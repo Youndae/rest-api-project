@@ -1,0 +1,63 @@
+package com.example.boardrest.repository;
+
+import com.example.boardrest.domain.Comment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface CommentRepository extends JpaRepository<Comment, Long> {
+
+    @Query(value = "SELECT commentNo" +
+            ", CONCAT(REPEAT('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', commentIndent), '', commentContent) AS commentContent" +
+            ", userId" +
+            ", commentDate" +
+            ", commentGroupNo" +
+            ", commentIndent" +
+            ", commentUpperNo" +
+            ", imageNo" +
+            ", boardNo " +
+            "FROM comment " +
+            "WHERE boardNo = :boardNo",
+    countQuery = "SELECT count(*) " +
+            "FROM comment " +
+            "WHERE boardNo = :boardNo",
+    nativeQuery = true)
+    Page<Comment> hierarchicalCommentList(@Param("boardNo") long boardNo, Pageable pageable);
+
+    @Query(value = "SELECT commentNo" +
+            ", CONCAT(REPEAT('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', commentIndent), '', commentContent) AS commentContent" +
+            ", userId" +
+            ", commentDate" +
+            ", commentGroupNo" +
+            ", commentIndent" +
+            ", commentUpperNo" +
+            ", imageNo" +
+            ", boardNo " +
+            "FROM comment " +
+            "WHERE imageNo = :imageNo",
+    countQuery = "SELECT count(*) " +
+            "FROM comment " +
+            "WHERE imageNo = :imageNo",
+    nativeQuery = true)
+    Page<Comment> imageCommentList(@Param("imageNo") long imageNo, Pageable pageable);
+
+    @Query(value = "SELECT count(*) " +
+            "FROM comment " +
+            "WHERE boardNo = :boardNo"
+    , nativeQuery = true)
+    int countBoardComment(@Param("boardNo") long boardNo);
+
+    @Query(value = "SELECT count(*) " +
+            "FROM comment " +
+            "WHERE imageNo = :imageNo"
+    , nativeQuery = true)
+    int countImageComment(@Param("imageNo") long imageNo);
+
+    @Query(value = "SELECT ifnull(max(commentNo) + 1, 1) " +
+            "FROM comment"
+    , nativeQuery = true)
+    long maxCommentNo();
+
+}
