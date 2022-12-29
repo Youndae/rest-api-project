@@ -107,11 +107,22 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
             ", boardContent = :boardContent " +
             "WHERE boardNo = :boardNo",
             nativeQuery = true)
-    void boardModify(@Param("boardTitle") String boardTitle, @Param("boardContent") String boardContent, @Param("boardNo") long boardNo);
+    HierarchicalBoard boardModify(@Param("boardTitle") String boardTitle, @Param("boardContent") String boardContent, @Param("boardNo") long boardNo);
 
 
     @Query(value = "SELECT ifnull(max(boardNo) + 1, 1) " +
             "FROM hierarchicalBoard",
             nativeQuery = true)
     long maxBoardNo();
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE hierarchicalBoard " +
+            "SET boardContent = ?1" +
+            ", boardIndent = ?2" +
+            ", boardGroupNo = ?3" +
+            ", boardUpperNo = ?4 " +
+            "WHERE boardNo = ?5"
+    , nativeQuery = true)
+    HierarchicalBoard boardInsertPatch(String boardContent, int boardIndent, long boardGroupNo, String boardUpperNo, long boardNo);
 }

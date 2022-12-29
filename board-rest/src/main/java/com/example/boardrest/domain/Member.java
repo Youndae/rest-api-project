@@ -35,5 +35,7 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Auth> auths;
 
-
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }
