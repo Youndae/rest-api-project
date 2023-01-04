@@ -1,5 +1,7 @@
-package com.example.boardrest.domain;
+package com.example.boardrest.domain.dto;
 
+import com.example.boardrest.domain.Criteria;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 

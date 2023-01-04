@@ -1,4 +1,4 @@
-package com.example.boardrest.domain;
+package com.example.boardrest.domain.dto;
 
 public interface ImageDataDTO {
 

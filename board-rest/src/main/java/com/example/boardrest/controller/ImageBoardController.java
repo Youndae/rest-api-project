@@ -1,12 +1,11 @@
 package com.example.boardrest.controller;
 
 import com.example.boardrest.domain.ImageBoard;
-import com.example.boardrest.domain.ImageDTO;
-import com.example.boardrest.domain.ImageDataDTO;
+import com.example.boardrest.domain.dto.ImageDTO;
+import com.example.boardrest.domain.dto.ImageDataDTO;
 import com.example.boardrest.repository.ImageBoardRepository;
 import com.example.boardrest.repository.ImageDataRepository;
 import com.example.boardrest.service.ImageBoardService;
-import com.sun.org.apache.regexp.internal.RE;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

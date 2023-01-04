@@ -1,7 +1,7 @@
 package com.example.boardrest.repository;
 
 import com.example.boardrest.domain.ImageBoard;
-import com.example.boardrest.domain.ImageDTO;
+import com.example.boardrest.domain.dto.ImageDTO;
 import com.example.boardrest.domain.ImageData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -13,7 +13,7 @@ import java.util.Set;
 
 public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
 
-    @Query(value = "SELECT new com.example.boardrest.domain.ImageDTO(" +
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.ImageDTO(" +
             "b.imageNo" +
             ", d.imageName" +
             ", b.imageContent" +
@@ -29,7 +29,7 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
             "ORDER BY b.imageNo DESC")
     List<ImageDTO> imageBoardList();
 
-    @Query(value = "SELECT new com.example.boardrest.domain.ImageDTO(" +
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.ImageDTO(" +
             "b.imageNo" +
             ", d.imageName" +
             ", b.imageContent" +

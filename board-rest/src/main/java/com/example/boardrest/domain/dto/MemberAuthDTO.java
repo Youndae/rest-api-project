@@ -1,5 +1,6 @@
-package com.example.boardrest.domain;
+package com.example.boardrest.domain.dto;
 
+import com.example.boardrest.domain.Auth;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,7 @@
 package com.example.boardrest.repository;
 
 import com.example.boardrest.domain.ImageData;
-import com.example.boardrest.domain.ImageDataDTO;
+import com.example.boardrest.domain.dto.ImageDataDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

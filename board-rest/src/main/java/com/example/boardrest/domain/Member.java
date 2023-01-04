@@ -23,10 +23,10 @@ public class Member {
 
     private String userName;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private final Set<HierarchicalBoard> hierarchicalBoards = new HashSet<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private final Set<ImageBoard> imageBoards = new HashSet<>();
 
     @OneToMany(mappedBy = "member")

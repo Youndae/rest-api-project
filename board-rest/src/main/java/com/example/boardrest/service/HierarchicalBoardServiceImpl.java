@@ -2,10 +2,13 @@ package com.example.boardrest.service;
 
 import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.HierarchicalBoard;
+import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
 import com.example.boardrest.domain.Member;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -77,8 +80,53 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService{
 
     // 계층형 게시판 List
     @Override
-    public List<HierarchicalBoard> getHierarchicalBoardList(Criteria cri) {
+    public List<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri) {
+/*
+        if(cri.getKeyword() == null || cri.getKeyword() == ""){ //default List
+            return hierarchicalBoardRepository.hierarchicalBoardList(
+                    PageRequest.of(cri.getPageNum() - 1
+                            , cri.getAmount()
+                            , Sort.by("boardGroupNo").descending()
+                                    .and(Sort.by("boardUpperNo").ascending()))
+            ).toList();
+        }else if (cri.getSearchType() == "t") {//title 검색시 사용
+            return hierarchicalBoardRepository.hierarchicalBoardListSearchTitle(
+                            cri.getKeyword()
+                            , PageRequest.of(cri.getPageNum() - 1
+                                    , cri.getAmount()
+                                    , Sort.by("boardGroupNo").descending()
+                                            .and(Sort.by("boardUpperNo").ascending()))
+            ).toList();
+        } else if (cri.getSearchType() == "c") {//content 검색시 사용
+            return hierarchicalBoardRepository.hierarchicalBoardListSearchContent(
+                            cri.getKeyword()
+                            , PageRequest.of(cri.getPageNum() - 1
+                                    , cri.getAmount()
+                                    , Sort.by("boardGroupNo").descending()
+                                            .and(Sort.by("boardUpperNo").ascending()))
+            ).toList();
+        } else if (cri.getSearchType() == "u") {// user 검색 시 사용
+            return hierarchicalBoardRepository.hierarchicalBoardListSearchUser(
+                            cri.getKeyword()
+                            , PageRequest.of(cri.getPageNum() - 1
+                                    , cri.getAmount()
+                                    , Sort.by("boardGroupNo").descending()
+                                            .and(Sort.by("boardUpperNo").ascending()))
+            ).toList();
+        } else if (cri.getKeyword() == "tc") {// title and content 검색시 사용
+            return hierarchicalBoardRepository.hierarchicalBoardListSearchTitleOrContent(
+                            cri.getKeyword()
+                            , PageRequest.of(cri.getPageNum() - 1
+                                    , cri.getAmount()
+                                    , Sort.by("boardGroupNo").descending()
+                                            .and(Sort.by("boardUpperNo").ascending()))
+            ).toList();
+        } else{
+            return null;
+        }*/
+
         return null;
+
     }
 
     // 계층형 게시판 patch

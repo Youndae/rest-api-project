@@ -2,20 +2,30 @@ package com.example.boardrest.controller;
 
 import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.HierarchicalBoard;
+import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
+import com.example.boardrest.domain.dto.PageDTO;
 import com.example.boardrest.repository.CommentRepository;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
 import com.example.boardrest.service.HierarchicalBoardService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,19 +38,36 @@ public class HierarchicalBoardController {
     private final HierarchicalBoardRepository hierarchicalBoardRepository;
 
     @GetMapping("/boardList")
-    public ResponseEntity<List<HierarchicalBoard>> hierarchicalBoardMain(Criteria cri){
+    public ResponseEntity<List<HierarchicalBoardDTO>> hierarchicalBoardMain(Criteria cri){
 
-        return new ResponseEntity<>(hierarchicalBoardService.getHierarchicalBoardList(cri), HttpStatus.OK);
+//        return new ResponseEntity<>(hierarchicalBoardService.getHierarchicalBoardList(cri), HttpStatus.OK);
+
+        /*List<HierarchicalBoardDTO> dto = hierarchicalBoardRepository.hierarchicalBoardList(PageRequest.of(cri.getPageNum() - 1
+                , cri.getAmount()
+                , Sort.by("boardGroupNo").descending()
+                        .and(Sort.by("boardUpperNo").ascending()))).toList();*/
+
+
+        /*return new ResponseEntity<>(hierarchicalBoardRepository.hierarchicalBoardList(PageRequest.of(cri.getPageNum() - 1
+                , cri.getAmount()
+                , Sort.by("boardGroupNo").descending()
+                        .and(Sort.by("boardUpperNo").ascending()))).toList(), HttpStatus.OK);*/
+
+        return new ResponseEntity<>(hierarchicalBoardRepository.hierarchicalBoardList(PageRequest.of(cri.getPageNum() - 1
+                , cri.getAmount()
+                , Sort.by("boardGroupNo").descending()
+                        .and(Sort.by("boardUpperNo").ascending()))).toList(), HttpStatus.OK);
     }
 
+
     @GetMapping("/boardDetail/{boardNo}")
-    public ResponseEntity<HierarchicalBoard> hierarchicalBoardDetail(@PathVariable long boardNo){
+    public ResponseEntity<HierarchicalBoardDTO> hierarchicalBoardDetail(@PathVariable long boardNo){
 
         return new ResponseEntity<>(hierarchicalBoardRepository.findByBoardNo(boardNo), HttpStatus.OK);
     }
 
     @GetMapping("/boardReplyInfo/{boardNo}")
-    public ResponseEntity<HierarchicalBoard> hierarchicalBoardReplyInfo(@PathVariable long boardNo){
+    public ResponseEntity<HierarchicalBoardDTO> hierarchicalBoardReplyInfo(@PathVariable long boardNo){
 
         return new ResponseEntity<>(hierarchicalBoardRepository.findByBoardNo(boardNo), HttpStatus.OK);
     }
