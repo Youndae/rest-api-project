@@ -34,9 +34,6 @@ public class ImageBoard {
 
     private String imageContent;
 
-    @OneToMany(mappedBy = "imageBoard", fetch = FetchType.LAZY)
-    private final Set<Comment> comments = new HashSet<>();
-
     @OneToMany(mappedBy = "imageBoard", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final Set<ImageData> imageDataSet = new HashSet<>();
 

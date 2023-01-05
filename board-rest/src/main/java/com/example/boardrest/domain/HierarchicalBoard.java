@@ -36,8 +36,8 @@ public class HierarchicalBoard {
 
     private String boardUpperNo;
 
-    @OneToMany(mappedBy = "hierarchicalBoard")
-    private final Set<Comment> comments = new HashSet<>();
+    /*@OneToMany(mappedBy = "hierarchicalBoard")
+    private final Set<Comment> comments = new HashSet<>();*/
 
 
 

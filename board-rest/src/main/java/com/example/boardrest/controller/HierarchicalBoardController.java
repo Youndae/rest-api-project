@@ -3,6 +3,7 @@ package com.example.boardrest.controller;
 import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.HierarchicalBoard;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
+import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
 import com.example.boardrest.domain.dto.PageDTO;
 import com.example.boardrest.repository.CommentRepository;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
@@ -38,25 +39,11 @@ public class HierarchicalBoardController {
     private final HierarchicalBoardRepository hierarchicalBoardRepository;
 
     @GetMapping("/boardList")
-    public ResponseEntity<List<HierarchicalBoardDTO>> hierarchicalBoardMain(Criteria cri){
-
-//        return new ResponseEntity<>(hierarchicalBoardService.getHierarchicalBoardList(cri), HttpStatus.OK);
-
-        /*List<HierarchicalBoardDTO> dto = hierarchicalBoardRepository.hierarchicalBoardList(PageRequest.of(cri.getPageNum() - 1
-                , cri.getAmount()
-                , Sort.by("boardGroupNo").descending()
-                        .and(Sort.by("boardUpperNo").ascending()))).toList();*/
+    public ResponseEntity<HierarchicalBoardListDTO> hierarchicalBoardMain(Criteria cri){
 
 
-        /*return new ResponseEntity<>(hierarchicalBoardRepository.hierarchicalBoardList(PageRequest.of(cri.getPageNum() - 1
-                , cri.getAmount()
-                , Sort.by("boardGroupNo").descending()
-                        .and(Sort.by("boardUpperNo").ascending()))).toList(), HttpStatus.OK);*/
+        return new ResponseEntity<>(hierarchicalBoardService.getHierarchicalBoardList(cri), HttpStatus.OK);
 
-        return new ResponseEntity<>(hierarchicalBoardRepository.hierarchicalBoardList(PageRequest.of(cri.getPageNum() - 1
-                , cri.getAmount()
-                , Sort.by("boardGroupNo").descending()
-                        .and(Sort.by("boardUpperNo").ascending()))).toList(), HttpStatus.OK);
     }
 
 

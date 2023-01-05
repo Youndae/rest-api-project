@@ -23,16 +23,17 @@ public class Member {
 
     private String userName;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-    private final Set<HierarchicalBoard> hierarchicalBoards = new HashSet<>();
+//    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+
+    /*@OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private final Set<ImageBoard> imageBoards = new HashSet<>();
 
     @OneToMany(mappedBy = "member")
-    private final Set<Comment> comments = new HashSet<>();
+    private final Set<Comment> comments = new HashSet<>();*/
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ToString.Exclude
     private List<Auth> auths;
 
     public void setUserId(String userId) {

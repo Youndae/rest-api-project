@@ -1,9 +1,16 @@
 package com.example.boardrest.service;
 
 import com.example.boardrest.domain.Comment;
+import com.example.boardrest.domain.Criteria;
+import com.example.boardrest.domain.dto.CommentDTO;
+import com.example.boardrest.domain.dto.CommentListDTO;
+import com.example.boardrest.domain.dto.PageDTO;
 import com.example.boardrest.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -80,7 +87,76 @@ public class CommentServiceImpl implements CommentService{
 
     // 댓글 List
     @Override
-    public List<Comment> commentList(Map<String, Object> boardNo) {
+    public CommentListDTO commentList(Map<String, Object> commentData, Criteria cri) {
+
+        /**
+         * boardNo인지
+         * imageNo인지 구분 필요.
+         *
+         * commentDTO에 담고
+         * commentListDTO에 PageDTO와 같이 필드 추가
+         *
+         * 여기서 의문점.
+         * board의 comment인 경우
+         * 데이터를 가져올 때 boardNo만 가져오도록 한다면
+         * DTO가 두개가 나와줘야 하는가?
+         * DTO에 매핑할때 하나를 빼먹는 경우 syntax error가 발생하기 때문.
+         *
+         */
+
+        CommentListDTO dto;
+
+        cri.setPageNum(Integer.parseInt(commentData.get("pageNum").toString()));
+
+        log.info("pageNum : " + cri.getPageNum());
+
+
+        /*if(commentData.get("boardNo") == null){
+            log.info("boardNo is null");
+
+            long imageNo = Long.parseLong(commentData.get("imageNo").toString());
+
+            dto = CommentListDTO.builder()
+                    .commentDTOList(commentRepository.getHierarchicalBoardCommentList(
+                            imageNo
+                            , PageRequest.of(cri.getPageNum() - 1
+                                    , cri.getAmount()
+                                    , Sort.by("commentGroupNo").descending()
+                                            .and(Sort.by("commentUpperNo").ascending()))
+                    ).toList())
+                    .pageDTO(new PageDTO(cri, commentRepository.commentTotal(imageNo)))
+                    .build();
+        }else if(commentData.get("boardNo") != null){
+            log.info("boardNo is not null");
+
+
+            long boardNo = Long.parseLong(commentData.get("boardNo").toString());
+
+            log.info("boardNo : " + boardNo);
+
+            List<CommentDTO> commentDTO = commentRepository.getHierarchicalBoardCommentList(
+                    boardNo
+                    , PageRequest.of(cri.getPageNum() - 1
+                    , cri.getAmount()
+                    , Sort.by("commentGroupNo").descending()
+                                    .and(Sort.by("commentUpperNo").ascending()))
+            ).toList();
+
+            dto = CommentListDTO.builder()
+                    .commentDTOList(commentRepository.getHierarchicalBoardCommentList(
+                            boardNo
+                            , PageRequest.of(cri.getPageNum() - 1
+                            , cri.getAmount()
+                            , Sort.by("commentGroupNo").descending()
+                                            .and(Sort.by("commentUpperNo").ascending()))
+                    ).toList())
+                    .pageDTO(new PageDTO(cri, commentRepository.commentTotal(boardNo)))
+                    .build();
+        }else{
+            return null;
+        }*/
+
+
         return null;
     }
 

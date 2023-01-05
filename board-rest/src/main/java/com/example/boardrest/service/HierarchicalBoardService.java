@@ -3,6 +3,7 @@ package com.example.boardrest.service;
 import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.HierarchicalBoard;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
+import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -16,7 +17,7 @@ public interface HierarchicalBoardService {
 
     long deleteBoard(long boardNo);
 
-    List<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri);
+    HierarchicalBoardListDTO getHierarchicalBoardList(Criteria cri);
 
     long patchBoard(HttpServletRequest request);
 

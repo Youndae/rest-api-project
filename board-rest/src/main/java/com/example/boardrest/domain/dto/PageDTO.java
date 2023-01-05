@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @ToString
 public class PageDTO {
@@ -15,11 +17,12 @@ public class PageDTO {
 
     private boolean prev, next;
 
-    private int total;
+    private long total;
 
     private Criteria cri;
 
-    public PageDTO(Criteria cri, int total){
+
+    public PageDTO(Criteria cri, long total){
         this.cri = cri;
         this.total = total;
 
@@ -33,5 +36,6 @@ public class PageDTO {
 
         this.prev = this.startPage > 1;
         this.next = this.endPage < realEnd;
+
     }
 }

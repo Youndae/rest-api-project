@@ -15,91 +15,6 @@ import java.util.List;
 public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalBoard, Long> {
 
     //HierarchicalBoard default List
-    /*@Query(value = "SELECT boardNo" +
-            ", CONCAT(REPEAT('    ', boardIndent), '', boardTitle) AS boardTitle" +
-            ", userId" +
-            ", boardContent" +
-            ", boardDate" +
-            ", boardGroupNo" +
-            ", boardUpperNo" +
-            ", boardIndent " +
-            "FROM hierarchicalBoard"
-    , countQuery = "SELECT count(*) " +
-            "FROM hierarchicalBoard"
-    , nativeQuery = true)
-    Page<HierarchicalBoard> hierarchicalBoardList(Pageable pageable);*/
-
-    /*//HierarchicalBoard SearchTitle List
-    @Query(value = "SELECT boardNo" +
-            ", CONCAT(REPEAT('   ', boardIndent), '', boardTitle) AS boardTitle" +
-            ", userId" +
-            ", boardContent" +
-            ", boardDate" +
-            ", boardGroupNo" +
-            ", boardUpperNo" +
-            ", boardIndent " +
-            "FROM hierarchicalBoard " +
-            "WHERE boardTitle LIKE :keyword"
-            , countQuery = "SELECT count(*) " +
-            "FROM hierarchicalBoard " +
-            "WHERE boardTitle LIKE :keyword"
-            , nativeQuery = true)
-    Page<HierarchicalBoard> hierarchicalBoardListSearchTitle(@Param("keyword") String keyword, Pageable pageable);*/
-
-    /*//HierarchicalBoard SearchContent List
-    @Query(value = "SELECT boardNo" +
-            ", CONCAT(REPEAT('   ', boardIndent), '', boardTitle) AS boardTitle" +
-            ", userId" +
-            ", boardContent" +
-            ", boardDate" +
-            ", boardGroupNo" +
-            ", boardUpperNo" +
-            ", boardIndent " +
-            "FROM hierarchicalBoard " +
-            "WHERE boardContent LIKE :keyword"
-            , countQuery = "SELECT count(*) " +
-            "FROM hierarchicalBoard " +
-            "WHERE boardContent LIKE :keyword"
-            , nativeQuery = true)
-    Page<HierarchicalBoard> hierarchicalBoardListSearchContent(@Param("keyword") String keyword, Pageable pageable);*/
-
-    /*//HierarchicalBoard SearchUser List
-    @Query(value = "SELECT boardNo" +
-            ", CONCAT(REPEAT('   ', boardIndent), '', boardTitle) AS boardTitle" +
-            ", userId" +
-            ", boardContent" +
-            ", boardDate" +
-            ", boardGroupNo" +
-            ", boardUpperNo" +
-            ", boardIndent " +
-            "FROM hierarchicalBoard " +
-            "WHERE userId LIKE :keyword"
-            , countQuery = "SELECT count(*) " +
-            "FROM hierarchicalBoard " +
-            "WHERE userId LIKE :keyword"
-            , nativeQuery = true)
-    Page<HierarchicalBoard> hierarchicalBoardListSearchUser(@Param("keyword") String keyword, Pageable pageable);*/
-
-    /*//HierarchicalBoard Search Title + Content List
-    @Query(value = "SELECT boardNo" +
-            ", CONCAT(REPEAT('   ', boardIndent), '', boardTitle) AS boardTitle" +
-            ", userId" +
-            ", boardContent" +
-            ", boardDate" +
-            ", boardGroupNo" +
-            ", boardUpperNo" +
-            ", boardIndent " +
-            "FROM hierarchicalBoard " +
-            "WHERE boardTitle LIKE :keyword " +
-            "OR boardContent LIKE :keyword"
-            , countQuery = "SELECT count(*) " +
-            "FROM hierarchicalBoard " +
-            "WHERE boardTitle LIKE :keyword " +
-            "OR boardContent LIKE :keyword"
-            , nativeQuery = true)
-    Page<HierarchicalBoard> hierarchicalBoardListSearchTitleOrContent(@Param("keyword") String keyword, Pageable pageable);*/
-
-    //HierarchicalBoard default List
     @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardDTO(" +
             "b.boardNo" +
             ", b.boardTitle" +
@@ -110,12 +25,13 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
             ", b.boardIndent" +
             ", b.boardUpperNo) " +
             "FROM HierarchicalBoard b"
-    , countQuery = "SELECT count(b) " +
-            "FROM HierarchicalBoard b")
+    , countQuery = "SELECT c.contentCount " +
+            "FROM Count_table c " +
+            "WHERE c.boardName = 'hierarchicalboard'")
     Page<HierarchicalBoardDTO> hierarchicalBoardList(Pageable pageable);
 
 
-    /*//HierarchicalBoard searchTitle List
+    //HierarchicalBoard searchTitle List
     @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardDTO(" +
             "b.boardNo" +
             ", b.boardTitle" +
@@ -127,7 +43,7 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
             ", b.boardUpperNo) " +
             "FROM HierarchicalBoard b " +
             "WHERE b.boardTitle LIKE :keyword"
-            , countQuery = "SELECT count(b) " +
+    , countQuery = "SELECT count(b) " +
             "FROM HierarchicalBoard b " +
             "WHERE b.boardTitle LIKE :keyword")
     Page<HierarchicalBoardDTO> hierarchicalBoardListSearchTitle(@Param("keyword") String keyword, Pageable pageable);
@@ -183,7 +99,7 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
             "FROM HierarchicalBoard b " +
             "WHERE b.boardTitle LIKE :keyword " +
             "OR b.boardContent LIKE :keyword")
-    Page<HierarchicalBoardDTO> hierarchicalBoardListSearchTitleOrContent(@Param("keyword") String keyword, Pageable pageable);*/
+    Page<HierarchicalBoardDTO> hierarchicalBoardListSearchTitleOrContent(@Param("keyword") String keyword, Pageable pageable);
 
 
     @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardDTO(" +
@@ -196,8 +112,7 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
             ", b.boardIndent" +
             ", b.boardUpperNo) " +
             "FROM HierarchicalBoard b " +
-            "WHERE b.boardNo = ?1"
-    , nativeQuery = true)
+            "WHERE b.boardNo = ?1")
     HierarchicalBoardDTO findByBoardNo(long boardNo);
 
     @Modifying
@@ -221,17 +136,34 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
     HierarchicalBoard boardInsertPatch(String boardContent, int boardIndent, long boardGroupNo, String boardUpperNo, long boardNo);
 
 
-    /*@Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardDTO(" +
-            "b.boardNo" +
-            ", b.boardTitle" +
-            ", b.member.userId" +
-            ", b.boardContent" +
-            ", b.boardDate" +
-            ", b.boardGroupNo" +
-            ", b.boardIndent" +
-            ", b.boardUpperNo) " +
-            "FROM HierarchicalBoard b"
-    , countQuery = "SELECT count(h)" +
-            "FROM HierarchicalBoard h")
-    Page<HierarchicalBoardDTO> boardListTest(Pageable pageable);*/
+    // 기본 boardList TotalCount
+    @Query(value = "SELECT c.contentCount " +
+            "FROM Count_table c " +
+            "WHERE c.boardName = 'hierarchicalBoard'")
+    long defaultBoardTotalCount();
+
+    // searchTitle TotalCount
+    @Query(value = "SELECT count(b) " +
+            "FROM HierarchicalBoard b " +
+            "WHERE b.boardTitle LIKE :keyword")
+    long searchTitleTotalCount(@Param("keyword") String keyword);
+
+    // searchContent TotalCount
+    @Query(value = "SELECT count(b) " +
+            "FROM HierarchicalBoard b " +
+            "WHERE b.boardContent LIKE :keyword")
+    long searchContentTotalCount(@Param("keyword") String keyword);
+
+    // searchUser TotalCount
+    @Query(value = "SELECT count(b) " +
+            "FROM HierarchicalBoard b " +
+            "WHERE b.member.userId LIKE :keyword")
+    long searchUserTotalCount(@Param("keyword") String keyword);
+
+    // searchTitle + content TotalCount
+    @Query(value = "SELECT count(b) " +
+            "FROM HierarchicalBoard b " +
+            "WHERE b.boardTitle LIKE :keyword " +
+            "OR b.boardContent LIKE :keyword")
+    long searchTitleOrContentTotalCount(@Param("keyword") String keyword);
 }

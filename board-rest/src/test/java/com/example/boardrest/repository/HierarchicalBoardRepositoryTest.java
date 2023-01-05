@@ -20,16 +20,14 @@ class HierarchicalBoardRepositoryTest {
 
     @Test
     void getListTest(){
-        getListMethod();
+        hierarchicalBoardRepository.hierarchicalBoardListSearchContent(
+                "%게시글%"
+                , PageRequest.of(0
+                , 20
+                , Sort.by("boardGroupNo").descending()
+                                .and(Sort.by("boardUpperNo").ascending()))
+        );
     }
 
-    List<HierarchicalBoard> getListMethod(){
-        return hierarchicalBoardRepository.hierarchicalBoardList(
-                PageRequest.of(1 - 1
-                        , 20
-                        , Sort.by("boardGroupNo").descending()
-                                .and(Sort.by("boardUpperNo").ascending()))
-        ).toList();
-    }
 
 }
