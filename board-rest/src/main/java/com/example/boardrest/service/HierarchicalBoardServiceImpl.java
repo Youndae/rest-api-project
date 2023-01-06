@@ -3,15 +3,12 @@ package com.example.boardrest.service;
 import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.HierarchicalBoard;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
-import com.example.boardrest.domain.Member;
-import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
-import com.example.boardrest.domain.dto.PageDTO;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,12 +16,11 @@ import javax.transaction.Transactional;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class HierarchicalBoardServiceImpl implements HierarchicalBoardService{
+public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
     private final PrincipalService principalService;
 
@@ -34,7 +30,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService{
     @Override
     @Transactional(rollbackOn = Exception.class)
     public long insertBoard(HttpServletRequest request, Principal principal) {
-        try{
+        try {
 
             long boardNo = insertGetBoardNo(request, principal);
 
@@ -44,7 +40,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService{
             request.setAttribute("boardUpperNo", boardNo);
 
             return insertPatchHierarchicalBoard(request);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info("Board insertion failed");
             return -1;
         }
@@ -53,7 +49,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService{
     // 계층형 게시판 답글 insert
     @Override
     public long insertBoardReply(HttpServletRequest request, Principal principal) {
-        try{
+        try {
             long boardNo = insertGetBoardNo(request, principal);
 
             request.setAttribute("boardNo", boardNo);
@@ -62,7 +58,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService{
             request.setAttribute("boardUpperNo", request.getParameter("boardUpperNo") + "," + boardNo);
 
             return insertPatchHierarchicalBoard(request);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info("board Reply insertion failed");
             return -1;
         }
@@ -71,11 +67,11 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService{
     // 계층형 게시판 delete
     @Override
     public long deleteBoard(long boardNo) {
-        try{
+        try {
             hierarchicalBoardRepository.deleteById(boardNo);
             log.info(boardNo + " board delete success");
             return 1;
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info(boardNo + " delete failed");
             return -1;
         }
@@ -83,65 +79,50 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService{
 
     // 계층형 게시판 List
     @Override
-    public HierarchicalBoardListDTO getHierarchicalBoardList(Criteria cri) {
+    public Page<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri) {
 
-        HierarchicalBoardListDTO dto;
+        Page<HierarchicalBoardDTO> dto;
 
-        if(cri.getKeyword() == null || cri.getKeyword() == ""){ //default List
-            dto = HierarchicalBoardListDTO.builder()
-                    .hierarchicalBoardDTOList(hierarchicalBoardRepository.hierarchicalBoardList(
-                            PageRequest.of(cri.getPageNum() - 1
-                                    , cri.getAmount()
-                                    , Sort.by("boardGroupNo").descending()
-                                            .and(Sort.by("boardUpperNo").ascending()))
-                    ).toList())
-                    .pageDTO(new PageDTO(cri, hierarchicalBoardRepository.defaultBoardTotalCount()))
-                    .build();
-        }else if (cri.getSearchType() == "t") {//title 검색시 사용
-            dto = HierarchicalBoardListDTO.builder()
-                    .hierarchicalBoardDTOList(hierarchicalBoardRepository.hierarchicalBoardListSearchTitle(
-                            cri.getKeyword()
-                            , PageRequest.of(cri.getPageNum() - 1
-                                    , cri.getAmount()
-                                    , Sort.by("boardGroupNo").descending()
-                                            .and(Sort.by("boardUpperNo").ascending()))
-                    ).toList())
-                    .pageDTO(new PageDTO(cri, hierarchicalBoardRepository.searchTitleTotalCount(cri.getKeyword())))
-                    .build();
+        if (cri.getKeyword() == null || cri.getKeyword() == "") { //default List
+            dto = hierarchicalBoardRepository.hierarchicalBoardList(
+                    PageRequest.of(cri.getPageNum() - 1
+                            , cri.getAmount()
+                            , Sort.by("boardGroupNo").descending()
+                                    .and(Sort.by("boardUpperNo").ascending()))
+            );
+        } else if (cri.getSearchType() == "t") {//title 검색시 사용
+            dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitle(
+                    cri.getKeyword()
+                    , PageRequest.of(cri.getPageNum() - 1
+                            , cri.getAmount()
+                            , Sort.by("boardGroupNo").descending()
+                                    .and(Sort.by("boardUpperNo").ascending()))
+            );
         } else if (cri.getSearchType() == "c") {//content 검색시 사용
-            dto = HierarchicalBoardListDTO.builder()
-                    .hierarchicalBoardDTOList(hierarchicalBoardRepository.hierarchicalBoardListSearchContent(
-                            cri.getKeyword()
-                            , PageRequest.of(cri.getPageNum() - 1
-                                    , cri.getAmount()
-                                    , Sort.by("boardGroupNo").descending()
-                                            .and(Sort.by("boardUpperNo").ascending()))
-                    ).toList())
-                    .pageDTO(new PageDTO(cri, hierarchicalBoardRepository.searchContentTotalCount(cri.getKeyword())))
-                    .build();
+            dto = hierarchicalBoardRepository.hierarchicalBoardListSearchContent(
+                    cri.getKeyword()
+                    , PageRequest.of(cri.getPageNum() - 1
+                            , cri.getAmount()
+                            , Sort.by("boardGroupNo").descending()
+                                    .and(Sort.by("boardUpperNo").ascending()))
+            );
         } else if (cri.getSearchType() == "u") {// user 검색 시 사용
-            dto = HierarchicalBoardListDTO.builder()
-                    .hierarchicalBoardDTOList(hierarchicalBoardRepository.hierarchicalBoardListSearchUser(
-                            cri.getKeyword()
-                            , PageRequest.of(cri.getPageNum() - 1
-                                    , cri.getAmount()
-                                    , Sort.by("boardGroupNo").descending()
-                                            .and(Sort.by("boardUpperNo").ascending()))
-                    ).toList())
-                    .pageDTO(new PageDTO(cri, hierarchicalBoardRepository.searchUserTotalCount(cri.getKeyword())))
-                    .build();
+            dto = hierarchicalBoardRepository.hierarchicalBoardListSearchUser(
+                    cri.getKeyword()
+                    , PageRequest.of(cri.getPageNum() - 1
+                            , cri.getAmount()
+                            , Sort.by("boardGroupNo").descending()
+                                    .and(Sort.by("boardUpperNo").ascending()))
+            );
         } else if (cri.getKeyword() == "tc") {// title and content 검색시 사용
-            dto = HierarchicalBoardListDTO.builder()
-                    .hierarchicalBoardDTOList( hierarchicalBoardRepository.hierarchicalBoardListSearchTitleOrContent(
-                            cri.getKeyword()
-                            , PageRequest.of(cri.getPageNum() - 1
-                                    , cri.getAmount()
-                                    , Sort.by("boardGroupNo").descending()
-                                            .and(Sort.by("boardUpperNo").ascending()))
-                    ).toList())
-                    .pageDTO(new PageDTO(cri, hierarchicalBoardRepository.searchTitleOrContentTotalCount(cri.getKeyword())))
-                    .build();
-        } else{
+            dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitleOrContent(
+                    cri.getKeyword()
+                    , PageRequest.of(cri.getPageNum() - 1
+                            , cri.getAmount()
+                            , Sort.by("boardGroupNo").descending()
+                                    .and(Sort.by("boardUpperNo").ascending()))
+            );
+        } else {
             return null;
         }
 
@@ -160,7 +141,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService{
     }
 
     // 1차 save 처리로 boardNo 리턴
-    public long insertGetBoardNo(HttpServletRequest request, Principal principal) throws Exception{
+    public long insertGetBoardNo(HttpServletRequest request, Principal principal) throws Exception {
         return hierarchicalBoardRepository.save(
                 HierarchicalBoard.builder()
                         .boardTitle(request.getParameter("boardTitle"))
@@ -175,10 +156,10 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService{
     public long insertPatchHierarchicalBoard(HttpServletRequest request) throws Exception {
 
         return hierarchicalBoardRepository.boardInsertPatch(request.getParameter("boardContent")
-                                    , Integer.parseInt(request.getAttribute("boardIndent").toString())
-                                    , Long.parseLong(request.getAttribute("boardGroupNo").toString())
-                                    , request.getAttribute("boardUpperNo").toString()
-                                    , Long.parseLong(request.getAttribute("boardNo").toString())
+                , Integer.parseInt(request.getAttribute("boardIndent").toString())
+                , Long.parseLong(request.getAttribute("boardGroupNo").toString())
+                , request.getAttribute("boardUpperNo").toString()
+                , Long.parseLong(request.getAttribute("boardNo").toString())
         ).getBoardNo();
     }
 }

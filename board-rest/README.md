@@ -59,9 +59,22 @@
 >> 이걸 Entity로 굳이 만들어야 할까 싶었지만 JPA에서 table과 Entity의 구조는 맞춰야 하는것 아닌가 해서 생성.
 >> #
 >> comment 수정중
+> 
+> #
+> 23/01/06
+>> Comment 수정.   
+>> Page<>로 페이징 관련 데이터를 넘길 수 있다는 것을 확인. 그래서 리턴을 List 로 하는것이 아닌 Page로 리턴하도록 수정.   
+>> DTO에 매핑할 때 null값이 존재하면 오류가 발생하면서 매핑이 안되는 부분때문에 각 게시판별 DTO를 생성하고
+>> 이 DTO들을 Page 타입으로 담고 있는 CommentListDTO를 만들어 해당하지 않는 게시판의 DTO는 null값으로 만들어 리턴하도록 구현.
+>> 그리고 HierarchicalBoard 역시 ListDTO를 삭제하고 DTO하나만 Page 타입으로 리턴하도록 해 처리.   
+>> 프론트에서는 totalElements와 totalPages가 같이 리턴되니까 이걸 받아서 데이터 하단에 페이지 이동 처리만 하도록 하면 되니 PageDTO는 삭제.   
+>> #
+>> url은 rest에 맞게 전체적으로 수정이 필요.   
+>> imageBoard에 대한 처리 필요.
 ---
 
 ## 남아있는 처리 과정
 > 1. 각 Entity getList
 > 2. 상태코드 리턴처리
 > 3. 전체적인 테스트
+> 

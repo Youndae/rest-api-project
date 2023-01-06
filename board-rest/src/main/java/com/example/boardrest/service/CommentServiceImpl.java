@@ -2,9 +2,9 @@ package com.example.boardrest.service;
 
 import com.example.boardrest.domain.Comment;
 import com.example.boardrest.domain.Criteria;
-import com.example.boardrest.domain.dto.CommentDTO;
+import com.example.boardrest.domain.dto.HierarchicalBoardCommentDTO;
 import com.example.boardrest.domain.dto.CommentListDTO;
-import com.example.boardrest.domain.dto.PageDTO;
+import com.example.boardrest.domain.dto.ImageBoardCommentDTO;
 import com.example.boardrest.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,6 @@ import javax.transaction.Transactional;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -90,74 +89,54 @@ public class CommentServiceImpl implements CommentService{
     public CommentListDTO commentList(Map<String, Object> commentData, Criteria cri) {
 
         /**
-         * boardNo인지
-         * imageNo인지 구분 필요.
-         *
-         * commentDTO에 담고
-         * commentListDTO에 PageDTO와 같이 필드 추가
-         *
-         * 여기서 의문점.
-         * board의 comment인 경우
-         * 데이터를 가져올 때 boardNo만 가져오도록 한다면
-         * DTO가 두개가 나와줘야 하는가?
-         * DTO에 매핑할때 하나를 빼먹는 경우 syntax error가 발생하기 때문.
+         * commentData에 넘어온 게시글 번호가
+         * boardNo인지 ImageNo인지 체크 후
+         * 그에 맞는 쿼리를 호출해 각 게시판 CommentDTO에 담아주고
+         * 모든 commentDTO를 담고 있는 CommentListDTO에 builder 패턴으로 담아준 뒤 리턴.
          *
          */
 
+        cri.setPageNum(Integer.parseInt(commentData.get("pageNum").toString()));
         CommentListDTO dto;
 
-        cri.setPageNum(Integer.parseInt(commentData.get("pageNum").toString()));
-
-        log.info("pageNum : " + cri.getPageNum());
-
-
-        /*if(commentData.get("boardNo") == null){
-            log.info("boardNo is null");
-
+        if(commentData.get("boardNo") == null){// imageBoard
+            // getImageBoardCommentList
             long imageNo = Long.parseLong(commentData.get("imageNo").toString());
 
-            dto = CommentListDTO.builder()
-                    .commentDTOList(commentRepository.getHierarchicalBoardCommentList(
-                            imageNo
-                            , PageRequest.of(cri.getPageNum() - 1
-                                    , cri.getAmount()
-                                    , Sort.by("commentGroupNo").descending()
-                                            .and(Sort.by("commentUpperNo").ascending()))
-                    ).toList())
-                    .pageDTO(new PageDTO(cri, commentRepository.commentTotal(imageNo)))
-                    .build();
-        }else if(commentData.get("boardNo") != null){
-            log.info("boardNo is not null");
-
-
-            long boardNo = Long.parseLong(commentData.get("boardNo").toString());
-
-            log.info("boardNo : " + boardNo);
-
-            List<CommentDTO> commentDTO = commentRepository.getHierarchicalBoardCommentList(
-                    boardNo
-                    , PageRequest.of(cri.getPageNum() - 1
-                    , cri.getAmount()
-                    , Sort.by("commentGroupNo").descending()
-                                    .and(Sort.by("commentUpperNo").ascending()))
-            ).toList();
-
-            dto = CommentListDTO.builder()
-                    .commentDTOList(commentRepository.getHierarchicalBoardCommentList(
-                            boardNo
-                            , PageRequest.of(cri.getPageNum() - 1
+            Page<ImageBoardCommentDTO> commentDTO = commentRepository.getImageBoardCommentList(
+                    PageRequest.of(cri.getPageNum() - 1
                             , cri.getAmount()
                             , Sort.by("commentGroupNo").descending()
-                                            .and(Sort.by("commentUpperNo").ascending()))
-                    ).toList())
-                    .pageDTO(new PageDTO(cri, commentRepository.commentTotal(boardNo)))
+                                    .and(Sort.by("commentUpperNo").ascending()))
+                    , imageNo
+            );
+
+            dto = CommentListDTO.builder()
+                    .hierarchicalBoardCommentDTO(null)
+                    .imageBoardCommentDTO(commentDTO)
                     .build();
+
+        }else if(commentData.get("boardNo") != null){// hierarchicalBoard
+            long boardNo = Long.parseLong(commentData.get("boardNo").toString());
+
+            Page<HierarchicalBoardCommentDTO> commentDTO = commentRepository.getHierarchicalBoardCommentList(
+                    PageRequest.of(cri.getPageNum() - 1
+                            , cri.getAmount()
+                            , Sort.by("commentGroupNo").descending()
+                                    .and(Sort.by("commentUpperNo").ascending()))
+                    , boardNo);
+
+            dto = CommentListDTO.builder()
+                    .hierarchicalBoardCommentDTO(commentDTO)
+                    .imageBoardCommentDTO(null)
+                    .build();
+
         }else{
             return null;
-        }*/
+        }
 
+        return dto;
 
-        return null;
     }
 
     // 1차 save commentNo 리턴

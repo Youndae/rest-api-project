@@ -4,6 +4,7 @@ import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.HierarchicalBoard;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
+import org.springframework.data.domain.Page;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -17,7 +18,7 @@ public interface HierarchicalBoardService {
 
     long deleteBoard(long boardNo);
 
-    HierarchicalBoardListDTO getHierarchicalBoardList(Criteria cri);
+    Page<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri);
 
     long patchBoard(HttpServletRequest request);
 

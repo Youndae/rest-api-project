@@ -1,6 +1,7 @@
 package com.example.boardrest.domain.dto;
 
 import lombok.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @Builder
 public class CommentListDTO {
 
-    private List<CommentDTO> commentDTOList;
+    private Page<HierarchicalBoardCommentDTO> hierarchicalBoardCommentDTO;
 
-    private PageDTO pageDTO;
+    private Page<ImageBoardCommentDTO> imageBoardCommentDTO;
 }

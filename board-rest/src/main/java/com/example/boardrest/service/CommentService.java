@@ -2,9 +2,7 @@ package com.example.boardrest.service;
 
 import com.example.boardrest.domain.Comment;
 import com.example.boardrest.domain.Criteria;
-import com.example.boardrest.domain.dto.CommentDTO;
 import com.example.boardrest.domain.dto.CommentListDTO;
-import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 import java.util.Map;
