@@ -3,6 +3,7 @@ package com.example.boardrest.repository;
 import com.example.boardrest.domain.ImageBoard;
 import com.example.boardrest.domain.dto.ImageDTO;
 import com.example.boardrest.domain.ImageData;
+import com.example.boardrest.domain.dto.ImageDetailDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -29,7 +30,7 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
             "ORDER BY b.imageNo DESC")
     List<ImageDTO> imageBoardList();
 
-    @Query(value = "SELECT new com.example.boardrest.domain.dto.ImageDTO(" +
+    /*@Query(value = "SELECT new com.example.boardrest.domain.dto.ImageDTO(" +
             "b.imageNo" +
             ", d.imageName" +
             ", b.imageContent" +
@@ -43,12 +44,16 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
             "ON b.imageNo = d.imageBoard.imageNo " +
             "WHERE b.imageNo = ?1 " +
             "ORDER BY d.imageStep ASC")
-    List<ImageDTO> imageDetailDTO(long imageNo);
+    List<ImageDTO> imageDetailDTO(long imageNo);*/
 
-    @Query(value = "SELECT b " +
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.ImageDetailDTO(" +
+            "b.imageNo" +
+            ", b.member.userId" +
+            ", b.imageDate" +
+            ", b.imageContent) " +
             "FROM ImageBoard b " +
-            "WHERE b.imageNo = ?1")
-    ImageBoard modifyImageDetail(long imageNo);
+            "WHERE b.imageNo = ?1 ")
+    ImageDetailDTO imageDetailDTO(long imageNo);
 
     @Modifying
     @Transactional

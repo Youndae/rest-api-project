@@ -71,10 +71,20 @@
 >> #
 >> url은 rest에 맞게 전체적으로 수정이 필요.   
 >> imageBoard에 대한 처리 필요.
+> 
+> #
+> 23/01/10
+>> ImageBoard 처리 수정.   
+>> image-board-list는 정상적으로 리턴하는것을 확인.   
+>> image-detail과 image-modify는 따로 분리해서 처리하고는 있으나 동일한 repository 메소드를 가져와 사용중.   
+>> 이 처리를 위해 ImageDetailDTO를 생성.   
+>> detail과 modify는 동일한 데이터를 리턴하고 있으나 프론트에서 요청하는것을 감안해 지금처럼 분리하는것이 나은지
+>> 아니면 동일하게 detail로만 받아서 처리하도록 할것인지 고민.   
+>> 이제 전체적인 구현은 끝난것으로 보이고 ApplicationServer 만들어서 테스트 해볼것.
 ---
 
 ## 남아있는 처리 과정
 > 1. 각 Entity getList
 > 2. 상태코드 리턴처리
 > 3. 전체적인 테스트
-> 
+>

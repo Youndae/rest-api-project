@@ -27,9 +27,7 @@ public class CommentController {
 
     private CommentService commentService;
 
-    private final CommentRepository commentRepository;
-
-    @GetMapping("/commentList")
+    @GetMapping("/comment-list")
     public ResponseEntity<CommentListDTO> commentList(@RequestBody Map<String, Object> commentData, Criteria cri){
         commentData.forEach((s, o) -> log.info(s + " : " + o));
 
@@ -41,7 +39,7 @@ public class CommentController {
         return new ResponseEntity<>(commentService.commentList(commentData, cri), HttpStatus.OK);
     }
 
-    @PostMapping("/commentInsert")
+    @PostMapping("/comment-insert")
     public int commentInsert(@RequestBody Map<String, Object> commentData
                                     , Comment comment
                                     , Principal principal){
@@ -49,7 +47,7 @@ public class CommentController {
         return commentService.commentInsert(commentData, comment, principal);
     }
 
-    @PostMapping("/commentReply")
+    @PostMapping("/comment-reply")
     public int commentReply(@RequestBody Map<String, Object> commentData
                                 , Comment comment
                                 , Principal principal){
@@ -59,7 +57,7 @@ public class CommentController {
         return commentService.commentReplyInsert(commentData, comment, principal);
     }
 
-    @DeleteMapping("/comentDelete")
+    @DeleteMapping("/comment-delete")
     public int commentDelete(@RequestBody String commentNo) {
         log.info("commentDelete");
 

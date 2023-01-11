@@ -24,47 +24,47 @@ public class HierarchicalBoardController {
 
     private final HierarchicalBoardRepository hierarchicalBoardRepository;
 
-    @GetMapping("/boardList")
+    @GetMapping("/board-list")
     public ResponseEntity<Page<HierarchicalBoardDTO>> hierarchicalBoardMain(Criteria cri){
 
         return new ResponseEntity<>(hierarchicalBoardService.getHierarchicalBoardList(cri), HttpStatus.OK);
     }
 
 
-    @GetMapping("/boardDetail/{boardNo}")
+    @GetMapping("/board-detail/{boardNo}")
     public ResponseEntity<HierarchicalBoardDTO> hierarchicalBoardDetail(@PathVariable long boardNo){
 
         return new ResponseEntity<>(hierarchicalBoardRepository.findByBoardNo(boardNo), HttpStatus.OK);
     }
 
-    @GetMapping("/boardReplyInfo/{boardNo}")
+    @GetMapping("/board-reply-info/{boardNo}")
     public ResponseEntity<HierarchicalBoardDTO> hierarchicalBoardReplyInfo(@PathVariable long boardNo){
 
         return new ResponseEntity<>(hierarchicalBoardRepository.findByBoardNo(boardNo), HttpStatus.OK);
     }
 
-    @PostMapping("/boardInsert")
+    @PostMapping("/board-insert")
     public long hierarchicalBoardInsert(HttpServletRequest request, Principal principal){
         log.info("boardInsert");
 
         return hierarchicalBoardService.insertBoard(request, principal);
     }
 
-    @PatchMapping("/boardModify")
+    @PatchMapping("/board-modify")
     public long hierarchicalBoardModify(HttpServletRequest request){
         log.info("Patch board");
 
         return hierarchicalBoardService.patchBoard(request);
     }
 
-    @DeleteMapping("/boardDelete/{boardNo}")
+    @DeleteMapping("/board-delete/{boardNo}")
     public long hierarchicalBoardDelete(@PathVariable long boardNo){
         log.info("delete board");
 
         return hierarchicalBoardService.deleteBoard(boardNo);
     }
 
-    @PostMapping("/boardReply")
+    @PostMapping("/board-reply")
     public long hierarchicalBoardReply(HttpServletRequest request, Principal principal){
         log.info("reply board");
 

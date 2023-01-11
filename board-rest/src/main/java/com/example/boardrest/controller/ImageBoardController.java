@@ -3,6 +3,7 @@ package com.example.boardrest.controller;
 import com.example.boardrest.domain.ImageBoard;
 import com.example.boardrest.domain.dto.ImageDTO;
 import com.example.boardrest.domain.dto.ImageDataDTO;
+import com.example.boardrest.domain.dto.ImageDetailDTO;
 import com.example.boardrest.repository.ImageBoardRepository;
 import com.example.boardrest.repository.ImageDataRepository;
 import com.example.boardrest.service.ImageBoardService;
@@ -35,25 +36,31 @@ public class ImageBoardController {
         return new ResponseEntity<>(imageBoardRepository.imageBoardList(), HttpStatus.OK);
     }
 
+    /**
+     * imageBoardModify를 실행했을 경우 save만으로 수정을 처리하고 있는지 확인 필요.
+     */
     @GetMapping("/image-board-detail/{imageNo}")
-    public ResponseEntity<List<ImageDTO>> imageBoardDetail(@PathVariable long imageNo){
+    public ResponseEntity<ImageDetailDTO> imageBoardDetail(@PathVariable long imageNo){
 
         return new ResponseEntity<>(imageBoardRepository.imageDetailDTO(imageNo), HttpStatus.OK);
     }
 
-    @GetMapping("/image-board-modify/{imageNo}")
-    public ResponseEntity<ImageBoard> imageBoardModifyInfo(@PathVariable long imageNo){
 
-        return new ResponseEntity<>(imageBoardRepository.modifyImageDetail(imageNo), HttpStatus.OK);
+    @GetMapping("/image-board-modify/{imageNo}")
+    public ResponseEntity<ImageDetailDTO> imageBoardModifyInfo(@PathVariable long imageNo){
+
+        return new ResponseEntity<>(imageBoardRepository.imageDetailDTO(imageNo), HttpStatus.OK);
     }
 
-    @GetMapping("/detail-image-list")
-    public ResponseEntity<List<ImageDataDTO>> detailImageList(long imageNo){
+    @GetMapping("/detail-image-list/{imageNo}")
+    public ResponseEntity<List<ImageDataDTO>> detailImageList(@PathVariable long imageNo){
         log.info("detail ImageList");
+        log.info("imageNo : " + imageNo);
 
         return new ResponseEntity<>(imageDataRepository.imageDataList(imageNo), HttpStatus.OK);
     }
 
+    // 등록된 boardNo return
     @PostMapping("/image-insert")
     public long imageBoardInsert(@RequestParam("files")List<MultipartFile> images
                                     , HttpServletRequest request
