@@ -1,12 +1,5 @@
 
 spring:
-  thymeleaf:
-    prefix: classpath:/templates/
-    suffix: .html
-    cache: false
-    view-names: th/*
-
-
   jpa:
     show-sql: true
     properties:

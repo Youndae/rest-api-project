@@ -9,11 +9,26 @@
           integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <script type="text/javascript" th:src="@{https://code.jquery.com/jquery-3.3.1.min.js}"></script>
     <script type="text/javascript" th:src="@{/js/.js}"></script>
+    <script>
+        $(document).ready(function(){
+            $.getJSON("/board/boardListData", function(arr){
+                var str = "<tr><th>글번호</th><th>글제목</th><th>작성자</th><th>작성일</th></tr>";
+                $(arr).each(attach){
+
+                }
+            })
+        });
+    </script>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="container">
+        <div class="form-row float-right mb-1">
+            <button class="btn btn-outline-info btn-sm" onclick="location.href='/board/boardInsert'">글작성</button>
+        </div>
+        <table class="table table-hover">
 
+        </table>
     </div>
 </div>
 </body>
