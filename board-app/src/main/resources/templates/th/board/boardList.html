@@ -8,16 +8,22 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
           integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <script type="text/javascript" th:src="@{https://code.jquery.com/jquery-3.3.1.min.js}"></script>
-    <script type="text/javascript" th:src="@{/js/.js}"></script>
+    <script type="text/javascript" th:src="@{/js/paging.js}"></script>
+    <style>
+        li {
+            list-style: none;
+            float: left;
+            padding: 5px;
+        }
+    </style>
     <script>
         $(document).ready(function(){
-            $.getJSON("/board/boardListData", function(arr){
-                var str = "<tr><th>글번호</th><th>글제목</th><th>작성자</th><th>작성일</th></tr>";
-                $(arr).each(attach){
-
+            $("#keywordInput").keydown(function(key){
+                if(key.keyCode == 13){
+                    $("#searchBtn").click();
                 }
             })
-        });
+        })
     </script>
 </head>
 <body>
@@ -27,8 +33,65 @@
             <button class="btn btn-outline-info btn-sm" onclick="location.href='/board/boardInsert'">글작성</button>
         </div>
         <table class="table table-hover">
-
+            <tr>
+                <th>글번호</th>
+                <th>글제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+            </tr>
+            <th:block th:each="board : ${boardList.content}" th:border="1">
+                <tr>
+                    <td th:text="${board.boardNo}"/>
+                    <td>
+                        <span>
+                            <a th:href="@{/board/boardDetail/{boardNo}(boardNo=${board.boardNo})}" th:text="${board.boardTitle}"></a>
+                        </span>
+                    </td>
+                    <td th:text="${board.userId}"/>
+                    <td th:text="${#dates.format(board.boardDate, 'yyyy-MM-dd')}"/>
+                </tr>
+            </th:block>
         </table>
+        <div class="search">
+            <form action="/board/boardList" id="search_form" method="get">
+                <select name="searchType">
+                    <option th:value="t" th:selected="${boardList.pageDTO.cri.searchType == 't'}">제목</option>
+                    <option th:value="c" th:selected="${boardList.pageDTO.cri.searchType == 'c'}">내용</option>
+                    <option th:value="w" th:selected="${boardList.pageDTO.cri.searchType == 'u'}">작성자</option>
+                    <option th:value="tc" th:selected="${boardList.pageDTO.cri.searchType == 'tc'}">제목+내용</option>
+                </select>
+                <input type="text" name="keyword" id="keywordInput" th:value="${boardList.pageDTO.cri.keyword}"/>
+                <button class="btn btn-outline-info btn-sm" id="searchBtn">검색</button>
+            </form>
+        </div>
+        <div>
+            <ul>
+                <th:block th:if="${boardList.pageDTO.prev}">
+                    <li>
+                        <a th:href="${boardList.pageDTO.startPage - 1}">prev</a>
+                    </li>
+                </th:block>
+
+                <th:block th:each="num : ${#numbers.sequence(boardList.pageDTO.startPage, boardList.pageDTO.endPage)}">
+                    <li class="paginate_button">
+                        <a th:href="${num}" th:classappend="${num eq boardList.pageDTO.cri.pageNum} ? active : ''" th:text="${num}"></a>
+                    </li>
+                </th:block>
+
+                <th:block th:if="${boardList.pageDTO.next}">
+                    <li>
+                        <a th:href="${boardList.pageDTO.endPage + 1}" th:text="next"></a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+
+        <form th:action="@{/board/boardList}" id="pageActionForm" method="get">
+            <input type="hidden" name="pageNum" th:value="${boardList.pageDTO.cri.pageNum}">
+            <input type="hidden" name="amount" th:value="${boardList.pageDTO.cri.amount}">
+            <input type="hidden" name="searchType" th:value="${boardList.pageDTO.cri.searchType}">
+            <input type="hidden" name="keyword" th:value="${boardList.pageDTO.cri.keyword}">
+        </form>
     </div>
 </div>
 </body>

@@ -45,6 +45,11 @@ dependencies {
     // for log4jdbc
     implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4:1.16'
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
+    //jwt
+    // https://mvnrepository.com/artifact/com.auth0/java-jwt
+    implementation 'com.auth0:java-jwt:4.2.1'
+
 }
 
 tasks.named('test') {

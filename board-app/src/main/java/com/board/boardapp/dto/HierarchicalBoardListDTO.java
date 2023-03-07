@@ -14,7 +14,7 @@ public class HierarchicalBoardListDTO {
 
     private List<HierarchicalBoardDTO> content;
 
-    /*private boolean last;
+/*    private boolean last;
 
     private long totalPages;
 
@@ -29,6 +29,10 @@ public class HierarchicalBoardListDTO {
     private boolean first;
 
     private boolean empty;*/
+
+    private int totalPages;
+
+    private long totalElements;
 
     private PageDTO pageDTO;
 

@@ -83,14 +83,22 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
         Page<HierarchicalBoardDTO> dto;
 
-        if (cri.getKeyword() == null || cri.getKeyword() == "") { //default List
+        log.info("service pageNum : " + cri.getPageNum());
+        log.info("service keyword : " + cri.getKeyword());
+        log.info("service searchType : " + cri.getSearchType());
+
+        if(cri.getKeyword() != null) cri.setKeyword("%"+cri.getKeyword()+"%");
+
+        if (cri.getKeyword() == null) { //default List
+            log.info("default");
             dto = hierarchicalBoardRepository.hierarchicalBoardList(
                     PageRequest.of(cri.getPageNum() - 1
                             , cri.getAmount()
                             , Sort.by("boardGroupNo").descending()
                                     .and(Sort.by("boardUpperNo").ascending()))
             );
-        } else if (cri.getSearchType() == "t") {//title 검색시 사용
+        } else if (cri.getSearchType().equals("t")) {//title 검색시 사용
+            log.info("searchType is t");
             dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitle(
                     cri.getKeyword()
                     , PageRequest.of(cri.getPageNum() - 1
@@ -98,7 +106,8 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
                             , Sort.by("boardGroupNo").descending()
                                     .and(Sort.by("boardUpperNo").ascending()))
             );
-        } else if (cri.getSearchType() == "c") {//content 검색시 사용
+        } else if (cri.getSearchType().equals("c")) {//content 검색시 사용
+            log.info("searchType is c");
             dto = hierarchicalBoardRepository.hierarchicalBoardListSearchContent(
                     cri.getKeyword()
                     , PageRequest.of(cri.getPageNum() - 1
@@ -106,7 +115,8 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
                             , Sort.by("boardGroupNo").descending()
                                     .and(Sort.by("boardUpperNo").ascending()))
             );
-        } else if (cri.getSearchType() == "u") {// user 검색 시 사용
+        } else if (cri.getSearchType().equals("u")) {// user 검색 시 사용
+            log.info("searchType is u");
             dto = hierarchicalBoardRepository.hierarchicalBoardListSearchUser(
                     cri.getKeyword()
                     , PageRequest.of(cri.getPageNum() - 1
@@ -114,7 +124,8 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
                             , Sort.by("boardGroupNo").descending()
                                     .and(Sort.by("boardUpperNo").ascending()))
             );
-        } else if (cri.getKeyword() == "tc") {// title and content 검색시 사용
+        } else if (cri.getSearchType().equals("tc")) {// title and content 검색시 사용
+            log.info("searchType is tc");
             dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitleOrContent(
                     cri.getKeyword()
                     , PageRequest.of(cri.getPageNum() - 1
@@ -123,8 +134,12 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
                                     .and(Sort.by("boardUpperNo").ascending()))
             );
         } else {
+            log.info("error");
             return null;
         }
+
+        log.info("ok");
+        log.info("response : " + dto);
 
         return dto;
 

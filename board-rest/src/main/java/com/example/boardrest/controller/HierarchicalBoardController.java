@@ -2,6 +2,7 @@ package com.example.boardrest.controller;
 
 import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
+import com.example.boardrest.domain.dto.HierarchicalBoardDetailDTO;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
 import com.example.boardrest.service.HierarchicalBoardService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,16 +27,53 @@ public class HierarchicalBoardController {
     private final HierarchicalBoardRepository hierarchicalBoardRepository;
 
     @GetMapping("/board-list")
-    public ResponseEntity<Page<HierarchicalBoardDTO>> hierarchicalBoardMain(Criteria cri){
+    public ResponseEntity<Page<HierarchicalBoardDTO>> hierarchicalBoardMain(@RequestParam(value = "pageNum") int pageNum
+                                                                                , @RequestParam(value = "amount") int amount
+                                                                                , @RequestParam(value = "keyword", required = false) String keyword
+                                                                                , @RequestParam(value = "searchType", required = false) String searchType){
+
+        log.info("keyword : " + keyword);
+        log.info("pageNum : " + pageNum);
+
+        Criteria cri = new Criteria();
+
+        if(keyword != null){
+            log.info("keyword is not null");
+            cri = Criteria.builder()
+                    .pageNum(pageNum)
+                    .amount(amount)
+                    .keyword(keyword)
+                    .searchType(searchType)
+                    .build();
+        }else if(keyword == null){
+            log.info("keyword is null");
+            cri = Criteria.builder()
+                    .pageNum(pageNum)
+                    .amount(amount)
+                    .build();
+        }
 
         return new ResponseEntity<>(hierarchicalBoardService.getHierarchicalBoardList(cri), HttpStatus.OK);
     }
 
 
     @GetMapping("/board-detail/{boardNo}")
-    public ResponseEntity<HierarchicalBoardDTO> hierarchicalBoardDetail(@PathVariable long boardNo){
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public ResponseEntity<HierarchicalBoardDetailDTO> hierarchicalBoardDetail(@PathVariable long boardNo, Principal principal){
 
-        return new ResponseEntity<>(hierarchicalBoardRepository.findByBoardNo(boardNo), HttpStatus.OK);
+        log.info("detail");
+
+        if(principal != null)
+            log.info("userId : " + principal.getName());
+        else if(principal == null)
+            log.info("principal is nullable");
+
+        HierarchicalBoardDetailDTO dto = HierarchicalBoardDetailDTO.builder()
+                .detailData(hierarchicalBoardRepository.findByBoardNo(boardNo))
+                .uid("coco")
+                .build();
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @GetMapping("/board-reply-info/{boardNo}")

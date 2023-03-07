@@ -10,19 +10,28 @@ import lombok.*;
 @AllArgsConstructor
 public class PageDTO {
 
-    private boolean last;
+    private int startPage;
 
-    private long totalPages;
+    private int endPage;
 
-    private long totalElements;
+    private boolean prev, next;
 
-    private long number;
+    private Criteria cri;
 
-    private int size;
+    public PageDTO(Criteria cri, int totalPages){
+        this.cri = cri;
 
-    private int numberOfElements;
+        this.endPage = (int) (Math.ceil(cri.getPageNum() / 10.0) * 10);
+        this.startPage = this.endPage - 9;
 
-    private boolean first;
+        int realEnd = totalPages;
 
-    private boolean empty;
+        if(realEnd < this.endPage) this.endPage = realEnd;
+
+        this.prev = this.startPage > 1;
+        this.next = this.endPage < realEnd;
+
+    }
+
+
 }

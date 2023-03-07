@@ -16,9 +16,11 @@ public class Auth {
     @Id
     private long authNo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
-    private Member member;
+    private Member member;*/
+
+    private String userId;
 
     private String auth;
 }

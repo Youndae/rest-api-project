@@ -32,7 +32,7 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private final Set<Comment> comments = new HashSet<>();*/
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "userId", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @ToString.Exclude
     private List<Auth> auths;
 

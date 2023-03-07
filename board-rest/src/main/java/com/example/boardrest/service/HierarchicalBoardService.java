@@ -3,7 +3,6 @@ package com.example.boardrest.service;
 import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.HierarchicalBoard;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
-import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
 import org.springframework.data.domain.Page;
 
 import javax.servlet.http.HttpServletRequest;

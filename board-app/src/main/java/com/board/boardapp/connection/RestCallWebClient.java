@@ -1,23 +1,39 @@
 package com.board.boardapp.connection;
 
-import com.board.boardapp.dto.HierarchicalBoardDTO;
-import com.board.boardapp.dto.HierarchicalBoardListDTO;
+import com.board.boardapp.config.WebClientConfig;
+import com.board.boardapp.dto.*;
+import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserter;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.Response;
 import java.io.DataInput;
+import java.security.Principal;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class RestCallWebClient {
 
     /**
@@ -58,85 +74,153 @@ public class RestCallWebClient {
      * 아니면 MVC 패턴이 목적이 아니라 서버에서 꼭 연결을 해야하는 다른 이유가 있는것인지가 중요 포인트일듯.
      *
      */
-    public List<HierarchicalBoardDTO> getHierarchicalBoardList() throws JsonProcessingException {
-        WebClient client = WebClient.builder()
-                .baseUrl("http://localhost:9095")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
 
-        Object response = client.get().uri(uriBuilder -> uriBuilder.path("/board/board-list").build()).retrieve().bodyToMono(Object.class).block();
 
-        System.out.println("response ");
-        System.out.println(response);
-        System.out.println("-----------------");
+    private final WebClientConfig webClientConfig;
 
-        /*Object response2 = client.get().uri(uriBuilder -> uriBuilder.path("/board/board-list").build());
+    private final TokenService tokenService;
 
-        JSONObject response3 = new JSONObject(client.get().uri(uriBuilder -> uriBuilder.path("/board/board-list").build()).retrieve().bodyToMono(JSONObject.class).block());
+    public HierarchicalBoardListDTO getHierarchicalBoardList(Criteria cri) throws JsonProcessingException {
 
-        JSONObject response4 = new JSONObject(client.get().uri(uriBuilder -> uriBuilder.path("/board/board-list").build()).retrieve().bodyToFlux(JSONObject.class).blockFirst());
+        WebClient client = webClientConfig.useWebClient();
 
-        *//*ResponseEntity response2 = client.get()
-                .uri(uriBuilder -> uriBuilder.path("/board/board-list").build())
-                .retrieve().bodyToMono(ResponseEntity.class).block();
+        String response = null;
 
-        System.out.println("restCall responseStatus : " + response2.getStatusCode());*//*
-
-        ObjectMapper om = new ObjectMapper();
-
-//        HierarchicalBoardDTO dto = om.readValue(response, HierarchicalBoardDTO.class);
-
-//        List<HierarchicalBoardDTO> dtoList = om.convertValue(response2, om.getTypeFactory().constructCollectionType(List.class, HierarchicalBoardDTO.class));
-
-//        List<HierarchicalBoardDTO> dtoList2 = om.readValue(response, om.getTypeFactory().constructCollectionType(List.class, HierarchicalBoardDTO.class));
-
-        System.out.println("response3 : " + response3.has("content"));
-
-        System.out.println("response4 : " + response4.has("content"));
-
-        JSONObject content = response3.getJSONObject("content");
-
-        List<HierarchicalBoardDTO> dtoList = om.convertValue(content, om.getTypeFactory().constructCollectionType(List.class, HierarchicalBoardDTO.class));
-
-        System.out.println("dtoList get 1 : " + dtoList.get(1));
-        System.out.println("dtoList size : " + dtoList.size());
-*/
+        if(cri.getKeyword() == null){
+            log.info("keyword is null");
+            response = client.get()
+                    .uri(uriBuilder -> uriBuilder.path("/board/board-list")
+                            .queryParam("pageNum", cri.getPageNum())
+                            .queryParam("amount", cri.getAmount())
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        }else if(cri.getKeyword() != null){
+            log.info("keyword is not null");
+            response = client.get()
+                    .uri(uriBuilder -> uriBuilder.path("/board/board-list")
+                            .queryParam("pageNum", cri.getPageNum())
+                            .queryParam("amount", cri.getAmount())
+                            .queryParam("keyword", cri.getKeyword())
+                            .queryParam("searchType", cri.getSearchType())
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        }
 
         ObjectMapper om = new ObjectMapper();
 
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-//        HierarchicalBoardListDTO dtoList = om.convertValue(response, TypeFactory.defaultInstance().constructCollectionType(List.class, HierarchicalBoardListDTO.class));
+        HierarchicalBoardListDTO dto;
 
-        HierarchicalBoardListDTO dtoList = om.convertValue(response, HierarchicalBoardListDTO.class);
+        if(response != null){
+            dto = om.readValue(response, HierarchicalBoardListDTO.class);
+        }else{
+            JsonProcessingException Exception = null;
+            throw Exception;
+        }
 
+        dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
 
-//        System.out.println("dto : " + dto);
-
-        System.out.println(dtoList.getContent());
-
-        System.out.println("------------------------------");
-
-        System.out.println(dtoList.getPageDTO());
-
-
-        String response2 = client.get().uri(uriBuilder -> uriBuilder.path("/board/board-list").build()).retrieve().bodyToMono(String.class).block();
-
-        ObjectMapper om2 = new ObjectMapper();
-
-        om2.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        HierarchicalBoardListDTO dto = om2.readValue(response2, HierarchicalBoardListDTO.class);
-
-        System.out.println("----------------------------");
-        System.out.println(dto.toString());
-        System.out.println("----------------------------");
-
-
-
-        return null;
+        return dto;
     }
 
+    public HierarchicalBoardDetailDTO getHierarchicalBoardDetail(long boardNo, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+
+        WebClient client = webClientConfig.useWebClient();
+
+        String responseVal = null;
+
+        String existsToken = tokenService.checkExistsToken(request);
+
+        if(existsToken == "N"){
+            log.info("token is null");
+            responseVal = client.get()
+                    .uri(uriBuilder -> uriBuilder.path("/board/board-detail/{boardNo}")
+                            .build(boardNo))
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        }else if(existsToken == "T" || existsToken == "F"){
+            JwtDTO dto = new JwtDTO();
+
+            if(existsToken == "F"){
+                log.info("token is false. reissuedToken");
+                dto = tokenService.reIssuedToken(request, response);
+            }else if(existsToken == "T"){
+                log.info("token is true. dto set cookieVal");
+                Cookie cookie = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
+                dto = JwtDTO.builder()
+                        .accessTokenHeader(cookie.getName())
+                        .accessTokenValue(cookie.getValue())
+                        .build();
+            }
+            log.info("token is true");
+            responseVal = client.get()
+                    .uri(uriBuilder -> uriBuilder.path("/board/board-detail/{boardNo}")
+                            .build(boardNo))
+                    .cookie(dto.getAccessTokenHeader(), dto.getAccessTokenValue())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        }
+
+        System.out.println("detail response : " + responseVal);
+
+        ObjectMapper om = new ObjectMapper();
+
+        HierarchicalBoardDetailDTO dto = om.readValue(responseVal, HierarchicalBoardDetailDTO.class);
+
+        return dto;
+    }
+
+    public long hierarchicalBoardInsert(HttpServletRequest request, Principal principal){
+        WebClient client = webClientConfig.useWebClient();
+
+        return client.post()
+                .uri(uriBuilder -> uriBuilder.path("/board/board-insert").build())
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(Long.class)
+                .block();
+    }
+
+    public void loginProc(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+
+        System.out.println("restCall login");
+
+        System.out.println(request);
+
+        Map<String, String> map = new HashMap<>();
+
+        map.put("userId", request.getParameter("userId"));
+        map.put("userPw", request.getParameter("userPw"));
+
+        Member member = Member.builder()
+                .userId(request.getParameter("userId"))
+                .userPw(request.getParameter("userPw"))
+                .build();
+
+        WebClient client = WebClient.builder()
+                .baseUrl("http://localhost:9095")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+
+        JwtDTO responseVal = client.post()
+                .uri(uriBuilder -> uriBuilder.path("/member/login").build())
+                .bodyValue(member)
+                .retrieve()
+                .bodyToMono(JwtDTO.class)
+                .block();
+
+        System.out.println("response : " + responseVal);
+
+        tokenService.saveToken(responseVal, response);
+
+    }
 
 
 }

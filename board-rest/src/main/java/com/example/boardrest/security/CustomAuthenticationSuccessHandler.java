@@ -2,6 +2,9 @@ package com.example.boardrest.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +29,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             roleNames.add(authority.getAuthority());
         });
 
-        response.sendRedirect("/imageBoard/imageBoardList");
+//        response.sendRedirect("/board/boardList");
+
+//        response.addHeader("JSESSIONID", String.valueOf(SecurityContextHolder.getContext().getAuthentication()));
+
+        log.info("session : " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+        log.info("cookie : " + response.getHeaderNames());
+
+        log.info("cookie jsessionid : " + response.getHeader("JSESSIONID"));
     }
 }
