@@ -83,10 +83,22 @@ public class HierarchicalBoardController {
     }
 
     @PostMapping("/board-insert")
-    public long hierarchicalBoardInsert(HttpServletRequest request, Principal principal){
+    public long hierarchicalBoardInsert(@RequestBody HierarchicalBoardDTO dto, Principal principal){
         log.info("boardInsert");
 
-        return hierarchicalBoardService.insertBoard(request, principal);
+        if(principal == null)
+            log.info("api server principal is null");
+        else if(principal != null)
+            log.info("api server principal is not null : " + principal.getName());
+
+        log.info("title : {}, content : {}", dto.getBoardTitle(), dto.getBoardContent());
+
+//        log.info("title : {}", request.getParameter("boardTitle"));
+//        log.info("content : {}", request.getParameter("boardContent"));
+
+        return 1L;
+
+//        return hierarchicalBoardService.insertBoard(request, principal);
     }
 
     @PatchMapping("/board-modify")

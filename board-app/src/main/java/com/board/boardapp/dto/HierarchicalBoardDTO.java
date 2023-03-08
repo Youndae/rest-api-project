@@ -9,7 +9,7 @@ import java.util.Date;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
+@Builder
 public class HierarchicalBoardDTO {
 
     private Long boardNo;

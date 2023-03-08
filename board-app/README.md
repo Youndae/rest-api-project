@@ -98,3 +98,97 @@
 > 두 게시판 게시글 작성 시 xss 대비 방안 세워서 처리.   
 > 
 > 전체적인 구현 이후 TokenInterceptor 통해서 referer 체크 마저 구현하고 ExceptionHandling까지 처리.
+> 
+> interceptor
+>> referer 체크 후 토큰 체크하도록 하면
+>> rt, at가 null일때는 login 페이지로 가도록 하고
+>> rt만 존재할때는 reissued를 받게 하면 요청마다 토큰 체크를 하도록 할 필요가 없을듯.
+>> 그럼 interceptor를 거치지 않는 페이지 리스트에서 각 게시판 detail 페이지는 있으면 안된다.
+>> 여기서 문제점. response.addCookie로 재발급된 토큰을 저장할건데.
+>> 이게 response가 완전하게 전달되지 않은 상태에서 새로 발급 받은 토큰을 어떻게 요청할것이며
+>> 이 요청에서 토큰이 재발급이 되었는지 여부는 어떻게 확인할것인지가 관건.
+>> 만약 인터셉터에서 null 여부만 체크해 처리하게 되면 사실상 인터셉터를 거치는 모든 페이지는 권한이 필요한 페이지 이므로 
+>> null일 경우 로그인 페이지로 리다이렉트 하면 되긴 하지만
+>> 각 게시판 Detail 페이지의 경우 그럼 한번 더 토큰 여부를 검증해야 하는 문제가 발생.
+>> 인터셉터에서 토큰 존재 여부를 체크하지 않는다면 토큰 서비스로 분리해두긴 했지만 모든 요청에서 해당 서비스를 호출해 체크하도록 해야한다.
+> 
+> 토큰 여부 체크 과정
+>> at, rt 모두 존재하는지 rt만 존재하는지 둘다 존재하지 않는지를 체크.
+>> at가 존재한다면 클라이언트의 요청을 수행
+>> rt만 존재한다면 토큰 재발급 후 재발급 받은 at로 요청 수행
+>> 둘다 존재하지 않는다면 로그인 페이지로 redirect
+>> at가 존재한다는 경우는 고려해야할 사항이 없음. 그대로 cookie로 꺼내 전송하면 되기 때문.
+>> 둘다 존재하지 않는 경우도 로그인 페이지로 리다이렉트 해주거나 권한이 필요 없는 페이지는 요청을 수행하면 되기 때문에 고려사항이 없음.
+>> rt만 존재하는 경우는 재발급 요청 -> 리턴된 rt, at 쿠키에 저장 -> at 리턴 -> 리턴받은 at로 요청 수행 이 순서로 진행되어야 하는데
+>> 분리된 과정을 하나의 메소드로 묶어서 그 메소드에서 각각 호출해 처리하도록 하기에는 리턴되는 타입들의 차이가 발생.
+>> 그럼 리턴되는 타입을 하나로 통일시켜 처리하거나 묶지 못하고 매 요청시마다 각각 호출해 사용하는 방법으로 처리해야 함.
+>> 재발급 된 토큰은 JwtDTO 타입으로 리턴될것. at가 존재하는 경우도 JwtDTO에 담아 리턴이 가능. 없는 경우는 그럼 그냥 null을 리턴?
+>> 이 방법의 부작용은 기껏 checkExistsToken으로 cookie를 털어 체크했는데 DTO에 담겨 왔다는 이유로 한번 더 체크해야하는 문제가 발생.
+>> 그럼 어차피 리턴받은 시점에 또 다시 dto 값을 체크해 그에 맞는 조건으로 수행하도록 해야함.
+>> 그래도 한가지 조건이 줄어드는 장점이 있음.
+>> null이 아니라면 재발급 받은 토큰이 DTO에 들어가있거나 존재하던 쿠키값이 DTO에 들어가서 리턴될것이므로 
+>> dto가 null이면 로그인페이지로 리다이렉트. 그게 아니라면 요청을 수행하도록 할 수는 있음.
+>> 그럼 모든 요청에서 JwtDTO 타입으로 체크 메소드를 호출하고 그 체크메소드에서는 존재 여부 체크 후 DTO에 값을 담거나 null을 리턴하도록 하면.
+>> 리턴되는 dto를 통해 그에 맞는 조건을 수행할 수 있게 됨.
+> 로직 정리
+>> 1. at 존재
+>>> client request -> existsToken -> checkExistsToken -> dto.setAt -> return to clientServer -> api server request
+>> 2. token 재발급
+>>> client request -> existsToken -> checkExistsToken -> reissuedToken -> savedToken -> dto.setAt -> return to clientServer -> api serverRequest
+>> 3. token null
+>>> client request -> existsToken -> checkExistsToken -> return to clientServer(null) -> redirect loginForm
+>> 간단하게 코드 정리
+>>> ``` java
+>>> @PostMapping("/")
+>>> public String requestController(HttpServletRequest request) {
+>>>     JwtDTO dto = tokenService.existsToken(request);
+>>>     if(dto == null)
+>>>         return "th/member/loginForm";
+>>>     
+>>>     0000service.insert(request, dto);
+>>>     
+>>>     return "0000";
+>>> }
+>>> 
+>>> @Override
+>>> public JwtDTO existsToken(HttpServletRequest request){
+>>>     Cookie at = ...;
+>>>     Cookie rt = ...;
+>>> 
+>>>     if(at == null && rt == null)
+>>>         return null;
+>>>     else if(at != null && rt != null)
+>>>         return JwtDTO.builder()
+>>>                 .accessHeader(at.getName())
+>>>                 .accessValue(at.getValue())
+>>>                 .build();
+>>>     else if(at == null && rt != null)
+>>>         return reissuedToken(request);
+>>> }
+>>> ```
+>> 다른 문제점.
+>> refreshToken을 cookie에 담아둔다면 로그인 여부 체크를 어떻게 할지.
+>> 아무생각없이 rt가 localStorage에 존재하면 로그인 한것으로 간주하려고 했으나
+>> 둘다 cookie에 저장하는 경우에는 httpOnly 설정으로 클라이언트에서 접근할 수 없을건데 뭘로 검증할것인가가 관건.
+>> 그럼 그나마 떠오르는 방법이 api server에서 모든 요청에 principal 을 체크해 리턴해주는 방법이 있음.
+>> 토큰이 존재하면 AuthorizationFilter에서 contextHolder에 저장하도록 되어있기 때문에 principal을 통해 로그인한 사용자 아이디 리턴이 가능함.
+>> 그럼 여기서 고민해야 할 사항.
+>> 사용자 아이디를 리턴할 것인가. 아니면 boolean으로 로그인 여부만 리턴할 것인가.
+>> 사용자 아이디가 직접적으로 필요한 페이지는 작성자와 사용자를 구분해야 하는 각 게시판 detail 페이지와 댓글 데이터 정도이다.
+>> boolean으로 리턴하게 되면 로그인 여부는 쉽게 처리할 수 있지만 작성자와 구분이 어려워진다.
+>> 모든 요청에서 아이디를 리턴하는 것은 정보 유출이 되지 않을까 생각했지만. 생각해보니까 어차피 아이디 알아내는것 정도는 매우 쉽다.
+>> 어차피 왠만한 페이지에서 글 남기면 출력되는게 아이디 혹은 닉네임인데 닉네임만 눌러도 아이디가 출력되는 페이지도 많기 때문.
+>> 또한 아이디는 알아낸다고 해도 중요정보인 사용자 실명이나 비밀번호, 그 외 주소등 개인정보가 같이 딸려오는 것은 아니기 때문에 그걸 같이 보내지만 않으면
+>> 아이디를 매번 리턴하는것도 나쁘지 않은 선택으로 보인다.
+>> 그렇게 하면 로그인 여부에서도 아이디로 체크하고 한번에 detail 페이지에서 작성자와의 비교역시 가능해지기 때문.
+>> 보안에 있어서 주의해야할 점은 사이트에 따라 아이디 혹은 닉네임만 리턴하도록 하고 그 외 정보를 리턴하도록 하지만 않으면 문제는 발생하지 않을것으로 보임.
+>> 그럼 rt는 그대로 cookie에 저장하도록 하고 아이디를 리턴받아 로그인 여부와 작성자와의 비교를 처리하는 방법으로 진행.
+> 
+>> 프로젝트 마무리 하면서 고민해야 할 사항.
+>>> 만약 rt를 localStorage에 저장하는 경우 재발급을 받아야 할 때 어떻게 처리할것인가를 고민해야할 필요가 있음.
+>>> JQuery를 사용하면 어차피 ajax를 통한 요청이 대다수일텐데 요청을 보낼때 rt만 헤더에 담아 보내면 쿠키에 있는 at는 알아서 넘어갈 것.
+>>> 그럼 클라이언트 서버는 requestHeader에서 rt를 꺼내 확인하고 at 역시 꺼내서 확인.
+>>> 없으면 재발급 요청할 건데.
+>>> 해결 방안. 별거 없었음. response.addHeader에 재발급 받은 rt를 담아 요청 데이터와 같이 리턴해주고 JQuery에서는 데이터 처리 전후 아무때나
+>>> localStorage에 rt를 다시 저장하면 된다.
+>>> localStorage에 저장하는 방법을 택한다면 클라이언트서버에서 역시 페이지요청과 데이터 요청을 정확하게 분리해서 처리해줘야 한다.

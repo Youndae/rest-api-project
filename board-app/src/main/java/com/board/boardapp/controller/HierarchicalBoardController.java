@@ -4,18 +4,17 @@ import com.board.boardapp.connection.RestCallWebClient;
 import com.board.boardapp.dto.Criteria;
 import com.board.boardapp.dto.HierarchicalBoardDTO;
 import com.board.boardapp.dto.HierarchicalBoardListDTO;
+import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,11 +23,14 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/board")
+@RequiredArgsConstructor
 @Slf4j
 public class HierarchicalBoardController {
 
-    @Autowired
-    private RestCallWebClient restCallWebClient;
+
+    private final RestCallWebClient restCallWebClient;
+
+    private final TokenService tokenService;
 
     @GetMapping("/boardList")
     public String hierarchicalBoardMain(Model model
@@ -68,15 +70,24 @@ public class HierarchicalBoardController {
     }
 
     @GetMapping("/boardInsert")
-    public String hierarchicalBoardInsert(){
+    public String hierarchicalBoardInsert(HttpServletRequest request){
 
-        return "th/board/boardInsert";
+        String existsToken = tokenService.checkExistsToken(request);
+
+        if(existsToken == "T" || existsToken == "F")
+            return "th/board/boardInsert";
+        else
+            return "th/member/loginForm";
+
     }
 
     @PostMapping("/boardInsert")
-    public String hierarchicalBoardInsertProc(HttpServletRequest request, Principal principal){
+    public String hierarchicalBoardInsertProc(HttpServletRequest request){
 
-        long response = restCallWebClient.hierarchicalBoardInsert(request, principal);
+
+        long response = restCallWebClient.hierarchicalBoardInsert(request);
+
+        log.info("controller insertProc response : {}", response);
 
         return "redirect:/board/boardDetail/" + response;
     }

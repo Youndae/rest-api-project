@@ -19,6 +19,7 @@ import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.WebUtils;
+import reactor.core.publisher.Mono;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -177,12 +178,23 @@ public class RestCallWebClient {
         return dto;
     }
 
-    public long hierarchicalBoardInsert(HttpServletRequest request, Principal principal){
+    public long hierarchicalBoardInsert(HttpServletRequest request){
         WebClient client = webClientConfig.useWebClient();
+
+//        log.info("title : {} , content : {}", request.getParameter("boardTitle"), request.getParameter("boardContent"));
+
+        HierarchicalBoardDTO dto = HierarchicalBoardDTO.builder()
+                .boardTitle(request.getParameter("boardTitle"))
+                .boardContent(request.getParameter("boardContent"))
+                .build();
+
+        Cookie at = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
 
         return client.post()
                 .uri(uriBuilder -> uriBuilder.path("/board/board-insert").build())
-                .bodyValue(request)
+                .accept()
+                .body(Mono.just(dto), HierarchicalBoardDTO.class)
+                .cookie(at.getName(), at.getValue())
                 .retrieve()
                 .bodyToMono(Long.class)
                 .block();
