@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.WebUtils;
@@ -22,10 +23,14 @@ public class TokenController {
 
     private final JwtTokenProvider provider;
 
-    @GetMapping("/reissued")
+    @PostMapping("/reissued")
     public ResponseEntity<JwtDTO> reissuedToken(HttpServletRequest request){
       log.info("reissued Token");
 
-      return new ResponseEntity<>(provider.verifyRefreshToken(request), HttpStatus.OK);
+      JwtDTO dto = provider.verifyRefreshToken(request);
+
+      log.info("dto : {}", dto);
+
+      return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }

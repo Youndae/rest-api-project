@@ -1,8 +1,7 @@
 package com.example.boardrest.repository;
 
 import com.example.boardrest.domain.Comment;
-import com.example.boardrest.domain.dto.HierarchicalBoardCommentDTO;
-import com.example.boardrest.domain.dto.ImageBoardCommentDTO;
+import com.example.boardrest.domain.dto.BoardCommentDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,38 +14,36 @@ import javax.transaction.Transactional;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // HierarchicalBoard Comment List
-    @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardCommentDTO(" +
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.BoardCommentDTO(" +
             "c.commentNo" +
             ", c.member.userId" +
             ", c.commentDate" +
             ", c.commentContent" +
             ", c.commentGroupNo" +
             ", c.commentIndent" +
-            ", c.commentUpperNo" +
-            ", c.hierarchicalBoard.boardNo) " +
+            ", c.commentUpperNo) " +
             "FROM Comment c " +
             "WHERE c.hierarchicalBoard.boardNo = :boardNo"
     , countQuery = "SELECT count(c) " +
             "FROM Comment c " +
             "WHERE c.hierarchicalBoard.boardNo = :boardNo")
-    Page<HierarchicalBoardCommentDTO> getHierarchicalBoardCommentList(Pageable pageable, @Param("boardNo") long boardNo);
+    Page<BoardCommentDTO> getHierarchicalBoardCommentList(Pageable pageable, @Param("boardNo") long boardNo);
 
     // ImageBoard Comment List
-    @Query(value = "SELECT new com.example.boardrest.domain.dto.ImageBoardCommentDTO(" +
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.BoardCommentDTO(" +
             "c.commentNo" +
             ", c.member.userId" +
             ", c.commentDate" +
             ", c.commentContent" +
             ", c.commentGroupNo" +
             ", c.commentIndent" +
-            ", c.commentUpperNo" +
-            ", c.imageBoard.imageNo) " +
+            ", c.commentUpperNo) " +
             "FROM Comment c " +
             "WHERE c.imageBoard.imageNo = :imageNo"
     , countQuery = "SELECT count(c) " +
             "FROM Comment c " +
             "WHERE c.imageBoard.imageNo = :imageNo")
-    Page<ImageBoardCommentDTO> getImageBoardCommentList(Pageable pageable, @Param("imageNo") long imageNo);
+    Page<BoardCommentDTO> getImageBoardCommentList(Pageable pageable, @Param("imageNo") long imageNo);
 
     // patch after saving ImageBoard comments
     @Modifying

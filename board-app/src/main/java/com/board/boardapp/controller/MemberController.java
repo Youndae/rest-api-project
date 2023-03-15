@@ -1,8 +1,7 @@
 package com.board.boardapp.controller;
 
-import com.board.boardapp.connection.RestCallWebClient;
-import com.board.boardapp.dto.Member;
-import com.board.boardapp.dto.MemberDTO;
+import com.board.boardapp.connection.webClient.HierarchicalBoardWebClient;
+import com.board.boardapp.connection.webClient.MemberWebClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -18,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final RestCallWebClient restCallWebClient;
+    private final MemberWebClient memberWebClient;
 
     @GetMapping("/loginForm")
     public String login() {
@@ -38,7 +37,7 @@ public class MemberController {
         System.out.println("username : " + request.getParameter("userId"));
         System.out.println("userPw : " + request.getParameter("userPw"));
 
-        restCallWebClient.loginProc(request, response);
+        memberWebClient.loginProc(request, response);
 
         return "redirect:/board/boardList";
     }

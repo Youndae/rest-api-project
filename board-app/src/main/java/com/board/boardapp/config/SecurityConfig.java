@@ -20,7 +20,9 @@ public class SecurityConfig {
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.headers().frameOptions().sameOrigin();
+        http.headers().frameOptions().sameOrigin()
+                .and().csrf().disable();
+
 
         http.authorizeRequests()
                     .antMatchers("/", "/login/**", "/resources/**")

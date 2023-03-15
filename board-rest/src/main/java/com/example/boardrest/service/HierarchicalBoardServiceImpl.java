@@ -3,6 +3,8 @@ package com.example.boardrest.service;
 import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.HierarchicalBoard;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
+import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
+import com.example.boardrest.domain.dto.HierarchicalBoardReplyDTO;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -29,17 +32,28 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
     // 계층형 게시판 insert
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public long insertBoard(HttpServletRequest request, Principal principal) {
+    public long insertBoard(HierarchicalBoardDTO dto, Principal principal) {
         try {
+            log.info("content : {}", dto.getBoardContent());
 
-            long boardNo = insertGetBoardNo(request, principal);
+            long boardNo = insertGetBoardNo(dto, principal);
 
-            request.setAttribute("boardNo", boardNo);
+            dto = HierarchicalBoardDTO.builder()
+                            .boardNo(boardNo)
+                            .boardGroupNo(boardNo)
+                            .boardIndent(0)
+                            .boardUpperNo(String.valueOf(boardNo))
+                            .build();
+
+            /*request.setAttribute("boardNo", boardNo);
             request.setAttribute("boardGroupNo", boardNo);
             request.setAttribute("boardIndent", 0);
-            request.setAttribute("boardUpperNo", boardNo);
+            request.setAttribute("boardUpperNo", boardNo);*/
 
-            return insertPatchHierarchicalBoard(request);
+            /*return insertPatchHierarchicalBoard(request);*/
+            insertPatchHierarchicalBoard(dto);
+
+            return boardNo;
         } catch (Exception e) {
             log.info("Board insertion failed");
             return -1;
@@ -48,16 +62,39 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
     // 계층형 게시판 답글 insert
     @Override
-    public long insertBoardReply(HttpServletRequest request, Principal principal) {
+    @Transactional(rollbackOn = Exception.class)
+    public long insertBoardReply(HierarchicalBoardModifyDTO dto, Principal principal) {
         try {
-            long boardNo = insertGetBoardNo(request, principal);
+            /**
+             * 1. boardNo를 통해 해당 게시글 data 가져오기
+             * @Data
+             * 1. groupNo
+             * 2. upperNo
+             * 3. indent
+             *
+             * 2. 해당 데이터를 파싱해서 HierarchicalBoardDTO에 담고 insert처리.
+             * 3. insert 처리시 getBoardNo();
+             */
 
-            request.setAttribute("boardNo", boardNo);
-            request.setAttribute("boardGroupNo", request.getParameter("boardGroupNo"));
-            request.setAttribute("boardIndent", request.getParameter("boardIndent") + 1);
-            request.setAttribute("boardUpperNo", request.getParameter("boardUpperNo") + "," + boardNo);
+            HierarchicalBoardDTO saveDTO = HierarchicalBoardDTO.builder()
+                    .boardTitle(dto.getBoardTitle())
+                    .boardContent(dto.getBoardContent())
+                    .build();
 
-            return insertPatchHierarchicalBoard(request);
+            long boardNo = insertGetBoardNo(saveDTO, principal);
+
+            HierarchicalBoardReplyDTO replyDTO = hierarchicalBoardRepository.getReplyData(dto.getBoardNo());
+
+            saveDTO = HierarchicalBoardDTO.builder()
+                    .boardIndent(replyDTO.getBoardIndent() + 1)
+                    .boardGroupNo(replyDTO.getBoardGroupNo())
+                    .boardUpperNo(replyDTO.getBoardUpperNo() + String.valueOf(boardNo))
+                    .boardNo(boardNo)
+                    .build();
+
+            insertPatchHierarchicalBoard(saveDTO);
+
+            return boardNo;
         } catch (Exception e) {
             log.info("board Reply insertion failed");
             return -1;
@@ -66,14 +103,14 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
     // 계층형 게시판 delete
     @Override
-    public long deleteBoard(long boardNo) {
+    @Transactional(rollbackOn = Exception.class)
+    public void deleteBoard(long boardNo) {
         try {
             hierarchicalBoardRepository.deleteById(boardNo);
             log.info(boardNo + " board delete success");
-            return 1;
         } catch (Exception e) {
             log.info(boardNo + " delete failed");
-            return -1;
+
         }
     }
 
@@ -147,19 +184,25 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
     // 계층형 게시판 patch
     @Override
-    public long patchBoard(HttpServletRequest request) {
-        return hierarchicalBoardRepository.boardModify(
-                request.getParameter("boardTitle")
-                , request.getParameter("boardContent")
-                , Long.parseLong(request.getParameter("boardNo"))
-        ).getBoardNo();
+    @Transactional(rollbackOn = Exception.class)
+    public long patchBoard(HierarchicalBoardModifyDTO dto, Principal principal) {
+
+            hierarchicalBoardRepository.boardModify(
+                    dto.getBoardTitle()
+                    , dto.getBoardContent()
+                    , dto.getBoardNo());
+
+            return dto.getBoardNo();
+
     }
 
     // 1차 save 처리로 boardNo 리턴
-    public long insertGetBoardNo(HttpServletRequest request, Principal principal) throws Exception {
+    public long insertGetBoardNo(HierarchicalBoardDTO dto, Principal principal) throws Exception {
+
         return hierarchicalBoardRepository.save(
                 HierarchicalBoard.builder()
-                        .boardTitle(request.getParameter("boardTitle"))
+                        .boardTitle(dto.getBoardTitle())
+                        .boardContent(dto.getBoardContent())
                         .member(principalService.checkPrincipal(principal))
                         .boardDate(Date.valueOf(LocalDate.now()))
                         .build()
@@ -168,13 +211,27 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
 
     // 계층형 게시판 insert 후 patch 처리(groupNo, UpperNo 값 설정을 위해 분리해서 처리)
-    public long insertPatchHierarchicalBoard(HttpServletRequest request) throws Exception {
+    public void insertPatchHierarchicalBoard(HierarchicalBoardDTO dto) throws Exception {
 
-        return hierarchicalBoardRepository.boardInsertPatch(request.getParameter("boardContent")
-                , Integer.parseInt(request.getAttribute("boardIndent").toString())
-                , Long.parseLong(request.getAttribute("boardGroupNo").toString())
-                , request.getAttribute("boardUpperNo").toString()
-                , Long.parseLong(request.getAttribute("boardNo").toString())
-        ).getBoardNo();
+        hierarchicalBoardRepository.boardInsertPatch(dto.getBoardIndent()
+                , dto.getBoardGroupNo()
+                , dto.getBoardUpperNo()
+                , dto.getBoardNo()
+        );
     }
+
+    @Override
+    public HierarchicalBoardModifyDTO getModifyData(long boardNo, Principal principal) {
+
+        String userId = hierarchicalBoardRepository.checkWriter(boardNo);
+
+        if(principal == null || !principal.getName().equals(userId))
+            return null;
+
+        HierarchicalBoardModifyDTO dto = hierarchicalBoardRepository.getModifyData(boardNo);
+
+        return dto;
+    }
+
+
 }

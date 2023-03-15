@@ -1,4 +1,4 @@
-package com.board.boardapp.connection;
+package com.board.boardapp.connection.webClient;
 
 import com.board.boardapp.config.WebClientConfig;
 import com.board.boardapp.dto.*;
@@ -6,36 +6,23 @@ import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserter;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.WebUtils;
 import reactor.core.publisher.Mono;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.Response;
-import java.io.DataInput;
-import java.security.Principal;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RestCallWebClient {
+public class HierarchicalBoardWebClient {
 
     /**
      * return을 String으로 리턴할것인가
@@ -81,6 +68,7 @@ public class RestCallWebClient {
 
     private final TokenService tokenService;
 
+    //계층형 게시판 list
     public HierarchicalBoardListDTO getHierarchicalBoardList(Criteria cri) throws JsonProcessingException {
 
         WebClient client = webClientConfig.useWebClient();
@@ -129,15 +117,16 @@ public class RestCallWebClient {
         return dto;
     }
 
+    //계층형 게시판 상세페이지
     public HierarchicalBoardDetailDTO getHierarchicalBoardDetail(long boardNo, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
 
         WebClient client = webClientConfig.useWebClient();
 
         String responseVal = null;
 
-        String existsToken = tokenService.checkExistsToken(request);
+        JwtDTO existsToken = tokenService.checkExistsToken(request, response);
 
-        if(existsToken == "N"){
+        if(existsToken == null){
             log.info("token is null");
             responseVal = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/board/board-detail/{boardNo}")
@@ -145,31 +134,18 @@ public class RestCallWebClient {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-        }else if(existsToken == "T" || existsToken == "F"){
-            JwtDTO dto = new JwtDTO();
-
-            if(existsToken == "F"){
-                log.info("token is false. reissuedToken");
-                dto = tokenService.reIssuedToken(request, response);
-            }else if(existsToken == "T"){
-                log.info("token is true. dto set cookieVal");
-                Cookie cookie = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
-                dto = JwtDTO.builder()
-                        .accessTokenHeader(cookie.getName())
-                        .accessTokenValue(cookie.getValue())
-                        .build();
-            }
+        }else if(existsToken != null){
             log.info("token is true");
             responseVal = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/board/board-detail/{boardNo}")
                             .build(boardNo))
-                    .cookie(dto.getAccessTokenHeader(), dto.getAccessTokenValue())
+                    .cookie(existsToken.getAccessTokenHeader(), existsToken.getAccessTokenValue())
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
         }
 
-        System.out.println("detail response : " + responseVal);
+        log.info("detail response : " + responseVal);
 
         ObjectMapper om = new ObjectMapper();
 
@@ -178,7 +154,8 @@ public class RestCallWebClient {
         return dto;
     }
 
-    public long hierarchicalBoardInsert(HttpServletRequest request){
+    // 계층형 게시판 글 작성
+    public long hierarchicalBoardInsert(HttpServletRequest request, HttpServletResponse response) {
         WebClient client = webClientConfig.useWebClient();
 
 //        log.info("title : {} , content : {}", request.getParameter("boardTitle"), request.getParameter("boardContent"));
@@ -188,51 +165,129 @@ public class RestCallWebClient {
                 .boardContent(request.getParameter("boardContent"))
                 .build();
 
-        Cookie at = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
+//        Cookie at = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
+
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        /**
+         * 만약 모종의 이유(외부 공격 등)로 토큰이 둘다 존재하지 않는 경우가 발생한다면 요청을 보내지 않고 처리할 수 있도록 장치가 필요.
+         **/
+        if(tokenDTO == null){
+            return -1L;
+        }
 
         return client.post()
                 .uri(uriBuilder -> uriBuilder.path("/board/board-insert").build())
                 .accept()
                 .body(Mono.just(dto), HierarchicalBoardDTO.class)
-                .cookie(at.getName(), at.getValue())
+                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
                 .bodyToMono(Long.class)
                 .block();
     }
 
-    public void loginProc(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+    // 계층형 게시판 수정 데이터 요청
+    public HierarchicalBoardModifyDTO getModifyData(long boardNo
+                                        , HttpServletRequest request
+                                        , HttpServletResponse response) throws JsonProcessingException {
 
-        System.out.println("restCall login");
+        WebClient client = webClientConfig.useWebClient();
 
-        System.out.println(request);
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
-        Map<String, String> map = new HashMap<>();
+        if(tokenDTO == null)
+            return null;
+        else{
+            String responseVal = client.get()
+                    .uri(uriBuilder -> uriBuilder.path("/board/board-modify/{boardNo}")
+                            .build(boardNo))
+                    .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
 
-        map.put("userId", request.getParameter("userId"));
-        map.put("userPw", request.getParameter("userPw"));
+            ObjectMapper om = new ObjectMapper();
 
-        Member member = Member.builder()
-                .userId(request.getParameter("userId"))
-                .userPw(request.getParameter("userPw"))
-                .build();
+            HierarchicalBoardModifyDTO dto = om.readValue(responseVal, HierarchicalBoardModifyDTO.class);
 
-        WebClient client = WebClient.builder()
-                .baseUrl("http://localhost:9095")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
-
-        JwtDTO responseVal = client.post()
-                .uri(uriBuilder -> uriBuilder.path("/member/login").build())
-                .bodyValue(member)
-                .retrieve()
-                .bodyToMono(JwtDTO.class)
-                .block();
-
-        System.out.println("response : " + responseVal);
-
-        tokenService.saveToken(responseVal, response);
+            return dto;
+        }
 
     }
 
+    // 계층형 게시판 수정 요청
+    public long modifyPatch(HttpServletRequest request, HttpServletResponse response){
+        WebClient client = webClientConfig.useWebClient();
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null)
+            return -1L;
+
+        HierarchicalBoardModifyDTO dto = HierarchicalBoardModifyDTO.builder()
+                .boardNo(Long.parseLong(request.getParameter("boardNo")))
+                .boardTitle(request.getParameter("boardTitle"))
+                .boardContent(request.getParameter("boardContent"))
+                .build();
+
+        return client.patch()
+                .uri(uriBuilder -> uriBuilder.path("/board/board-modify").build())
+                .accept()
+                .body(Mono.just(dto), HierarchicalBoardModifyDTO.class)
+                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .retrieve()
+                .bodyToMono(Long.class)
+                .block();
+    }
+
+    // 계층형 게시판 삭제
+    public int boardDelete(long boardNo, HttpServletRequest request, HttpServletResponse response){
+        WebClient client = webClientConfig.useWebClient();
+
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null)
+            return 0;
+
+        try{
+            client.delete()
+                    .uri(uriBuilder -> uriBuilder.path("/board/board-delete/{boardNo}")
+                            .build(boardNo))
+                    .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            return 1;
+        }catch (Exception e){
+            return 0;
+        }
+    }
+
+    //계층형 게시판 답글 작성
+    public long hierarchicalBoardReply(HttpServletRequest request, HttpServletResponse response){
+
+        WebClient client = webClientConfig.useWebClient();
+
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null){
+            return -1L;
+        }
+
+        HierarchicalBoardModifyDTO dto = HierarchicalBoardModifyDTO.builder()
+                .boardNo(Long.parseLong(request.getParameter("boardNo")))
+                .boardTitle(request.getParameter("boardTitle"))
+                .boardContent(request.getParameter("boardContent"))
+                .build();
+
+        return client.post()
+                .uri(uriBuilder -> uriBuilder.path("/board/board-reply").build())
+                .accept()
+                .body(Mono.just(dto), HierarchicalBoardModifyDTO.class)
+                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .retrieve()
+                .bodyToMono(Long.class)
+                .block();
+    }
 
 }

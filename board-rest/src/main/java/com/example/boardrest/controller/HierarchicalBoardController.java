@@ -3,6 +3,7 @@ package com.example.boardrest.controller;
 import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardDetailDTO;
+import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
 import com.example.boardrest.service.HierarchicalBoardService;
 import lombok.RequiredArgsConstructor;
@@ -58,20 +59,25 @@ public class HierarchicalBoardController {
 
 
     @GetMapping("/board-detail/{boardNo}")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity<HierarchicalBoardDetailDTO> hierarchicalBoardDetail(@PathVariable long boardNo, Principal principal){
 
         log.info("detail");
 
-        if(principal != null)
-            log.info("userId : " + principal.getName());
-        else if(principal == null)
-            log.info("principal is nullable");
+        HierarchicalBoardDetailDTO dto = null;
 
-        HierarchicalBoardDetailDTO dto = HierarchicalBoardDetailDTO.builder()
-                .detailData(hierarchicalBoardRepository.findByBoardNo(boardNo))
-                .uid("coco")
-                .build();
+        if(principal != null) {
+            log.info("userId : " + principal.getName());
+            dto = HierarchicalBoardDetailDTO.builder()
+                    .detailData(hierarchicalBoardRepository.findByBoardNo(boardNo))
+                    .uid(principal.getName())
+                    .build();
+        }else if(principal == null) {
+            log.info("principal is nullable");
+            dto = HierarchicalBoardDetailDTO.builder()
+                    .detailData(hierarchicalBoardRepository.findByBoardNo(boardNo))
+                    .uid(null)
+                    .build();
+        }
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
@@ -83,6 +89,7 @@ public class HierarchicalBoardController {
     }
 
     @PostMapping("/board-insert")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public long hierarchicalBoardInsert(@RequestBody HierarchicalBoardDTO dto, Principal principal){
         log.info("boardInsert");
 
@@ -91,36 +98,54 @@ public class HierarchicalBoardController {
         else if(principal != null)
             log.info("api server principal is not null : " + principal.getName());
 
-        log.info("title : {}, content : {}", dto.getBoardTitle(), dto.getBoardContent());
+//        log.info("title : {}, content : {}", dto.getBoardTitle(), dto.getBoardContent());
 
 //        log.info("title : {}", request.getParameter("boardTitle"));
 //        log.info("content : {}", request.getParameter("boardContent"));
 
-        return 1L;
+        return hierarchicalBoardService.insertBoard(dto, principal);
+    }
 
-//        return hierarchicalBoardService.insertBoard(request, principal);
+    @GetMapping("/board-modify/{boardNo}")
+    public ResponseEntity<HierarchicalBoardModifyDTO> hierarchicalBoardModify(@PathVariable long boardNo, Principal principal){
+
+        log.info("modify");
+
+        HierarchicalBoardModifyDTO dto = hierarchicalBoardService.getModifyData(boardNo, principal);
+
+        log.info("modify dto : {}", dto);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @PatchMapping("/board-modify")
-    public long hierarchicalBoardModify(HttpServletRequest request){
+    public long hierarchicalBoardModify(@RequestBody HierarchicalBoardModifyDTO dto, Principal principal){
         log.info("Patch board");
 
-        return hierarchicalBoardService.patchBoard(request);
+        return hierarchicalBoardService.patchBoard(dto, principal);
     }
 
     @DeleteMapping("/board-delete/{boardNo}")
-    public long hierarchicalBoardDelete(@PathVariable long boardNo){
+    public void hierarchicalBoardDelete(@PathVariable long boardNo){
         log.info("delete board");
 
-        return hierarchicalBoardService.deleteBoard(boardNo);
+        hierarchicalBoardService.deleteBoard(boardNo);
     }
 
     @PostMapping("/board-reply")
-    public long hierarchicalBoardReply(HttpServletRequest request, Principal principal){
+    public long hierarchicalBoardReply(@RequestBody HierarchicalBoardModifyDTO dto, Principal principal){
         log.info("reply board");
 
-        return hierarchicalBoardService.insertBoardReply(request, principal);
+//        return hierarchicalBoardService.insertBoardReply(request, principal);
 
+        log.info("boardNo : {}, title : {}, content : {}", dto.getBoardNo(), dto.getBoardTitle(), dto.getBoardContent());
+
+
+        long responseVal = hierarchicalBoardService.insertBoardReply(dto, principal);
+
+        log.info("board-reply responseVal : {}", responseVal);
+
+        return responseVal;
     }
 
 }

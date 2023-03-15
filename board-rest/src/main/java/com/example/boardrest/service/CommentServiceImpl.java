@@ -2,12 +2,15 @@ package com.example.boardrest.service;
 
 import com.example.boardrest.domain.Comment;
 import com.example.boardrest.domain.Criteria;
-import com.example.boardrest.domain.dto.HierarchicalBoardCommentDTO;
+import com.example.boardrest.domain.dto.BoardCommentDTO;
+import com.example.boardrest.domain.dto.BoardCommentListDTO;
 import com.example.boardrest.domain.dto.CommentListDTO;
-import com.example.boardrest.domain.dto.ImageBoardCommentDTO;
 import com.example.boardrest.repository.CommentRepository;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -86,7 +89,7 @@ public class CommentServiceImpl implements CommentService{
 
     // 댓글 List
     @Override
-    public CommentListDTO commentList(Map<String, Object> commentData, Criteria cri) {
+    public BoardCommentListDTO commentList(String boardNo, String imageNo, Criteria cri, Principal principal) {
 
         /**
          * commentData에 넘어온 게시글 번호가
@@ -96,46 +99,82 @@ public class CommentServiceImpl implements CommentService{
          *
          */
 
-        cri.setPageNum(Integer.parseInt(commentData.get("pageNum").toString()));
-        CommentListDTO dto;
+        Page<BoardCommentDTO> hBoardDTO;
 
-        if(commentData.get("boardNo") == null){// imageBoard
+        if(boardNo == null){// imageBoard
+            log.info("boardNo is null");
             // getImageBoardCommentList
-            long imageNo = Long.parseLong(commentData.get("imageNo").toString());
+            long iBoardNo = Long.parseLong(imageNo);
 
-            Page<ImageBoardCommentDTO> commentDTO = commentRepository.getImageBoardCommentList(
+            hBoardDTO = commentRepository.getImageBoardCommentList(
                     PageRequest.of(cri.getPageNum() - 1
                             , cri.getAmount()
                             , Sort.by("commentGroupNo").descending()
                                     .and(Sort.by("commentUpperNo").ascending()))
-                    , imageNo
+                    , iBoardNo
             );
 
-            dto = CommentListDTO.builder()
+            /*dto = CommentListDTO.builder()
                     .hierarchicalBoardCommentDTO(null)
                     .imageBoardCommentDTO(commentDTO)
-                    .build();
+                    .build();*/
 
-        }else if(commentData.get("boardNo") != null){// hierarchicalBoard
-            long boardNo = Long.parseLong(commentData.get("boardNo").toString());
+        }else if(boardNo != null){// hierarchicalBoard
+            log.info("boardNo is not null");
+            long hBoardNo = Long.parseLong(boardNo);
 
-            Page<HierarchicalBoardCommentDTO> commentDTO = commentRepository.getHierarchicalBoardCommentList(
+            hBoardDTO = commentRepository.getHierarchicalBoardCommentList(
                     PageRequest.of(cri.getPageNum() - 1
                             , cri.getAmount()
                             , Sort.by("commentGroupNo").descending()
                                     .and(Sort.by("commentUpperNo").ascending()))
-                    , boardNo);
+                    , hBoardNo);
 
-            dto = CommentListDTO.builder()
+            /*dto = CommentListDTO.builder()
                     .hierarchicalBoardCommentDTO(commentDTO)
                     .imageBoardCommentDTO(null)
-                    .build();
+                    .build();*/
 
         }else{
             return null;
         }
 
-        return dto;
+        log.info("return dto : {}", hBoardDTO);
+
+        String uid = null;
+
+        if(principal != null)
+            uid = principal.getName();
+
+        /*BoardCommentListDTO result = BoardCommentListDTO.builder()
+                    .boardComment(hBoardDTO)
+                    .uid(uid)
+                    .build();*/
+
+        BoardCommentListDTO result;
+
+
+
+        try{
+            ObjectMapper om = new ObjectMapper();
+
+            String boardDTOVal = om.writeValueAsString(hBoardDTO);
+
+            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+            result = om.readValue(boardDTOVal, BoardCommentListDTO.class);
+
+            result.setUid(uid);
+
+            log.info("result : {}", result);
+        }catch (Exception e){
+            log.info("fail");
+            result = null;
+        }
+
+        log.info("return result : {}", result);
+
+        return result;
 
     }
 

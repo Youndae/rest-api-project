@@ -2,6 +2,8 @@ package com.example.boardrest.repository;
 
 import com.example.boardrest.domain.HierarchicalBoard;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
+import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
+import com.example.boardrest.domain.dto.HierarchicalBoardReplyDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -115,6 +117,20 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
             "WHERE b.boardNo = ?1")
     HierarchicalBoardDTO findByBoardNo(long boardNo);
 
+
+    @Query(value = "SELECT b.member.userId " +
+            "FROM HierarchicalBoard b " +
+            "WHERE b.boardNo = ?1")
+    String checkWriter(long boardNo);
+
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO(" +
+            "b.boardNo" +
+            ", b.boardTitle" +
+            ", b.boardContent) " +
+            "FROM HierarchicalBoard b " +
+            "WHERE b.boardNo = ?1")
+    HierarchicalBoardModifyDTO getModifyData(long boardNo);
+
     @Modifying
     @Transactional
     @Query(value = "UPDATE hierarchicalBoard " +
@@ -122,18 +138,25 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
             ", boardContent = :boardContent " +
             "WHERE boardNo = :boardNo",
             nativeQuery = true)
-    HierarchicalBoard boardModify(@Param("boardTitle") String boardTitle, @Param("boardContent") String boardContent, @Param("boardNo") long boardNo);
+    void boardModify(@Param("boardTitle") String boardTitle, @Param("boardContent") String boardContent, @Param("boardNo") long boardNo);
 
     @Modifying
     @Transactional
     @Query(value = "UPDATE hierarchicalBoard " +
-            "SET boardContent = ?1" +
-            ", boardIndent = ?2" +
-            ", boardGroupNo = ?3" +
-            ", boardUpperNo = ?4 " +
-            "WHERE boardNo = ?5"
+            "SET boardIndent = ?1" +
+            ", boardGroupNo = ?2" +
+            ", boardUpperNo = ?3 " +
+            "WHERE boardNo = ?4"
     , nativeQuery = true)
-    HierarchicalBoard boardInsertPatch(String boardContent, int boardIndent, long boardGroupNo, String boardUpperNo, long boardNo);
+    void boardInsertPatch(int boardIndent, long boardGroupNo, String boardUpperNo, long boardNo);
+
+    @Query(value = "SELECT " +
+            "b.boardGroupNo AS boardGroupNo" +
+            ", b.boardIndent AS boardIndent" +
+            ", b.boardUpperNo AS boardUpperNo " +
+            "FROM HierarchicalBoard b " +
+            "WHERE b.boardNo = ?1")
+    HierarchicalBoardReplyDTO getReplyData(long boardNo);
 
 
     // 기본 boardList TotalCount

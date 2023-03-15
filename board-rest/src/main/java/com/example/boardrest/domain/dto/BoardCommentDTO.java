@@ -10,7 +10,7 @@ import java.util.Date;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class HierarchicalBoardCommentDTO {
+public class BoardCommentDTO {
 
     private long commentNo;
 
@@ -25,7 +25,5 @@ public class HierarchicalBoardCommentDTO {
     private int commentIndent;
 
     private String commentUpperNo;
-
-    private long boardNo;
 
 }

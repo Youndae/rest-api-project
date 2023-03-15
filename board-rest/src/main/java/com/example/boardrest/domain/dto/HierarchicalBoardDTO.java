@@ -13,6 +13,7 @@ import java.util.List;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class HierarchicalBoardDTO {
 
     private Long boardNo;

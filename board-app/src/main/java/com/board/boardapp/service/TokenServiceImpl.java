@@ -13,6 +13,7 @@ import org.springframework.web.util.WebUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -22,7 +23,7 @@ public class TokenServiceImpl implements TokenService{
     private final WebClientConfig clientConfig;
 
     @Override
-    public String checkExistsToken(HttpServletRequest request) {
+    public JwtDTO checkExistsToken(HttpServletRequest request, HttpServletResponse response) {
 
         log.info("referer : " + request.getHeader("Referer"));
 
@@ -37,13 +38,11 @@ public class TokenServiceImpl implements TokenService{
          */
 
         if(at == null && rt != null)
-            return "F";
+            return reIssuedToken(request, response);
         else if(at != null && rt != null)
-            return "T";
-        else if(at == null && rt == null)
-            return "N";
+            return JwtDTO.builder().accessTokenHeader(at.getName()).accessTokenValue(at.getValue()).build();
 
-        return "error";
+        return null;
 
     }
 
@@ -68,8 +67,14 @@ public class TokenServiceImpl implements TokenService{
                 .sameSite("Strict")
                 .build();
 
+        ResponseCookie lsc = ResponseCookie.from("lsc", UUID.randomUUID().toString())
+                        .path("/")
+                        .maxAge(JwtProperties.REFRESH_MAX_AGE)
+                        .build();
+
         response.addHeader("Set-Cookie", at.toString());
         response.addHeader("Set-Cookie", rt.toString());
+        response.addHeader("Set-Cookie", lsc.toString());
 
         log.info("save Token Success");
 
@@ -82,7 +87,7 @@ public class TokenServiceImpl implements TokenService{
         Cookie rt = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
 
         JwtDTO dto = client.post()
-                .uri(uriBuilder -> uriBuilder.path("reissuedToken").build())
+                .uri(uriBuilder -> uriBuilder.path("/token/reissued").build())
                 .cookie(rt.getName(), rt.getValue())
                 .retrieve()
                 .bodyToMono(JwtDTO.class)

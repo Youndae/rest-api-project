@@ -2,16 +2,12 @@ package com.example.boardrest.controller;
 
 import com.example.boardrest.domain.Comment;
 import com.example.boardrest.domain.Criteria;
-import com.example.boardrest.domain.dto.HierarchicalBoardCommentDTO;
-import com.example.boardrest.domain.dto.CommentListDTO;
-import com.example.boardrest.repository.CommentRepository;
+import com.example.boardrest.domain.dto.BoardCommentDTO;
+import com.example.boardrest.domain.dto.BoardCommentListDTO;
 import com.example.boardrest.service.CommentService;
-import com.example.boardrest.service.PrincipalService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,15 +24,26 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("/comment-list")
-    public ResponseEntity<CommentListDTO> commentList(@RequestBody Map<String, Object> commentData, Criteria cri){
-        commentData.forEach((s, o) -> log.info(s + " : " + o));
+    public ResponseEntity<BoardCommentListDTO> commentList(@RequestParam(value = "boardNo", required = false) String boardNo
+                                                        , @RequestParam(value = "imageNo", required = false) String imageNo
+                                                        , @RequestParam(value = "pageNum") int pageNum
+                                                        , @RequestParam(value = "amount") int amount
+                                                        , Principal principal){
+
+        log.info("api comment-list");
 
         /**
          * commentList 요청시 받을 데이터
          * boardNo, imageNo, pageNum
          */
 
-        return new ResponseEntity<>(commentService.commentList(commentData, cri), HttpStatus.OK);
+        Criteria cri = Criteria.builder()
+                .pageNum(pageNum)
+                .amount(amount)
+                .build();
+
+
+        return new ResponseEntity<>(commentService.commentList(boardNo, imageNo, cri, principal), HttpStatus.OK);
     }
 
     @PostMapping("/comment-insert")

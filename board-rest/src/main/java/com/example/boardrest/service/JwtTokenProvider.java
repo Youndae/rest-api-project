@@ -161,9 +161,9 @@ public class JwtTokenProvider {
 
         return JwtDTO.builder()
                 .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
-                .accessTokenValue(issuedAccessToken(userId))
+                .accessTokenValue(JwtProperties.TOKEN_PREFIX + issuedAccessToken(userId))
                 .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
-                .refreshTokenValue(reIssuedRefreshToken(originIndex))
+                .refreshTokenValue(JwtProperties.TOKEN_PREFIX + reIssuedRefreshToken(originIndex))
                 .build();
     }
 }

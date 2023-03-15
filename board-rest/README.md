@@ -97,3 +97,7 @@
 > 1. repository에 exists 추가. O
 > 2. 로그인 처리에서 provider로 연결해 토큰 처리하도록 수정. O
 > 3. Authorization에서 provider로 연결해 처리하도록 수정. O
+> 
+> 각 게시판 게시글 수정에 있어서 client server와 api server에서 각각 작성자와 사용자를 체크해
+> 이중으로 체크하는것도 보안면에서는 괜찮다고 생각함. 이렇게 진행할것.
+> 
