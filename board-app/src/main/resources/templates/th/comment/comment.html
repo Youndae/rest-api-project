@@ -9,6 +9,13 @@
           integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <script type="text/javascript" th:src="@{https://code.jquery.com/jquery-3.3.1.min.js}"></script>
 </head>
+<style>
+    li {
+        list-style: none;
+        float: left;
+        padding: 5px;
+    }
+</style>
 <body>
 <div th:fragment="commentFragment">
     <form id="commentFrm" method="post">
@@ -18,6 +25,9 @@
         </div>
     </form>
     <div class="comment-area">
+
+    </div>
+    <div class="comment-paging">
 
     </div>
 </div>

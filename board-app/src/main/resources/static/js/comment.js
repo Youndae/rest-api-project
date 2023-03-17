@@ -8,95 +8,138 @@ $(function(){
     else
         pageNum = $("#pageNum").val();
 
-    var str = "";
-
     if(boardNo != null){
-        console.log("boardNo is not null");
+        console.log("hierarchicalBoardComment");
         console.log("boardNo : " + boardNo);
 
-        $.getJSON('/comment/boardComment/' + boardNo + "/" + pageNum, function(arr){
-            $(arr).each(function(i, res){
-                // str = commentEachParsing(result.content);
+        hierarchicalBoardComment(boardNo, pageNum);
 
-                console.log("res.toString : " + res.toString());
-                console.log("res : " + res.uid);
-                console.log("res.commentNo : " + res.commentNo);
-                console.log("res.content.commentNo : " + res.content.commentNo);
-                console.log("res.boardContent.commentDTO.commentNo" + res.boardContent.CommentDTO.commentNo);
-
-                str += "<div id=\"comment\">" +
-                        "<div class=\"comment-box\" id=\"comment-box\" value=\"" + res.commentNo + "\">" +
-                            "<table class=\"table table-hover\">" +
-                                "<tr>" +
-                                    "<td>" +
-                                        "<p text=\"" + res.content.userId + "\">" +
-                                        "<p text=\"" + res.content.commentContent + "\"></p>" +
-                                        "<button class=\"btn btn-outline-info btn-sm\" id=\"cReply\" type=\"button\" " +
-                                            "onclick=\"cReply(this)\" value=\"" + res.content.commentNo + "\">답글</button>";
-
-                if(res.content.userId == res.uid){
-                    console.log("uid equals userId");
-                    str += "<button class=\"btn btn-outline-info btn-sm\" id=\"cDel\" type=\"button\" " +
-                        "onclick=\"cDel(this)\" value=\"" + res.commentNo + "\">삭제</button>";
-                }
-
-                str += "</p>" +
-                    "</td>" +
-                    "<input type=\"hidden\" id=\"commentNo\" value=\"" + res.content.commentNo + "\">" +
-                    "<input type=\"hidden\" id=\"commentUpperNo\" value=\"" + res.content.commentUpperNo + "\">" +
-                    "<input type=\"hidden\" id=\"commentGroupNo\" value=\"" + res.content.commentGroupNo + "\">" +
-                    "<input type=\"hidden\" id=\"commentIndent\" value=\"" + res.content.commentIndent + "\">" +
-                    "</tr>" +
-                    "</table>" +
-                    "</div>" +
-                    "</div>";
-                console.log("str : " + str);
-            })
-        })
-    }if(imageNo != null){
-        console.log("boardNo is null");
-        console.log("imageBoard : " + imageNo);
-
-        $.getJSON('/comment/imageComment/{imageNo}', {imageNo: imageNo}, function(arr){
-            $(arr).each(function(i, result){
-                str = commentEachParsing(result);
-            })
-        })
     }
 
-    $(".comment-area").append(str);
+    if(imageNo != null){
+        console.log("imageBoardComment");
+        console.log("imageBoard : " + imageNo);
+
+        imageBoardComment(imageNo, pageNum);
+    }
 
 })
 
-function commentEachParsing(res){
+function hierarchicalBoardComment(boardNo, pageNum){
+    $.getJSON('/comment/boardComment/' + boardNo + "/" + pageNum, function(arr){
 
+        commentEachParsing(arr.content, arr.uid);
 
-    var resStr = "<div id=\"comment\">" +
-        "<div class=\"comment-box\" id=\"comment-box\" value=\"" + res.commentNo + "\">" +
-        "<table class=\"table table-hover\">" +
-        "<tr>" +
-        "<td>" +
-        "<p text=\"" + res.userId + "\">" +
-        "<p text=\"" + res.commentContent + "\"></p>" +
-        "<button class=\"btn btn-outline-info btn-sm\" id=\"cReply\" type=\"button\" " +
-        "onclick=\"cReply(this)\" value=\"" + res.commentNo + "\">답글</button>";
+        commentPagingParsing(arr);
 
-    if(res.userId == res.uid){
-        console.log("uid equals userId");
-        resStr += "<button class=\"btn btn-outline-info btn-sm\" id=\"cDel\" type=\"button\" " +
-            "onclick=\"cDel(this)\" value=\"" + res.commentNo + "\">삭제</button>";
+    })
+}
+
+function imageBoardComment(imageNo, pageNum){
+    $.getJSON('/comment/imageComment/' + imageNo + "/" + pageNum, function(arr){
+
+        commentEachParsing(arr.content, arr.uid);
+
+        commentPagingParsing(arr);
+    })
+}
+
+function commentPaging(obj){
+    var boardNo = $("#boardNo").val();
+    var imageNo = $("#imageNo").val();
+    var pageNum = obj;
+
+    if(boardNo != null){
+        hierarchicalBoardComment(boardNo, pageNum);
     }
 
-    resStr += "</p>" +
-        "</td>" +
-        "<input type=\"hidden\" id=\"commentNo\" value=\"" + res.commentNo + "\">" +
-        "<input type=\"hidden\" id=\"commentUpperNo\" value=\"" + res.commentUpperNo + "\">" +
-        "<input type=\"hidden\" id=\"commentGroupNo\" value=\"" + res.commentGroupNo + "\">" +
-        "<input type=\"hidden\" id=\"commentIndent\" value=\"" + res.commentIndent + "\">" +
-        "</tr>" +
-        "</table>" +
-        "</div>" +
-        "</div>";
+    if(imageNo != null){
+        imageBoardComment(imageNo, pageNum);
+    }
+}
 
-    return resStr;
+function commentPagingParsing(res){
+
+    var comment_paging = $(".comment-paging");
+
+    comment_paging.empty();
+
+    var cpStr = "";
+    var startPage = res.pageDTO.startPage;
+    var endPage = res.pageDTO.endPage;
+    var pageNum = res.pageDTO.cri.pageNum;
+    var prev = res.pageDTO.prev;
+    var next = res.pageDTO.next;
+
+    if(prev){
+        cpStr += "<ul>" +
+            "<li>" +
+            "<a onclick=\"commentPrev('prev')\">이전</a>" +
+            "</li>";
+    }else {
+        cpStr += "<ul>";
+    }
+
+    for(var i = startPage; i <= endPage; i++){
+        if(i == pageNum){
+            cpStr += "<li>" +
+                        "<a href=\"#\" style=\"font-weight: bold; color: black;\" onclick=\"commentPaging(" + i + ")\">" + i + "</a>" +
+                    "</li>"
+        }else {
+            cpStr += "<li>" +
+                        "<a href=\"#\" onclick=\"commentPaging(" + i + ")\">" + i + "</a>" +
+                    "</li>"
+        }
+    }
+
+    if(next){
+        cpStr += "<li>" +
+            "<a onclick=\"commentNext('next')\">다음</a>" +
+            "</li>" +
+            "</ul>";
+    }else{
+        cpStr += "</ul>";
+    }
+
+    comment_paging.append(cpStr);
+}
+
+function commentEachParsing(arr, uid){
+
+    var comment_area = $(".comment-area");
+
+    comment_area.empty();
+
+    var commentStr = "";
+
+    $(arr).each(function(i, res){
+        commentStr += "<div class=\"comment-box\" value=\"" + res.commentNo + "\">" +
+                    "<table class=\"table table-hover\">" +
+                        "<tr>" +
+                            "<td>" +
+                                "<p>" + res.userId +
+                                    "<p>" + res.commentContent + "</p>" +
+                                    "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
+                                        "onclick=\"cReply(this)\" value=\"" + res.commentNo + "\">답글</button>";
+
+        if(res.userId == uid){
+            console.log("uid equals userId");
+            commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
+                "onclick=\"cDel(this)\" value=\"" + res.commentNo + "\">삭제</button>";
+        }
+
+        commentStr += "</p>" +
+            "</td>" +
+            "<input type=\"hidden\" class=\"commentNo\" value=\"" + res.commentNo + "\">" +
+            "<input type=\"hidden\" class=\"commentUpperNo\" value=\"" + res.commentUpperNo + "\">" +
+            "<input type=\"hidden\" class=\"commentGroupNo\" value=\"" + res.commentGroupNo + "\">" +
+            "<input type=\"hidden\" class=\"commentIndent\" value=\"" + res.commentIndent + "\">" +
+            "</tr>" +
+            "</table>" +
+            "</div>";
+    })
+
+    console.log("str : " + commentStr);
+
+    comment_area.append(commentStr);
 }

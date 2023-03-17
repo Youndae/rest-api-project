@@ -75,7 +75,9 @@ public class HierarchicalBoardWebClient {
 
         String response = null;
 
-        if(cri.getKeyword() == null){
+        log.info("keyword : " + cri.getKeyword());
+
+        if(cri.getKeyword() == null || cri.getKeyword().equals("")){
             log.info("keyword is null");
             response = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/board/board-list")
@@ -85,7 +87,7 @@ public class HierarchicalBoardWebClient {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-        }else if(cri.getKeyword() != null){
+        }else if(cri.getKeyword() != null || !cri.getKeyword().equals("")){
             log.info("keyword is not null");
             response = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/board/board-list")

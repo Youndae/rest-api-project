@@ -15,6 +15,10 @@
             float: left;
             padding: 5px;
         }
+        .board-list-paging .active {
+            font-weight: bold;
+            color: black;
+        }
     </style>
     <script>
         $(document).ready(function(){
@@ -64,7 +68,7 @@
                 <button class="btn btn-outline-info btn-sm" id="searchBtn">검색</button>
             </form>
         </div>
-        <div>
+        <div class="board-list-paging">
             <ul>
                 <th:block th:if="${boardList.pageDTO.prev}">
                     <li>

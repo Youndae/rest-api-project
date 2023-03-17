@@ -43,6 +43,32 @@ public class CommentController {
 
         log.info("controller dto : {}", dto);
 
+
+
         return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/imageComment/{imageNo}/{pageNum}")
+    public ResponseEntity<CommentListDTO> imageComment(@PathVariable("imageNo") long imageNo
+            , @PathVariable("pageNum") int pageNum
+            , HttpServletRequest request
+            , HttpServletResponse response) throws JsonProcessingException {
+
+        /*log.info("controller boardNo : {}, pageNum : {}", boardNo, pageNum);
+
+        Criteria cri = new Criteria();
+        cri.setPageNum(pageNum);
+
+        log.info("cri.getPageNum() : {}, cri.getAmount() : {}", cri.getPageNum(), cri.getAmount());
+
+        CommentListDTO dto = commentBoardWebClient.getBoardComment(boardNo, request, response, cri);
+
+        log.info("controller dto : {}", dto);*/
+
+
+
+//        return new ResponseEntity<>(dto, HttpStatus.OK);
+
+        return null;
     }
 }
