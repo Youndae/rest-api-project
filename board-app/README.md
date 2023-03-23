@@ -352,7 +352,15 @@
 >>> 그래서 이 id 값을 다 지우고 class로 수정.
 > 
 > 
+>
 > 
-> 계층형 게시판 페이징 동작 시 오류 발생.
-> api 서버에서 pageNum은 정상적으로 받는데 keyword가 not null로 나와서 발생하는 문제인듯.
-> comment 끝내고 해결.
+> 이미지 게시판 리스트 출력 및 상세 페이지, insert 구현 완료.
+> 이미지 게시판 등록 테스트 중 오류 발생.
+> 게시판 등록 오류는 아니고 token 체크 중 발생하는 오류.
+> 'name' is required and must not be empty.라는 오류가 발생
+> api server에서 null이 리턴되는데 체크해보니까 refreshToken 검증 과정에서 DB에 존재하지 않는
+> 값이 tokenValue로 들어간 것으로 확인.
+> 왜 이런 문제가 갑자기 생긴것인지 어디에서 꼬인건지 체크해야 함.
+> 또한 DB에 refreshToken 데이터가 계속 쌓임. reIssued의 경우 기존 RefreshToken 데이터를 
+> 수정하는 형태가 되어야 하는데 수정이 아닌 save처리가 되고 있음.  
+> 체크 후 코드 수정 필요.

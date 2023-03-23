@@ -1,10 +1,7 @@
 package com.board.boardapp.connection.webClient;
 
 import com.board.boardapp.config.WebClientConfig;
-import com.board.boardapp.dto.CommentListDTO;
-import com.board.boardapp.dto.Criteria;
-import com.board.boardapp.dto.JwtDTO;
-import com.board.boardapp.dto.PageDTO;
+import com.board.boardapp.dto.*;
 import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -13,9 +10,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -71,8 +70,120 @@ public class CommentBoardWebClient {
 
         dto = om.readValue(responseVal, CommentListDTO.class);
 
+        log.info("boardComment TotalPages : {}", dto.getTotalPages());
+
         dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
 
         return dto;
+    }
+
+    public int commentInsert(Map<String, Object> commentData
+                                , HttpServletRequest request
+                                , HttpServletResponse response){
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null){
+            return -1;
+        }
+
+        WebClient client = webClientConfig.useWebClient();
+
+
+        CommentDTO dto;
+
+        if(commentData.get("boardNo") == null){
+
+            dto = CommentDTO.builder()
+                    .commentContent(commentData.get("commentContent").toString())
+                    .imageNo(Long.parseLong(commentData.get("imageNo").toString()))
+                    .build();
+        }else{
+            dto = CommentDTO.builder()
+                    .commentContent(commentData.get("commentContent").toString())
+                    .boardNo(Long.parseLong(commentData.get("boardNo").toString()))
+                    .build();
+        }
+        log.info("comment Insert Service");
+        int result = client.post()
+                .uri(uriBuilder -> uriBuilder.path("/comment/comment-insert").build())
+                .body(Mono.just(dto), CommentDTO.class)
+                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .retrieve()
+                .bodyToMono(Integer.class)
+                .block();
+
+        log.info("result : {}", result);
+
+        return result;
+    }
+
+    public int commentReplyInsert(Map<String, Object> commentData
+                                    , HttpServletRequest request
+                                    , HttpServletResponse response){
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null){
+            return -1;
+        }
+
+        WebClient client = webClientConfig.useWebClient();
+
+        String commentContent = commentData.get("commentContent").toString();
+        long commentGroupNo = Long.parseLong(commentData.get("commentGroupNo").toString());
+        int commentIndent = Integer.parseInt(commentData.get("commentIndent").toString());
+        String commentUpperNo = commentData.get("commentUpperNo").toString();
+
+        CommentDTO dto;
+
+        if(commentData.get("boardNo") == null){
+            dto = CommentDTO.builder()
+                    .commentContent(commentContent)
+                    .commentGroupNo(commentGroupNo)
+                    .commentIndent(commentIndent)
+                    .commentUpperNo(commentUpperNo)
+                    .imageNo(Long.parseLong(commentData.get("imageNo").toString()))
+                    .build();
+        }else{
+            dto = CommentDTO.builder()
+                    .commentContent(commentContent)
+                    .commentGroupNo(commentGroupNo)
+                    .commentIndent(commentIndent)
+                    .commentUpperNo(commentUpperNo)
+                    .boardNo(Long.parseLong(commentData.get("boardNo").toString()))
+                    .build();
+        }
+
+        int result = client.post()
+                .uri(uriBuilder -> uriBuilder.path("/comment/comment-reply").build())
+                .body(Mono.just(dto), CommentDTO.class)
+                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .retrieve()
+                .bodyToMono(Integer.class)
+                .block();
+
+        log.info("reply result : {}", result);
+
+        return result;
+    }
+
+    public int commentDelete(long commentNo, HttpServletRequest request, HttpServletResponse response){
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null)
+            return -1;
+
+        WebClient client = webClientConfig.useWebClient();
+
+        int result = client.delete()
+                .uri(uriBuilder -> uriBuilder.path("/comment/comment-delete/{commentNo}")
+                        .build(commentNo))
+                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .retrieve()
+                .bodyToMono(Integer.class)
+                .block();
+
+        log.info("commentDelete client result : {}", result);
+
+        return result;
     }
 }

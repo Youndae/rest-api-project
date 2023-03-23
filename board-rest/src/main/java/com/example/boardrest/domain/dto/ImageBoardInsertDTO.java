@@ -1,23 +1,20 @@
 package com.example.boardrest.domain.dto;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
+import java.util.List;
 
 @Getter
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class ImageDetailDTO {
-
-    private long imageNo;
+public class ImageBoardInsertDTO {
 
     private String imageTitle;
 
-    private String userId;
-
-    private Date imageDate;
-
     private String imageContent;
+
+    private List<MultipartFile> images;
 }

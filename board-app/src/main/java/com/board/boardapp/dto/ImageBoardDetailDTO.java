@@ -1,15 +1,17 @@
-package com.example.boardrest.domain.dto;
+package com.board.boardapp.dto;
 
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @ToString
 @EqualsAndHashCode
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ImageDetailDTO {
+public class ImageBoardDetailDTO {
 
     private long imageNo;
 
@@ -20,4 +22,8 @@ public class ImageDetailDTO {
     private Date imageDate;
 
     private String imageContent;
+
+    private List<ImageDataDTO> imageData;
+
+    private String uid;
 }

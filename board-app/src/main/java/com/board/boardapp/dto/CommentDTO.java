@@ -26,4 +26,8 @@ public class CommentDTO {
 
     private String commentUpperNo;
 
+    private long boardNo;
+
+    private long imageNo;
+
 }

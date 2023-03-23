@@ -10,15 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping("/comment")
 @RequiredArgsConstructor
 @Slf4j
@@ -70,5 +69,35 @@ public class CommentController {
 //        return new ResponseEntity<>(dto, HttpStatus.OK);
 
         return null;
+    }
+
+    @PostMapping("/commentInsert")
+    public long commentInsert(@RequestBody Map<String, Object> commentData
+                                , HttpServletRequest request
+                                , HttpServletResponse response){
+
+        log.info("commentInsert commentData : {}", commentData);
+
+        return commentBoardWebClient.commentInsert(commentData, request, response);
+    }
+
+    @PostMapping("/commentReplyInsert")
+    public long commentReplyInsert(@RequestBody Map<String, Object> commentData
+                                        , HttpServletRequest request
+                                        , HttpServletResponse response){
+
+        log.info("commentReplyInsert commentData : {}", commentData);
+
+        return commentBoardWebClient.commentReplyInsert(commentData, request, response);
+    }
+
+    @DeleteMapping("/commentDelete/{commentNo}")
+    public int commentDelete(@PathVariable long commentNo
+                                , HttpServletRequest request
+                                , HttpServletResponse response){
+
+        log.info("commentDelete commentNo : {}", commentNo);
+
+        return commentBoardWebClient.commentDelete(commentNo, request, response);
     }
 }

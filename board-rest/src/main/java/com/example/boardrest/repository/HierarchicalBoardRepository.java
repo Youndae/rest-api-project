@@ -28,7 +28,7 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
             ", b.boardUpperNo) " +
             "FROM HierarchicalBoard b"
     , countQuery = "SELECT c.contentCount " +
-            "FROM Count_table c " +
+            "FROM CountTable c " +
             "WHERE c.boardName = 'hierarchicalboard'")
     Page<HierarchicalBoardDTO> hierarchicalBoardList(Pageable pageable);
 
@@ -161,7 +161,7 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
 
     // 기본 boardList TotalCount
     @Query(value = "SELECT c.contentCount " +
-            "FROM Count_table c " +
+            "FROM CountTable c " +
             "WHERE c.boardName = 'hierarchicalBoard'")
     long defaultBoardTotalCount();
 

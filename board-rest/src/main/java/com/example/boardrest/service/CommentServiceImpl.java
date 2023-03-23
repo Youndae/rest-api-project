@@ -4,6 +4,7 @@ import com.example.boardrest.domain.Comment;
 import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.dto.BoardCommentDTO;
 import com.example.boardrest.domain.dto.BoardCommentListDTO;
+import com.example.boardrest.domain.dto.CommentInsertDTO;
 import com.example.boardrest.domain.dto.CommentListDTO;
 import com.example.boardrest.repository.CommentRepository;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -34,18 +35,20 @@ public class CommentServiceImpl implements CommentService{
     // 댓글 insert
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public int commentInsert(Map<String, Object> commentData
-                        , Comment comment
+    public long commentInsert(CommentInsertDTO dto
                         , Principal principal) {
+
+
+        log.info("commentInsertContent : {}, boardNo : {}, imageNo : {}", dto.getCommentContent(), dto.getBoardNo(), dto.getImageNo());
         try{
-            long commentNo = commentInsertGetCommentNo(commentData, principal);
+            long commentNo = commentInsertGetCommentNo(dto, principal);
 
-            commentData.put("commentGroupNo", commentNo);
-            commentData.put("commentIndent", 1);
-            commentData.put("commentNo", commentNo);
-            commentData.put("commentUpperNo", commentNo);
+            dto.setCommentNo(commentNo);
+            dto.setCommentGroupNo(commentNo);
+            dto.setCommentIndent(1);
+            dto.setCommentUpperNo(String.valueOf(commentNo));
 
-            checkBoard(commentData);
+            checkBoard(dto);
 
             return 1;
         }catch (Exception e){
@@ -57,17 +60,26 @@ public class CommentServiceImpl implements CommentService{
 
     // 대댓글 insert
     @Override
-    public int commentReplyInsert(Map<String, Object> commentData
-                        , Comment comment
+    @Transactional(rollbackOn = Exception.class)
+    public long commentReplyInsert(CommentInsertDTO dto
                         , Principal principal) {
+
+        log.info("commentReply commentNo : {}, commentContent : {}, commentGroupNo : {}, commentIndent : {}, commentUpperNo : {}, boardNo : {}"
+        , dto.getCommentNo()
+        , dto.getCommentContent()
+        , dto.getCommentGroupNo()
+        , dto.getCommentIndent()
+        , dto.getCommentUpperNo()
+        , dto.getBoardNo());
+
         try{
-            long commentNo = commentInsertGetCommentNo(commentData, principal);
+            long commentNo = commentInsertGetCommentNo(dto, principal);
 
-            commentData.put("commentIndent", Integer.parseInt(commentData.get("commentIndent").toString()) + 1);
-            commentData.put("commentUpperNo", commentData.get("commentUpperNo") + "," + commentNo);
-            commentData.put("commentNo", commentNo);
+            dto.setCommentIndent(dto.getCommentIndent() + 1);
+            dto.setCommentUpperNo(dto.getCommentUpperNo() + "," + commentNo);
+            dto.setCommentNo(commentNo);
 
-            checkBoard(commentData);
+            checkBoard(dto);
 
             return 1;
         }catch (Exception e){
@@ -78,13 +90,29 @@ public class CommentServiceImpl implements CommentService{
 
     // 댓글 delete
     @Override
-    public int commentDelete(long commentNo) {
-        try{
-            commentRepository.deleteById(commentNo);
-            return 1;
-        }catch (Exception e){
+    @Transactional(rollbackOn = Exception.class)
+    public int commentDelete(long commentNo, Principal principal) {
+
+        /**
+         * DB에 저장된 데이터의 사용자 아이디를 가져와
+         * 현재 로그인한 사용자의 아이디와 비교를 해 동일할 경우만 삭제 처리.
+         */
+        String uidData = commentRepository.existsComment(commentNo);
+
+        log.info("uidData : {}", uidData);
+
+        if(commentRepository.existsComment(commentNo).equals(principal.getName())){
+            try{
+                commentRepository.deleteById(commentNo);
+                return 1;
+            }catch (Exception e){
+                return -1;
+            }
+        }else{
             return -1;
         }
+
+
     }
 
     // 댓글 List
@@ -179,49 +207,49 @@ public class CommentServiceImpl implements CommentService{
     }
 
     // 1차 save commentNo 리턴
-    long commentInsertGetCommentNo(Map<String, Object> commentData, Principal principal) throws Exception{
+    long commentInsertGetCommentNo(CommentInsertDTO dto, Principal principal) throws Exception{
         return commentRepository.save(
                 Comment.builder()
                         .member(principalService.checkPrincipal(principal))
-                        .commentContent(commentData.get("commentContent").toString())
+                        .commentContent(dto.getCommentContent())
                         .commentDate(Date.valueOf(LocalDate.now()))
                         .build()
         ).getCommentNo();
     }
 
     // 어느 게시판인지 체크(해당하는 게시판의 patch comment 호출)
-    void checkBoard(Map<String, Object> commentData) throws Exception{
+    void checkBoard(CommentInsertDTO dto) throws Exception{
 
-        if(commentData.get("boardNo") == null)
-            patchImageComment(commentData);
-        else if(commentData.get("boardNo") != null)
-            patchHierarchicalComment(commentData);
+        if(dto.getImageNo() != 0)
+            patchImageComment(dto);
+        else if(dto.getBoardNo() != 0)
+            patchHierarchicalComment(dto);
 
     }
 
     // 이미지 게시판 comment patch
-    void patchImageComment(Map<String, Object> commentData) throws Exception{
+    void patchImageComment(CommentInsertDTO dto) throws Exception{
         log.info("patch imageBoard comment");
 
         commentRepository.patchImageComment(
-                Long.parseLong(commentData.get("commentGroupNo").toString())
-                , Integer.parseInt(commentData.get("commentIndent").toString())
-                , commentData.get("commentUpperNo").toString()
-                , Long.parseLong(commentData.get("imageNo").toString())
-                , Long.parseLong(commentData.get("commentNo").toString())
+                dto.getCommentGroupNo()
+                , dto.getCommentIndent()
+                , dto.getCommentUpperNo()
+                , dto.getImageNo()
+                , dto.getCommentNo()
         );
     }
 
     // 계층형 게시판 comment patch
-    void patchHierarchicalComment(Map<String, Object> commentData) throws Exception{
+    void patchHierarchicalComment(CommentInsertDTO dto) throws Exception{
         log.info("patch hierarchicalBoard comment");
 
         commentRepository.patchHierarchicalComment(
-                Long.parseLong(commentData.get("commentGroupNo").toString())
-                , Integer.parseInt(commentData.get("commentIndent").toString())
-                , commentData.get("commentUpperNo").toString()
-                , Long.parseLong(commentData.get("boardNo").toString())
-                , Long.parseLong(commentData.get("commentNo").toString())
+                dto.getCommentGroupNo()
+                , dto.getCommentIndent()
+                , dto.getCommentUpperNo()
+                , dto.getBoardNo()
+                , dto.getCommentNo()
         );
     }
 

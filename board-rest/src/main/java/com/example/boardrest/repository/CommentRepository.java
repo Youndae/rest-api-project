@@ -69,4 +69,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             , nativeQuery = true)
     void patchHierarchicalComment(long commentGroupNo, int commentIndent, String commentUpperNo, long boardNo, long commentNo);
 
+
+    @Query(value = "select userId " +
+            "FROM comment " +
+            "WHERE commentNo = ?1"
+    , nativeQuery = true)
+    String existsComment(long commentNo);
+
 }

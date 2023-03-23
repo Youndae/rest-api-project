@@ -2,6 +2,7 @@ package com.example.boardrest.repository;
 
 import com.example.boardrest.domain.ImageData;
 import com.example.boardrest.domain.dto.ImageDataDTO;
+import com.example.boardrest.domain.dto.ImageDetailDataDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -28,4 +29,13 @@ public interface ImageDataRepository extends JpaRepository<ImageData, String> {
             "FROM ImageData d " +
             "WHERE d.imageBoard.imageNo = ?1")
     int countImageStep(long imageNo);
+
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.ImageDetailDataDTO(" +
+            "id.imageName " +
+            ", id.oldName " +
+            ", id.imageStep) " +
+            "FROM ImageData id " +
+            "WHERE id.imageBoard.imageNo = ?1 " +
+            "ORDER BY id.imageStep asc")
+    List<ImageDetailDataDTO> getImageData(long imageNo);
 }

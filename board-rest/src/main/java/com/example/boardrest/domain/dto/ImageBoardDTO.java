@@ -7,9 +7,10 @@ import java.util.Date;
 @Getter
 @ToString
 @EqualsAndHashCode
-@NoArgsConstructor
 @AllArgsConstructor
-public class ImageDetailDTO {
+@NoArgsConstructor
+@Builder
+public class ImageBoardDTO {
 
     private long imageNo;
 
@@ -20,4 +21,6 @@ public class ImageDetailDTO {
     private Date imageDate;
 
     private String imageContent;
+
+    private String imageName;
 }

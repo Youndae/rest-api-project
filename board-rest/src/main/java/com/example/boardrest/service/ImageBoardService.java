@@ -1,5 +1,9 @@
 package com.example.boardrest.service;
 
+import com.example.boardrest.domain.Criteria;
+import com.example.boardrest.domain.dto.ImageBoardDTO;
+import com.example.boardrest.domain.dto.ImageBoardDetailDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,16 +12,22 @@ import java.util.List;
 
 public interface ImageBoardService {
 
-    long imageSizeCheck(List<MultipartFile> images) throws Exception;
+    Page<ImageBoardDTO> getImageBoardList(int pageNum, int amount, String keyword, String searchType);
 
-    long imageInsertCheck(List<MultipartFile> images
-            , HttpServletRequest request
-            , Principal principal);
+    long imageSizeCheck(MultipartFile[] images) throws Exception;
 
-    long imagePatchCheck(List<MultipartFile> images
+    long imageInsertCheck(MultipartFile[] images
+                            , String imageTitle
+                            , String imageContent
+                            , HttpServletRequest request
+                            , Principal principal);
+
+    long imagePatchCheck(MultipartFile[] images
             , List<String> deleteFiles
             , HttpServletRequest request
             , Principal principal);
 
     long deleteImageBoard(long imageNo, HttpServletRequest request);
+
+    ImageBoardDetailDTO getImageBoardDetail(long imageNo, Principal principal);
 }

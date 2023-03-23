@@ -235,3 +235,37 @@ board-app = client Server
 >> webClient로 보내줄 때 오류가 발생.
 >> 그래서 조건문에 keyword.equals("") 조건을 추가해 문제 해결.
 > 
+> 23/03/18 ~ 23/03/21 - Client Server, Api Server
+>> comment insert, Reply Insert, delete, 페이징 구현 완료.   
+>> insert와 Reply Insert는 imageBoard, HierarhicalBoard를 구분하지 않고 두 게시판의 boardNo를 찾아 보내게 된다.      
+>> 그럼 둘중 하나는 값이 없을것이고 받은 데이터를 CommentDTO에 담아 api 서버로 전송한다.   
+>> api 서버에서는 값이 존재하는지 여부에 따라서 commentInsert, Reply Insert를 처리하고 DB에 저장된 commentNo를 리턴한다.   
+>> 최종적으로 ExceptionHandler를 구현하고 나면 여기서는 상태 리턴만 받도록 하면 될것으로 예상.   
+>> 페이징기능이 게시판도 그렇고 댓글에서도 prev, next가 정상적으로 출력은 되지만 동작이 안되고 있었는데 해당 부분 수정해서 해결.   
+>> a 태그로 만들어두기만 하고 연결을 안해줘서 동작을 안하고 있었음.   
+>> 댓글의 경우 prev, next 테스트를 위해 계층형 게시판 99988번 글에 댓글 데이터 240개를 추가.   
+>> API server에서 commentInsert를 처리하기 위해 CommentInsertDTO를 생성했고 insert, ReplyInsert 모두 이 DTO에 받아서 처리.
+> 
+> 23/03/22 ~ 23/03/23 - Client Server, Api Server
+>> ImageBoard 작업중.   
+>> ImageBoardList 정상적으로 출력 완료.   
+>> 이미지 파일의 경우 데스크탑 E 드라이브에 저장 후 api 서버에서 byte[]로 리턴해 출력하는 형태로 구현.   
+>> 이미지 파일의 사이즈를 최대 10MB로 잡아두고 만들다보니 WebClient에서 버퍼 사이즈 초과로 오류가 발생.   
+>> 그래서 Client server에서 버퍼 사이즈를 늘려서 WebClient를 빌드하는 메소드를 추가 생성. 이미지 리턴은 해당 메소드를 호출해서 WebClient를 생성하도록 함.   
+>> ImageBoardInsert 처리 완료.   
+>> 기존 사용하던 코드들을 재활용해 처리함.   
+>> 게시글 등록 후에는 ImageBoardDetail 페이지로 연결되도록 구현.   
+>> #### 갑자기 RefreshToken 값이 api server에서 제대로 검증되지 않는 오류가 발생.   
+>> #### 디버그로 찾아봤으나 클라이언트에 리턴된 refreshToken 값이 DB에 존재하지 않는 값이 전달된 것으로 확인.   
+>> #### 그래서 refreshToken만 받은 상태에서 두 토큰을 재발급 받으려 하다보니 검증에서 걸려 null만 리턴되는 현상.      
+>> #### 재 로그인 후 기능 동작에 있어서는 문제가 발생하지 않음.   
+>> #### AccessToken 만료기간 수정 후 refereshToken 을 통한 reIssued 테스트가 필요.
+>> ImageDetail의 경우 기존 프로젝트처럼 출력하도록 되어있고 수정, 삭제 버튼은 추가했으나 기능 동작하도록 연결이 필요.   
+>> 또한 ImageBoard에 대한 댓글 데이터는 존재하지 않으므로 해당 데이터 삽입하여 댓글 페이징과 답글 등등 기능 테스트 필요.   
+>> ImageBoardList의 경우 기존에는 무한 스크롤도 넣지 않고 페이징도 넣지 않았는데 이번 프로젝트에서 페이징으로 기능 수정.   
+>> 
+
+
+# 기능 전체적으로 마무리 후 해야할것
+> 1. 프론트, 백 모두 불필요 로그 제거.
+> 2. 기능 전체적으로 Exception 테스트

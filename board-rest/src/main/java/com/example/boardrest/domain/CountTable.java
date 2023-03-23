@@ -7,7 +7,7 @@ import javax.persistence.Id;
 
 @Entity
 @Getter
-public class Count_table {
+public class CountTable {
 
     @Id
     private String boardName;

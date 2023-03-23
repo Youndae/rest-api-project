@@ -93,6 +93,8 @@ public class TokenServiceImpl implements TokenService{
                 .bodyToMono(JwtDTO.class)
                 .block();
 
+        log.info("dto : {} : {}", dto.getAccessTokenHeader(), dto.getAccessTokenValue());
+
         saveToken(dto, response);
 
         return dto;
