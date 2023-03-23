@@ -1,4 +1,3 @@
-var imageNo = $("#imageNo").val();
 var files = {};
 var previewIndex = 0;
 var deleteFiles = {};
@@ -7,12 +6,26 @@ var deleteNo = 0;
 
 $(function(){
 
+    var imageNo = $("#imageNo").val();
+
     $("#modify").on('click', function(){
-        location.href='/imageBoard/imageBoardInsert/' + imageNo;
+        location.href='/imageBoard/imageBoardModify/' + imageNo;
     })
 
     $("#deleteBoard").on('click', function(){
-        location.href='/imageBoard/imageBoardDelete/' + imageNo;
+
+        $.ajax({
+            url: '/imageBoard/imageBoardDelete/' + imageNo,
+            method: 'delete',
+            success: function(result){
+                if(result == 1){
+                    alert("삭제 성공")
+                    location.href='/imageBoard/imageBoardList';
+                }else{
+                    alert("삭제 실패");
+                }
+            }
+        })
     })
 
     $(".attach input[type=file]").change(function(){
@@ -47,6 +60,65 @@ $(function(){
                 }else{
                     alert("성공?");
                     location.href="/imageBoard/imageBoardDetail/" + data;
+                }
+            },
+            error: function(request, status, error){
+                alert("code : " + request.status + "\n" +
+                "message : " + request.responseText + "\n" +
+                "error : " + error);
+            }
+        })
+    })
+
+    var modifyImageNo = $("#modifyImageNo").val();
+
+    if(modifyImageNo != undefined){
+        $.getJSON("/imageBoard/modifyImageAttach", {imageNo: modifyImageNo}, function(arr){
+            $(arr).each(function(i, attach){
+                $("#preview").append(
+                    "<div class=\"preview-box\" value=\"" + attach.imageStep + "\">" +
+                    "<img class=\"thumbnail\" id=\"imgName\" src=\"/imageBoard/display/" + attach.imageName + "\"\/>" +
+                    "<p>" + attach.oldName + "</p>" +
+                    "<a href=\"#\" value=\"" + attach.imageStep + "\" onclick=\"deleteOldPreview(this)\">" +
+                    "삭제" + "</a>" +
+                    "</div>"
+                );
+                step = attach.imageStep;
+            });
+        })
+    }
+
+    $("#imageModify").on('click', function(){
+        var form = $("#uploadForm")[0];
+        var formData = new FormData(form);
+
+        for(var index = 0; index < Object.keys(files).length; index++){
+            formData.append('files', files[index]);
+        }
+
+        console.log("deleteFiles : " + deleteFiles[0]);
+
+        for(var index = 0; index < Object.keys(deleteFiles).length; index++){
+            formData.append('deleteFiles', deleteFiles[index]);
+        }
+
+        console.log("formData : " + formData.get('deleteFiles'));
+
+        $.ajax({
+            url: '/imageBoard/imageBoardModify',
+            method: 'patch',
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            data: formData,
+            success: function(result){
+                if(result == -1){
+                    alert("오류가 발생했습니다 다시 시도해주세요.\n 문제가 계속되면 관리자에게 문의해주세요.");
+                }else if(result == -2){
+                    alert("파일 사이즈를 초과했습니다.");
+                }else{
+                    location.href='/imageBoard/imageBoardDetail/' + result;
                 }
             },
             error: function(request, status, error){

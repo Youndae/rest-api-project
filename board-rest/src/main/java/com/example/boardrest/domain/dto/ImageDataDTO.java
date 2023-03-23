@@ -2,7 +2,7 @@ package com.example.boardrest.domain.dto;
 
 public interface ImageDataDTO {
 
-    String getIamgeName();
+    String getImageName();
 
     Long getImageNo();
 

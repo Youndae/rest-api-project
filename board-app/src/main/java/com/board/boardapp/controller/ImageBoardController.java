@@ -2,6 +2,7 @@ package com.board.boardapp.controller;
 
 import com.board.boardapp.connection.webClient.ImageBoardWebClient;
 import com.board.boardapp.dto.Criteria;
+import com.board.boardapp.dto.ImageDataDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,14 +89,55 @@ public class ImageBoardController {
 
     @GetMapping("/imageBoardModify/{imageNo}")
     public String imageBoardModify(Model model
-                                    , @PathVariable long imageNo){
-        model.addAttribute("imageNo", imageNo);
+                                    , @PathVariable long imageNo
+                                    , HttpServletRequest request
+                                    , HttpServletResponse response){
+
+
+        model.addAttribute("image", imageBoardWebClient.getModifyData(imageNo, request, response));
 
         return "th/imageBoard/imageBoardModify";
     }
 
-    @GetMapping("/display")
-    public ResponseEntity<byte[]> getImageDisplay(String imageName, HttpServletRequest request, HttpServletResponse response){
+    @GetMapping("/modifyImageAttach")
+    public ResponseEntity<List<ImageDataDTO>> modifyImageAttach(long imageNo, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+        log.info("imageNo : {}", imageNo);
+
+        return new ResponseEntity<>(imageBoardWebClient.getModifyImageList(imageNo, request, response), HttpStatus.OK);
+    }
+
+    @PatchMapping("/imageBoardModify")
+    public long imageBoardModifyProc(@RequestParam("imageNo") long imageNo
+                                    , @RequestParam("imageTitle") String imageTitle
+                                    , @RequestParam("imageContent") String imageContent
+                                    , @RequestParam(value = "files", required = false) List<MultipartFile> files
+                                    , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
+                                    , HttpServletRequest request
+                                    , HttpServletResponse response){
+
+        if(deleteFiles == null)
+            log.info("deleteFiles is null");
+        else
+            log.info("deleteFiles name : " + deleteFiles.get(0));
+
+        return imageBoardWebClient.imageBoardModify(imageNo, imageTitle, imageContent, files, deleteFiles, request, response);
+
+    }
+
+    @DeleteMapping("/imageBoardDelete/{imageNo}")
+    @ResponseBody
+    public long imageBoardDelete(@PathVariable long imageNo
+                                    , HttpServletRequest request
+                                    , HttpServletResponse response) {
+
+        log.info("delete imageNo : {}", imageNo);
+
+        return imageBoardWebClient.imageBoardDelete(imageNo, request, response);
+
+    }
+
+    @GetMapping("/display/{imageName}")
+    public ResponseEntity<byte[]> getImageDisplay(@PathVariable String imageName, HttpServletRequest request, HttpServletResponse response){
         log.info("imageName : {}", imageName);
 
         return new ResponseEntity<>(imageBoardWebClient.getImageDisplay(imageName, request, response), HttpStatus.OK);

@@ -3,10 +3,7 @@ package com.example.boardrest.service;
 import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.ImageBoard;
 import com.example.boardrest.domain.ImageData;
-import com.example.boardrest.domain.dto.ImageBoardDTO;
-import com.example.boardrest.domain.dto.ImageBoardDetailDTO;
-import com.example.boardrest.domain.dto.ImageDetailDTO;
-import com.example.boardrest.domain.dto.ImageDetailDataDTO;
+import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.properties.ImageSizeProperties;
 import com.example.boardrest.repository.ImageBoardRepository;
 import com.example.boardrest.repository.ImageDataRepository;
@@ -26,6 +23,7 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -125,7 +123,7 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
     // 이미지파일 사이즈 체크
     @Override
-    public long imageSizeCheck(MultipartFile[] images) throws Exception {
+    public long imageSizeCheck(List<MultipartFile> images) throws Exception {
         log.info("image size Check");
 
         for(MultipartFile image : images){
@@ -145,7 +143,11 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     // 이미지 게시판 insert
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public long imageInsertCheck(MultipartFile[] images, String imageTitle, String imageContent, HttpServletRequest request, Principal principal) {
+    public long imageInsertCheck(List<MultipartFile> images
+                                , String imageTitle
+                                , String imageContent
+                                , HttpServletRequest request
+                                , Principal principal) {
         log.info("image insert check");
 
         try{
@@ -176,7 +178,7 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
     // 이미지 게시판 patch
     @Override
-    public long imagePatchCheck(MultipartFile[] images
+    public long imagePatchCheck(List<MultipartFile> images
                         , List<String> deleteFiles
                         , HttpServletRequest request
                         , Principal principal) {
@@ -207,7 +209,7 @@ public class ImageBoardServiceImpl implements ImageBoardService{
                 imageInsert(images, request, imageDataRepository.countImageStep(imageNo) + 1, imageBoard);
 
             if(deleteFiles != null)
-                deleteFilesProc(deleteFiles, request);
+                deleteFilesProc(deleteFiles);
 
             return imageBoardRepository.save(imageBoard).getImageNo();
         }catch (Exception e){
@@ -218,25 +220,30 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
     // 이미지 게시판 delete
     @Override
-    public long deleteImageBoard(long imageNo, HttpServletRequest request) {
+    public long deleteImageBoard(long imageNo, Principal principal) {
         log.info("delete imageBoard");
+
+        Optional<ImageBoard> entity = imageBoardRepository.findById(imageNo);
+
+        if(!entity.get().getMember().getUserId().equals(principal.getName()))
+            return 0;
 
         try{
             List<String> deleteFileName = imageDataRepository.deleteImageDataList(imageNo);
 
-            deleteFilesProc(deleteFileName, request);
+            deleteFilesProc(deleteFileName);
 
             imageBoardRepository.deleteById(imageNo);
 
             return 1;
         }catch (Exception e){
             log.info("delete board exception!");
-            return -1;
+            return 0;
         }
     }
 
     // 이미지 파일 저장 및 imageData save 처리
-    void imageInsert(MultipartFile[] images
+    void imageInsert(List<MultipartFile> images
                             , HttpServletRequest request
                             , int step
                             , ImageBoard imageBoard) throws Exception{
@@ -274,8 +281,8 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     }
 
     // 이미지 파일 삭제
-    void deleteFilesProc(List<String> deleteFiles, HttpServletRequest request) throws Exception{
-        String filePath = request.getSession().getServletContext().getRealPath("/img/");
+    void deleteFilesProc(List<String> deleteFiles) throws Exception{
+        String filePath = "E:\\upload\\boardProject\\";
 
         try{
             for(int i = 0; i < deleteFiles.size(); i++){
@@ -288,5 +295,28 @@ public class ImageBoardServiceImpl implements ImageBoardService{
         }catch (Exception e){
             log.info("delete file Process Exception");
         }
+    }
+
+    @Override
+    public ImageDetailDTO getModifyData(long imageNo, Principal principal) {
+
+        if(principal == null){
+            return null;
+        }
+
+        ImageDetailDTO dto = imageBoardRepository.imageDetailDTO(imageNo);
+
+        if(!dto.getUserId().equals(principal.getName()))
+            return null;
+
+        return dto;
+    }
+
+    @Override
+    public List<ImageDataDTO> getModifyImageAttach(long imageNo, Principal principal) {
+
+        List<ImageDataDTO> dto = imageDataRepository.imageDataList(imageNo);
+
+        return dto;
     }
 }

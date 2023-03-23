@@ -169,12 +169,133 @@ public class ImageBoardWebClient {
                 .body(BodyInserters.fromMultipartData(mbBuilder.build()))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
-                .bodyToMono(Integer.class)
+                .bodyToMono(Long.class)
                 .block();
 
 //        log.info("result : {}", result);
 
 //         return 1;
+    }
+
+    public ImageBoardDTO getModifyData(long imageNo
+                                        , HttpServletRequest request
+                                        , HttpServletResponse response){
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null){
+            return null;
+        }
+        WebClient client = webClientConfig.useWebClient();
+
+        ImageBoardDTO dto = client.get()
+                .uri(uriBuilder -> uriBuilder.path("/image-board/modify-data/{imageNo}").build(imageNo))
+                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .retrieve()
+                .bodyToMono(ImageBoardDTO.class)
+                .block();
+
+        return dto;
+    }
+
+    public List<ImageDataDTO> getModifyImageList(long imageNo
+                                                    , HttpServletRequest request
+                                                    , HttpServletResponse response) throws JsonProcessingException {
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null){
+            return null;
+        }
+
+        WebClient client = webClientConfig.useImageWebClient();
+
+       String responseVal = client.get()
+                .uri(uriBuilder -> uriBuilder.path("/image-board/modify-image-attach/{imageNo}").build(imageNo))
+                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+       ObjectMapper om = new ObjectMapper();
+
+       om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+       List<ImageDataDTO> dto = om.readValue(responseVal, List.class);
+
+       for(int i = 0; i < dto.size(); i++){
+           log.info("dto : {}", dto.get(i));
+       }
+
+       return dto;
+    }
+
+    public long imageBoardModify(long imageNo
+                                    , String imageTitle
+                                    , String imageContent
+                                    , List<MultipartFile> files
+                                    , List<String> deleteFiles
+                                    , HttpServletRequest request
+                                    , HttpServletResponse response){
+
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null)
+            return -1L;
+
+        WebClient client = webClientConfig.useImageWebClient();
+
+        MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
+
+
+
+        if(files != null){
+            log.info("files is not null");
+            for(MultipartFile file : files){
+                log.info("file.originName : {}", file.getOriginalFilename());
+                mbBuilder.part("files", file.getResource());
+            }
+        }
+
+        if(deleteFiles != null){
+            log.info("delete file is not null");
+            for(String file : deleteFiles){
+                mbBuilder.part("deleteFiles", file);
+            }
+        }
+
+        mbBuilder.part("imageTitle", imageTitle);
+        mbBuilder.part("imageContent", imageContent);
+        mbBuilder.part("imageNo", imageNo);
+
+        return client.patch()
+                .uri(uriBuilder -> uriBuilder.path("/image-board/image-modify").build())
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(mbBuilder.build()))
+                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .retrieve()
+                .bodyToMono(Long.class)
+                .block();
+
+    }
+
+    public long imageBoardDelete(long imageNo, HttpServletRequest request, HttpServletResponse response) {
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null)
+            return 0;
+
+        WebClient client = webClientConfig.useWebClient();
+
+        try{
+            return client.delete()
+                    .uri(uriBuilder -> uriBuilder.path("/image-board/image-delete/{imageNo}").build(imageNo))
+                    .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .retrieve()
+                    .bodyToMono(Long.class)
+                    .block();
+
+        }catch (Exception e){
+            return 0;
+        }
     }
 
 }

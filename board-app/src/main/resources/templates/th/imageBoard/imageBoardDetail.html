@@ -37,7 +37,7 @@
             <div class="mt-4">
                 <th:block th:each="imageData : ${image.imageData}">
                     <div class="mb-4">
-                        <img class="imageData" th:src="@{/imageBoard/display(imageName=${imageData.imageName})}" style="width: 300px; height: 300px"/>
+                        <img class="imageData" th:src="@{/imageBoard/display/{imageName}(imageName=${imageData.imageName})}" style="width: 300px; height: 300px"/>
                     </div>
                 </th:block>
             </div>

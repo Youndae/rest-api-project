@@ -55,57 +55,62 @@ public class ImageBoardController {
     }
 
 
-    @GetMapping("/image-board-modify/{imageNo}")
-    public ResponseEntity<ImageDetailDTO> imageBoardModifyInfo(@PathVariable long imageNo) {
+    @GetMapping("/modify-data/{imageNo}")
+    public ResponseEntity<ImageDetailDTO> imageBoardModifyInfo(@PathVariable long imageNo, Principal principal) {
 
-        return new ResponseEntity<>(imageBoardRepository.imageDetailDTO(imageNo), HttpStatus.OK);
+        return new ResponseEntity<>(imageBoardService.getModifyData(imageNo, principal), HttpStatus.OK);
+    }
+
+    @GetMapping("/modify-image-attach/{imageNo}")
+    public ResponseEntity<List<ImageDataDTO>> modifyImageAttach(@PathVariable long imageNo, Principal principal){
+
+        return new ResponseEntity<>(imageBoardService.getModifyImageAttach(imageNo, principal), HttpStatus.OK);
     }
 
     // 등록된 boardNo return
     @PostMapping("/image-insert")
-    public long imageBoardInsert(@RequestParam MultipartFile[] files
+    public long imageBoardInsert(@RequestParam List<MultipartFile> files
                                 , @RequestParam String imageTitle
                                 , @RequestParam String imageContent
                                     , HttpServletRequest request
-                                    , Principal principal){
+                                    , Principal principal) {
         log.info("image Insert");
-
-//        return imageBoardService.imageInsertCheck(images, request, principal);
-
-        /*log.info("dto title : {}", dto.getImageTitle());
-        log.info("dto content : {}", dto.getImageContent());
-        log.info("dto images : {}", dto.getImages().get(0).getOriginalFilename());*/
-
-        log.info("file length : {}", files.length);
-        log.info("title : {}", imageTitle);
-        log.info("content : {}", imageContent);
-
-        for(MultipartFile multipartFile : files){
-            log.info("origin name : {}",multipartFile.getOriginalFilename());
-        }
-
-
-
-//        return 1;
 
         return imageBoardService.imageInsertCheck(files, imageTitle, imageContent, request, principal);
     }
 
-    @PatchMapping("/image-modify")
-    public void imageBoardPatch(@RequestParam(value = "files", required = false) List<MultipartFile> images
+
+
+    /*@PatchMapping("/image-modify")
+    public void imageBoardPatch(@RequestParam("imageNo") long imageNo
+                                , @RequestParam("imageTitle") String imageTitle
+                                , @RequestParam("imageContent") String imageContent
+                                    , @RequestParam(value = "files", required = false) List<MultipartFile> files
                                     , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
-                                    , HttpServletRequest request
                                     , Principal principal){
         log.info("image modify");
 
 //        imageBoardService.imagePatchCheck(images, deleteFiles, request, principal);
+    }*/
+
+
+    @PatchMapping("/image-modify")
+    public void imageBoardPatch(@RequestParam(value = "files", required = false) List<MultipartFile> files
+                                , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
+                                , HttpServletRequest request
+                                , Principal principal){
+        log.info("image modify");
+
+        imageBoardService.imagePatchCheck(files, deleteFiles, request, principal);
     }
 
     @DeleteMapping("/image-delete/{imageNo}")
-    public void imageBoardDelete(@PathVariable long imageNo, HttpServletRequest request){
+    public long imageBoardDelete(@PathVariable long imageNo, Principal principal){
         log.info("delete imageBoard");
 
-        imageBoardService.deleteImageBoard(imageNo, request);
+        log.info("delete imageNo : {}", imageNo);
+
+        return imageBoardService.deleteImageBoard(imageNo, principal);
     }
 
     @GetMapping("/display")
