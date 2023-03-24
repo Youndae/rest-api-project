@@ -43,13 +43,21 @@ public class CommentController {
                 .amount(amount)
                 .build();
 
+        log.info("comment-list");
+
 
         return new ResponseEntity<>(commentService.commentList(boardNo, imageNo, cri, principal), HttpStatus.OK);
     }
 
     @PostMapping("/comment-insert")
     public long commentInsert(@RequestBody CommentInsertDTO dto
-                            , Principal principal){
+                            , Principal principal) {
+
+        log.info("comment-insert");
+
+//        throw new NullPointerException("nullException");
+
+        log.info("comment-insert");
 
         return commentService.commentInsert(dto, principal);
     }

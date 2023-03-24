@@ -6,18 +6,17 @@ import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.AccessDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -79,14 +78,39 @@ public class HierarchicalBoardWebClient {
 
         if(cri.getKeyword() == null || cri.getKeyword().equals("")){
             log.info("keyword is null");
-            response = client.get()
+            /*response = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/board/board-list")
                             .queryParam("pageNum", cri.getPageNum())
                             .queryParam("amount", cri.getAmount())
                             .build())
                     .retrieve()
                     .bodyToMono(String.class)
+                    .block();*/
+
+            response = client.get()
+                    .uri(uriBuilder -> uriBuilder.path("/board/board-list")
+                            .queryParam("pageNum", cri.getPageNum())
+                            .queryParam("amount", cri.getAmount())
+                            .build())
+                    .retrieve()
+                    .onStatus(HttpStatus::is4xxClientError, clientResponse ->
+                            Mono.error(
+//                                    statusCodePrint(clientResponse.statusCode().toString())
+                                    new NotFoundException("not Found")
+                            )
+                    )
+                    .onStatus(HttpStatus::is5xxServerError, clientResponse ->
+                            Mono.error(
+//                                    statusCodePrint(clientResponse.statusCode().toString())
+                                    new AccessDeniedException("denied")
+                            )
+                    )
+                    .bodyToMono(String.class)
                     .block();
+
+            log.info("response : {}", response);
+
+
         }else if(cri.getKeyword() != null || !cri.getKeyword().equals("")){
             log.info("keyword is not null");
             response = client.get()
@@ -117,6 +141,17 @@ public class HierarchicalBoardWebClient {
         dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
 
         return dto;
+    }
+
+    public Throwable statusCodePrint(String statusCode){
+        System.out.println("statusCode : " + statusCode);
+
+        if(statusCode.startsWith("4"))
+            return new Throwable(new NotFoundException("not found"));
+        else if(statusCode.startsWith("5"))
+            return new Throwable(new Exception());
+
+        return null;
     }
 
     //계층형 게시판 상세페이지
@@ -175,7 +210,7 @@ public class HierarchicalBoardWebClient {
          * 만약 모종의 이유(외부 공격 등)로 토큰이 둘다 존재하지 않는 경우가 발생한다면 요청을 보내지 않고 처리할 수 있도록 장치가 필요.
          **/
         if(tokenDTO == null){
-            return -1L;
+            new AccessDeniedException("DeniedException");
         }
 
         return client.post()
@@ -198,22 +233,22 @@ public class HierarchicalBoardWebClient {
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
         if(tokenDTO == null)
-            return null;
-        else{
-            String responseVal = client.get()
-                    .uri(uriBuilder -> uriBuilder.path("/board/board-modify/{boardNo}")
-                            .build(boardNo))
-                    .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
+            new AccessDeniedException("Denied Exception");
 
-            ObjectMapper om = new ObjectMapper();
 
-            HierarchicalBoardModifyDTO dto = om.readValue(responseVal, HierarchicalBoardModifyDTO.class);
+        String responseVal = client.get()
+                .uri(uriBuilder -> uriBuilder.path("/board/board-modify/{boardNo}")
+                        .build(boardNo))
+                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
 
-            return dto;
-        }
+        ObjectMapper om = new ObjectMapper();
+
+        HierarchicalBoardModifyDTO dto = om.readValue(responseVal, HierarchicalBoardModifyDTO.class);
+
+        return dto;
 
     }
 
@@ -223,7 +258,7 @@ public class HierarchicalBoardWebClient {
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
         if(tokenDTO == null)
-            return -1L;
+            new AccessDeniedException("Denied Exception");
 
         HierarchicalBoardModifyDTO dto = HierarchicalBoardModifyDTO.builder()
                 .boardNo(Long.parseLong(request.getParameter("boardNo")))
@@ -248,7 +283,7 @@ public class HierarchicalBoardWebClient {
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
         if(tokenDTO == null)
-            return 0;
+            new AccessDeniedException("Denied Exception");
 
         try{
             client.delete()
@@ -273,7 +308,7 @@ public class HierarchicalBoardWebClient {
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
         if(tokenDTO == null){
-            return -1L;
+            new AccessDeniedException("Denied Exception");
         }
 
         HierarchicalBoardModifyDTO dto = HierarchicalBoardModifyDTO.builder()

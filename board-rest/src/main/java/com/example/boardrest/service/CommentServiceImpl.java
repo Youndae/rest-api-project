@@ -182,8 +182,8 @@ public class CommentServiceImpl implements CommentService{
         BoardCommentListDTO result;
 
 
-
         try{
+
             ObjectMapper om = new ObjectMapper();
 
             String boardDTOVal = om.writeValueAsString(hBoardDTO);

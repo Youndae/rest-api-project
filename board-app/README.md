@@ -353,4 +353,21 @@
 > 
 > 
 >
-> 
+>> Exception Hadling 문제점.
+>>> client Server 동작중에 발생하는 Exception에 대해서는 @ControllerAdvice를 통해 코드를 작성해주면 해결이 가능.
+>>> 하지만 APi Server에서 동작중 발생하는 Exception에 대해서는 client server가 제대로 인식하지 못함.
+>>> WebClient를 통해 접근할 때 처리할 수 있는 방법이 retrieve()와 exChange() 두가지가 있는데
+>>> 스프링에서는 메모리 누수 우려로 인해 exChange 보다는 retrieve를 사용하는 것을 권장한다고 한다.
+>>> 하지만 문제점이 exChange로 하게 되면 api server에 제대로 접근조차 안된다.
+>>> 문서에 나와있는 대로 코드를 작성해봐도 접근자체가 되지 않고있고
+>>> retrieve로 처리하게 되면 제대로 접근은 하고 있으나 api server에서 강제로 exception을 발생시켜 리턴되는 데이터가 없다보니
+>>> client server의 오류인 500에러로 처리해버린다.
+>>> @ControllerAdvice 코드들을 다 주석처리하고 넘어오는 상태코드를 확인해보면 제대로 400에러가 넘어오긴 하지만
+>>> 핸들링 할 때 이 상태코드로 하는게 아니라 client server에서 발생한 예외처리를 하느라 500 에러로 처리하는 것으로 보인다.
+>>>
+>>> 또한, Jquery에서 getJSON을 통해 데이터를 요청하는 경우 Exception이 발생하더라도 핸들링에 접근은 하지만 오류 페이지로 이동은 하지 않는다.
+>>> 단지 데이터가 null로 넘어가 해당 데이터가 출력이 되지 않을 뿐.
+>>> 
+>>> 몇가지 테스트를 해보니 retrieve 기준 api 서버에서 responseEntity로 어떤 상태코드를 리턴하는가에 따라 처리가 가능하다.
+>>> 하지만 문제점. api server에서 RestControllerAdvice를 구현하더라도 이 exception을 핸들링해서 클라이언트 서버에 리턴을 해주지 못한다.
+>>> 이 방법을 찾아야 할것으로 보임.

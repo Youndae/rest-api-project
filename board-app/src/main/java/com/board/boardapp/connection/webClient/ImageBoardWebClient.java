@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -67,24 +67,19 @@ public class ImageBoardWebClient {
 
         ImageBoardListDTO dto;
 
-        if(response != null){
-            dto = om.readValue(response, ImageBoardListDTO.class);
-        }else{
-            JsonProcessingException Exception = null;
-            throw Exception;
+        if(response == null){
+            new Exception();
+
         }
+
+        dto = om.readValue(response, ImageBoardListDTO.class);
 
         dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
 
         return dto;
     }
 
-    public byte[] getImageDisplay(String imageName, HttpServletRequest request, HttpServletResponse response){
-
-        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
-
-        if(tokenDTO == null)
-            return null;
+    public byte[] getImageDisplay(String imageName){
 
         /**
          * 메모리 초과 오류 발생.
@@ -148,9 +143,9 @@ public class ImageBoardWebClient {
 
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
-        if(tokenDTO == null){
-            return -1;
-        }
+        if(tokenDTO == null)
+            new AccessDeniedException("Denied Exception");
+
 
         WebClient client = webClientConfig.useImageWebClient();
 
@@ -182,9 +177,9 @@ public class ImageBoardWebClient {
                                         , HttpServletResponse response){
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
-        if(tokenDTO == null){
-            return null;
-        }
+        if(tokenDTO == null)
+            new AccessDeniedException("Denied Exception");
+
         WebClient client = webClientConfig.useWebClient();
 
         ImageBoardDTO dto = client.get()
@@ -202,9 +197,9 @@ public class ImageBoardWebClient {
                                                     , HttpServletResponse response) throws JsonProcessingException {
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
-        if(tokenDTO == null){
-            return null;
-        }
+        if(tokenDTO == null)
+            new AccessDeniedException("Denied Exception");
+
 
         WebClient client = webClientConfig.useImageWebClient();
 
@@ -239,7 +234,7 @@ public class ImageBoardWebClient {
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
         if(tokenDTO == null)
-            return -1L;
+            new AccessDeniedException("Denied Exception");
 
         WebClient client = webClientConfig.useImageWebClient();
 
@@ -281,7 +276,7 @@ public class ImageBoardWebClient {
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
         if(tokenDTO == null)
-            return 0;
+            new AccessDeniedException("Denied Exception");
 
         WebClient client = webClientConfig.useWebClient();
 

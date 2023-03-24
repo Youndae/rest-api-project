@@ -31,7 +31,7 @@ public class HierarchicalBoardController {
     public ResponseEntity<Page<HierarchicalBoardDTO>> hierarchicalBoardMain(@RequestParam(value = "pageNum") int pageNum
                                                                                 , @RequestParam(value = "amount") int amount
                                                                                 , @RequestParam(value = "keyword", required = false) String keyword
-                                                                                , @RequestParam(value = "searchType", required = false) String searchType){
+                                                                                , @RequestParam(value = "searchType", required = false) String searchType) {
 
         log.info("keyword : " + keyword);
         log.info("pageNum : " + pageNum);

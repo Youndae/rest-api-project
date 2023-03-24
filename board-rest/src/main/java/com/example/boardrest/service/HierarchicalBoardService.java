@@ -7,6 +7,7 @@ import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
 import org.springframework.data.domain.Page;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
 import java.security.Principal;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface HierarchicalBoardService {
 
     void deleteBoard(long boardNo);
 
-    Page<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri);
+    Page<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri) ;
 
     long patchBoard(HierarchicalBoardModifyDTO dto, Principal principal);
 

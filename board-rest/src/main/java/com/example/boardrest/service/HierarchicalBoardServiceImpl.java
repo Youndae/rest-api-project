@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -117,6 +119,8 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
     // 계층형 게시판 List
     @Override
     public Page<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri) {
+
+        log.info("getHierarchicalBoard list");
 
         Page<HierarchicalBoardDTO> dto;
 

@@ -270,6 +270,27 @@ board-app = client Server
 >> 오류가 발생하지 않으니 원인 파악이 불가하여 해결 불가.   
 >> 단, 이런 경우가 발생할 때를 대비해 ExceptionHandling을 통해 로그아웃 처리 후 재 로그인을 유도하도록 구현해야 할것으로 판단. 구현해야 함.   
 >> imageBoard Modify, delete까지 마저 구현 완료.
+>>
+>> ExceptionHandler 구현.   
+>> Client Server에서는 @ControllerAdvice로 Api Server에서는 @RestControllerAdvice로 구현.
+>> Exception 처리에 대해서는 현재 동일하게 /error 페이지를 출력하도록 구현되어 있고 현재 클라이언트 서버는 NotFoundException, NullPointerException, AccessDeniedException만 되어 있고   
+>> api 서버에서는 NullPointerException, FileNotFoundException, IllegalArgumentException, IllegalAccessException만 추가해 놓은 상태.
+>> api 서버에서 발생한 Exception은 상태 코드를 리턴할것이고 클라이언트 서버는 WebClient로 요청 시 retrieve를 활용해 onStatus로 상태코드 값을 받아
+>> ExceptionHandler를 동작시키는 형태로 구현.   
+>> 전체적으로 테스트하면서 예외처리를 추가해야함.   
+>> Api 서버에서는 오류를 로그에 저장한 뒤 상태코드를 리턴. 클라이언트 서버에서도 로그를 저장하도록 추가해줘야 함.
+>> 클라이언트 서버에서 요청하는 모든 메소드를 수정한 상태는 아니고 boardList 처리 메소드만 수정한 상태.
+>> 전체적으로 예외처리를 추가해줘야 함.
+>>
+>> Referer 인터셉터의 경우 지금까지 그냥 로그로 찍어내는 것만 만들어놨었는데 예외처리 수정 직후 구현 예정.
+>> 계획중인 인터셉터 처리 형태로는 post, patch, delete 처리에 대한 url과 개인정보같은 중요 데이터의 get 요청 url을 선별해 해당 url로 요청이 들어오는 경우는
+>> Referer 값을 localhost:8080/ 이런식으로 확인하는게 아닌 localhost:8080/board/boardInsert 이렇게 직전의 url 전체를 확인하는 형태로 구현 예정.   
+>> 그냥 localhost:8080/ 이런 형태로 체크하게 되면 같은 도메인이기만 하면 어느 위치에서든 처리가 가능하게 될것이고 그건 방지해야 될것이라고 생각해서 
+>> 데이터가 변할 수 있는 요청에 대한 것은 좀 더 상세하게 체크해서 처리하는 것으로 결정.
+>>
+>> 클라이언트 서버에서 security Dependency 제거하고 SecurityConfig 역시 제거함.   
+>> csrf 토큰 때문에 사용할까 고민했는데 딱히 사용할것 같지 않아서 삭제.
+>> 이건 고민 좀 더 해보고 추후 리펙토링 단계에서 결정.
 > 
 > 
 

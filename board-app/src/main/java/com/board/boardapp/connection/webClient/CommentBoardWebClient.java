@@ -1,19 +1,23 @@
 package com.board.boardapp.connection.webClient;
 
 import com.board.boardapp.config.WebClientConfig;
+import com.board.boardapp.controller.ExceptionHandlerAdvice;
 import com.board.boardapp.dto.*;
 import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.file.AccessDeniedException;
 import java.util.Map;
 
 @Service
@@ -59,7 +63,66 @@ public class CommentBoardWebClient {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
+
+            /*responseVal = client.get()
+                    .uri(uriBuilder -> uriBuilder.path("/comment/comment-list")
+                            .queryParam("boardNo", String.valueOf(boardNo))
+                            .queryParam("pageNum", cri.getPageNum())
+                            .queryParam("amount", cri.getAmount())
+                            .build())
+                    .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .retrieve()
+                    .onStatus(HttpStatus::is4xxClientError, clientResponse ->
+                            Mono.error(
+                                    new NotFoundException("notFound")
+                            )
+                    )
+                    .onStatus(HttpStatus::is5xxServerError, clientResponse ->
+                            Mono.error(
+                                    new Exception()
+                            )
+                    )
+                    .bodyToMono(String.class)
+                    .block();*/
+
+            /*Mono<Object> res = client.get()
+                    .uri(uriBuilder -> uriBuilder.path("/comment/comment-list")
+                            .queryParam("boardNo", String.valueOf(boardNo))
+                            .queryParam("pageNum", cri.getPageNum())
+                            .queryParam("amount", cri.getAmount())
+                            .build())
+                    .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .exchangeToMono(clientResponse ->
+                            clientResponse.bodyToMono(String.class)
+                                    .map(s -> {
+                                        if(clientResponse.statusCode().is4xxClientError()){
+                                            log.info("4xxerror");
+                                            try {
+                                                throw new NotFoundException("notFound");
+                                            } catch (NotFoundException e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                        }
+
+                                        if(clientResponse.statusCode().is5xxServerError()){
+                                            log.info("5xxerror");
+                                            try {
+                                                throw new Exception();
+                                            } catch (Exception e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                        }
+
+                                        log.info("success");
+                                        return null;
+                                    })
+                    );
+
+            log.info("res : {}", res);*/
+//            log.info("res : {}", responseVal);
         }
+
+
 
         log.info("boardComment responseVal : {}", responseVal);
 
@@ -83,7 +146,7 @@ public class CommentBoardWebClient {
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
         if(tokenDTO == null){
-            return -1;
+            new AccessDeniedException("Denied Exception");
         }
 
         WebClient client = webClientConfig.useWebClient();
@@ -104,15 +167,33 @@ public class CommentBoardWebClient {
                     .build();
         }
         log.info("comment Insert Service");
-        int result = client.post()
+
+        /*Mono<Object> result = client.post()
                 .uri(uriBuilder -> uriBuilder.path("/comment/comment-insert").build())
                 .body(Mono.just(dto), CommentDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                .retrieve()
-                .bodyToMono(Integer.class)
-                .block();
+                .exchangeToMono(clientResponse -> {
+                    log.info("statusCode : " + clientResponse.statusCode().value());
+                    if(clientResponse.statusCode().equals(HttpStatus.OK)){
+                        return clientResponse.bodyToMono(Integer.class);
+                    }else if(clientResponse.statusCode().is4xxClientError() || clientResponse.statusCode().is5xxServerError()){
+                        return clientResponse.bodyToMono(ExceptionHandlerAdvice.class);
+                    }else{
+                        return clientResponse.createException().flatMap(Mono::error);
+                    }
+                });*/
+
+
+        int result = client.post()
+                        .uri(uriBuilder -> uriBuilder.path("/comment/comment-insert").build())
+                        .body(Mono.just(dto), CommentDTO.class)
+                        .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                        .retrieve()
+                        .bodyToMono(Integer.class)
+                        .block();
 
         log.info("result : {}", result);
+
 
         return result;
     }

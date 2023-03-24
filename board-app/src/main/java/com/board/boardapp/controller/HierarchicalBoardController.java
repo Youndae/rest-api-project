@@ -7,6 +7,7 @@ import com.board.boardapp.dto.HierarchicalBoardModifyDTO;
 import com.board.boardapp.dto.JwtDTO;
 import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -29,7 +30,9 @@ public class HierarchicalBoardController {
 
     @GetMapping("/boardList")
     public String hierarchicalBoardMain(Model model
-                                            , Criteria cri) throws JsonProcessingException {
+                                            , Criteria cri) throws Exception {
+
+
 
         model.addAttribute("boardList", hierarchicalBoardWebClient.getHierarchicalBoardList(cri));
 
@@ -122,7 +125,9 @@ public class HierarchicalBoardController {
 
     @GetMapping("/boardReply/{boardNo}")
     public String hierarchicalBoardReply(Model model
-                                            , @PathVariable long boardNo){
+                                            , @PathVariable long boardNo
+                                            , HttpServletRequest request
+                                            , HttpServletResponse response){
         /**
          * @Data
          * boardNo
@@ -145,6 +150,13 @@ public class HierarchicalBoardController {
          * 그래도?
          * 항상 전자의 방식대로 했으니 이번에는 후자의 방법으로.
          */
+
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null){
+            return "th/member/loginForm";
+        }
+
 
         model.addAttribute("boardNo", boardNo);
 

@@ -28,9 +28,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/css/**"
                                         , "/js/**"
+                                        , "/imageBoard/imageBoardDetail"
                                         , "/board/boardList"
                                         , "/imageBoard/imageBoardList"
-                                        , "/imageBoard/imageBoardDetail"
                                         , "/comment/hierarchicalBoardComment"
                                         , "/comment/imageBoardComment"
                                         , "/member/join"

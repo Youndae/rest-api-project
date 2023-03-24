@@ -137,9 +137,9 @@ public class ImageBoardController {
     }
 
     @GetMapping("/display/{imageName}")
-    public ResponseEntity<byte[]> getImageDisplay(@PathVariable String imageName, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<byte[]> getImageDisplay(@PathVariable String imageName){
         log.info("imageName : {}", imageName);
 
-        return new ResponseEntity<>(imageBoardWebClient.getImageDisplay(imageName, request, response), HttpStatus.OK);
+        return new ResponseEntity<>(imageBoardWebClient.getImageDisplay(imageName), HttpStatus.OK);
     }
 }
