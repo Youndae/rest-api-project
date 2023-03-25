@@ -5,12 +5,15 @@ import com.board.boardapp.dto.JwtDTO;
 import com.board.boardapp.dto.Member;
 import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +49,18 @@ public class MemberWebClient {
                 .uri(uriBuilder -> uriBuilder.path("/member/login").build())
                 .bodyValue(member)
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(JwtDTO.class)
                 .block();
 

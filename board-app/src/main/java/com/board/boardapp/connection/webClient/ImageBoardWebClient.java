@@ -6,14 +6,17 @@ import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +48,18 @@ public class ImageBoardWebClient {
                             .queryParam("amount", cri.getAmount())
                             .build())
                     .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
                     .bodyToMono(String.class)
                     .block();
         }else if(cri.getKeyword() != null || !cri.getKeyword().equals("")){
@@ -57,6 +72,18 @@ public class ImageBoardWebClient {
                             .queryParam("searchType", cri.getSearchType())
                             .build())
                     .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
                     .bodyToMono(String.class)
                     .block();
         }
@@ -93,6 +120,18 @@ public class ImageBoardWebClient {
         return client.get()
                 .uri(uriBuilder -> uriBuilder.path("/image-board/display").queryParam("imageName", imageName).build())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(byte[].class)
                 .block();
     }
@@ -112,6 +151,18 @@ public class ImageBoardWebClient {
                     .uri(uriBuilder -> uriBuilder.path("/image-board/image-board-detail/{imageNo}")
                             .build(imageNo))
                     .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
                     .bodyToMono(String.class)
                     .block();
         }else{
@@ -120,6 +171,18 @@ public class ImageBoardWebClient {
                             .build(imageNo))
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                     .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
                     .bodyToMono(String.class)
                     .block();
         }
@@ -164,6 +227,18 @@ public class ImageBoardWebClient {
                 .body(BodyInserters.fromMultipartData(mbBuilder.build()))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(Long.class)
                 .block();
 
@@ -186,6 +261,18 @@ public class ImageBoardWebClient {
                 .uri(uriBuilder -> uriBuilder.path("/image-board/modify-data/{imageNo}").build(imageNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(ImageBoardDTO.class)
                 .block();
 
@@ -207,6 +294,18 @@ public class ImageBoardWebClient {
                 .uri(uriBuilder -> uriBuilder.path("/image-board/modify-image-attach/{imageNo}").build(imageNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(String.class)
                 .block();
 
@@ -267,6 +366,18 @@ public class ImageBoardWebClient {
                 .body(BodyInserters.fromMultipartData(mbBuilder.build()))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(Long.class)
                 .block();
 
@@ -285,6 +396,18 @@ public class ImageBoardWebClient {
                     .uri(uriBuilder -> uriBuilder.path("/image-board/image-delete/{imageNo}").build(imageNo))
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                     .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
                     .bodyToMono(Long.class)
                     .block();
 

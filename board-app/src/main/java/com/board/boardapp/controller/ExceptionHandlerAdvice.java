@@ -20,7 +20,7 @@ public class ExceptionHandlerAdvice {
     }
 
 
-    @ExceptionHandler({NullPointerException.class})
+    @ExceptionHandler(NullPointerException.class)
     public String exceptionHandle(Exception e){
         log.info("NullPointerException e : " + e.getMessage());
         return "th/error/error";

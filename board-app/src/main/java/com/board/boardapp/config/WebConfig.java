@@ -28,11 +28,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/css/**"
                                         , "/js/**"
-                                        , "/imageBoard/imageBoardDetail"
-                                        , "/board/boardList"
-                                        , "/imageBoard/imageBoardList"
-                                        , "/comment/hierarchicalBoardComment"
-                                        , "/comment/imageBoardComment"
+                                        , "/imageBoard/imageBoardDetail/**"
+                                        , "/board/boardDetail/**"
+                                        , "/board/boardList/**"
+                                        , "/imageBoard/imageBoardList/**"
+                                        , "/comment/hierarchicalBoardComment/**"
+                                        , "/comment/imageBoardComment/**"
                                         , "/member/join"
                                         , "/member/loginForm"
                 );

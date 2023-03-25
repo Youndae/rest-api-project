@@ -49,6 +49,18 @@ public class CommentBoardWebClient {
                             .queryParam("amount", cri.getAmount())
                             .build())
                     .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
                     .bodyToMono(String.class)
                     .block();
         }else if(tokenDTO != null){
@@ -61,68 +73,22 @@ public class CommentBoardWebClient {
                             .build())
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                     .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
                     .bodyToMono(String.class)
                     .block();
 
-            /*responseVal = client.get()
-                    .uri(uriBuilder -> uriBuilder.path("/comment/comment-list")
-                            .queryParam("boardNo", String.valueOf(boardNo))
-                            .queryParam("pageNum", cri.getPageNum())
-                            .queryParam("amount", cri.getAmount())
-                            .build())
-                    .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                    .retrieve()
-                    .onStatus(HttpStatus::is4xxClientError, clientResponse ->
-                            Mono.error(
-                                    new NotFoundException("notFound")
-                            )
-                    )
-                    .onStatus(HttpStatus::is5xxServerError, clientResponse ->
-                            Mono.error(
-                                    new Exception()
-                            )
-                    )
-                    .bodyToMono(String.class)
-                    .block();*/
-
-            /*Mono<Object> res = client.get()
-                    .uri(uriBuilder -> uriBuilder.path("/comment/comment-list")
-                            .queryParam("boardNo", String.valueOf(boardNo))
-                            .queryParam("pageNum", cri.getPageNum())
-                            .queryParam("amount", cri.getAmount())
-                            .build())
-                    .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                    .exchangeToMono(clientResponse ->
-                            clientResponse.bodyToMono(String.class)
-                                    .map(s -> {
-                                        if(clientResponse.statusCode().is4xxClientError()){
-                                            log.info("4xxerror");
-                                            try {
-                                                throw new NotFoundException("notFound");
-                                            } catch (NotFoundException e) {
-                                                throw new RuntimeException(e);
-                                            }
-                                        }
-
-                                        if(clientResponse.statusCode().is5xxServerError()){
-                                            log.info("5xxerror");
-                                            try {
-                                                throw new Exception();
-                                            } catch (Exception e) {
-                                                throw new RuntimeException(e);
-                                            }
-                                        }
-
-                                        log.info("success");
-                                        return null;
-                                    })
-                    );
-
-            log.info("res : {}", res);*/
-//            log.info("res : {}", responseVal);
         }
-
-
 
         log.info("boardComment responseVal : {}", responseVal);
 
@@ -168,27 +134,23 @@ public class CommentBoardWebClient {
         }
         log.info("comment Insert Service");
 
-        /*Mono<Object> result = client.post()
-                .uri(uriBuilder -> uriBuilder.path("/comment/comment-insert").build())
-                .body(Mono.just(dto), CommentDTO.class)
-                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                .exchangeToMono(clientResponse -> {
-                    log.info("statusCode : " + clientResponse.statusCode().value());
-                    if(clientResponse.statusCode().equals(HttpStatus.OK)){
-                        return clientResponse.bodyToMono(Integer.class);
-                    }else if(clientResponse.statusCode().is4xxClientError() || clientResponse.statusCode().is5xxServerError()){
-                        return clientResponse.bodyToMono(ExceptionHandlerAdvice.class);
-                    }else{
-                        return clientResponse.createException().flatMap(Mono::error);
-                    }
-                });*/
-
-
         int result = client.post()
                         .uri(uriBuilder -> uriBuilder.path("/comment/comment-insert").build())
                         .body(Mono.just(dto), CommentDTO.class)
                         .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                         .retrieve()
+                        .onStatus(
+                                HttpStatus::is4xxClientError, clientResponse ->
+                                        Mono.error(
+                                                new NotFoundException("not found")
+                                        )
+                        )
+                        .onStatus(
+                                HttpStatus::is5xxServerError, clientResponse ->
+                                        Mono.error(
+                                                new NullPointerException()
+                                        )
+                        )
                         .bodyToMono(Integer.class)
                         .block();
 
@@ -239,6 +201,18 @@ public class CommentBoardWebClient {
                 .body(Mono.just(dto), CommentDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(Integer.class)
                 .block();
 
@@ -260,6 +234,18 @@ public class CommentBoardWebClient {
                         .build(commentNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(Integer.class)
                 .block();
 

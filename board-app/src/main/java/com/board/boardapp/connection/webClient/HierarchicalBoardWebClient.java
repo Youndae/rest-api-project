@@ -76,16 +76,8 @@ public class HierarchicalBoardWebClient {
 
         log.info("keyword : " + cri.getKeyword());
 
-        if(cri.getKeyword() == null || cri.getKeyword().equals("")){
+        if (cri.getKeyword() == null || cri.getKeyword().equals("")) {
             log.info("keyword is null");
-            /*response = client.get()
-                    .uri(uriBuilder -> uriBuilder.path("/board/board-list")
-                            .queryParam("pageNum", cri.getPageNum())
-                            .queryParam("amount", cri.getAmount())
-                            .build())
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();*/
 
             response = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/board/board-list")
@@ -94,16 +86,14 @@ public class HierarchicalBoardWebClient {
                             .build())
                     .retrieve()
                     .onStatus(HttpStatus::is4xxClientError, clientResponse ->
-                            Mono.error(
-//                                    statusCodePrint(clientResponse.statusCode().toString())
-                                    new NotFoundException("not Found")
-                            )
+                                    Mono.error(
+                                            new NotFoundException("not Found")
+                                    )
                     )
                     .onStatus(HttpStatus::is5xxServerError, clientResponse ->
-                            Mono.error(
-//                                    statusCodePrint(clientResponse.statusCode().toString())
-                                    new AccessDeniedException("denied")
-                            )
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
                     )
                     .bodyToMono(String.class)
                     .block();
@@ -111,7 +101,7 @@ public class HierarchicalBoardWebClient {
             log.info("response : {}", response);
 
 
-        }else if(cri.getKeyword() != null || !cri.getKeyword().equals("")){
+        } else if (cri.getKeyword() != null || !cri.getKeyword().equals("")) {
             log.info("keyword is not null");
             response = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/board/board-list")
@@ -121,6 +111,18 @@ public class HierarchicalBoardWebClient {
                             .queryParam("searchType", cri.getSearchType())
                             .build())
                     .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
                     .bodyToMono(String.class)
                     .block();
         }
@@ -131,9 +133,9 @@ public class HierarchicalBoardWebClient {
 
         HierarchicalBoardListDTO dto;
 
-        if(response != null){
+        if (response != null) {
             dto = om.readValue(response, HierarchicalBoardListDTO.class);
-        }else{
+        } else {
             JsonProcessingException Exception = null;
             throw Exception;
         }
@@ -141,17 +143,6 @@ public class HierarchicalBoardWebClient {
         dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
 
         return dto;
-    }
-
-    public Throwable statusCodePrint(String statusCode){
-        System.out.println("statusCode : " + statusCode);
-
-        if(statusCode.startsWith("4"))
-            return new Throwable(new NotFoundException("not found"));
-        else if(statusCode.startsWith("5"))
-            return new Throwable(new Exception());
-
-        return null;
     }
 
     //계층형 게시판 상세페이지
@@ -169,6 +160,18 @@ public class HierarchicalBoardWebClient {
                     .uri(uriBuilder -> uriBuilder.path("/board/board-detail/{boardNo}")
                             .build(boardNo))
                     .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
                     .bodyToMono(String.class)
                     .block();
         }else if(existsToken != null){
@@ -178,6 +181,18 @@ public class HierarchicalBoardWebClient {
                             .build(boardNo))
                     .cookie(existsToken.getAccessTokenHeader(), existsToken.getAccessTokenValue())
                     .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
                     .bodyToMono(String.class)
                     .block();
         }
@@ -219,6 +234,18 @@ public class HierarchicalBoardWebClient {
                 .body(Mono.just(dto), HierarchicalBoardDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(Long.class)
                 .block();
     }
@@ -241,6 +268,18 @@ public class HierarchicalBoardWebClient {
                         .build(boardNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(String.class)
                 .block();
 
@@ -272,6 +311,18 @@ public class HierarchicalBoardWebClient {
                 .body(Mono.just(dto), HierarchicalBoardModifyDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(Long.class)
                 .block();
     }
@@ -291,6 +342,18 @@ public class HierarchicalBoardWebClient {
                             .build(boardNo))
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                     .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
                     .bodyToMono(String.class)
                     .block();
 
@@ -323,6 +386,18 @@ public class HierarchicalBoardWebClient {
                 .body(Mono.just(dto), HierarchicalBoardModifyDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(Long.class)
                 .block();
     }
