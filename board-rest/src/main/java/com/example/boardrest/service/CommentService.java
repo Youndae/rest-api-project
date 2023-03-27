@@ -1,14 +1,10 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.Comment;
-import com.example.boardrest.domain.Criteria;
-import com.example.boardrest.domain.dto.BoardCommentDTO;
+import com.example.boardrest.domain.entity.Criteria;
 import com.example.boardrest.domain.dto.BoardCommentListDTO;
 import com.example.boardrest.domain.dto.CommentInsertDTO;
-import org.springframework.data.domain.Page;
 
 import java.security.Principal;
-import java.util.Map;
 
 public interface CommentService {
 

@@ -3,7 +3,7 @@ package com.example.boardrest.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.boardrest.config.jwt.JwtProperties;
-import com.example.boardrest.domain.RefreshToken;
+import com.example.boardrest.domain.entity.RefreshToken;
 import com.example.boardrest.domain.dto.JwtDTO;
 import com.example.boardrest.domain.dto.RefreshDTO;
 import com.example.boardrest.repository.RefreshTokenRepository;

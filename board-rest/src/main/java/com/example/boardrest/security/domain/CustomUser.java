@@ -1,6 +1,6 @@
 package com.example.boardrest.security.domain;
 
-import com.example.boardrest.domain.Member;
+import com.example.boardrest.domain.entity.Member;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;

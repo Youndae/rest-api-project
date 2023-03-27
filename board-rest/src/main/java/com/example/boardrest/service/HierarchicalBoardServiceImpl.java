@@ -1,7 +1,7 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.Criteria;
-import com.example.boardrest.domain.HierarchicalBoard;
+import com.example.boardrest.domain.entity.Criteria;
+import com.example.boardrest.domain.entity.HierarchicalBoard;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardReplyDTO;
@@ -13,11 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;

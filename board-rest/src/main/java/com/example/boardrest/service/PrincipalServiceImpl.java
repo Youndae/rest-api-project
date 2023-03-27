@@ -1,6 +1,6 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.Member;
+import com.example.boardrest.domain.entity.Member;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;

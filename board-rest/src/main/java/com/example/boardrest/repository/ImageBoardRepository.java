@@ -1,8 +1,8 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.ImageBoard;
+import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.dto.*;
-import com.example.boardrest.domain.ImageData;
+import com.example.boardrest.domain.entity.ImageData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 
 public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {

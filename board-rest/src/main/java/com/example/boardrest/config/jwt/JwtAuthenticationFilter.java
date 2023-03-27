@@ -2,8 +2,7 @@ package com.example.boardrest.config.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.boardrest.domain.Member;
-import com.example.boardrest.repository.RefreshTokenRepository;
+import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.security.domain.CustomUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

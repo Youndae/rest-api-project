@@ -1,6 +1,6 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.RefreshToken;
+import com.example.boardrest.domain.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

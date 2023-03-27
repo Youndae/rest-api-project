@@ -1,6 +1,6 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.HierarchicalBoard;
+import com.example.boardrest.domain.entity.HierarchicalBoard;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardReplyDTO;
@@ -12,7 +12,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalBoard, Long> {
 

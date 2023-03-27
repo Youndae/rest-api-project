@@ -1,20 +1,17 @@
 package com.example.boardrest.controller;
 
-import com.example.boardrest.domain.Comment;
-import com.example.boardrest.domain.Criteria;
-import com.example.boardrest.domain.dto.BoardCommentDTO;
+import com.example.boardrest.domain.entity.Criteria;
 import com.example.boardrest.domain.dto.BoardCommentListDTO;
 import com.example.boardrest.domain.dto.CommentInsertDTO;
 import com.example.boardrest.service.CommentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -50,6 +47,7 @@ public class CommentController {
     }
 
     @PostMapping("/comment-insert")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public long commentInsert(@RequestBody CommentInsertDTO dto
                             , Principal principal) {
 
@@ -63,6 +61,7 @@ public class CommentController {
     }
 
     @PostMapping("/comment-reply")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public long commentReply(@RequestBody CommentInsertDTO dto
                                 , Principal principal){
         log.info("commentReply");
@@ -72,6 +71,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/comment-delete/{commentNo}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public int commentDelete(@PathVariable long commentNo, Principal principal) {
         log.info("commentDelete");
 

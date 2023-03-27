@@ -1,14 +1,12 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.Member;
+import com.example.boardrest.domain.dto.MemberDTO;
+import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.domain.dto.JwtDTO;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public interface MemberService {
 
-    int memberJoinProc(Member member);
+    int memberJoinProc(MemberDTO dto);
 
     JwtDTO memberLogin(Member member);
 }

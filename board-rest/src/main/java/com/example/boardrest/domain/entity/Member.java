@@ -1,11 +1,9 @@
-package com.example.boardrest.domain;
+package com.example.boardrest.domain.entity;
 
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter

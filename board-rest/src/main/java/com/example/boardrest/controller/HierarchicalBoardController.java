@@ -1,6 +1,6 @@
 package com.example.boardrest.controller;
 
-import com.example.boardrest.domain.Criteria;
+import com.example.boardrest.domain.entity.Criteria;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardDetailDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 @RestController
@@ -83,13 +82,14 @@ public class HierarchicalBoardController {
     }
 
     @GetMapping("/board-reply-info/{boardNo}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public ResponseEntity<HierarchicalBoardDTO> hierarchicalBoardReplyInfo(@PathVariable long boardNo){
 
         return new ResponseEntity<>(hierarchicalBoardRepository.findByBoardNo(boardNo), HttpStatus.OK);
     }
 
     @PostMapping("/board-insert")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public long hierarchicalBoardInsert(@RequestBody HierarchicalBoardDTO dto, Principal principal){
         log.info("boardInsert");
 
@@ -107,6 +107,7 @@ public class HierarchicalBoardController {
     }
 
     @GetMapping("/board-modify/{boardNo}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public ResponseEntity<HierarchicalBoardModifyDTO> hierarchicalBoardModify(@PathVariable long boardNo, Principal principal){
 
         log.info("modify");
@@ -119,6 +120,7 @@ public class HierarchicalBoardController {
     }
 
     @PatchMapping("/board-modify")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public long hierarchicalBoardModify(@RequestBody HierarchicalBoardModifyDTO dto, Principal principal){
         log.info("Patch board");
 
@@ -126,6 +128,7 @@ public class HierarchicalBoardController {
     }
 
     @DeleteMapping("/board-delete/{boardNo}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public void hierarchicalBoardDelete(@PathVariable long boardNo){
         log.info("delete board");
 
@@ -133,6 +136,7 @@ public class HierarchicalBoardController {
     }
 
     @PostMapping("/board-reply")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public long hierarchicalBoardReply(@RequestBody HierarchicalBoardModifyDTO dto, Principal principal){
         log.info("reply board");
 

@@ -1,6 +1,6 @@
 package com.example.boardrest.security;
 
-import com.example.boardrest.domain.Member;
+import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.repository.MemberRepository;
 import com.example.boardrest.security.domain.CustomUser;
 import lombok.Setter;

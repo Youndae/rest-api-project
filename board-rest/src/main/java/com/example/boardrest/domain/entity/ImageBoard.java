@@ -1,8 +1,5 @@
-package com.example.boardrest.domain;
+package com.example.boardrest.domain.entity;
 
-import com.example.boardrest.domain.Comment;
-import com.example.boardrest.domain.ImageData;
-import com.example.boardrest.domain.Member;
 import lombok.*;
 
 import javax.persistence.*;

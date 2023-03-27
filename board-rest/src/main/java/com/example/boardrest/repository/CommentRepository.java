@@ -1,6 +1,6 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.Comment;
+import com.example.boardrest.domain.entity.Comment;
 import com.example.boardrest.domain.dto.BoardCommentDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

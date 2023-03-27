@@ -1,8 +1,7 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.Criteria;
-import com.example.boardrest.domain.ImageBoard;
-import com.example.boardrest.domain.ImageData;
+import com.example.boardrest.domain.entity.ImageBoard;
+import com.example.boardrest.domain.entity.ImageData;
 import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.properties.ImageSizeProperties;
 import com.example.boardrest.repository.ImageBoardRepository;

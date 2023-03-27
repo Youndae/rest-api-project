@@ -1,11 +1,8 @@
 package com.example.boardrest.domain.dto;
 
-import com.example.boardrest.domain.Criteria;
-import com.example.boardrest.domain.HierarchicalBoard;
 import lombok.*;
 
 import java.util.Date;
-import java.util.List;
 
 
 @Getter

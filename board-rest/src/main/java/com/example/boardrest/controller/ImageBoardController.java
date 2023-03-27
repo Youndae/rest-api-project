@@ -1,6 +1,5 @@
 package com.example.boardrest.controller;
 
-import com.example.boardrest.domain.ImageBoard;
 import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.repository.ImageBoardRepository;
 import com.example.boardrest.repository.ImageDataRepository;
@@ -11,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,12 +56,14 @@ public class ImageBoardController {
 
 
     @GetMapping("/modify-data/{imageNo}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public ResponseEntity<ImageDetailDTO> imageBoardModifyInfo(@PathVariable long imageNo, Principal principal) {
 
         return new ResponseEntity<>(imageBoardService.getModifyData(imageNo, principal), HttpStatus.OK);
     }
 
     @GetMapping("/modify-image-attach/{imageNo}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public ResponseEntity<List<ImageDataDTO>> modifyImageAttach(@PathVariable long imageNo, Principal principal){
 
         return new ResponseEntity<>(imageBoardService.getModifyImageAttach(imageNo, principal), HttpStatus.OK);
@@ -69,6 +71,7 @@ public class ImageBoardController {
 
     // 등록된 boardNo return
     @PostMapping("/image-insert")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public long imageBoardInsert(@RequestParam List<MultipartFile> files
                                 , @RequestParam String imageTitle
                                 , @RequestParam String imageContent
@@ -95,6 +98,7 @@ public class ImageBoardController {
 
 
     @PatchMapping("/image-modify")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public void imageBoardPatch(@RequestParam(value = "files", required = false) List<MultipartFile> files
                                 , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
                                 , HttpServletRequest request
@@ -105,6 +109,7 @@ public class ImageBoardController {
     }
 
     @DeleteMapping("/image-delete/{imageNo}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public long imageBoardDelete(@PathVariable long imageNo, Principal principal){
         log.info("delete imageBoard");
 

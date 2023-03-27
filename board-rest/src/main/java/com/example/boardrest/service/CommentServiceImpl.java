@@ -1,17 +1,15 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.Comment;
-import com.example.boardrest.domain.Criteria;
+import com.example.boardrest.domain.entity.Comment;
+import com.example.boardrest.domain.entity.Criteria;
 import com.example.boardrest.domain.dto.BoardCommentDTO;
 import com.example.boardrest.domain.dto.BoardCommentListDTO;
 import com.example.boardrest.domain.dto.CommentInsertDTO;
-import com.example.boardrest.domain.dto.CommentListDTO;
 import com.example.boardrest.repository.CommentRepository;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -21,7 +19,6 @@ import javax.transaction.Transactional;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

@@ -1,8 +1,7 @@
 package com.example.boardrest.controller;
 
-import com.example.boardrest.config.jwt.JwtAuthenticationFilter;
-import com.example.boardrest.config.jwt.JwtAuthorizationFilter;
-import com.example.boardrest.domain.Member;
+import com.example.boardrest.domain.dto.MemberDTO;
+import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.domain.dto.JwtDTO;
 import com.example.boardrest.repository.MemberRepository;
 import com.example.boardrest.service.MemberService;
@@ -10,13 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,16 +24,16 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/join-proc")
-    public int joinProc(Member member){
+    public int joinProc(@RequestBody MemberDTO dto){
         log.info("join Process");
 
-        return memberService.memberJoinProc(member);
+        return memberService.memberJoinProc(dto);
     }
 
-    @PostMapping("/check-user-id")
-    public int checkUserId(Member member){
+    @GetMapping("/check-user-id")
+    public int checkUserId(@RequestParam("userId") String userId){
 
-        if(memberRepository.findByUserId(member.getUserId()) != null)
+        if(memberRepository.findByUserId(userId) != null)
             return 1;
         else
             return 0;

@@ -300,6 +300,11 @@ board-app = client Server
 >> 아니면 그냥 특정 url로 연결할 것인지
 >> 아니면 뭐 다른 방법이 있는 것인지에 대해 결정을 할 필요가 있음.
 >> 
+> 
+> 23/03/27 - Client server, Api Server
+>> api 서버 컨트롤러에서 @PreAuthorize로 접근 권한 설정.   
+>> 회원가입 기능이 구현이 안되어 있어서 회원가입 기능 구현.
+>> refererInterCeptor exclude에 회원가입시 아이디체크와 에러페이지 추가.
 
 
 # 기능 전체적으로 마무리 후 해야할것

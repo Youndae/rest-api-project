@@ -1,6 +1,5 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.Criteria;
 import com.example.boardrest.domain.dto.ImageBoardDTO;
 import com.example.boardrest.domain.dto.ImageBoardDetailDTO;
 import com.example.boardrest.domain.dto.ImageDataDTO;

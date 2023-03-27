@@ -36,6 +36,8 @@ public class WebConfig implements WebMvcConfigurer {
                                         , "/comment/imageBoardComment/**"
                                         , "/member/join"
                                         , "/member/loginForm"
+                        , "/member/checkUserId"
+                        , "/error"
                 );
 
     }

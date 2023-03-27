@@ -50,6 +50,31 @@ public class RefererInterceptor implements HandlerInterceptor {
      *      요청메소드가 get이지만 referer 체크를 해야 하는 요청에 대한 검증 처리.
      */
 
+    /**
+     * @PostMapping
+     * board/boardInsert                            -> board/boardInsert
+     * board/boardModify                            -> board/boardModify/{boardNo}
+     * board/boardDelete/{imageNo}                  -> board/boardDetail/{boardNo}
+     * board/boardReplyInsert                       -> board/ReplyInsert
+     *
+     * imageBoard/imageBoardInsert                  -> imageBoard/imageBoardInsert
+     * imageBoard/imageBoardModify                  -> imageBoard/imageBoardModify/{imageNo}
+     * imageBoard/imageBoardDelete/{imageNo}        -> imageBoard/imageBoardDetail
+     *
+     * comment/commentInsert                        -> board/boardDetail/{boardNo}  /  imageBoard/imageBoardDetail/{imageNo}
+     * comment/commentReplyInsert                   -> board/boardDetail/{boardNo}  /  imageBoard/imageBoardDetail/{imageNo}
+     * comment/commentDelete/{commentNo}            -> board/boardDetail/{boardNo}  /  imageBoard/imageBoardDetail/{imageNo}
+     *
+     * member/login                                 -> member/loginForm
+     * member/joinProc                              -> member/join
+     *
+     * @GetMapping
+     * board/boardModify                            -> board/boardDetail/{boardNo}
+     *
+     * imageBoard/imageBoardModify                  -> imageBoard/imageBoardDetail/{imageNo}
+     *
+     */
+
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -110,39 +135,6 @@ public class RefererInterceptor implements HandlerInterceptor {
         }else {
             return false;
         }
-
-        // path = "localhost:8080/board/";
-
-        // reqUrl 값에 따라 분류해서 Referer와 검증.
-
-
-
-
-
-        /**
-         * @PostMapping
-         * board/boardInsert                            -> board/boardInsert
-         * board/boardModify                            -> board/boardModify/{boardNo}
-         * board/boardDelete/{imageNo}                  -> board/boardDetail/{boardNo}
-         * board/boardReplyInsert                       -> board/ReplyInsert
-         *
-         * imageBoard/imageBoardInsert                  -> imageBoard/imageBoardInsert
-         * imageBoard/imageBoardModify                  -> imageBoard/imageBoardModify/{imageNo}
-         * imageBoard/imageBoardDelete/{imageNo}        -> imageBoard/imageBoardDetail
-         *
-         * comment/commentInsert                        -> board/boardDetail/{boardNo}  /  imageBoard/imageBoardDetail/{imageNo}
-         * comment/commentReplyInsert                   -> board/boardDetail/{boardNo}  /  imageBoard/imageBoardDetail/{imageNo}
-         * comment/commentDelete/{commentNo}            -> board/boardDetail/{boardNo}  /  imageBoard/imageBoardDetail/{imageNo}
-         *
-         * member/login                                 -> member/loginForm
-         * member/joinProc                              -> member/join
-         *
-         * @GetMapping
-         * board/boardModify                            -> board/boardDetail/{boardNo}
-         *
-         * imageBoard/imageBoardModify                  -> imageBoard/imageBoardDetail/{imageNo}
-         *
-         */
 
     }
 
