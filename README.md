@@ -305,6 +305,35 @@ board-app = client Server
 >> api 서버 컨트롤러에서 @PreAuthorize로 접근 권한 설정.   
 >> 회원가입 기능이 구현이 안되어 있어서 회원가입 기능 구현.
 >> refererInterCeptor exclude에 회원가입시 아이디체크와 에러페이지 추가.
+> 
+> 23/03/28 - Client server, Api server
+>> 회원가입 후 로그인 과정에서 검증 오류 발생.   
+>> 기존 계정들은 정상적으로 로그인이 되었지만 새로 가입한 계정들이 로그인이 안되는 오류가 발생.   
+>> 테스트를 돌려본 결과 10자가 넘어가면서 특수문자가 들어간 경우 오류가 발생하는 것으로 확인.   
+>> 그래서 구글링을 해봤지만 전혀 원하는 답이 나오지 않았음.   
+>> 하지만! 문제는 join.html에서 비밀번호 확인 input에도 비밀번호 input과 마찬가지로 name 설정이 userPw로 되어있었기 때문에   
+>> 회원가입 처리 시 중복으로 비밀번호가 들어갔기 때문에 발생한 에러였음.   
+>> 테스트에서 오류가 발생한것은 아무래도 이것저것 해보느라 passwordEncoder 옵션 설정에서 발생한 에러로 추정.   
+>> 이건 테스트 클래스에서 좀 더 테스트가 필요.   
+>>
+>> api 서버에서 TokenProvider를 수정.   
+>> 기존 refreshToken을 검증하는 verifyRefreshToken 메소드는 RefreshToken 검증 후 정상적인 토큰이면 바로 reIssuanceAllToken 메소드를 호출 해
+>> 두 토큰을 모두 재발급 받은 뒤 그것을 리턴받아 컨트롤러에 넘겨주는 형태였는데    
+>> 로그아웃 처리를 하면서 refreshToken 검증이 필요해 provider를 보다보니 너무 검증 메소드에 기능이 몰려있다고 생각해 기능을 좀 분리.   
+>> verifyRefreshToken은 RefreshToken을 검증한 뒤 token에 저장되어 있는 값인 rIndex와 tokenValue를 Map으로 리턴하도록 수정했고   
+>> reIssuanceAllToken에서는 verifyRefreshToken에서 리턴받은 Map 데이터를 토대로 DB 데이터와 비교 후 정상적인 토큰이라면 재발급을 처리해   
+>> JwtDTO 타입으로 토큰값들을 담아 리턴하도록 구현.   
+>> 그리고 이것을 호출하는 TokenService의 reIssuedToken 메소드를 생성해 거기서 토큰 검증 후 map으로 데이터를 리턴받고   
+>> 해당 데이터가 null이 아니라면 reIssuanceAllToken 메소드를 호출해 토큰을 재발급 받고 컨트롤러에 리턴하도록 구현.
+>> 이 재발급 처리는 코드만 수정하고 테스트를 아직 하지 않았기 때문에 테스트 필요.
+>> 
+>> logout 기능을 구현을 안해서 logout 기능 구현 중.
+>> 코드는 완성했고 테스트가 필요함.   
+>>
+>> url 입력으로 loginForm에 접근할 때 refreshToken을 갖고 있는 사용자라면 로그인 페이지에 접근해 다시 로그인 하는 경우를 발생시키면 안되기 때문에
+>> loginForm 접근 시 토큰 여부를 확인해 갖고 있다면 메인 페이지로 이동시킬 수 있도록 처리가 필요.   
+>> 또한 로그인 시 아이디나 비밀번호 오류 발생 시 error 페이지를 출력하는 것이 아닌 loginForm 페이지에서 아이디나 비밀번호가 맞지 않는다는
+>> 메세지를 출력하도록 수정 필요.
 
 
 # 기능 전체적으로 마무리 후 해야할것

@@ -1,5 +1,6 @@
 package com.example.boardrest.domain.dto;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;

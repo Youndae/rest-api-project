@@ -14,6 +14,7 @@ import javax.persistence.*;
 public class Auth {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long authNo;
 
     /*@ManyToOne(fetch = FetchType.LAZY)

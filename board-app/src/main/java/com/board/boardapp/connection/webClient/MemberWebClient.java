@@ -2,6 +2,7 @@ package com.board.boardapp.connection.webClient;
 
 import com.board.boardapp.config.WebClientConfig;
 import com.board.boardapp.dto.JwtDTO;
+import com.board.boardapp.dto.JwtProperties;
 import com.board.boardapp.dto.Member;
 import com.board.boardapp.dto.MemberDTO;
 import com.board.boardapp.service.TokenService;
@@ -14,10 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.WebUtils;
 import reactor.core.publisher.Mono;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,6 +64,12 @@ public class MemberWebClient {
                         HttpStatus::is5xxServerError, clientResponse ->
                                 Mono.error(
                                         new NullPointerException()
+                                )
+                )
+                .onStatus(
+                        HttpStatus::isError, clientResponse ->
+                                Mono.error(
+                                        new AccessDeniedException("exception")
                                 )
                 )
                 .bodyToMono(JwtDTO.class)
@@ -115,6 +125,28 @@ public class MemberWebClient {
                 )
                 .bodyToMono(Integer.class)
                 .block();
+
+    }
+
+    public void logout(HttpServletRequest request, HttpServletResponse response){
+
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        WebClient client = webClientConfig.useWebClient();
+
+        int responseVal = client.post()
+                .uri(uriBuilder -> uriBuilder.path("/member/logout").build())
+                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .retrieve()
+                .bodyToMono(Integer.class)
+                .block();
+
+        log.info("logout response : {}", responseVal);
+        /**
+         * 로그아웃 처리가 정상적으로 동작했다면
+         * lsc, Authorization, Authorization_Refresh 쿠키 전체 삭제.
+         */
 
     }
 }

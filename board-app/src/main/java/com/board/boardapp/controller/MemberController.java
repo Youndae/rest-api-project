@@ -63,4 +63,10 @@ public class MemberController {
         return memberWebClient.checkUserId(userId);
     }
 
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response){
+
+        memberWebClient.logout(request, response);
+    }
+
 }

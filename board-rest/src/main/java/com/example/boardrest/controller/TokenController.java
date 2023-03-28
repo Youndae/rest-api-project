@@ -3,6 +3,7 @@ package com.example.boardrest.controller;
 import com.example.boardrest.config.jwt.JwtProperties;
 import com.example.boardrest.domain.dto.JwtDTO;
 import com.example.boardrest.service.JwtTokenProvider;
+import com.example.boardrest.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,11 +24,15 @@ public class TokenController {
 
     private final JwtTokenProvider provider;
 
+    private final TokenService tokenService;
+
     @PostMapping("/reissued")
     public ResponseEntity<JwtDTO> reissuedToken(HttpServletRequest request){
       log.info("reissued Token");
 
-      JwtDTO dto = provider.verifyRefreshToken(request);
+//      JwtDTO dto = provider.verifyRefreshToken(request);
+
+      JwtDTO dto = tokenService.reIssuedToken(request);
 
       log.info("dto : {}", dto);
 

@@ -39,27 +39,34 @@ $(function(){
         var userId = {
             userId : $("#userId").val(),
         };
-
+        console.log("checkUserId");
         if(userId.userId == ""){
             $("#overlap").text("아이디를 입력하세요");
+            $("#overlap").css("color", "red");
         }else if(userId.userId != "" && idPattern.test(userId.userId) == false) {
-            $("#idOverlap").text("영문자와 숫자를 사용한 5 ~ 15 자리만 가능합니다.");
-
+            $("#overlap").text("영문자와 숫자를 사용한 5 ~ 15 자리만 가능합니다.");
+            $("#overlap").css("color", "red");
         }else{
             $.ajaxSettings.traditional = true;
             $.ajax({
                 url: '/member/checkUserId',
-                type: 'post',
+                method: 'get',
                 data: userId,
                 success: function(data){
+
+                    console.log("return data : " + data);
                     if(data == 1){
                         $("#overlap").text("사용중인 아이디입니다.");
+                        $("#check").val("dupl");
+                        $("#overlap").css("color", "red");
                     }else if(data == 0){
                         $("#check").val("check");
                         $("#overlap").text("사용 가능한 아이디입니다.");
                         checkId = $("#userId").val();
+                        $("#overlap").css("color", "black");
                     }else{
                         $("#overlap").text("오류가 발생했습니다. 문제가 계속되면 관리자에게 문의해주세요.");
+                        $("#overlap").css("color", "red");
                     }
                 },
                 error: function(request, status, error){
@@ -103,9 +110,17 @@ $(function(){
 
         var checkVal = $("#check").val();
 
+        console.log("pwStat : " + $("#pwStat").val());
+
         if(checkVal == ""){
             $("#overlap").text("아이디 중복체크를 해주세요.");
-        }else if($("#pwStat") == ""){
+            $("#userId").focus();
+            $("#overlap").css("color", "red");
+        }else if(checkVal == "dupl"){
+            $("#overlap").text("이미 사용중인 아이디입니다.");
+            $("#userId").focus();
+            $("#overlap").css("color", "red");
+        }else if($("#pwStat").val() == ""){
             $("#checkUserPw").focus();
         }else if($("#userPw").val() == null){
             $("#userPw").focus();
@@ -122,14 +137,16 @@ $(function(){
                 contentType: false,
                 processData: false,
                 cache: false,
-                type: 'post',
+                method: 'post',
                 data: formData,
                 success: function(data){
                     if(data == 0){
                         alert("가입 실패\n 다시 시도해주세요");
-                    }else{
+                    }else if(data == 1){
                         alert("가입 되었습니다.")
                         location.href='/member/loginForm';
+                    }else{
+                        alert('error');
                     }
                 },
                 error: function(request, status, error){

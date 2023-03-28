@@ -9,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,5 +52,13 @@ public class MemberController {
 
 
         return new ResponseEntity<>(memberService.memberLogin(member), HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_MANAGER', 'ROLE_ADMIN')")
+    public int logout(HttpServletRequest request, Principal principal){
+
+        return memberService.logout(request, principal);
+
     }
 }

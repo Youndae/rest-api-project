@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,12 +36,20 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({IllegalArgumentException.class, IllegalAccessException.class})
-    public ResponseEntity IllegalExceptionHandler(Exception e){
+    public ResponseEntity illegalExceptionHandler(Exception e){
 
         exceptionLog(e);
 
         return ResponseEntity.status(HttpStatus.valueOf(400)).build();
     }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity badCredentialsExcpetionHandler(Exception e){
+        exceptionLog(e);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {

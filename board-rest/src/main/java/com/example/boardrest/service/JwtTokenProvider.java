@@ -16,6 +16,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -133,6 +135,71 @@ public class JwtTokenProvider {
      * client로 토큰을 전달 한 뒤 다시 재 요청이 오도록 할것이기 때문.
      */
     //verify RefreshToken & AccessToken
+    public Map<String, String> verifyRefreshToken(HttpServletRequest request){
+
+        Cookie refreshToken = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
+
+        if(refreshToken == null || !refreshToken.getValue().startsWith(JwtProperties.TOKEN_PREFIX)) {
+            log.info("refresh Token null");
+            return null;
+        }
+
+        String refreshTokenVal = refreshToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
+
+        String rIndex = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
+                .build()
+                .verify(refreshTokenVal)
+                .getClaim("refresh")
+                .asString();
+
+        log.info("tokenval : {}, rIndex : {}", refreshTokenVal, rIndex);
+
+        if(refreshTokenVal != null && rIndex != null){
+            Map<String, String> tokenMap = new HashMap<>();
+            tokenMap.put("rIndex", rIndex);
+            tokenMap.put("refreshTokenValue", refreshTokenVal);
+
+            return tokenMap;
+        }
+
+        return null;
+    }
+
+
+    //reissuance AccessToken & RefreshToken
+    public JwtDTO reIssuanceAllToken(Map<String, String> reIssuedData){
+
+        log.info("reIssuanceAllToken");
+
+        //refreshToken 검증과 동시에 userId를 획득.
+        //그럼 query는 select userId from refreshToken where rtIndex = rIndex And tokenVal = refreshTokenVal
+        // 이렇게 처리해 userId가 null인 경우 재발급을 하지 않도록.
+        String userId = refreshTokenRepository.existsByRtIndexAndUserId(
+                            reIssuedData.get("rIndex")
+                            , reIssuedData.get(reIssuedData.get("refreshTokenValue"))
+                        );
+
+        if(userId != null){
+            JwtDTO dto =  JwtDTO.builder()
+                    .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
+                    .accessTokenValue(JwtProperties.TOKEN_PREFIX + issuedAccessToken(userId))
+                    .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
+                    .refreshTokenValue(JwtProperties.TOKEN_PREFIX + reIssuedRefreshToken(reIssuedData.get("rIndex")))
+                    .build();
+
+            log.info("reIssuanceAllToken Data : {} : {} \n {} : {}", dto.getAccessTokenHeader(), dto.getAccessTokenValue()
+                    , dto.getRefreshTokenHeader(), dto.getRefreshTokenValue());
+
+            return dto;
+        }
+
+        return null;
+    }
+
+
+
+
+    /*//verify RefreshToken & AccessToken
     public JwtDTO verifyRefreshToken(HttpServletRequest request){
 
         Cookie refreshToken = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
@@ -187,5 +254,5 @@ public class JwtTokenProvider {
         , dto.getRefreshTokenHeader(), dto.getRefreshTokenValue());
 
         return dto;
-    }
+    }*/
 }

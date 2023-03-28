@@ -30,7 +30,7 @@ public class ExceptionHandlerAdvice {
     public String AccessDeniedHandle(Exception e){
         log.info("AccessDeniedException e : " + e.getMessage());
 
-        return "th/error/error";
+        return "th/member/loginForm";
     }
 
 
