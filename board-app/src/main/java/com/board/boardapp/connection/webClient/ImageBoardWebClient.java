@@ -101,6 +101,8 @@ public class ImageBoardWebClient {
 
         dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
 
+        log.info("dto : {}", dto);
+
         return dto;
     }
 

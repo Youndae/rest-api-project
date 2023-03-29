@@ -19,7 +19,6 @@ $(function(){
             method: 'delete',
             success: function(result){
                 if(result == 1){
-                    alert("삭제 성공")
                     location.href='/imageBoard/imageBoardList';
                 }else{
                     alert("삭제 실패");

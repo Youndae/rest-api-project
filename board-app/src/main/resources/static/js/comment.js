@@ -135,7 +135,7 @@ function hierarchicalBoardComment(boardNo, pageNum){
 
 function imageBoardComment(imageNo, pageNum){
     $.getJSON('/comment/imageComment/' + imageNo + "/" + pageNum, function(arr){
-
+        console.log("imageBoardComment arr.content : " + arr.content + "\n arr.uid : " + arr.uid);
         commentEachParsing(arr.content, arr.uid);
 
         commentPagingParsing(arr);
@@ -179,14 +179,16 @@ function commentPagingParsing(res){
     }
 
     for(var i = startPage; i <= endPage; i++){
-        if(i == pageNum){
-            cpStr += "<li>" +
-                        "<a href=\"#\" style=\"font-weight: bold; color: black;\" onclick=\"commentPaging(" + i + ")\">" + i + "</a>" +
+        if(startPage != endPage){
+            if(i == pageNum){
+                cpStr += "<li>" +
+                    "<a href=\"#\" style=\"font-weight: bold; color: black;\" onclick=\"commentPaging(" + i + ")\">" + i + "</a>" +
                     "</li>"
-        }else {
-            cpStr += "<li>" +
-                        "<a href=\"#\" onclick=\"commentPaging(" + i + ")\">" + i + "</a>" +
+            }else {
+                cpStr += "<li>" +
+                    "<a href=\"#\" onclick=\"commentPaging(" + i + ")\">" + i + "</a>" +
                     "</li>"
+            }
         }
     }
 
@@ -203,6 +205,8 @@ function commentPagingParsing(res){
 }
 
 function commentEachParsing(arr, uid){
+
+    console.log("commentEachParsing")
 
     var comment_area = $(".comment-area");
 

@@ -38,4 +38,5 @@ public interface ImageDataRepository extends JpaRepository<ImageData, String> {
             "WHERE id.imageBoard.imageNo = ?1 " +
             "ORDER BY id.imageStep asc")
     List<ImageDetailDataDTO> getImageData(long imageNo);
+
 }

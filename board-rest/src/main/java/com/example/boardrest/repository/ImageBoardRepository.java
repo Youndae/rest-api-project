@@ -162,4 +162,6 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
             "WHERE b.imageNo = ?4")
     void imageBoardModify(String imageTitle, String imageContent, Set<ImageData> imageDataSet, long imageNo);
 
+
+
 }

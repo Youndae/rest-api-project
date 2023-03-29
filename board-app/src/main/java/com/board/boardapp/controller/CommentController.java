@@ -53,22 +53,18 @@ public class CommentController {
             , HttpServletRequest request
             , HttpServletResponse response) throws JsonProcessingException {
 
-        /*log.info("controller boardNo : {}, pageNum : {}", boardNo, pageNum);
+        log.info("controller imageNo : {}, pageNum : {}", imageNo, pageNum);
 
         Criteria cri = new Criteria();
         cri.setPageNum(pageNum);
 
-        log.info("cri.getPageNum() : {}, cri.getAmount() : {}", cri.getPageNum(), cri.getAmount());
+        log.info("cri.getPageNum() : {}, cri.getAmount() : {}", cri.getPageNum(), cri.getBoardAmount());
 
-        CommentListDTO dto = commentBoardWebClient.getBoardComment(boardNo, request, response, cri);
+        CommentListDTO dto = commentBoardWebClient.getImageComment(imageNo, request, response, cri);
 
-        log.info("controller dto : {}", dto);*/
+        log.info("controller dto : {}", dto);
 
-
-
-//        return new ResponseEntity<>(dto, HttpStatus.OK);
-
-        return null;
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @PostMapping("/commentInsert")

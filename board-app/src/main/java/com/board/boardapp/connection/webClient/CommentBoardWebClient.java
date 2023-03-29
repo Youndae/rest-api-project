@@ -106,6 +106,83 @@ public class CommentBoardWebClient {
         return dto;
     }
 
+    public CommentListDTO getImageComment(long imageNo
+                                            , HttpServletRequest request
+                                            , HttpServletResponse response
+                                            , Criteria cri) throws JsonProcessingException {
+        WebClient client = webClientConfig.useWebClient();
+
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        String responseVal = "";
+
+        log.info("pageNum : {}, amount : {}", cri.getPageNum(), cri.getBoardAmount());
+
+        if(tokenDTO == null){
+            responseVal = client.get()
+                    .uri(uriBuilder -> uriBuilder.path("/comment/comment-list")
+                            .queryParam("imageNo", String.valueOf(imageNo))
+                            .queryParam("pageNum", cri.getPageNum())
+                            .queryParam("amount", cri.getBoardAmount())
+                            .build())
+                    .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
+                    .bodyToMono(String.class)
+                    .block();
+        }else if(tokenDTO != null){
+            log.info("token is not null");
+            responseVal = client.get()
+                    .uri(uriBuilder -> uriBuilder.path("/comment/comment-list")
+                            .queryParam("imageNo", String.valueOf(imageNo))
+                            .queryParam("pageNum", cri.getPageNum())
+                            .queryParam("amount", cri.getBoardAmount())
+                            .build())
+                    .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new NotFoundException("not found")
+                                    )
+                    )
+                    .onStatus(
+                            HttpStatus::is5xxServerError, clientResponse ->
+                                    Mono.error(
+                                            new NullPointerException()
+                                    )
+                    )
+                    .bodyToMono(String.class)
+                    .block();
+
+        }
+
+        log.info("imageComment responseVal : {}", responseVal);
+
+        CommentListDTO dto;
+
+        ObjectMapper om = new ObjectMapper();
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        dto = om.readValue(responseVal, CommentListDTO.class);
+
+        log.info("boardComment TotalPages : {}", dto.getTotalPages());
+
+        dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
+
+        return dto;
+    }
+
     public int commentInsert(Map<String, Object> commentData
                                 , HttpServletRequest request
                                 , HttpServletResponse response){
