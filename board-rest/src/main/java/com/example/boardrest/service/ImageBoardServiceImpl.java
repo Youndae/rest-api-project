@@ -65,51 +65,51 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     }
 
     @Override
-    public Page<ImageBoardDTO> getImageBoardList(int pageNum, int amount, String keyword, String searchType) {
+    public Page<ImageBoardDTO> getImageBoardList(Criteria cri) {
 
         log.info("pageNum : {}, amount : {}, keyword : {}, searchType : {}"
-        , pageNum
-        , amount
-        , keyword
-        , searchType);
+        , cri.getPageNum()
+        , cri.getImageAmount()
+        , cri.getKeyword()
+        , cri.getSearchType());
 
         Page<ImageBoardDTO> dto;
 
-        if(keyword != null)
-            keyword = "%" + keyword + "%";
+        if(cri.getKeyword() != null)
+            cri.setKeyword("%" + cri.getKeyword() + "%");
 
-        if(keyword == null){//default
+        if(cri.getKeyword() == null){//default
             dto = imageBoardRepository.getImageBoardList(
-                    PageRequest.of(pageNum - 1
-                            , amount
+                    PageRequest.of(cri.getPageNum() - 1
+                            , cri.getImageAmount()
                             , Sort.by("imageNo").descending())
             );
-        }else if(searchType.equals("t")){//제목 검색
+        }else if(cri.getSearchType().equals("t")){//제목 검색
             dto = imageBoardRepository.getImageBoardSearchTitle(
-                    keyword
-                    , PageRequest.of(pageNum - 1
-                    , amount
+                    cri.getKeyword()
+                    , PageRequest.of(cri.getPageNum() - 1
+                    , cri.getImageAmount()
                     , Sort.by("imageNo").descending())
             );
-        }else if(searchType.equals("c")){//내용 검색
+        }else if(cri.getSearchType().equals("c")){//내용 검색
             dto = imageBoardRepository.getImageBoardSearchContent(
-                    keyword
-                    , PageRequest.of(pageNum - 1
-                            , amount
+                    cri.getKeyword()
+                    , PageRequest.of(cri.getPageNum() - 1
+                            , cri.getImageAmount()
                             , Sort.by("imageNo").descending())
             );
-        }else if(searchType.equals("u")){//작성자 검색
+        }else if(cri.getSearchType().equals("u")){//작성자 검색
             dto = imageBoardRepository.getImageBoardSearchWriter(
-                    keyword
-                    , PageRequest.of(pageNum - 1
-                            , amount
+                    cri.getKeyword()
+                    , PageRequest.of(cri.getPageNum() - 1
+                            , cri.getImageAmount()
                             , Sort.by("imageNo").descending())
             );
-        }else if(searchType.equals("tc")){//제목 + 내용 검색
+        }else if(cri.getSearchType().equals("tc")){//제목 + 내용 검색
             dto = imageBoardRepository.getImageBoardSearchTitleAndContent(
-                    keyword
-                    , PageRequest.of(pageNum - 1
-                            , amount
+                    cri.getKeyword()
+                    , PageRequest.of(cri.getPageNum() - 1
+                            , cri.getImageAmount()
                             , Sort.by("imageNo").descending())
             );
         }else{

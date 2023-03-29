@@ -1,9 +1,6 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.ImageBoardDTO;
-import com.example.boardrest.domain.dto.ImageBoardDetailDTO;
-import com.example.boardrest.domain.dto.ImageDataDTO;
-import com.example.boardrest.domain.dto.ImageDetailDTO;
+import com.example.boardrest.domain.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,7 +10,7 @@ import java.util.List;
 
 public interface ImageBoardService {
 
-    Page<ImageBoardDTO> getImageBoardList(int pageNum, int amount, String keyword, String searchType);
+    Page<ImageBoardDTO> getImageBoardList(Criteria cri);
 
     long imageSizeCheck(List<MultipartFile> images) throws Exception;
 

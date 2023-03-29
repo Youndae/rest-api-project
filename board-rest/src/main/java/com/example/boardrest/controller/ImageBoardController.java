@@ -40,7 +40,23 @@ public class ImageBoardController {
                                                             , @RequestParam(value = "keyword", required = false) String keyword
                                                             , @RequestParam(value = "searchType", required = false) String searchType){
 
-        return new ResponseEntity<>(imageBoardService.getImageBoardList(pageNum, amount, keyword, searchType), HttpStatus.OK);
+        Criteria cri = new Criteria();
+
+        if(keyword != null){
+            cri = Criteria.builder()
+                    .pageNum(pageNum)
+                    .imageAmount(amount)
+                    .keyword(keyword)
+                    .searchType(searchType)
+                    .build();
+        }else if(keyword == null){
+            cri = Criteria.builder()
+                    .pageNum(pageNum)
+                    .imageAmount(amount)
+                    .build();
+        }
+
+        return new ResponseEntity<>(imageBoardService.getImageBoardList(cri), HttpStatus.OK);
     }
 
     /**

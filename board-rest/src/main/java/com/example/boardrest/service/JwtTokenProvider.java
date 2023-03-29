@@ -176,8 +176,10 @@ public class JwtTokenProvider {
         // 이렇게 처리해 userId가 null인 경우 재발급을 하지 않도록.
         String userId = refreshTokenRepository.existsByRtIndexAndUserId(
                             reIssuedData.get("rIndex")
-                            , reIssuedData.get(reIssuedData.get("refreshTokenValue"))
+                            , reIssuedData.get("refreshTokenValue")
                         );
+
+        log.info("reIssued userId : {}", userId);
 
         if(userId != null){
             JwtDTO dto =  JwtDTO.builder()

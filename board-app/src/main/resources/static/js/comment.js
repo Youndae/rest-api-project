@@ -23,6 +23,12 @@ $(function(){
         imageBoardComment(imageNo, pageNum);
     }
 
+    $("#commentContent").keydown(function(key){
+        if(key.keyCode == 13){
+            $("#commentInsert").click();
+        }
+    })
+
 })
 
 $(document).on('click', '#commentInsert', function(){
@@ -209,10 +215,23 @@ function commentEachParsing(arr, uid){
                     "<table class=\"table table-hover\">" +
                         "<tr>" +
                             "<td>" +
-                                "<p>" + res.userId +
-                                    "<p>" + res.commentContent + "</p>" +
-                                    "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
-                                        "onclick=\"cReply(this)\" value=\"" + res.commentNo + "\">답글</button>";
+                                "<p>" + res.userId;
+
+        if(res.commentIndent == 1){
+            commentStr += "<p class=\"ci-1\">" + res.commentContent + "</p>";
+        }else if(res.commentIndent == 2){
+            commentStr += "<p class=\"ci-2\">" + "ㄴ" + res.commentContent + "</p>";
+        }else if(res.commentIndent == 3){
+            commentStr += "<p class=\"ci-3\">" + "ㄴ" + res.commentContent + "</p>";
+        }else if(res.commentIndent == 4){
+            commentStr += "<p class=\"ci-4\">" + "ㄴ" + res.commentContent + "</p>";
+        }
+
+
+        if(uid != null && res.commentIndent != 4){
+            commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
+                "onclick=\"cReply(this)\" value=\"" + res.commentNo + "\">답글</button>";
+        }
 
         if(res.userId == uid){
             console.log("uid equals userId");
@@ -230,8 +249,6 @@ function commentEachParsing(arr, uid){
             "</table>" +
             "</div>";
     })
-
-    console.log("str : " + commentStr);
 
     comment_area.append(commentStr);
 }

@@ -14,5 +14,6 @@ public interface TokenService {
 
     JwtDTO reIssuedToken(HttpServletRequest request, HttpServletResponse response);
 
+    void deleteCookie(HttpServletRequest request, HttpServletResponse response);
 
 }

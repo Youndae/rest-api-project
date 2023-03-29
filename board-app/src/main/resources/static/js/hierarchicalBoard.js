@@ -3,9 +3,16 @@ $(document).ready(function(){
     $("#insertProc").on('click', function(){
         var form = $("#insertBoardFrm");
 
-        console.log("insert!");
+        if($("#boardTitle").val() == ""){
+            alert("제목을 입력해주세요");
+            $("#boardTitle").focus();
+        }else{
+            console.log("insert!");
 
-        form.submit();
+            form.submit();
+        }
+
+
     })
 
     $("#modify").on('click', function(){

@@ -3,6 +3,8 @@ package com.board.boardapp.controller;
 import com.board.boardapp.connection.webClient.ImageBoardWebClient;
 import com.board.boardapp.dto.Criteria;
 import com.board.boardapp.dto.ImageDataDTO;
+import com.board.boardapp.dto.JwtDTO;
+import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,8 @@ import java.util.List;
 public class ImageBoardController {
 
     private final ImageBoardWebClient imageBoardWebClient;
+
+    private final TokenService tokenService;
 
     @GetMapping("/imageBoardList")
     public String imageBoardMain(Model model, Criteria cri) throws JsonProcessingException {
@@ -70,7 +74,14 @@ public class ImageBoardController {
     }
 
     @GetMapping("/imageBoardInsert")
-    public String imageBoardInsert(){
+    public String imageBoardInsert(HttpServletRequest request, HttpServletResponse response){
+
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null){
+            return "th/member/loginForm";
+        }
+
         return "th/imageBoard/imageBoardInsert";
     }
 
@@ -92,6 +103,12 @@ public class ImageBoardController {
                                     , @PathVariable long imageNo
                                     , HttpServletRequest request
                                     , HttpServletResponse response){
+
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null){
+            return "th/member/loginForm";
+        }
 
 
         model.addAttribute("image", imageBoardWebClient.getModifyData(imageNo, request, response));

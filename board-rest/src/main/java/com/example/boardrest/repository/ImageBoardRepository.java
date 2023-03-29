@@ -58,7 +58,8 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
             "FROM ImageBoard ib " +
             "INNER JOIN " +
             "ImageData id " +
-            "ON ib.imageNo = id.imageBoard.imageNo"
+            "ON ib.imageNo = id.imageBoard.imageNo " +
+            "GROUP BY ib.imageNo"
     ,countQuery = "SELECT c.contentCount " +
             "FROM CountTable c " +
             "WHERE c.boardName = 'imageBoard'")
@@ -76,7 +77,8 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
             "INNER JOIN " +
             "ImageData id " +
             "ON ib.imageNo = id.imageBoard.imageNo " +
-            "WHERE ib.imageTitle LIKE :keyword"
+            "WHERE ib.imageTitle LIKE :keyword " +
+            "GROUP BY ib.imageNo"
     ,countQuery = "SELECT count(ib) " +
             "FROM ImageBoard ib " +
             "WHERE ib.imageTitle LIKE :keyword")
@@ -94,8 +96,9 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
             "INNER JOIN " +
             "ImageData id " +
             "ON ib.imageNo = id.imageBoard.imageNo " +
-            "WHERE ib.imageContent LIKE :keyword"
-            ,countQuery = "SELECT count(ib) " +
+            "WHERE ib.imageContent LIKE :keyword " +
+            "GROUP BY ib.imageNo"
+    ,countQuery = "SELECT count(ib) " +
             "FROM ImageBoard ib " +
             "WHERE ib.imageContent LIKE :keyword")
     Page<ImageBoardDTO> getImageBoardSearchContent(@Param("keyword") String keyword, Pageable pageable);
@@ -112,8 +115,9 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
             "INNER JOIN " +
             "ImageData id " +
             "ON ib.imageNo = id.imageBoard.imageNo " +
-            "WHERE ib.member.userId LIKE :keyword"
-            ,countQuery = "SELECT count(ib) " +
+            "WHERE ib.member.userId LIKE :keyword " +
+            "GROUP BY ib.imageNo"
+    ,countQuery = "SELECT count(ib) " +
             "FROM ImageBoard ib " +
             "WHERE ib.member.userId LIKE :keyword")
     Page<ImageBoardDTO> getImageBoardSearchWriter(@Param("keyword") String keyword, Pageable pageable);
@@ -131,8 +135,9 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
             "ImageData id " +
             "ON ib.imageNo = id.imageBoard.imageNo " +
             "WHERE ib.imageTitle LIKE :keyword " +
-            "OR ib.imageContent LIKE :keyword"
-            ,countQuery = "SELECT count(ib) " +
+            "OR ib.imageContent LIKE :keyword " +
+            "GROUP BY ib.imageNo"
+    ,countQuery = "SELECT count(ib) " +
             "FROM ImageBoard ib " +
             "WHERE ib.imageTitle LIKE :keyword " +
             "OR ib.imageContent LIKE :keyword")

@@ -82,67 +82,67 @@ public class MemberServiceImpl implements MemberService{
 
         log.info("member login service");
 
-        try{
-            log.info("userId : " + member.getUserId());
-            log.info("userPw : " + member.getUserPw());
+        log.info("userId : " + member.getUserId());
+        log.info("userPw : " + member.getUserPw());
 
-            log.info("encode Pw : {}", passwordEncoder.encode(member.getUserPw()));
+        log.info("encode Pw : {}", passwordEncoder.encode(member.getUserPw()));
 
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(member.getUserId(), member.getUserPw());
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(member.getUserId(), member.getUserPw());
 
-            log.info("authenticationToken : " + authenticationToken);
+        log.info("authenticationToken : " + authenticationToken);
 
-            Authentication authentication =
-                    authenticationManager.authenticate(authenticationToken);
+        Authentication authentication =
+                authenticationManager.authenticate(authenticationToken);
 
-            log.info("authentication : " + authentication);
+        log.info("authentication : " + authentication);
 
-            CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
 
-            log.info("login service success");
+        log.info("login service success");
 
-            String uid = customUser.getMember().getUserId();
+        String uid = customUser.getMember().getUserId();
 
-            String accessToken = tokenProvider.issuedAccessToken(uid);
+        String accessToken = tokenProvider.issuedAccessToken(uid);
 
-            log.info("service token : " + accessToken);
+        log.info("service token : " + accessToken);
 
-            String refreshToken = tokenProvider.issuedRefreshToken(uid);
+        String refreshToken = tokenProvider.issuedRefreshToken(uid);
 
-            JwtDTO dto = JwtDTO.builder()
-                    .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
-                    .accessTokenValue(JwtProperties.TOKEN_PREFIX + accessToken)
-                    .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
-                    .refreshTokenValue(JwtProperties.TOKEN_PREFIX + refreshToken)
-                    .build();
+        JwtDTO dto = JwtDTO.builder()
+                .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
+                .accessTokenValue(JwtProperties.TOKEN_PREFIX + accessToken)
+                .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
+                .refreshTokenValue(JwtProperties.TOKEN_PREFIX + refreshToken)
+                .build();
 
-            return dto;
-        }catch (Exception e){
-            log.info("loginService Exception");
-            e.printStackTrace();
-        }
-
-        return null;
+        return dto;
     }
 
     @Override
     public int logout(HttpServletRequest request, Principal principal) {
 
-        Cookie cookie = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
+        try{
+            Cookie cookie = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
 
-        log.info("cookie name : {}", cookie.getName());
-        log.info("cookie value : {}", cookie.getValue());
+            log.info("cookie name : {}", cookie.getName());
+            log.info("cookie value : {}", cookie.getValue());
 
-        Map<String, String> verifyRefreshToken = tokenProvider.verifyRefreshToken(request);
+            Map<String, String> verifyRefreshToken = tokenProvider.verifyRefreshToken(request);
 
-        RefreshToken refreshToken = RefreshToken.builder()
-                        .userId(principal.getName())
-                        .tokenVal(verifyRefreshToken.get("refreshTokenValue"))
-                        .rtIndex(verifyRefreshToken.get("rIndex"))
-                        .build();
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .userId(principal.getName())
+                    .tokenVal(verifyRefreshToken.get("refreshTokenValue"))
+                    .rtIndex(verifyRefreshToken.get("rIndex"))
+                    .build();
 
-        refreshTokenRepository.delete(refreshToken);
+            refreshTokenRepository.delete(refreshToken);
+
+            return 1;
+        }catch (Exception e){
+            new Exception();
+            return 0;
+        }
 
         /**
          * tokenprovider 수정 필요.
@@ -150,7 +150,5 @@ public class MemberServiceImpl implements MemberService{
          * 딱 검증만 하도록 메소드 분리해서 수정.
          */
 
-
-        return 0;
     }
 }

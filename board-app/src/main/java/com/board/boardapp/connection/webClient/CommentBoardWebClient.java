@@ -39,14 +39,14 @@ public class CommentBoardWebClient {
 
         String responseVal = "";
 
-        log.info("pageNum : {}, amount : {}", cri.getPageNum(), cri.getAmount());
+        log.info("pageNum : {}, amount : {}", cri.getPageNum(), cri.getBoardAmount());
 
         if(tokenDTO == null){
             responseVal = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/comment/comment-list")
                             .queryParam("boardNo", String.valueOf(boardNo))
                             .queryParam("pageNum", cri.getPageNum())
-                            .queryParam("amount", cri.getAmount())
+                            .queryParam("amount", cri.getBoardAmount())
                             .build())
                     .retrieve()
                     .onStatus(
@@ -69,7 +69,7 @@ public class CommentBoardWebClient {
                     .uri(uriBuilder -> uriBuilder.path("/comment/comment-list")
                             .queryParam("boardNo", String.valueOf(boardNo))
                             .queryParam("pageNum", cri.getPageNum())
-                            .queryParam("amount", cri.getAmount())
+                            .queryParam("amount", cri.getBoardAmount())
                             .build())
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                     .retrieve()

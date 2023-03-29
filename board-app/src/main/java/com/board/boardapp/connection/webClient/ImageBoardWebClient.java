@@ -36,8 +36,6 @@ public class ImageBoardWebClient {
 
         WebClient client = webClientConfig.useWebClient();
 
-        int amount = 12;
-
         String response = null;
 
         if(cri.getKeyword() == null || cri.getKeyword().equals("")){
@@ -45,7 +43,7 @@ public class ImageBoardWebClient {
             response = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/image-board/image-board-list")
                             .queryParam("pageNum", cri.getPageNum())
-                            .queryParam("amount", cri.getAmount())
+                            .queryParam("amount", cri.getImageAmount())
                             .build())
                     .retrieve()
                     .onStatus(
@@ -67,7 +65,7 @@ public class ImageBoardWebClient {
             response = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/image-board/image-board-list")
                             .queryParam("pageNum", cri.getPageNum())
-                            .queryParam("amount", cri.getAmount())
+                            .queryParam("amount", cri.getImageAmount())
                             .queryParam("keyword", cri.getKeyword())
                             .queryParam("searchType", cri.getSearchType())
                             .build())

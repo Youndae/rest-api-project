@@ -36,7 +36,7 @@ public class CommentController {
         Criteria cri = new Criteria();
         cri.setPageNum(pageNum);
 
-        log.info("cri.getPageNum() : {}, cri.getAmount() : {}", cri.getPageNum(), cri.getAmount());
+        log.info("cri.getPageNum() : {}, cri.getAmount() : {}", cri.getPageNum(), cri.getBoardAmount());
 
         CommentListDTO dto = commentBoardWebClient.getBoardComment(boardNo, request, response, cri);
 

@@ -1,7 +1,7 @@
 package com.example.boardrest.service;
 
 import com.example.boardrest.domain.entity.Comment;
-import com.example.boardrest.domain.entity.Criteria;
+import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.BoardCommentDTO;
 import com.example.boardrest.domain.dto.BoardCommentListDTO;
 import com.example.boardrest.domain.dto.CommentInsertDTO;
@@ -133,7 +133,7 @@ public class CommentServiceImpl implements CommentService{
 
             hBoardDTO = commentRepository.getImageBoardCommentList(
                     PageRequest.of(cri.getPageNum() - 1
-                            , cri.getAmount()
+                            , cri.getBoardAmount()
                             , Sort.by("commentGroupNo").descending()
                                     .and(Sort.by("commentUpperNo").ascending()))
                     , iBoardNo
@@ -150,7 +150,7 @@ public class CommentServiceImpl implements CommentService{
 
             hBoardDTO = commentRepository.getHierarchicalBoardCommentList(
                     PageRequest.of(cri.getPageNum() - 1
-                            , cri.getAmount()
+                            , cri.getBoardAmount()
                             , Sort.by("commentGroupNo").descending()
                                     .and(Sort.by("commentUpperNo").ascending()))
                     , hBoardNo);

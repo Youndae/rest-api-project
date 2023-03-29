@@ -84,6 +84,12 @@ public class HierarchicalBoardController {
 
         log.info("modify boardNo : {}", boardNo);
 
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+
+        if(tokenDTO == null){
+            return "th/member/loginForm";
+        }
+
         HierarchicalBoardModifyDTO dto = hierarchicalBoardWebClient.getModifyData(boardNo, request, response);
 
         if(dto == null)

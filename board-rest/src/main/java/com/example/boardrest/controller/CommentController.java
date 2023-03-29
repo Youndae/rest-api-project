@@ -1,6 +1,6 @@
 package com.example.boardrest.controller;
 
-import com.example.boardrest.domain.entity.Criteria;
+import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.BoardCommentListDTO;
 import com.example.boardrest.domain.dto.CommentInsertDTO;
 import com.example.boardrest.service.CommentService;
@@ -37,7 +37,7 @@ public class CommentController {
 
         Criteria cri = Criteria.builder()
                 .pageNum(pageNum)
-                .amount(amount)
+                .boardAmount(amount)
                 .build();
 
         log.info("comment-list");

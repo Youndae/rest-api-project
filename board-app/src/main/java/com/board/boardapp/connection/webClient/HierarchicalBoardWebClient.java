@@ -75,6 +75,7 @@ public class HierarchicalBoardWebClient {
         String response = null;
 
         log.info("keyword : " + cri.getKeyword());
+        log.info("searchType : " + cri.getSearchType());
 
         if (cri.getKeyword() == null || cri.getKeyword().equals("")) {
             log.info("keyword is null");
@@ -82,7 +83,7 @@ public class HierarchicalBoardWebClient {
             response = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/board/board-list")
                             .queryParam("pageNum", cri.getPageNum())
-                            .queryParam("amount", cri.getAmount())
+                            .queryParam("amount", cri.getBoardAmount())
                             .build())
                     .retrieve()
                     .onStatus(HttpStatus::is4xxClientError, clientResponse ->
@@ -106,7 +107,7 @@ public class HierarchicalBoardWebClient {
             response = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/board/board-list")
                             .queryParam("pageNum", cri.getPageNum())
-                            .queryParam("amount", cri.getAmount())
+                            .queryParam("amount", cri.getBoardAmount())
                             .queryParam("keyword", cri.getKeyword())
                             .queryParam("searchType", cri.getSearchType())
                             .build())

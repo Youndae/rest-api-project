@@ -1,8 +1,12 @@
-package com.board.boardapp.dto;
+package com.example.boardrest.domain.dto;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@ToString
+@Builder
+@AllArgsConstructor
 public class Criteria {
 
     private int pageNum;

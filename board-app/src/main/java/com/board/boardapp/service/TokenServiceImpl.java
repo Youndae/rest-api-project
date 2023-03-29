@@ -13,6 +13,8 @@ import org.springframework.web.util.WebUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -40,7 +42,12 @@ public class TokenServiceImpl implements TokenService{
         if(at == null && rt != null)
             return reIssuedToken(request, response);
         else if(at != null && rt != null)
-            return JwtDTO.builder().accessTokenHeader(at.getName()).accessTokenValue(at.getValue()).build();
+            return JwtDTO.builder()
+                    .accessTokenHeader(at.getName())
+                    .accessTokenValue(at.getValue())
+                    .refreshTokenHeader(rt.getName())
+                    .refreshTokenValue(rt.getValue())
+                    .build();
 
         return null;
 
@@ -67,7 +74,7 @@ public class TokenServiceImpl implements TokenService{
                 .sameSite("Strict")
                 .build();
 
-        ResponseCookie lsc = ResponseCookie.from("lsc", UUID.randomUUID().toString())
+        ResponseCookie lsc = ResponseCookie.from(JwtProperties.LSC_HEADER_STRING, UUID.randomUUID().toString())
                         .path("/")
                         .maxAge(JwtProperties.REFRESH_MAX_AGE)
                         .build();
@@ -98,5 +105,23 @@ public class TokenServiceImpl implements TokenService{
         saveToken(dto, response);
 
         return dto;
+    }
+
+    @Override
+    public void deleteCookie(HttpServletRequest request, HttpServletResponse response) {
+        Cookie at = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
+        Cookie rt = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
+        Cookie lsc = WebUtils.getCookie(request, JwtProperties.LSC_HEADER_STRING);
+
+        deleteCookieProc(at, response);
+        deleteCookieProc(rt, response);
+        deleteCookieProc(lsc, response);
+
+    }
+
+    public void deleteCookieProc(Cookie cookie, HttpServletResponse response){
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 }

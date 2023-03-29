@@ -1,6 +1,6 @@
 package com.example.boardrest.controller;
 
-import com.example.boardrest.domain.entity.Criteria;
+import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardDetailDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
@@ -41,7 +41,7 @@ public class HierarchicalBoardController {
             log.info("keyword is not null");
             cri = Criteria.builder()
                     .pageNum(pageNum)
-                    .amount(amount)
+                    .boardAmount(amount)
                     .keyword(keyword)
                     .searchType(searchType)
                     .build();
@@ -49,7 +49,7 @@ public class HierarchicalBoardController {
             log.info("keyword is null");
             cri = Criteria.builder()
                     .pageNum(pageNum)
-                    .amount(amount)
+                    .boardAmount(amount)
                     .build();
         }
 

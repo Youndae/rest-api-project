@@ -1,10 +1,7 @@
 package com.board.boardapp.connection.webClient;
 
 import com.board.boardapp.config.WebClientConfig;
-import com.board.boardapp.dto.JwtDTO;
-import com.board.boardapp.dto.JwtProperties;
-import com.board.boardapp.dto.Member;
-import com.board.boardapp.dto.MemberDTO;
+import com.board.boardapp.dto.*;
 import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javassist.NotFoundException;
@@ -34,20 +31,16 @@ public class MemberWebClient {
 
     private final TokenService tokenService;
 
-    public void loginProc(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+    public int loginProc(Map<String, String> loginData
+            , HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
 
         log.info("restCall login");
 
         WebClient client = webClientConfig.useWebClient();
 
-        Map<String, String> map = new HashMap<>();
-
-        map.put("userId", request.getParameter("userId"));
-        map.put("userPw", request.getParameter("userPw"));
-
         Member member = Member.builder()
-                .userId(request.getParameter("userId"))
-                .userPw(request.getParameter("userPw"))
+                .userId(loginData.get("userId"))
+                .userPw(loginData.get("userPw"))
                 .build();
 
         JwtDTO responseVal = client.post()
@@ -57,19 +50,7 @@ public class MemberWebClient {
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
                                 Mono.error(
-                                        new NotFoundException("not found")
-                                )
-                )
-                .onStatus(
-                        HttpStatus::is5xxServerError, clientResponse ->
-                                Mono.error(
-                                        new NullPointerException()
-                                )
-                )
-                .onStatus(
-                        HttpStatus::isError, clientResponse ->
-                                Mono.error(
-                                        new AccessDeniedException("exception")
+                                        new CustomNotFoundException(ErrorCode.USER_NOT_FOUND)
                                 )
                 )
                 .bodyToMono(JwtDTO.class)
@@ -77,7 +58,12 @@ public class MemberWebClient {
 
         log.info("response : {}", responseVal);
 
-        tokenService.saveToken(responseVal, response);
+        if(responseVal != null){
+            tokenService.saveToken(responseVal, response);
+            return 1;
+        }else{
+            return 0;
+        }
 
     }
 
@@ -128,25 +114,36 @@ public class MemberWebClient {
 
     }
 
-    public void logout(HttpServletRequest request, HttpServletResponse response){
+    public int logout(HttpServletRequest request, HttpServletResponse response){
+
+        log.info("logout webClient");
 
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
+        log.info("tokenDto : {}", tokenDTO);
+        log.info("at : {} : {}", tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue());
+        log.info("rt : {} : {}", tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue());
+
         WebClient client = webClientConfig.useWebClient();
 
-        int responseVal = client.post()
+        return client.post()
                 .uri(uriBuilder -> uriBuilder.path("/member/logout").build())
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .retrieve()
+                .onStatus(
+                        HttpStatus::is4xxClientError, clientResponse ->
+                                Mono.error(
+                                        new NotFoundException("not found")
+                                )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError, clientResponse ->
+                                Mono.error(
+                                        new NullPointerException()
+                                )
+                )
                 .bodyToMono(Integer.class)
                 .block();
-
-        log.info("logout response : {}", responseVal);
-        /**
-         * 로그아웃 처리가 정상적으로 동작했다면
-         * lsc, Authorization, Authorization_Refresh 쿠키 전체 삭제.
-         */
-
     }
 }

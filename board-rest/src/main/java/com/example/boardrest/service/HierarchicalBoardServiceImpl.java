@@ -1,6 +1,6 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.entity.Criteria;
+import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.entity.HierarchicalBoard;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
@@ -124,13 +124,14 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
         log.info("service keyword : " + cri.getKeyword());
         log.info("service searchType : " + cri.getSearchType());
 
-        if(cri.getKeyword() != null) cri.setKeyword("%"+cri.getKeyword()+"%");
+        if(cri.getKeyword() != null)
+            cri.setKeyword("%"+cri.getKeyword()+"%");
 
         if (cri.getKeyword() == null) { //default List
             log.info("default");
             dto = hierarchicalBoardRepository.hierarchicalBoardList(
                     PageRequest.of(cri.getPageNum() - 1
-                            , cri.getAmount()
+                            , cri.getBoardAmount()
                             , Sort.by("boardGroupNo").descending()
                                     .and(Sort.by("boardUpperNo").ascending()))
             );
@@ -139,7 +140,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
             dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitle(
                     cri.getKeyword()
                     , PageRequest.of(cri.getPageNum() - 1
-                            , cri.getAmount()
+                            , cri.getBoardAmount()
                             , Sort.by("boardGroupNo").descending()
                                     .and(Sort.by("boardUpperNo").ascending()))
             );
@@ -148,7 +149,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
             dto = hierarchicalBoardRepository.hierarchicalBoardListSearchContent(
                     cri.getKeyword()
                     , PageRequest.of(cri.getPageNum() - 1
-                            , cri.getAmount()
+                            , cri.getBoardAmount()
                             , Sort.by("boardGroupNo").descending()
                                     .and(Sort.by("boardUpperNo").ascending()))
             );
@@ -157,7 +158,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
             dto = hierarchicalBoardRepository.hierarchicalBoardListSearchUser(
                     cri.getKeyword()
                     , PageRequest.of(cri.getPageNum() - 1
-                            , cri.getAmount()
+                            , cri.getBoardAmount()
                             , Sort.by("boardGroupNo").descending()
                                     .and(Sort.by("boardUpperNo").ascending()))
             );
@@ -166,7 +167,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
             dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitleOrContent(
                     cri.getKeyword()
                     , PageRequest.of(cri.getPageNum() - 1
-                            , cri.getAmount()
+                            , cri.getBoardAmount()
                             , Sort.by("boardGroupNo").descending()
                                     .and(Sort.by("boardUpperNo").ascending()))
             );

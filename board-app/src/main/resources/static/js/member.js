@@ -7,6 +7,10 @@ $(function(){
 
         var id = $('#userId').val();
         var pw = $('#userPw').val();
+        var formData = {
+            userId: id,
+            userPw: pw,
+        }
 
         if(id == ""){
             $("#nullId").text("아이디를 입력하세요");
@@ -15,7 +19,26 @@ $(function(){
             $("#nullPw").text("비밀번호를 입력하세요");
             $("#userPw").focus();
         }else{
-            $('#loginForm').submit();
+            formData = JSON.stringify(formData);
+
+            $.ajax({
+                url: '/member/login',
+                method: 'post',
+                data: formData,
+                contentType: 'application/json; charset=UTF-8',
+                success: function(result){
+                    console.log("result : " + result);
+                    if(result == 1){
+                        location.href='/board/boardList';
+                    }
+                },
+                error: function(request, status, error){
+                    console.log("status : "  + request.status);
+                    if(request.status == 900){
+                        $(".login_form_overlap").text("아이디나 비밀번호가 일치하지 않습니다.");
+                    }
+                }
+            })
         }
     })
 

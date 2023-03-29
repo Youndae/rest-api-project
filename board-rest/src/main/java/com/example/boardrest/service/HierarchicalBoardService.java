@@ -1,6 +1,6 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.entity.Criteria;
+import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
 import org.springframework.data.domain.Page;
