@@ -309,14 +309,12 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     @Override
     public ImageDetailDTO getModifyData(long imageNo, Principal principal) {
 
-        if(principal == null){
-            return null;
-        }
+
 
         ImageDetailDTO dto = imageBoardRepository.imageDetailDTO(imageNo);
 
-        if(!dto.getUserId().equals(principal.getName()))
-            return null;
+        if(!dto.getUserId().equals(principal.getName()) || principal == null)
+            throw new NullPointerException();
 
         return dto;
     }

@@ -371,3 +371,23 @@
 >>> 몇가지 테스트를 해보니 retrieve 기준 api 서버에서 responseEntity로 어떤 상태코드를 리턴하는가에 따라 처리가 가능하다.
 >>> 하지만 문제점. api server에서 RestControllerAdvice를 구현하더라도 이 exception을 핸들링해서 클라이언트 서버에 리턴을 해주지 못한다.
 >>> 이 방법을 찾아야 할것으로 보임.
+> 
+> 
+> file size 오류 해결.
+>> 고용량 이미지 파일을 업로드 하고자 하는 경우 SizeLimitExceededException이 발생한다.   
+>> 문제는 ajax로 비동기 처리하는 해당 처리에 대해 ExceptionHandler에서 리턴하는 값을 제대로 받지 못한다는 점이다.
+>> 문제 해결하는데에 참고한 블로그 url은 아래와 같다.
+>> https://velog.io/@tenacity/MultipartException-ExceptionHandler-%EA%B5%AC%ED%98%84-%EC%8B%9C-%EC%A3%BC%EC%9A%94-%EC%84%A4%EC%A0%95-%EC%82%AC%ED%95%AD-SizeLimitExceededException-FileSizeLimitExceededException-MultipartException
+>> 해당 블로그에서는 단일 업로드시에는 ExceptionHandler에서 리턴하는 값을 받았지만 다중업로드시처럼 여러번 Exception이 발생하는 경우에는
+>> 동작하지 않았다고 한다.
+>> 하지만 여기서 이 프로젝트와 차이점은 단일 업로드를 하더라도 Handler에 3번 접근하고 있었다.
+>> 확신이 아닌 추측이지만 아마도 컨트롤러에서 데이터를 받을 때 제목, 내용, 이미지 파일 이렇게 받고 있기 때문이 아닌가 싶다.
+>> 여튼 문제는 해결이 되었으나
+>> 의문점은 아직 남는다.
+>> api 서버에서 파일 사이즈 체크를 진행하고 있다.
+>> 하지만 어차피 업로드 파일 사이즈가 10MB를 넘어가게 된다면 업로드 자체가 안되도록 yml에 설정이 되어있고,
+>> 그럼 api 서버에서 받는 이미지 파일 사이즈는 절대로 10MB를 넘어갈 수 없다는 말이 된다.
+>> 그럼 api서버에서는 굳이 파일의 사이즈 체크를 해야할 필요성이 있는가? 에 대한 의문점이 남는다.
+>> 이건 차차 고민해보도록 하고
+>> 문제를 해결한 방법은 server: tomcat: max-swallow-size: -1 이 설정으로 인해서 해결이 된것인데
+>> 이 max-swallow-size가 어떤 것을 의미하는지에 대해 찾아보고 정리를 해야 한다.

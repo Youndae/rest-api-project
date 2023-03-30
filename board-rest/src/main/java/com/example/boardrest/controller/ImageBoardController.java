@@ -115,13 +115,13 @@ public class ImageBoardController {
 
     @PatchMapping("/image-modify")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public void imageBoardPatch(@RequestParam(value = "files", required = false) List<MultipartFile> files
+    public long imageBoardPatch(@RequestParam(value = "files", required = false) List<MultipartFile> files
                                 , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
                                 , HttpServletRequest request
                                 , Principal principal){
         log.info("image modify");
 
-        imageBoardService.imagePatchCheck(files, deleteFiles, request, principal);
+        return imageBoardService.imagePatchCheck(files, deleteFiles, request, principal);
     }
 
     @DeleteMapping("/image-delete/{imageNo}")

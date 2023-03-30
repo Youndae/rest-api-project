@@ -1,17 +1,18 @@
 package com.board.boardapp.controller;
 
 import com.board.boardapp.dto.CustomNotFoundException;
-import com.board.boardapp.dto.ErrorCode;
 import com.board.boardapp.dto.ErrorResponseEntity;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.nio.file.AccessDeniedException;
+import java.util.HashMap;
+import java.util.Map;
 
 @ControllerAdvice
 @Slf4j
@@ -45,7 +46,17 @@ public class ExceptionHandlerAdvice {
         return ErrorResponseEntity.toResponseEntity(e.getErrorCode());
     }
 
+    @ExceptionHandler(SizeLimitExceededException.class)
+    public ResponseEntity sizeLimitExceededExceptionHandler(SizeLimitExceededException e){
 
+        log.info("size limit exception");
+
+        Map<String, String> result = new HashMap<>();
+        result.put("message", "Large File");
+
+        return ResponseEntity.status(HttpStatus.valueOf(400))
+                .body(result);
+    }
 
 
 }

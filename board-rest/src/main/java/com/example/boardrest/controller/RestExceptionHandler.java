@@ -24,7 +24,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
         exceptionLog(e);
 
-        return ResponseEntity.status(HttpStatus.valueOf(400)).build();
+        return ResponseEntity.status(HttpStatus.valueOf(500)).build();
     }
 
     @ExceptionHandler(FileNotFoundException.class)

@@ -229,7 +229,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
         String userId = hierarchicalBoardRepository.checkWriter(boardNo);
 
         if(principal == null || !principal.getName().equals(userId))
-            return null;
+            throw new NullPointerException();
 
         HierarchicalBoardModifyDTO dto = hierarchicalBoardRepository.getModifyData(boardNo);
 

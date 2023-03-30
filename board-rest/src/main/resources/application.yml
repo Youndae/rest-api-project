@@ -12,6 +12,11 @@ spring:
     generate-ddl: off
     database: mysql
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 
   devtools:
     livereload:

@@ -93,7 +93,7 @@ public class ImageBoardController {
                                         , HttpServletRequest request
                                         , HttpServletResponse response){
 
-
+        log.info("imageInsert");
 
         return imageBoardWebClient.imageBoardInsert(imageTitle, imageContent, images, request, response);
     }
@@ -124,6 +124,7 @@ public class ImageBoardController {
     }
 
     @PatchMapping("/imageBoardModify")
+    @ResponseBody
     public long imageBoardModifyProc(@RequestParam("imageNo") long imageNo
                                     , @RequestParam("imageTitle") String imageTitle
                                     , @RequestParam("imageContent") String imageContent

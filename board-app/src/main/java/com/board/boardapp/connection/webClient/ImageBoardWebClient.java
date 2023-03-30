@@ -276,6 +276,8 @@ public class ImageBoardWebClient {
                 .bodyToMono(ImageBoardDTO.class)
                 .block();
 
+        log.info("getModifyData return dto : {}", dto);
+
         return dto;
     }
 
@@ -360,7 +362,7 @@ public class ImageBoardWebClient {
         mbBuilder.part("imageContent", imageContent);
         mbBuilder.part("imageNo", imageNo);
 
-        return client.patch()
+        long responseVal = client.patch()
                 .uri(uriBuilder -> uriBuilder.path("/image-board/image-modify").build())
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(mbBuilder.build()))
@@ -381,6 +383,10 @@ public class ImageBoardWebClient {
                 .bodyToMono(Long.class)
                 .block();
 
+
+        log.info("responseVal : {}", responseVal);
+
+        return responseVal;
     }
 
     public long imageBoardDelete(long imageNo, HttpServletRequest request, HttpServletResponse response) {
