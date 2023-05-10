@@ -27,8 +27,6 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
     private final HierarchicalBoardRepository hierarchicalBoardRepository;
 
-    private final CountTableService countTableService;
-
     // 계층형 게시판 insert
     @Override
     @Transactional(rollbackOn = Exception.class)
@@ -46,8 +44,6 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
                             .build();
 
             insertPatchHierarchicalBoard(dto);
-
-            countTableService.boardCountPlus("hierarchicalboard");
 
             return boardNo;
         } catch (Exception e) {
@@ -90,8 +86,6 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
             insertPatchHierarchicalBoard(saveDTO);
 
-            countTableService.boardCountPlus("hierarchicalboard");
-
             return boardNo;
         } catch (Exception e) {
             log.info("board Reply insertion failed");
@@ -106,7 +100,6 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
         try {
             hierarchicalBoardRepository.deleteById(boardNo);
 
-            countTableService.boardCountMinus("hierarchicalboard");
             log.info(boardNo + " board delete success");
         } catch (Exception e) {
             log.info(boardNo + " delete failed");

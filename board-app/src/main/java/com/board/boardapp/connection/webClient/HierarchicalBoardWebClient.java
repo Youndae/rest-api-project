@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.file.AccessDeniedException;
+import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
@@ -219,6 +220,11 @@ public class HierarchicalBoardWebClient {
                 .build();
 
 //        Cookie at = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
+
+        Mono<HierarchicalBoardDTO> dto2 = Mono.just(
+                HierarchicalBoardDTO.builder()
+                        .build()
+        );
 
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 

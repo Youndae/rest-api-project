@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -138,10 +139,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         log.info("cookie is not null");
 
-        String uid = providerTest(jwtCookie);
-
-        log.info("cookie uid : " + uid);
-
         String username = jwtTokenProvider.verifyAccessToken(jwtCookie);
 
         log.info("AuthorizationFilter verify username : " + username);
@@ -164,13 +161,4 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
     }
 
-    public String providerTest(Cookie cookie){
-        log.info("provider test");
-
-        String username = jwtTokenProvider.verifyAccessToken(cookie);
-
-        log.info("provider test end");
-
-        return username;
-    }
 }

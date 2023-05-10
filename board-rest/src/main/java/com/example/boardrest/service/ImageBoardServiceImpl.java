@@ -1,11 +1,9 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.entity.CountTable;
 import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.ImageData;
 import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.properties.ImageSizeProperties;
-import com.example.boardrest.repository.CountTableRepository;
 import com.example.boardrest.repository.ImageBoardRepository;
 import com.example.boardrest.repository.ImageDataRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +37,6 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     private final ImageDataRepository imageDataRepository;
 
     private static long sizeSum = 0;
-
-    private final CountTableService countTableService;
 
     @Override
     public ImageBoardDetailDTO getImageBoardDetail(long imageNo, Principal principal) {
@@ -173,8 +169,6 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
             long imageNo =  imageBoardRepository.save(imageBoard).getImageNo();
 
-            countTableService.boardCountPlus("imageBoard");
-
             return imageNo;
         }catch (Exception e){
             log.info("insertion Exception!");
@@ -241,8 +235,6 @@ public class ImageBoardServiceImpl implements ImageBoardService{
             deleteFilesProc(deleteFileName);
 
             imageBoardRepository.deleteById(imageNo);
-
-            countTableService.boardCountMinus("imageBoard");
 
             return 1;
         }catch (Exception e){

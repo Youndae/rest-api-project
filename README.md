@@ -408,6 +408,9 @@ board-app = client Server
 >>>> 보안을 생각하면 referer 체크로 방지하는것이 맞다고 생각하고, 그렇다고 api 서버에서 체크하는 코드를 삭제하기에는 referer가 뚫리는 경우를 생각해 그대로 두는것이 좋을 것 같다고 생각함.   
 >>>> 또한 api 서버에서 작성자와 사용자가 불일치 하는경우 NullPointerException을 발생시키도록 되어있는데 아무래도 맞는 예외처리는 아니다보니 다른 Exception을 발생시키도록 수정이 필요할 것으로 생각됨.   
 >
+> 23/05/10 - ApiServer, DB
+>> 각 게시판 게시글 작성 및 삭제 시 사용하던 CountTableService와 CountTableRepository 삭제 후 DB에서 Trigger로 설정 변경.   
+>> 테스트까지 완료.
 > 
 > 테스트 항목(23/03/29 기준)
 >> 1. login & logout & token

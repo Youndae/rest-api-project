@@ -77,7 +77,6 @@ public class SecurityConfig {
                             .httpBasic().disable()
                             .logout().logoutSuccessHandler(logoutSuccessHandler())
                         .and()
-                            .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                             .addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository, jwtTokenProvider))
                             .authorizeRequests()
                             .antMatchers("/", "/resources/**")
