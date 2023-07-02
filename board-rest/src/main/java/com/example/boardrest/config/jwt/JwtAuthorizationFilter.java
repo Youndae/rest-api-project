@@ -129,9 +129,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         log.info("Authorities request");
 
         Cookie jwtCookie = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
+        Cookie rtCookie = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
 
         // header에 cookie가 존재하지 않거나 cookie값의 시작이 Bearer로 시작하지 않는 경우 검증하지 않고 넘김
-        if(jwtCookie == null || !jwtCookie.getValue().startsWith(JwtProperties.TOKEN_PREFIX)){
+        if(jwtCookie == null || !jwtCookie.getValue().startsWith(JwtProperties.TOKEN_PREFIX) || rtCookie == null || !rtCookie.getValue().startsWith(JwtProperties.TOKEN_PREFIX)){
             log.info("cookie is null or prefix value not Bearer");
             chain.doFilter(request, response);
             return;

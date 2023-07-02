@@ -3,17 +3,22 @@ package com.board.boardapp.controller;
 import com.board.boardapp.connection.webClient.HierarchicalBoardWebClient;
 import com.board.boardapp.connection.webClient.MemberWebClient;
 import com.board.boardapp.dto.JwtDTO;
+import com.board.boardapp.dto.JwtProperties;
 import com.board.boardapp.dto.MemberDTO;
 import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/member")
@@ -86,8 +91,9 @@ public class MemberController {
             /**
              * 로그아웃 처리가 정상적으로 동작했다면
              * lsc, Authorization, Authorization_Refresh 쿠키 전체 삭제.
-             */
+             **/
             tokenService.deleteCookie(request, response);
+            log.info("Logout success");
             return "redirect:/board/boardList";
         }else{
             return "th/error/error";

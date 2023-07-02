@@ -170,6 +170,7 @@ public class ImageBoardWebClient {
                     .uri(uriBuilder -> uriBuilder.path("/image-board/image-board-detail/{imageNo}")
                             .build(imageNo))
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->
@@ -226,6 +227,7 @@ public class ImageBoardWebClient {
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(mbBuilder.build()))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -260,6 +262,7 @@ public class ImageBoardWebClient {
         ImageBoardDTO dto = client.get()
                 .uri(uriBuilder -> uriBuilder.path("/image-board/modify-data/{imageNo}").build(imageNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -295,6 +298,7 @@ public class ImageBoardWebClient {
        String responseVal = client.get()
                 .uri(uriBuilder -> uriBuilder.path("/image-board/modify-image-attach/{imageNo}").build(imageNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -367,6 +371,7 @@ public class ImageBoardWebClient {
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(mbBuilder.build()))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -401,6 +406,7 @@ public class ImageBoardWebClient {
             return client.delete()
                     .uri(uriBuilder -> uriBuilder.path("/image-board/image-delete/{imageNo}").build(imageNo))
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->

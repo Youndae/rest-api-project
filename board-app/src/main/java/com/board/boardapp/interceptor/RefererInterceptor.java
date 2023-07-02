@@ -85,9 +85,15 @@ public class RefererInterceptor implements HandlerInterceptor {
 
         log.info("request url : " + request.getRequestURL());
 
-        if (request.getHeader("Referer") == null){
+        String referer = request.getHeader("Referer");
+
+        if (referer == null){
             new Exception();
         }
+
+        if(referer == null || !referer.contains(request.getHeader("host")))
+            new Exception();
+
 
         if(request.getMethod() != "get") {
             if (checkReferer(request)){

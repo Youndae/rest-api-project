@@ -72,6 +72,7 @@ public class CommentBoardWebClient {
                             .queryParam("amount", cri.getBoardAmount())
                             .build())
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->
@@ -149,6 +150,7 @@ public class CommentBoardWebClient {
                             .queryParam("amount", cri.getBoardAmount())
                             .build())
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->
@@ -215,6 +217,7 @@ public class CommentBoardWebClient {
                         .uri(uriBuilder -> uriBuilder.path("/comment/comment-insert").build())
                         .body(Mono.just(dto), CommentDTO.class)
                         .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                        .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                         .retrieve()
                         .onStatus(
                                 HttpStatus::is4xxClientError, clientResponse ->
@@ -277,6 +280,7 @@ public class CommentBoardWebClient {
                 .uri(uriBuilder -> uriBuilder.path("/comment/comment-reply").build())
                 .body(Mono.just(dto), CommentDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -310,6 +314,7 @@ public class CommentBoardWebClient {
                 .uri(uriBuilder -> uriBuilder.path("/comment/comment-delete/{commentNo}")
                         .build(commentNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->

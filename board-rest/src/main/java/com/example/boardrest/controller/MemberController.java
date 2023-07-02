@@ -58,6 +58,8 @@ public class MemberController {
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_MANAGER', 'ROLE_ADMIN')")
     public int logout(HttpServletRequest request, Principal principal){
 
+        log.info("logout");
+
         return memberService.logout(request, principal);
 
     }

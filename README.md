@@ -412,6 +412,19 @@ board-app = client Server
 >> 각 게시판 게시글 작성 및 삭제 시 사용하던 CountTableService와 CountTableRepository 삭제 후 DB에서 Trigger로 설정 변경.   
 >> 테스트까지 완료.
 > 
+> 23/07/03 - ApiServer, ApplicationServer
+>> 요청시 토큰 검증부분 수정.   
+>> 기존 AccessToken만 체크하던 것을 RefreshToken 존재여부까지 체크하도록 수정.   
+>> ApplicationServer에서는 토큰 체크 시 AccessToken만 존재한다면 null을 리턴해 요청을 차단하고는 있지만   
+>> API Server에서는 AccessToken 하나만 존재하는지를 체크하고 RefreshToken에 대해서는 재발급 요청시에만 검증하고 있었는데   
+>> AccessToken 하나만으로 요청이 들어오는 경우를 감안해 RefreshToken 검증까지는 안하더라도 존재 여부는 확인하도록 수정.      
+>> Application Server에서 브라우저 종료 이벤트 구현 중.   
+>> 브라우저 종료시 DB에 있는 RefreshToken 삭제까지는 무난하게 처리하고 있으나   
+>> 클라이언트의 쿠키 삭제가 종종 삭제되지 않고 남아있는 경우가 발생.   
+>> 될때가 있고 안될때가 있어서 지속적으로 테스트 해보면서 수정 필요.   
+>> nav.js에서 코드 처리중.   
+> 
+> 
 > 테스트 항목(23/03/29 기준)
 >> 1. login & logout & token
 >>> 1. ~~이미 로그인한 사용자가 로그인 페이지 url 입력으로 접근 시 로그인 페이지에 접근할 수 없도록 되어있는가.~~

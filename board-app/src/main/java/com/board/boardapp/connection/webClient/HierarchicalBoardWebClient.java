@@ -154,9 +154,9 @@ public class HierarchicalBoardWebClient {
 
         String responseVal = null;
 
-        JwtDTO existsToken = tokenService.checkExistsToken(request, response);
+        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
-        if(existsToken == null){
+        if(tokenDTO == null){
             log.info("token is null");
             responseVal = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/board/board-detail/{boardNo}")
@@ -176,12 +176,13 @@ public class HierarchicalBoardWebClient {
                     )
                     .bodyToMono(String.class)
                     .block();
-        }else if(existsToken != null){
+        }else if(tokenDTO != null){
             log.info("token is true");
             responseVal = client.get()
                     .uri(uriBuilder -> uriBuilder.path("/board/board-detail/{boardNo}")
                             .build(boardNo))
-                    .cookie(existsToken.getAccessTokenHeader(), existsToken.getAccessTokenValue())
+                    .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->
@@ -240,6 +241,7 @@ public class HierarchicalBoardWebClient {
                 .accept()
                 .body(Mono.just(dto), HierarchicalBoardDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -274,6 +276,7 @@ public class HierarchicalBoardWebClient {
                 .uri(uriBuilder -> uriBuilder.path("/board/board-modify/{boardNo}")
                         .build(boardNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -317,6 +320,7 @@ public class HierarchicalBoardWebClient {
                 .accept()
                 .body(Mono.just(dto), HierarchicalBoardModifyDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -348,6 +352,7 @@ public class HierarchicalBoardWebClient {
                     .uri(uriBuilder -> uriBuilder.path("/board/board-delete/{boardNo}")
                             .build(boardNo))
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                    .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->
@@ -392,6 +397,7 @@ public class HierarchicalBoardWebClient {
                 .accept()
                 .body(Mono.just(dto), HierarchicalBoardModifyDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
+                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
