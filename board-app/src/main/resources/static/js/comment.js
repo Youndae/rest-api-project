@@ -218,17 +218,28 @@ function commentEachParsing(arr, uid){
         commentStr += "<div class=\"comment-box\" value=\"" + res.commentNo + "\">" +
                     "<table class=\"table table-hover\">" +
                         "<tr>" +
-                            "<td>" +
-                                "<p>" + res.userId;
+                            "<td>";
 
-        if(res.commentIndent == 1){
-            commentStr += "<p class=\"ci-1\">" + res.commentContent + "</p>";
+        if (res.commentIndent == 0) {
+            commentStr += "<span class=\"comment_userId\">" + res.userId + "</span>" +
+                            "<span class=\"comment_date\">" + formatDate(res.commentDate) + "</span>" +
+                            "<p class=\"comment_content\">" + res.commentContent + "</p>";
+        }else if(res.commentIndent == 1){
+            commentStr += "<span class=\"comment_userId indent_size_1\">" + res.userId + "</span>" +
+                            "<span class=\"comment_date indent_size_1\">" + formatDate(res.commentDate) + "</span>" +
+                            "<p class=\"comment_content indent_size_1\">" + res.commentContent + "</p>";
         }else if(res.commentIndent == 2){
-            commentStr += "<p class=\"ci-2\">" + "ㄴ" + res.commentContent + "</p>";
+            commentStr += "<span class=\"comment_userId indent_size_2\">" + res.userId + "</span>" +
+                            "<span class=\"comment_date indent_size_2\">" + formatDate(res.commentDate) + "</span>" +
+                            "<p class=\"comment_content indent_size_2\">" + res.commentContent + "</p>";
         }else if(res.commentIndent == 3){
-            commentStr += "<p class=\"ci-3\">" + "ㄴ" + res.commentContent + "</p>";
+            commentStr += "<span class=\"comment_userId indent_size_3\">" + res.userId + "</span>" +
+                            "<span class=\"comment_date indent_size_3\">" + formatDate(res.commentDate) + "</span>" +
+                            "<p class=\"comment_content indent_size_3\">" + res.commentContent + "</p>";
         }else if(res.commentIndent == 4){
-            commentStr += "<p class=\"ci-4\">" + "ㄴ" + res.commentContent + "</p>";
+            commentStr += "<span class=\"comment_userId indent_size_4\">" + res.userId + "</span>" +
+                            "<span class=\"comment_date indent_size_4\">" + formatDate(res.commentDate) + "</span>" +
+                            "<p class=\"comment_content indent_size_4\">" + res.commentContent + "</p>";
         }
 
 
@@ -255,6 +266,20 @@ function commentEachParsing(arr, uid){
     })
 
     comment_area.append(commentStr);
+}
+
+function formatDate(date){
+    var d = new Date(date);
+    var month = '' + (d.getMonth() + 1);
+    var day = '' + d.getDate();
+    var year = d.getFullYear();
+
+    if(month.length < 2)
+        month = '0' + month;
+    if(day.length < 2)
+        day = '0' + day;
+
+    return [year, month, day].join('-');
 }
 
 function cReply(obj){

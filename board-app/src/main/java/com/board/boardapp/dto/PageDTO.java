@@ -2,12 +2,7 @@ package com.board.boardapp.dto;
 
 import lombok.*;
 
-@Getter
-@ToString
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class PageDTO {
 
     private int startPage;

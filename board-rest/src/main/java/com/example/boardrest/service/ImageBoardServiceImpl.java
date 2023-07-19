@@ -126,9 +126,8 @@ public class ImageBoardServiceImpl implements ImageBoardService{
         log.info("image size Check");
 
         for(MultipartFile image : images){
-            sizeSum += image.getSize();
 
-            if(sizeSum >= ImageSizeProperties.LIMIT_SIZE){
+            if(image.getSize() >= ImageSizeProperties.LIMIT_SIZE){
                 log.info("image size is larger than the limit size");
                 return ImageSizeProperties.RESULT_EXCEED_SIZE;
             }

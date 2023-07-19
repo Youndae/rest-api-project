@@ -26,9 +26,8 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
             ", b.boardIndent" +
             ", b.boardUpperNo) " +
             "FROM HierarchicalBoard b"
-    , countQuery = "SELECT c.contentCount " +
-            "FROM CountTable c " +
-            "WHERE c.boardName = 'hierarchicalboard'")
+    , countQuery = "SELECT count(distinct(b.boardNo)) " +
+            "FROM HierarchicalBoard b")
     Page<HierarchicalBoardDTO> hierarchicalBoardList(Pageable pageable);
 
 
@@ -157,35 +156,4 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
             "WHERE b.boardNo = ?1")
     HierarchicalBoardReplyDTO getReplyData(long boardNo);
 
-
-    // 기본 boardList TotalCount
-    @Query(value = "SELECT c.contentCount " +
-            "FROM CountTable c " +
-            "WHERE c.boardName = 'hierarchicalBoard'")
-    long defaultBoardTotalCount();
-
-    // searchTitle TotalCount
-    @Query(value = "SELECT count(b) " +
-            "FROM HierarchicalBoard b " +
-            "WHERE b.boardTitle LIKE :keyword")
-    long searchTitleTotalCount(@Param("keyword") String keyword);
-
-    // searchContent TotalCount
-    @Query(value = "SELECT count(b) " +
-            "FROM HierarchicalBoard b " +
-            "WHERE b.boardContent LIKE :keyword")
-    long searchContentTotalCount(@Param("keyword") String keyword);
-
-    // searchUser TotalCount
-    @Query(value = "SELECT count(b) " +
-            "FROM HierarchicalBoard b " +
-            "WHERE b.member.userId LIKE :keyword")
-    long searchUserTotalCount(@Param("keyword") String keyword);
-
-    // searchTitle + content TotalCount
-    @Query(value = "SELECT count(b) " +
-            "FROM HierarchicalBoard b " +
-            "WHERE b.boardTitle LIKE :keyword " +
-            "OR b.boardContent LIKE :keyword")
-    long searchTitleOrContentTotalCount(@Param("keyword") String keyword);
 }

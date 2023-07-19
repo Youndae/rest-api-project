@@ -484,8 +484,9 @@ board-app = client Server
 >>>> 3. ~~삭제한 이미지와 추가한 이미지파일의 처리가 정상적으로 이루어 지고 있는가.~~
 >>>> 4. ~~아무것도 수정하지 않고 작성 버튼을 눌렀을 때 정상적으로 처리되고 있는가.~~
 >>>> 5. ~~로그인하지 않은 사용자나 작성자가 아닌 사용자가 페이지 접근 시 오류페이지를 출력하고 있는가.~~ 
-
-
-# 기능 전체적으로 마무리 후 해야할것
-> 1. 프론트, 백 모두 불필요 로그 제거.
-> 2. 기능 전체적으로 Exception 테스트
+>
+> 
+> 23/07/19 - Api server
+>> count 쿼리 count(distinct(PK)) 형태로 수정.   
+>> 그로인해 countTable Entity와 테이블 제거.
+>> HierarchicalBoardRepository와 ImageBoardRepository에 사용하지 않는 쿼리 제거.

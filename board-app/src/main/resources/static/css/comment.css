@@ -1,0 +1,29 @@
+.comment_userId {
+    display: inline;
+    margin-right: 10px;
+    font-weight: 600;
+    font-size: large;
+}
+
+.comment_date{
+    font-size: small;
+    color: gray;
+}
+
+.comment_content {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.indent_size_1{
+    padding-left: 20px;
+}
+.indent_size_2{
+    padding-left: 40px;
+}
+.indent_size_3{
+    padding-left: 60px;
+}
+.indent_size_4{
+    padding-left: 80px;
+}

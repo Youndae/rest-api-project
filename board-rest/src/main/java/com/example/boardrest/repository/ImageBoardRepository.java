@@ -60,9 +60,8 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
             "ImageData id " +
             "ON ib.imageNo = id.imageBoard.imageNo " +
             "GROUP BY ib.imageNo"
-    ,countQuery = "SELECT c.contentCount " +
-            "FROM CountTable c " +
-            "WHERE c.boardName = 'imageBoard'")
+    ,countQuery = "SELECT count(distinct(ib.imageNo)) " +
+            "FROM ImageBoard ib")
     Page<ImageBoardDTO> getImageBoardList(Pageable pageable);
 
     //searchTitle
@@ -152,16 +151,6 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
             "FROM ImageBoard b " +
             "WHERE b.imageNo = ?1 ")
     ImageDetailDTO imageDetailDTO(long imageNo);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE ImageBoard  b " +
-            "SET b.imageTitle = ?1" +
-            ", b.imageContent = ?2" +
-            ", b.imageDataSet = ?3 " +
-            "WHERE b.imageNo = ?4")
-    void imageBoardModify(String imageTitle, String imageContent, Set<ImageData> imageDataSet, long imageNo);
-
 
 
 }
