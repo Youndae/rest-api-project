@@ -18,13 +18,16 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "c.commentNo" +
             ", c.member.userId" +
             ", c.commentDate" +
-            ", c.commentContent" +
+            ", CASE " +
+            "WHEN (c.commentStatus > 0) THEN null " +
+            "ELSE c.commentContent " +
+            "END AS commentContent" +
             ", c.commentGroupNo" +
             ", c.commentIndent" +
             ", c.commentUpperNo) " +
             "FROM Comment c " +
             "WHERE c.hierarchicalBoard.boardNo = :boardNo"
-    , countQuery = "SELECT count(c) " +
+            , countQuery = "SELECT count(c) " +
             "FROM Comment c " +
             "WHERE c.hierarchicalBoard.boardNo = :boardNo")
     Page<BoardCommentDTO> getHierarchicalBoardCommentList(Pageable pageable, @Param("boardNo") long boardNo);
@@ -34,13 +37,16 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "c.commentNo" +
             ", c.member.userId" +
             ", c.commentDate" +
-            ", c.commentContent" +
+            ", CASE " +
+            "WHEN (c.commentStatus > 0) THEN null " +
+            "ELSE c.commentContent " +
+            "END AS commentContent" +
             ", c.commentGroupNo" +
             ", c.commentIndent" +
             ", c.commentUpperNo) " +
             "FROM Comment c " +
             "WHERE c.imageBoard.imageNo = :imageNo"
-    , countQuery = "SELECT count(c) " +
+            , countQuery = "SELECT count(c) " +
             "FROM Comment c " +
             "WHERE c.imageBoard.imageNo = :imageNo")
     Page<BoardCommentDTO> getImageBoardCommentList(Pageable pageable, @Param("imageNo") long imageNo);
@@ -75,5 +81,14 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "WHERE commentNo = ?1"
     , nativeQuery = true)
     String existsComment(long commentNo);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE comment " +
+            "SET commentStatus = 1 " +
+            "WHERE commentNo = ?1"
+    , nativeQuery = true)
+    void deleteComment(long commentNo);
 
 }

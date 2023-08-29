@@ -220,26 +220,33 @@ function commentEachParsing(arr, uid){
                         "<tr>" +
                             "<td>";
 
+        var commentContent = "삭제된 댓글입니다.";
+
+        if(res.commentContent != null){
+            commentContent = res.commentContent;
+        }
+
+
         if (res.commentIndent == 0) {
             commentStr += "<span class=\"comment_userId\">" + res.userId + "</span>" +
                             "<span class=\"comment_date\">" + formatDate(res.commentDate) + "</span>" +
-                            "<p class=\"comment_content\">" + res.commentContent + "</p>";
+                            "<p class=\"comment_content\">" + commentContent + "</p>";
         }else if(res.commentIndent == 1){
             commentStr += "<span class=\"comment_userId indent_size_1\">" + res.userId + "</span>" +
                             "<span class=\"comment_date indent_size_1\">" + formatDate(res.commentDate) + "</span>" +
-                            "<p class=\"comment_content indent_size_1\">" + res.commentContent + "</p>";
+                            "<p class=\"comment_content indent_size_1\">" + commentContent + "</p>";
         }else if(res.commentIndent == 2){
             commentStr += "<span class=\"comment_userId indent_size_2\">" + res.userId + "</span>" +
                             "<span class=\"comment_date indent_size_2\">" + formatDate(res.commentDate) + "</span>" +
-                            "<p class=\"comment_content indent_size_2\">" + res.commentContent + "</p>";
+                            "<p class=\"comment_content indent_size_2\">" + commentContent + "</p>";
         }else if(res.commentIndent == 3){
             commentStr += "<span class=\"comment_userId indent_size_3\">" + res.userId + "</span>" +
                             "<span class=\"comment_date indent_size_3\">" + formatDate(res.commentDate) + "</span>" +
-                            "<p class=\"comment_content indent_size_3\">" + res.commentContent + "</p>";
+                            "<p class=\"comment_content indent_size_3\">" + commentContent + "</p>";
         }else if(res.commentIndent == 4){
             commentStr += "<span class=\"comment_userId indent_size_4\">" + res.userId + "</span>" +
                             "<span class=\"comment_date indent_size_4\">" + formatDate(res.commentDate) + "</span>" +
-                            "<p class=\"comment_content indent_size_4\">" + res.commentContent + "</p>";
+                            "<p class=\"comment_content indent_size_4\">" + commentContent + "</p>";
         }
 
 

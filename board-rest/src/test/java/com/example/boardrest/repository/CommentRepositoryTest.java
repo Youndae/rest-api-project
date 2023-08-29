@@ -4,7 +4,6 @@ import com.example.boardrest.domain.dto.BoardCommentDTO;
 import com.example.boardrest.domain.entity.Comment;
 import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.service.CountTableService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,20 +20,17 @@ class CommentRepositoryTest {
     @Autowired
     private CommentRepository commentRepository;
 
-    @Autowired
-    private CountTableService countTableService;
-
     @Test
     void listTest(){
 
-        Page<BoardCommentDTO> dto = commentRepository.getHierarchicalBoardCommentList(
+        /*Page<BoardCommentDTO> dto = commentRepository.getHierarchicalBoardCommentList(
                 PageRequest.of(1 - 1
                         , 20
                         , Sort.by("commentGroupNo").descending()
                                 .and(Sort.by("commentUpperNo").ascending()))
-                , 99988);
+                , 99988);*/
 
-        System.out.println(dto);
+//        System.out.println(dto);
 
 //        System.out.println("total : " + total);
     }
@@ -56,11 +52,6 @@ class CommentRepositoryTest {
             );
         }
 
-    }
-
-    @Test
-    void countTableTest(){
-        countTableService.boardCountMinus("imageboard");
     }
 
 

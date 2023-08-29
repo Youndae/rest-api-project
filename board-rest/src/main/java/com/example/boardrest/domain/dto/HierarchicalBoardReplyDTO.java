@@ -6,6 +6,6 @@ public interface HierarchicalBoardReplyDTO {
 
     int getBoardIndent();
 
-    Long getBoardUpperNo();
+    String getBoardUpperNo();
 
 }

@@ -30,10 +30,6 @@ public class ImageBoardController {
 
     private final ImageBoardService imageBoardService;
 
-    private final ImageBoardRepository imageBoardRepository;
-
-    private final ImageDataRepository imageDataRepository;
-
     @GetMapping("/image-board-list")
     public ResponseEntity<Page<ImageBoardDTO>> imageBoardList(@RequestParam(value = "pageNum") int pageNum
                                                             , @RequestParam(value = "amount") int amount

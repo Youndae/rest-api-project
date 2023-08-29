@@ -36,8 +36,6 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
     private final ImageDataRepository imageDataRepository;
 
-    private static long sizeSum = 0;
-
     @Override
     public ImageBoardDetailDTO getImageBoardDetail(long imageNo, Principal principal) {
 
@@ -121,7 +119,6 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     }
 
     // 이미지파일 사이즈 체크
-    @Override
     public long imageSizeCheck(List<MultipartFile> images) throws Exception {
         log.info("image size Check");
 
@@ -140,7 +137,7 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
     // 이미지 게시판 insert
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
     public long imageInsertCheck(List<MultipartFile> images
                                 , String imageTitle
                                 , String imageContent
@@ -156,28 +153,26 @@ public class ImageBoardServiceImpl implements ImageBoardService{
             return -1;
         }
 
-        try{
-            ImageBoard imageBoard = ImageBoard.builder()
-                    .member(principalService.checkPrincipal(principal))
-                    .imageTitle(request.getParameter("imageTitle"))
-                    .imageContent(request.getParameter("imageContent"))
-                    .imageDate(Date.valueOf(LocalDate.now()))
-                    .build();
 
-            imageInsert(images, request, 1, imageBoard);
+        ImageBoard imageBoard = ImageBoard.builder()
+                .member(principalService.checkPrincipal(principal))
+                .imageTitle(request.getParameter("imageTitle"))
+                .imageContent(request.getParameter("imageContent"))
+                .imageDate(Date.valueOf(LocalDate.now()))
+                .build();
 
-            long imageNo =  imageBoardRepository.save(imageBoard).getImageNo();
+        imageInsert(images,  1, imageBoard);
 
-            return imageNo;
-        }catch (Exception e){
-            log.info("insertion Exception!");
-            return -1;
-        }
+        long imageNo =  imageBoardRepository.save(imageBoard).getImageNo();
+
+        return imageNo;
+
 
     }
 
     // 이미지 게시판 patch
     @Override
+    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
     public long imagePatchCheck(List<MultipartFile> images
                         , List<String> deleteFiles
                         , HttpServletRequest request
@@ -196,30 +191,33 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
         long imageNo = Long.parseLong(request.getParameter("imageNo"));
 
-        try{
-            ImageBoard imageBoard = ImageBoard.builder()
-                    .member(principalService.checkPrincipal(principal))
-                    .imageNo(imageNo)
-                    .imageTitle(request.getParameter("imageTitle"))
-                    .imageContent(request.getParameter("imageContent"))
-                    .imageDate(Date.valueOf(LocalDate.now()))
-                    .build();
+        Optional<ImageBoard> entity = imageBoardRepository.findById(imageNo);
 
-            if(images != null)
-                imageInsert(images, request, imageDataRepository.countImageStep(imageNo) + 1, imageBoard);
-
-            if(deleteFiles != null)
-                deleteFilesProc(deleteFiles);
-
-            return imageBoardRepository.save(imageBoard).getImageNo();
-        }catch (Exception e){
-            log.info("patch exception!");
+        if(!entity.get().getMember().getUserId().equals(principal.getName()))
             return -1;
-        }
+
+
+        ImageBoard imageBoard = ImageBoard.builder()
+                .member(principalService.checkPrincipal(principal))
+                .imageNo(imageNo)
+                .imageTitle(request.getParameter("imageTitle"))
+                .imageContent(request.getParameter("imageContent"))
+                .imageDate(Date.valueOf(LocalDate.now()))
+                .build();
+
+        if(deleteFiles != null)
+            deleteFilesProc(deleteFiles);
+
+        if(images != null)
+            imageInsert(images, imageDataRepository.countImageStep(imageNo) + 1, imageBoard);
+
+        return imageBoardRepository.save(imageBoard).getImageNo();
+
     }
 
     // 이미지 게시판 delete
     @Override
+    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
     public long deleteImageBoard(long imageNo, Principal principal) {
         log.info("delete imageBoard");
 
@@ -228,79 +226,77 @@ public class ImageBoardServiceImpl implements ImageBoardService{
         if(!entity.get().getMember().getUserId().equals(principal.getName()))
             return 0;
 
+
+        List<String> deleteFileName = imageDataRepository.deleteImageDataList(imageNo);
+
         try{
-            List<String> deleteFileName = imageDataRepository.deleteImageDataList(imageNo);
-
             deleteFilesProc(deleteFileName);
-
-            imageBoardRepository.deleteById(imageNo);
-
-            return 1;
         }catch (Exception e){
-            log.info("delete board exception!");
-            return 0;
+            new Exception();
         }
+
+        imageBoardRepository.deleteById(imageNo);
+
+        return 1;
+
     }
 
     // 이미지 파일 저장 및 imageData save 처리
+    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
     void imageInsert(List<MultipartFile> images
-                            , HttpServletRequest request
                             , int step
-                            , ImageBoard imageBoard) throws Exception{
+                            , ImageBoard imageBoard) {
 
         String filePath = "E:\\upload\\boardProject\\";
 
         for(MultipartFile image : images){
             String originalName = image.getOriginalFilename();
 
+            StringBuffer sb = new StringBuffer();
+            String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()))
+                    .append(UUID.randomUUID().toString())
+                    .append(originalName.substring(originalName.lastIndexOf("."))).toString();
+
+            String saveFile = filePath + saveName;
+
             try{
-                StringBuffer sb = new StringBuffer();
-                String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()))
-                        .append(UUID.randomUUID().toString())
-                        .append(originalName.substring(originalName.lastIndexOf("."))).toString();
-
-                String saveFile = filePath + saveName;
-
                 image.transferTo(new File(saveFile));
-
-                log.info("saveName : " + saveName + ", originalName : " + originalName + ", imageStep : " + step);
-
-                ImageData imageData = ImageData.builder()
-                        .imageName(saveName)
-                        .oldName(originalName)
-                        .imageStep(step)
-                        .build();
-
-                imageBoard.addImageData(imageData);
-
-                step++;
             }catch (Exception e){
-                log.info("imageInsert exception");
+                new Exception();
             }
+
+            log.info("saveName : " + saveName + ", originalName : " + originalName + ", imageStep : " + step);
+
+            ImageData imageData = ImageData.builder()
+                    .imageName(saveName)
+                    .oldName(originalName)
+                    .imageStep(step)
+                    .build();
+
+            imageBoard.addImageData(imageData);
+
+            step++;
+
         }
     }
 
     // 이미지 파일 삭제
-    void deleteFilesProc(List<String> deleteFiles) throws Exception{
+    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
+    void deleteFilesProc(List<String> deleteFiles) {
         String filePath = "E:\\upload\\boardProject\\";
 
-        try{
-            for(int i = 0; i < deleteFiles.size(); i++){
-                imageDataRepository.deleteById(deleteFiles.get(i));
-                File file = new File(filePath + deleteFiles.get(i));
+        for(int i = 0; i < deleteFiles.size(); i++){
+            imageDataRepository.deleteById(deleteFiles.get(i));
+            File file = new File(filePath + deleteFiles.get(i));
 
-                if(file.exists())
-                    file.delete();
-            }
-        }catch (Exception e){
-            log.info("delete file Process Exception");
+            if(file.exists())
+                file.delete();
         }
+
     }
 
     @Override
     public ImageDetailDTO getModifyData(long imageNo, Principal principal) {
-
-
 
         ImageDetailDTO dto = imageBoardRepository.imageDetailDTO(imageNo);
 

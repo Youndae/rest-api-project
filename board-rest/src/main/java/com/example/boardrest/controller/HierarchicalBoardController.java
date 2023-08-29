@@ -129,10 +129,10 @@ public class HierarchicalBoardController {
 
     @DeleteMapping("/board-delete/{boardNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public void hierarchicalBoardDelete(@PathVariable long boardNo){
+    public long hierarchicalBoardDelete(@PathVariable long boardNo, Principal principal){
         log.info("delete board");
 
-        hierarchicalBoardService.deleteBoard(boardNo);
+        return hierarchicalBoardService.deleteBoard(boardNo, principal);
     }
 
     @PostMapping("/board-reply")

@@ -13,7 +13,7 @@ public interface HierarchicalBoardService {
 
     long insertBoardReply(HierarchicalBoardModifyDTO dto, Principal principal);
 
-    void deleteBoard(long boardNo);
+    long deleteBoard(long boardNo, Principal principal);
 
     Page<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri) ;
 

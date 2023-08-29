@@ -39,4 +39,6 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "boardNo")
     private HierarchicalBoard hierarchicalBoard;
+
+    private int commentStatus;
 }

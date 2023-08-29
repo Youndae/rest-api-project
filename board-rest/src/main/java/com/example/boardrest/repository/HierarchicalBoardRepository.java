@@ -1,9 +1,7 @@
 package com.example.boardrest.repository;
 
+import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.domain.entity.HierarchicalBoard;
-import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
-import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
-import com.example.boardrest.domain.dto.HierarchicalBoardReplyDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalBoard, Long> {
 
@@ -155,5 +154,32 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
             "FROM HierarchicalBoard b " +
             "WHERE b.boardNo = ?1")
     HierarchicalBoardReplyDTO getReplyData(long boardNo);
+
+
+    @Modifying
+    @Query(value = "DELETE FROM HierarchicalBoard h " +
+            "WHERE h.boardGroupNo = ?1")
+    void deleteByBoardGroupNo(long boardGroupNo);
+
+
+    @Modifying
+    @Query(value = "DELETE FROM HierarchicalBoard h WHERE h.boardNo in :delList")
+    void deleteAllByBoardNoList(@Param("delList") List<Long> delList);
+
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.DeleteBoardDTO(" +
+            "h.boardNo" +
+            ", h.boardGroupNo" +
+            ", h.boardIndent) " +
+            "FROM HierarchicalBoard h " +
+            "WHERE h.boardNo = ?1")
+    DeleteBoardDTO getDeleteData(long boardNo);
+
+
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.DeleteGroupListDTO(" +
+            "h.boardNo" +
+            ", h.boardUpperNo) " +
+            "FROM HierarchicalBoard h " +
+            "WHERE h.boardGroupNo = ?1")
+    List<DeleteGroupListDTO> getGroupList(long boardGroupNo);
 
 }

@@ -366,7 +366,7 @@ public class HierarchicalBoardWebClient {
                                             new NullPointerException()
                                     )
                     )
-                    .bodyToMono(String.class)
+                    .bodyToMono(Long.class)
                     .block();
 
             return 1;

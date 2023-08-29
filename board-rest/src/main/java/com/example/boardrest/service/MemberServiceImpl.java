@@ -103,20 +103,22 @@ public class MemberServiceImpl implements MemberService{
 
         String uid = customUser.getMember().getUserId();
 
-        String accessToken = tokenProvider.issuedAccessToken(uid);
+        if(uid != null){
+            String accessToken = tokenProvider.issuedAccessToken(uid);
 
-        log.info("service token : " + accessToken);
+            log.info("service token : " + accessToken);
 
-        String refreshToken = tokenProvider.issuedRefreshToken(uid);
+            String refreshToken = tokenProvider.issuedRefreshToken(uid);
 
-        JwtDTO dto = JwtDTO.builder()
-                .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
-                .accessTokenValue(JwtProperties.TOKEN_PREFIX + accessToken)
-                .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
-                .refreshTokenValue(JwtProperties.TOKEN_PREFIX + refreshToken)
-                .build();
+            return JwtDTO.builder()
+                    .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
+                    .accessTokenValue(JwtProperties.TOKEN_PREFIX + accessToken)
+                    .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
+                    .refreshTokenValue(JwtProperties.TOKEN_PREFIX + refreshToken)
+                    .build();
+        }
 
-        return dto;
+        return null;
     }
 
     @Override

@@ -12,8 +12,6 @@ public interface ImageBoardService {
 
     Page<ImageBoardDTO> getImageBoardList(Criteria cri);
 
-    long imageSizeCheck(List<MultipartFile> images) throws Exception;
-
     long imageInsertCheck(List<MultipartFile> images
                             , String imageTitle
                             , String imageContent
