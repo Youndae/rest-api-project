@@ -490,3 +490,24 @@ board-app = client Server
 >> count 쿼리 count(distinct(PK)) 형태로 수정.   
 >> 그로인해 countTable Entity와 테이블 제거.
 >> HierarchicalBoardRepository와 ImageBoardRepository에 사용하지 않는 쿼리 제거.
+>
+>
+>> 23/08/28 ~ 23/08/29
+>>> API server
+>>>> 계층형 삭제 처리 수정.
+>>>>> * 기존에는 삭제 요청 들어온 데이터만 삭제하는 형태.
+>>>>> * 수정 후, 그 하위 게시글까지 삭제하도록 수정.
+>>>>> * 삭제할 게시글의 upperNo를 갖고 있다면 삭제하도록 수정.
+>>>>> * 쿼리 역시 반복문을 통해 계속 호출하는 것이 아닌 List를 전달해 처리하도록 수정.
+>>>>
+>>>> 댓글 삭제 처리 수정.
+>>>>> * 데이터를 삭제하지 않고 '삭제된 댓글입니다.' 라는 문구를 출력하도록 수정.
+>>>>> * 처리를 위해 Comment에 commentStatus 필드를 추가. default 0으로 설정. 삭제 요청 시 1로 수정 처리.
+>>>>> * 리스트 조회 요청시에도 CASE WHEN을 통해 status가 1인 경우 content를 null로 출력하도록 쿼리 수정.
+>>>>> * JQuery에서도 content가 null인 경우 해당하는 문구를 출력하도록 수정.
+>>>>
+>>>> @Transactional을 통한 롤백 처리를 위해 예외처리 구문 수정.
+>
+>
+>> 23/08/30
+>>> 주석과 불필요 로그 제거.

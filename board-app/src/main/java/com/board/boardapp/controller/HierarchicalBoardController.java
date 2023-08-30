@@ -49,15 +49,9 @@ public class HierarchicalBoardController {
 
         System.out.println("boardNo : " + boardNo);
 
-//        System.out.println(principal.getName());
-
         HierarchicalBoardDetailDTO dto = hierarchicalBoardWebClient.getHierarchicalBoardDetail(boardNo, request, response);
 
         model.addAttribute("board", dto);
-
-        log.info("boardDetail uid : {}", dto.getUid());
-
-        log.info("uid : {} ", response.getHeader("uid"));
 
         model.addAttribute("uid", response.getHeader("uid"));
 
@@ -120,9 +114,6 @@ public class HierarchicalBoardController {
 
         log.info("controller insertProc response : {}", response);
 
-        /**
-         * exception Handler 구현 전 임시조치
-         */
         if(responseVal < 0)
             return "th/member/join";
         else
@@ -134,28 +125,6 @@ public class HierarchicalBoardController {
                                             , @PathVariable long boardNo
                                             , HttpServletRequest request
                                             , HttpServletResponse response){
-        /**
-         * @Data
-         * boardNo
-         * groupNo
-         * Indent
-         * upperNo
-         *
-         * or
-         *
-         * boardNo만 받아서 페이지 바로 열어주고
-         * 작성 버튼 눌렀을 때 기존글 boardNo를 같이 보내줘서
-         * 서버에서 boardNo에 해당하는 데이터 가져 온 뒤
-         * 그 데이터를 토대로 필요한 데이터를 만들어 save하는 방법도 가능.
-         *
-         * 장단점.
-         * boardNo를 받아 서버에서 필요 데이터를 가져올 때 사용자와 글 작성자를 비교해
-         * 다른 경우 걸러내는 작업이 가능.
-         * 물론 boardNo만 받아서 페이지 바로 열어주더라도 작성 처리시에 검증을 할 수 있지만
-         * 먼저 필요 데이터를 받는 경우 검증을 한번 더 해서 이중으로 처리가 가능하다는 장점이 있음.
-         * 그래도?
-         * 항상 전자의 방식대로 했으니 이번에는 후자의 방법으로.
-         */
 
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 

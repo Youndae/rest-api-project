@@ -46,11 +46,6 @@ public class MemberController {
 
         log.info("controller login");
 
-        log.info("controller userId : " + member.getUserId());
-        log.info("controller userPw : " + member.getUserPw());
-//        authenticationFilter.attemptAuthentication(request, response);
-
-
         return new ResponseEntity<>(memberService.memberLogin(member), HttpStatus.OK);
     }
 

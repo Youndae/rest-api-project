@@ -6,12 +6,5 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface MemberRepository extends JpaRepository<Member, String> {
 
-    @Query(value = "SELECT m.userId" +
-            ", m.userPw" +
-            ", m.auths " +
-            "FROM Member m " +
-            "WHERE m.userId = ?1")
-    Member userInfo(String userId);
-
     Member findByUserId(String userId);
 }

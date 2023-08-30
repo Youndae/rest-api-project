@@ -47,10 +47,6 @@ public class MemberController {
     public int loginProc(@RequestBody Map<String, String> loginData
             , HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
 
-        System.out.println("loginProc");
-
-        System.out.println("username : " + loginData.get("userId"));
-        System.out.println("userPw : " + loginData.get("userPw"));
 
         return memberWebClient.loginProc(loginData, request, response);
     }
@@ -65,8 +61,6 @@ public class MemberController {
     public int joinProc(MemberDTO memberDTO){
         log.info("joinProc");
 
-        log.info("join dto : {}", memberDTO);
-
         return memberWebClient.joinProc(memberDTO);
     }
 
@@ -75,7 +69,6 @@ public class MemberController {
     public int checkUserId(@RequestParam("userId") String userId){
 
         log.info("checkUserId");
-        log.info("userId : {}", userId);
 
         return memberWebClient.checkUserId(userId);
     }

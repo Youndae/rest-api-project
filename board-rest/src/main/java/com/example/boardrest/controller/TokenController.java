@@ -30,11 +30,7 @@ public class TokenController {
     public ResponseEntity<JwtDTO> reissuedToken(HttpServletRequest request){
       log.info("reissued Token");
 
-//      JwtDTO dto = provider.verifyRefreshToken(request);
-
       JwtDTO dto = tokenService.reIssuedToken(request);
-
-      log.info("dto : {}", dto);
 
       return new ResponseEntity<>(dto, HttpStatus.OK);
     }

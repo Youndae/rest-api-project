@@ -1,6 +1,6 @@
 package com.example.boardrest.config;
 
-import com.example.boardrest.config.jwt.JwtAuthenticationFilter;
+
 import com.example.boardrest.config.jwt.JwtAuthorizationFilter;
 import com.example.boardrest.repository.MemberRepository;
 import com.example.boardrest.security.CustomLogoutSuccessHandler;
@@ -17,7 +17,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.CorsFilter;
 
@@ -44,11 +43,6 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
 
 
-
-    /*@Bean
-    public AuthenticationSuccessHandler loginSuccessHandler(){
-        return new CustomAuthenticationSuccessHandler();
-    }*/
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -81,18 +75,6 @@ public class SecurityConfig {
                             .authorizeRequests()
                             .antMatchers("/", "/resources/**")
                             .permitAll();
-
-        /*http.authorizeRequests()
-                .antMatchers("/", "/login/**", "/resources/**")
-                .permitAll()
-
-            .and()
-                .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/imageBoard/imageBoardList")
-                .invalidateHttpSession(true)
-            .and()
-                .exceptionHandling().accessDeniedPage("/");*/
 
         return http.build();
     }

@@ -98,11 +98,6 @@ public class HierarchicalBoardController {
         else if(principal != null)
             log.info("api server principal is not null : " + principal.getName());
 
-//        log.info("title : {}, content : {}", dto.getBoardTitle(), dto.getBoardContent());
-
-//        log.info("title : {}", request.getParameter("boardTitle"));
-//        log.info("content : {}", request.getParameter("boardContent"));
-
         return hierarchicalBoardService.insertBoard(dto, principal);
     }
 
@@ -140,14 +135,7 @@ public class HierarchicalBoardController {
     public long hierarchicalBoardReply(@RequestBody HierarchicalBoardModifyDTO dto, Principal principal){
         log.info("reply board");
 
-//        return hierarchicalBoardService.insertBoardReply(request, principal);
-
-        log.info("boardNo : {}, title : {}, content : {}", dto.getBoardNo(), dto.getBoardTitle(), dto.getBoardContent());
-
-
         long responseVal = hierarchicalBoardService.insertBoardReply(dto, principal);
-
-        log.info("board-reply responseVal : {}", responseVal);
 
         return responseVal;
     }

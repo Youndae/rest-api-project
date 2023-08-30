@@ -31,12 +31,7 @@ public class ImageBoardController {
 
     @GetMapping("/imageBoardList")
     public String imageBoardMain(Model model, Criteria cri) throws JsonProcessingException {
-        /**
-         * @Data
-         * 1. imageTitle
-         * 2. imageData - imageName(step 1 thumbnail)
-         * 3. imageNo
-         */
+
         model.addAttribute("imageList", imageBoardWebClient.getImageBoardList(cri));
 
         return "th/imageBoard/imageBoardList";
@@ -47,27 +42,7 @@ public class ImageBoardController {
                                     , @PathVariable long imageNo
                                     , HttpServletRequest request
                                     , HttpServletResponse response) throws JsonProcessingException {
-        /**
-         * @Data
-         * 1. imageTitle
-         * 2. uid(login user)
-         * 3. userid(writer)
-         * 4. imageDate
-         * 5. imageNo
-         * 6. imageContent
-         * 7. imageDataList
-         *
-         * or
-         *
-         * 1. imageTitle
-         * 2. uid(login user)
-         * 3. userid(writer)
-         * 4. imageDate
-         * 5. imageNo
-         * 6. imageContent
-         *  +
-         * getJSON('/imageBoard/imageList')
-         */
+
         model.addAttribute("image", imageBoardWebClient.getImageDetail(imageNo, request, response));
 
         return "th/imageBoard/imageBoardDetail";
@@ -132,11 +107,6 @@ public class ImageBoardController {
                                     , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
                                     , HttpServletRequest request
                                     , HttpServletResponse response){
-
-        if(deleteFiles == null)
-            log.info("deleteFiles is null");
-        else
-            log.info("deleteFiles name : " + deleteFiles.get(0));
 
         return imageBoardWebClient.imageBoardModify(imageNo, imageTitle, imageContent, files, deleteFiles, request, response);
 

@@ -20,7 +20,7 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(NotFoundException.class)
     public String notFoundHandle(NotFoundException e){
-        System.out.println("NotFountException : " + e);
+        log.info("NotFountException : " + e);
         return "th/error/error";
     }
 

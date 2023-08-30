@@ -14,6 +14,7 @@ import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -58,6 +59,7 @@ public class JwtTokenProvider {
         return dto.getTokenVal();
     }
 
+    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
     public String reIssuedRefreshToken(String originIndex){
 
         log.info("reIssuedRefreshToken");
@@ -199,63 +201,4 @@ public class JwtTokenProvider {
         return null;
     }
 
-
-
-
-    /*//verify RefreshToken & AccessToken
-    public JwtDTO verifyRefreshToken(HttpServletRequest request){
-
-        Cookie refreshToken = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
-
-        if(refreshToken == null || !refreshToken.getValue().startsWith(JwtProperties.TOKEN_PREFIX)) {
-            log.info("refresh Token null");
-            return null;
-        }
-
-        String refreshTokenVal = refreshToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
-
-        String rIndex = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
-                .build()
-                .verify(refreshTokenVal)
-                .getClaim("refresh")
-                .asString();
-
-        log.info("tokenval : {}, rIndex : {}", refreshTokenVal, rIndex);
-
-        //refreshToken 검증과 동시에 userId를 획득.
-        //그럼 query는 select userId from refreshToken where rtIndex = rIndex And tokenVal = refreshTokenVal
-        // 이렇게 처리해 userId가 null인 경우 재발급을 하지 않도록.
-        String userId = refreshTokenRepository.existsByRtIndexAndUserId(rIndex, refreshTokenVal);
-
-        log.info("userId : {}", userId);
-
-        JwtDTO dto = new JwtDTO();
-
-        if(userId != null)
-            dto = reIssuanceAllToken(userId, rIndex);
-
-        log.info("dto : {} : {} \n {} : {}", dto.getAccessTokenHeader(), dto.getAccessTokenValue()
-        , dto.getRefreshTokenHeader(), dto.getRefreshTokenValue());
-
-        return dto;
-    }
-
-
-    //reissuance AccessToken & RefreshToken
-    public JwtDTO reIssuanceAllToken(String userId, String originIndex){
-
-        log.info("reIssuanceAllToken");
-
-        JwtDTO dto =  JwtDTO.builder()
-                .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
-                .accessTokenValue(JwtProperties.TOKEN_PREFIX + issuedAccessToken(userId))
-                .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
-                .refreshTokenValue(JwtProperties.TOKEN_PREFIX + reIssuedRefreshToken(originIndex))
-                .build();
-
-        log.info("reIssuanceAllToken Data : {} : {} \n {} : {}", dto.getAccessTokenHeader(), dto.getAccessTokenValue()
-        , dto.getRefreshTokenHeader(), dto.getRefreshTokenValue());
-
-        return dto;
-    }*/
 }

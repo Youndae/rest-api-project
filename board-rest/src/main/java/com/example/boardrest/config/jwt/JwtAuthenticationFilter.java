@@ -24,6 +24,7 @@ import java.util.Date;
 /**
  * Deprecated
  */
+@Deprecated
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {

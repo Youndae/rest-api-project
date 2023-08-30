@@ -120,10 +120,6 @@ public class MemberWebClient {
 
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
-        log.info("tokenDto : {}", tokenDTO);
-        log.info("at : {} : {}", tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue());
-        log.info("rt : {} : {}", tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue());
-
         WebClient client = webClientConfig.useWebClient();
 
         return client.post()

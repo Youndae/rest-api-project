@@ -26,8 +26,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         log.info("userByUsername : " + username);
 
-        log.info("userByUsername :  " + member);
-
         return member == null ? null : new CustomUser(member);
     }
 }

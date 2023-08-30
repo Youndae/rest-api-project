@@ -55,12 +55,8 @@ public class ImageBoardController {
         return new ResponseEntity<>(imageBoardService.getImageBoardList(cri), HttpStatus.OK);
     }
 
-    /**
-     * imageBoardModify를 실행했을 경우 save만으로 수정을 처리하고 있는지 확인 필요.
-     */
-    @GetMapping("/image-board-detail/{imageNo}")
+        @GetMapping("/image-board-detail/{imageNo}")
     public ResponseEntity<ImageBoardDetailDTO> imageBoardDetail(@PathVariable long imageNo, Principal principal){
-
 
 
         return new ResponseEntity<>(imageBoardService.getImageBoardDetail(imageNo, principal), HttpStatus.OK);
@@ -93,20 +89,6 @@ public class ImageBoardController {
 
         return imageBoardService.imageInsertCheck(files, imageTitle, imageContent, request, principal);
     }
-
-
-
-    /*@PatchMapping("/image-modify")
-    public void imageBoardPatch(@RequestParam("imageNo") long imageNo
-                                , @RequestParam("imageTitle") String imageTitle
-                                , @RequestParam("imageContent") String imageContent
-                                    , @RequestParam(value = "files", required = false) List<MultipartFile> files
-                                    , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
-                                    , Principal principal){
-        log.info("image modify");
-
-//        imageBoardService.imagePatchCheck(images, deleteFiles, request, principal);
-    }*/
 
 
     @PatchMapping("/image-modify")

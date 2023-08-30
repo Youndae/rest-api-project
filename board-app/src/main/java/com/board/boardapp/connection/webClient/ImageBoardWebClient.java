@@ -244,9 +244,6 @@ public class ImageBoardWebClient {
                 .bodyToMono(Long.class)
                 .block();
 
-//        log.info("result : {}", result);
-
-//         return 1;
     }
 
     public ImageBoardDTO getModifyData(long imageNo

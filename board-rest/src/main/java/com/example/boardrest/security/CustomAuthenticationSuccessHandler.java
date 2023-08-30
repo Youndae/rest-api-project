@@ -32,10 +32,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             roleNames.add(authority.getAuthority());
         });
 
-//        response.sendRedirect("/board/boardList");
-
-//        response.addHeader("JSESSIONID", String.valueOf(SecurityContextHolder.getContext().getAuthentication()));
-
         log.info("session : " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 
         log.info("cookie : " + response.getHeaderNames());

@@ -389,6 +389,12 @@
 >>>> 5. ~~로그인하지 않은 사용자나 작성자가 아닌 사용자가 페이지 접근 시 오류페이지를 출력하고 있는가.~~
 >
 > 
+> 23/07/19 - Api server
+>> count 쿼리 count(distinct(PK)) 형태로 수정.   
+>> 그로인해 countTable Entity와 테이블 제거.
+>> HierarchicalBoardRepository와 ImageBoardRepository에 사용하지 않는 쿼리 제거.
+> 
+> 
 >> 23/08/28 ~ 23/08/29
 >>> API server
 >>>> 계층형 삭제 처리 수정.
@@ -404,3 +410,261 @@
 >>>>> * JQuery에서도 content가 null인 경우 해당하는 문구를 출력하도록 수정.
 >>>>
 >>>> @Transactional을 통한 롤백 처리를 위해 예외처리 구문 수정.
+> 
+>
+
+
+## 메모
+> restAPI 에 연결하는 방법으로는 아래의 방법들이 존재.
+> 1. WebClient
+> 2. Java(HttpURLConnection)
+> 3. RestTemplate(spring)
+     > 하지만 RestTemplate는 spring5부터 Deprecated 상태.   
+     > 버전에 따라 사용하게 되는 경우가 있을 수 있으니 아래처럼 분리해서 사용.
+>> 1. WebClient -> HierarchicalBoard
+>> 2. Java -> ImageBoard
+>> 3. Comment, Member -> RestTemplate
+>>
+>
+> interceptor 구현해서 referer 체크 할 수 있도록.   
+> 단, get 요청이면서 단순 페이지 데이터만 나오는 요청들은 제외   
+> 인터셉터 제외 페이지 리스트
+> 1. boardList
+> 2. boardDetail
+> 3. imageList
+> 4. imageDetail
+> 5. loginForm
+> 6. join
+> 7. commentList(hierarchical & image)
+>
+> 두 게시판 게시글 작성 시 xss 대비 방안 세워서 처리.
+>
+> 전체적인 구현 이후 TokenInterceptor 통해서 referer 체크 마저 구현하고 ExceptionHandling까지 처리.
+>
+> interceptor
+>> referer 체크 후 토큰 체크하도록 하면
+>> rt, at가 null일때는 login 페이지로 가도록 하고
+>> rt만 존재할때는 reissued를 받게 하면 요청마다 토큰 체크를 하도록 할 필요가 없을듯.
+>> 그럼 interceptor를 거치지 않는 페이지 리스트에서 각 게시판 detail 페이지는 있으면 안된다.
+>> 여기서 문제점. response.addCookie로 재발급된 토큰을 저장할건데.
+>> 이게 response가 완전하게 전달되지 않은 상태에서 새로 발급 받은 토큰을 어떻게 요청할것이며
+>> 이 요청에서 토큰이 재발급이 되었는지 여부는 어떻게 확인할것인지가 관건.
+>> 만약 인터셉터에서 null 여부만 체크해 처리하게 되면 사실상 인터셉터를 거치는 모든 페이지는 권한이 필요한 페이지 이므로
+>> null일 경우 로그인 페이지로 리다이렉트 하면 되긴 하지만
+>> 각 게시판 Detail 페이지의 경우 그럼 한번 더 토큰 여부를 검증해야 하는 문제가 발생.
+>> 인터셉터에서 토큰 존재 여부를 체크하지 않는다면 토큰 서비스로 분리해두긴 했지만 모든 요청에서 해당 서비스를 호출해 체크하도록 해야한다.
+>
+> 토큰 여부 체크 과정
+>> at, rt 모두 존재하는지 rt만 존재하는지 둘다 존재하지 않는지를 체크.
+>> at가 존재한다면 클라이언트의 요청을 수행
+>> rt만 존재한다면 토큰 재발급 후 재발급 받은 at로 요청 수행
+>> 둘다 존재하지 않는다면 로그인 페이지로 redirect
+>> at가 존재한다는 경우는 고려해야할 사항이 없음. 그대로 cookie로 꺼내 전송하면 되기 때문.
+>> 둘다 존재하지 않는 경우도 로그인 페이지로 리다이렉트 해주거나 권한이 필요 없는 페이지는 요청을 수행하면 되기 때문에 고려사항이 없음.
+>> rt만 존재하는 경우는 재발급 요청 -> 리턴된 rt, at 쿠키에 저장 -> at 리턴 -> 리턴받은 at로 요청 수행 이 순서로 진행되어야 하는데
+>> 분리된 과정을 하나의 메소드로 묶어서 그 메소드에서 각각 호출해 처리하도록 하기에는 리턴되는 타입들의 차이가 발생.
+>> 그럼 리턴되는 타입을 하나로 통일시켜 처리하거나 묶지 못하고 매 요청시마다 각각 호출해 사용하는 방법으로 처리해야 함.
+>> 재발급 된 토큰은 JwtDTO 타입으로 리턴될것. at가 존재하는 경우도 JwtDTO에 담아 리턴이 가능. 없는 경우는 그럼 그냥 null을 리턴?
+>> 이 방법의 부작용은 기껏 checkExistsToken으로 cookie를 털어 체크했는데 DTO에 담겨 왔다는 이유로 한번 더 체크해야하는 문제가 발생.
+>> 그럼 어차피 리턴받은 시점에 또 다시 dto 값을 체크해 그에 맞는 조건으로 수행하도록 해야함.
+>> 그래도 한가지 조건이 줄어드는 장점이 있음.
+>> null이 아니라면 재발급 받은 토큰이 DTO에 들어가있거나 존재하던 쿠키값이 DTO에 들어가서 리턴될것이므로
+>> dto가 null이면 로그인페이지로 리다이렉트. 그게 아니라면 요청을 수행하도록 할 수는 있음.
+>> 그럼 모든 요청에서 JwtDTO 타입으로 체크 메소드를 호출하고 그 체크메소드에서는 존재 여부 체크 후 DTO에 값을 담거나 null을 리턴하도록 하면.
+>> 리턴되는 dto를 통해 그에 맞는 조건을 수행할 수 있게 됨.
+> 로직 정리
+>> 1. at 존재
+>>> client request -> existsToken -> checkExistsToken -> dto.setAt -> return to clientServer -> api server request
+>> 2. token 재발급
+>>> client request -> existsToken -> checkExistsToken -> reissuedToken -> savedToken -> dto.setAt -> return to clientServer -> api serverRequest
+>> 3. token null
+>>> client request -> existsToken -> checkExistsToken -> return to clientServer(null) -> redirect loginForm
+>> 간단하게 코드 정리
+>>> ``` java
+>>> @PostMapping("/")
+>>> public String requestController(HttpServletRequest request) {
+>>>     JwtDTO dto = tokenService.existsToken(request);
+>>>     if(dto == null)
+>>>         return "th/member/loginForm";
+>>>     
+>>>     0000service.insert(request, dto);
+>>>     
+>>>     return "0000";
+>>> }
+>>> 
+>>> @Override
+>>> public JwtDTO existsToken(HttpServletRequest request){
+>>>     Cookie at = ...;
+>>>     Cookie rt = ...;
+>>> 
+>>>     if(at == null && rt == null)
+>>>         return null;
+>>>     else if(at != null && rt != null)
+>>>         return JwtDTO.builder()
+>>>                 .accessHeader(at.getName())
+>>>                 .accessValue(at.getValue())
+>>>                 .build();
+>>>     else if(at == null && rt != null)
+>>>         return reissuedToken(request);
+>>> }
+>>> ```
+>> 다른 문제점.
+>> refreshToken을 cookie에 담아둔다면 로그인 여부 체크를 어떻게 할지.
+>> 아무생각없이 rt가 localStorage에 존재하면 로그인 한것으로 간주하려고 했으나
+>> 둘다 cookie에 저장하는 경우에는 httpOnly 설정으로 클라이언트에서 접근할 수 없을건데 뭘로 검증할것인가가 관건.
+>> 그럼 그나마 떠오르는 방법이 api server에서 모든 요청에 principal 을 체크해 리턴해주는 방법이 있음.
+>> 토큰이 존재하면 AuthorizationFilter에서 contextHolder에 저장하도록 되어있기 때문에 principal을 통해 로그인한 사용자 아이디 리턴이 가능함.
+>> 그럼 여기서 고민해야 할 사항.
+>> 사용자 아이디를 리턴할 것인가. 아니면 boolean으로 로그인 여부만 리턴할 것인가.
+>> 사용자 아이디가 직접적으로 필요한 페이지는 작성자와 사용자를 구분해야 하는 각 게시판 detail 페이지와 댓글 데이터 정도이다.
+>> boolean으로 리턴하게 되면 로그인 여부는 쉽게 처리할 수 있지만 작성자와 구분이 어려워진다.
+>> 모든 요청에서 아이디를 리턴하는 것은 정보 유출이 되지 않을까 생각했지만. 생각해보니까 어차피 아이디 알아내는것 정도는 매우 쉽다.
+>> 어차피 왠만한 페이지에서 글 남기면 출력되는게 아이디 혹은 닉네임인데 닉네임만 눌러도 아이디가 출력되는 페이지도 많기 때문.
+>> 또한 아이디는 알아낸다고 해도 중요정보인 사용자 실명이나 비밀번호, 그 외 주소등 개인정보가 같이 딸려오는 것은 아니기 때문에 그걸 같이 보내지만 않으면
+>> 아이디를 매번 리턴하는것도 나쁘지 않은 선택으로 보인다.
+>> 그렇게 하면 로그인 여부에서도 아이디로 체크하고 한번에 detail 페이지에서 작성자와의 비교역시 가능해지기 때문.
+>> 보안에 있어서 주의해야할 점은 사이트에 따라 아이디 혹은 닉네임만 리턴하도록 하고 그 외 정보를 리턴하도록 하지만 않으면 문제는 발생하지 않을것으로 보임.
+>> 그럼 rt는 그대로 cookie에 저장하도록 하고 아이디를 리턴받아 로그인 여부와 작성자와의 비교를 처리하는 방법으로 진행.
+>
+>> 프로젝트 마무리 하면서 고민해야 할 사항.
+>>> 만약 rt를 localStorage에 저장하는 경우 재발급을 받아야 할 때 어떻게 처리할것인가를 고민해야할 필요가 있음.
+>>> JQuery를 사용하면 어차피 ajax를 통한 요청이 대다수일텐데 요청을 보낼때 rt만 헤더에 담아 보내면 쿠키에 있는 at는 알아서 넘어갈 것.
+>>> 그럼 클라이언트 서버는 requestHeader에서 rt를 꺼내 확인하고 at 역시 꺼내서 확인.
+>>> 없으면 재발급 요청할 건데.
+>>> 해결 방안. 별거 없었음. response.addHeader에 재발급 받은 rt를 담아 요청 데이터와 같이 리턴해주고 JQuery에서는 데이터 처리 전후 아무때나
+>>> localStorage에 rt를 다시 저장하면 된다.
+>>> localStorage에 저장하는 방법을 택한다면 클라이언트서버에서 역시 페이지요청과 데이터 요청을 정확하게 분리해서 처리해줘야 한다.
+>
+>>> 로그인 여부를 cookie로 처리.
+>>> 해당 쿠키명은 lsc(login state cookie)로 만들어주고
+>>> 이 쿠키는 refreshToken이 발급되는 시점에 같이 생성해서 넘겨준다.
+>>> 만료 시점 역시 refreshToken과 동일한 만료 시점을 갖는다.
+>>> 그렇기 때문에 refreshToken이 재발급 될 때도 이 쿠키의 만료기간 역시 갱신되어야 한다.
+>>> 해당 쿠키는 api 서버로는 넘어가지 않는 쿠키가 될것이고
+>>> 아무 의미를 갖지 않는 난수로 만들어진 value를 갖게 될것.
+>>> 로그인 상태 표시는 navbar.html로 분리해두었으니 해당 html에서 스크립트를 통해
+>>> 해당 쿠키가 존재하기만 하면 로그인을 한 상태라고 인식할 수 있도록 구현한다.
+>>> 만약 이 쿠키명으로 인해 로그인 상태에 대해 쿠키를 탈취한 상대가 뭘 하려고 해봤자
+>>> 이 쿠키는 단순하게 로그인 & 로그아웃을 표시하기 위한 용도이기 때문에
+>>> token값을 갖고 있는 cookie와 문제가 발생할 일도 없을 것.
+>>> token 체크는 별도로 클라이언트서버에서 무조건 실행하도록 되어있으니.
+>>> 아주 단순하게 버튼 변경에 대한 용도로 사용.
+>>> 이걸 원래는 서버에서 model에 담아 넘겨주는 방법을 택하고자 했으나
+>>> 그럼 모든 컨트롤러의 페이지 요청에서 이 값을 model에 담아 보내줘야 한다.
+>>> 애초에 true, false 체크하는것은 인터셉터한테 맡기면 되니까 그 부분은 문제가 되지 않지만
+>>> 모든 페이지 요청에서 이걸 model에 담아주는 경우 누락될 가능성도 존재하기 때문에
+>>> security를 사용하는 경우 session을 통해 여부를 확인하듯이 쿠키로 확인하는것이 효율적이라고 생각.
+>>> 이렇게 처리하면 쿠키가 탈취되더라도 발생하는 문제는 전혀 없을것이고 로그인 여부를 확인하기 위해
+>>> 새로운 요청을 보낼 필요도 없으며 매번 model에 담지 않아도 되기 때문.
+>
+>> JQuery에서 JSONArray 파싱하는 문제 해결.
+>>> getJSON으로 comment 데이터를 가져와 처리하는 과정에서 문제가 발생.
+>>> comment는 페이징 기능까지 들어가야 하기 때문에 JSON 이 좀 복잡하게 온다.
+>>> 들어가는 데이터는 api 서버에서 JPA를 사용하기 때문에 Page 타입으로 리턴되는 paging 데이터,
+>>> 그리고 comment 데이터의 배열, 로그인한 사용자의 id 이렇게 들어오게 되어 아래처럼 리턴된다.
+>>> ``` json
+>>> {
+>>>     "totalPages" : 2,
+>>>     "totalElements" : 31,
+>>>     "uid" : "coco",
+>>>     "content" : [
+>>>         {
+>>>             "commentNo" : 49,
+>>>             "userId" : "coco",
+>>>             "commentDate" : 1671721200000,
+>>>             ....
+>>>         }
+>>>         {
+>>>             ....
+>>>         }
+>>>         ...
+>>>     ]
+>>> }
+>>> ```
+>>> 이렇게 리턴되다 보니 단순하게 생각했을 때 result.content.commentNo로 찍으면 바로 나올줄 알았으나
+>>> 바로 undefined.
+>>> 그래서 result.uid를 찍어보니 바로 나온다.   
+>>> 그럼 json 데이터는 정상적으로 넘어왔다고 볼 수 있다고 생각했고 이것저것 콘솔에 찍어봤지만 모두 허사였다.
+>>> 구글링을 통해 JQuery에서 jsonArray parsing을 어떻게 처리하는지 검색해보니
+>>> 기존에 하던 방식대로 each를 통해서 처리하는 방법과 for문을 통해 처리하는 방법 두가지가 존재했다.
+>>> 근데 each로 처리하는 방법은 제대로 동작하지 않아서 이런 문제가 발생했고, 예제들 json 데이터가
+>>> 현재 상황과는 다른 기본 형태의 배열 데이터였기 때문에 문제가 해결되지 않음.
+>>> 그래서 for문을 통해 처리하는 방법으로 선택해 처리하게 되었다.
+>>> 구글링을 해서 나오는 해결책에 대한 json Array 데이터 구조는 아래와 같다.
+>>> ``` json
+>>> {
+>>>     "commentNo" : 49,
+>>>     "userId" : "coco",
+>>>     "commentDate" : 1671721200000,
+>>>     ....
+>>> },
+>>> {
+>>>     "commentNo" : 50,
+>>>     "userId" : "coco",
+>>>     "commentDate" : 1671721200000,
+>>>     ....
+>>> },
+>>> ...
+>>> ```
+>>>
+>>> 내가 기존에 getJSON으로 받아 처리하던 json 데이터구조와 동일하다.
+>>> 딱 필요한 데이터의 List를 리턴해주게 되면 이렇게 받을 수 있는데 지금은
+>>> comment 데이터의 리스트 + paging 데이터, 사용자 아이디 이런 조합으로 오다보니까
+>>> JSON Array 자체라고 보기에는 어렵고 하나의 json 데이터에 JSON Array가 들어가 있는게 맞다고 봐야될것이라고 생각했다.
+>>> 그래서 진행한 테스트가 each문 안에서 for문으로 commentData의 배열을 풀어내는 방법이었다.
+>>> 생각했던대로 commentData를 따로 풀어주니 그 안에 있는 배열을 풀어낼 수 있었고 일차원적인 문제 해결은 달성했다.
+>>> 하지만. each문이라는게 애초에 그런 반복을 풀어주기 위한 함수인데 단일 json 데이터와 마찬가지인 구조에서
+>>> 굳이 each문을 통해 데이터를 풀어내고 그 안에서 또 반복문을 한번 더 사용해 풀어내야 하는가? 라는 문제가 남았다.
+>>> 그래서 지금 생각하는 해결 방법으로는 each문을 바로 만들어 풀어내는 것이 아닌
+>>> 페이징, 사용자 아이디 같은 데이터를 먼저 파싱해주고 each 함수를 호출해 처리하는 것은 어떨까? 라는 생각이 듦.
+>>> 그럼 불필요하게 두번의 반복문 함수를 호출할 필요도 없고
+>>> 코드도 좀 짧아지지 않을까...?
+>
+>> 기존 boardProject의 comment 문제점.
+>>> 기존에 진행한 프로젝트인 boardProject에서 comment를 분리해 처리하고자 했고
+>>> 그렇게 하다보니 JQuery에서 페이지 로딩이 끝나면 데이터를 요청하고 받아와서 파싱을 하도록 해야 했다.
+>>> 여기서 발생한 문제가 각 태그들에다가 id 값을 설정하는 바람에 동일한 id 값이 계속 들어갔다는 것.
+>>> 이게 동작하는데나 출력하는데 있어서는 문제가 되지 않았지만 애초에 ide에서 그렇게 작성하면 빨간 줄이 생기듯이
+>>> 딱히 좋은 방법이라고 생각하기는 어려움.   
+>>> 그래서 이 id 값을 다 지우고 class로 수정.
+>
+>
+>
+>> Exception Hadling 문제점.
+>>> client Server 동작중에 발생하는 Exception에 대해서는 @ControllerAdvice를 통해 코드를 작성해주면 해결이 가능.
+>>> 하지만 APi Server에서 동작중 발생하는 Exception에 대해서는 client server가 제대로 인식하지 못함.
+>>> WebClient를 통해 접근할 때 처리할 수 있는 방법이 retrieve()와 exChange() 두가지가 있는데
+>>> 스프링에서는 메모리 누수 우려로 인해 exChange 보다는 retrieve를 사용하는 것을 권장한다고 한다.
+>>> 하지만 문제점이 exChange로 하게 되면 api server에 제대로 접근조차 안된다.
+>>> 문서에 나와있는 대로 코드를 작성해봐도 접근자체가 되지 않고있고
+>>> retrieve로 처리하게 되면 제대로 접근은 하고 있으나 api server에서 강제로 exception을 발생시켜 리턴되는 데이터가 없다보니
+>>> client server의 오류인 500에러로 처리해버린다.
+>>> @ControllerAdvice 코드들을 다 주석처리하고 넘어오는 상태코드를 확인해보면 제대로 400에러가 넘어오긴 하지만
+>>> 핸들링 할 때 이 상태코드로 하는게 아니라 client server에서 발생한 예외처리를 하느라 500 에러로 처리하는 것으로 보인다.
+>>>
+>>> 또한, Jquery에서 getJSON을 통해 데이터를 요청하는 경우 Exception이 발생하더라도 핸들링에 접근은 하지만 오류 페이지로 이동은 하지 않는다.
+>>> 단지 데이터가 null로 넘어가 해당 데이터가 출력이 되지 않을 뿐.
+>>>
+>>> 몇가지 테스트를 해보니 retrieve 기준 api 서버에서 responseEntity로 어떤 상태코드를 리턴하는가에 따라 처리가 가능하다.
+>>> 하지만 문제점. api server에서 RestControllerAdvice를 구현하더라도 이 exception을 핸들링해서 클라이언트 서버에 리턴을 해주지 못한다.
+>>> 이 방법을 찾아야 할것으로 보임.
+>
+>
+> file size 오류 해결.
+>> 고용량 이미지 파일을 업로드 하고자 하는 경우 SizeLimitExceededException이 발생한다.   
+>> 문제는 ajax로 비동기 처리하는 해당 처리에 대해 ExceptionHandler에서 리턴하는 값을 제대로 받지 못한다는 점이다.
+>> 문제 해결하는데에 참고한 블로그 url은 아래와 같다.
+>> https://velog.io/@tenacity/MultipartException-ExceptionHandler-%EA%B5%AC%ED%98%84-%EC%8B%9C-%EC%A3%BC%EC%9A%94-%EC%84%A4%EC%A0%95-%EC%82%AC%ED%95%AD-SizeLimitExceededException-FileSizeLimitExceededException-MultipartException
+>> 해당 블로그에서는 단일 업로드시에는 ExceptionHandler에서 리턴하는 값을 받았지만 다중업로드시처럼 여러번 Exception이 발생하는 경우에는
+>> 동작하지 않았다고 한다.
+>> 하지만 여기서 이 프로젝트와 차이점은 단일 업로드를 하더라도 Handler에 3번 접근하고 있었다.
+>> 확신이 아닌 추측이지만 아마도 컨트롤러에서 데이터를 받을 때 제목, 내용, 이미지 파일 이렇게 받고 있기 때문이 아닌가 싶다.
+>> 여튼 문제는 해결이 되었으나
+>> 의문점은 아직 남는다.
+>> api 서버에서 파일 사이즈 체크를 진행하고 있다.
+>> 하지만 어차피 업로드 파일 사이즈가 10MB를 넘어가게 된다면 업로드 자체가 안되도록 yml에 설정이 되어있고,
+>> 그럼 api 서버에서 받는 이미지 파일 사이즈는 절대로 10MB를 넘어갈 수 없다는 말이 된다.
+>> 그럼 api서버에서는 굳이 파일의 사이즈 체크를 해야할 필요성이 있는가? 에 대한 의문점이 남는다.
+>> 이건 차차 고민해보도록 하고
+>> 문제를 해결한 방법은 server: tomcat: max-swallow-size: -1 이 설정으로 인해서 해결이 된것인데
+>> 이 max-swallow-size가 어떤 것을 의미하는지에 대해 찾아보고 정리를 해야 한다.

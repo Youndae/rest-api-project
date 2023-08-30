@@ -30,11 +30,6 @@ public class CommentController {
 
         log.info("api comment-list");
 
-        /**
-         * commentList 요청시 받을 데이터
-         * boardNo, imageNo, pageNum
-         */
-
         Criteria cri = Criteria.builder()
                 .pageNum(pageNum)
                 .boardAmount(amount)
@@ -50,10 +45,6 @@ public class CommentController {
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public long commentInsert(@RequestBody CommentInsertDTO dto
                             , Principal principal) {
-
-        log.info("comment-insert");
-
-//        throw new NullPointerException("nullException");
 
         log.info("comment-insert");
 

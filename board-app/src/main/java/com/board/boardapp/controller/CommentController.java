@@ -36,13 +36,7 @@ public class CommentController {
         Criteria cri = new Criteria();
         cri.setPageNum(pageNum);
 
-        log.info("cri.getPageNum() : {}, cri.getAmount() : {}", cri.getPageNum(), cri.getBoardAmount());
-
         CommentListDTO dto = commentBoardWebClient.getBoardComment(boardNo, request, response, cri);
-
-        log.info("controller dto : {}", dto);
-
-
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
@@ -53,16 +47,11 @@ public class CommentController {
             , HttpServletRequest request
             , HttpServletResponse response) throws JsonProcessingException {
 
-        log.info("controller imageNo : {}, pageNum : {}", imageNo, pageNum);
 
         Criteria cri = new Criteria();
         cri.setPageNum(pageNum);
 
-        log.info("cri.getPageNum() : {}, cri.getAmount() : {}", cri.getPageNum(), cri.getBoardAmount());
-
         CommentListDTO dto = commentBoardWebClient.getImageComment(imageNo, request, response, cri);
-
-        log.info("controller dto : {}", dto);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
@@ -72,8 +61,6 @@ public class CommentController {
                                 , HttpServletRequest request
                                 , HttpServletResponse response){
 
-        log.info("commentInsert commentData : {}", commentData);
-
         return commentBoardWebClient.commentInsert(commentData, request, response);
     }
 
@@ -82,7 +69,6 @@ public class CommentController {
                                         , HttpServletRequest request
                                         , HttpServletResponse response){
 
-        log.info("commentReplyInsert commentData : {}", commentData);
 
         return commentBoardWebClient.commentReplyInsert(commentData, request, response);
     }
@@ -92,7 +78,6 @@ public class CommentController {
                                 , HttpServletRequest request
                                 , HttpServletResponse response){
 
-        log.info("commentDelete commentNo : {}", commentNo);
 
         return commentBoardWebClient.commentDelete(commentNo, request, response);
     }

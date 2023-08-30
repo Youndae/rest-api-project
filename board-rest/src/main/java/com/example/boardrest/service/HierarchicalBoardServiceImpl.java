@@ -54,16 +54,6 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
     @Override
     @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
     public long insertBoardReply(HierarchicalBoardModifyDTO dto, Principal principal) {
-        /**
-         * 1. boardNo를 통해 해당 게시글 data 가져오기
-         * @Data
-         * 1. groupNo
-         * 2. upperNo
-         * 3. indent
-         *
-         * 2. 해당 데이터를 파싱해서 HierarchicalBoardDTO에 담고 insert처리.
-         * 3. insert 처리시 getBoardNo();
-         */
 
         HierarchicalBoardDTO saveDTO = HierarchicalBoardDTO.builder()
                 .boardTitle(dto.getBoardTitle())
@@ -93,39 +83,11 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
     public long deleteBoard(long boardNo, Principal principal) {
 
         //principal을 받고 작성자와 비교 필요.
-
-        /**
-         * test
-         *
-         *
-         * Exception 발생 시킬 시 어떻게 처리되는지.
-         *
-         * 수정 내역
-         * 원글인지 아닌지를 indent로 비교.
-         *
-         * if(indent == 0)
-         *  deleteGroup
-         * else
-         *  addDeleteDataList();
-         *  deleteList();
-         *
-         *
-         * addDeleteDataList(dataList, deleteNo, indent, deleteList){
-         *      for(int i = 0; i < size(); i++){
-         *          String[] arr = dataList.....split(",");
-         *
-         *          if(arr[indent].equals(deleteNo))
-         *              deleteList.add()
-         *      }
-         * }
-         */
-
         if(!principal.getName().equals(hierarchicalBoardRepository.checkWriter(boardNo)))
             new AccessDeniedException("AccessDenied");
 
         DeleteBoardDTO deleteData = hierarchicalBoardRepository.getDeleteData(boardNo);
 
-//        String[] upperArr = deleteData.getBoardUpperNo().split(",");
 
         if(deleteData.getBoardIndent() == 0)
             hierarchicalBoardRepository.deleteByBoardGroupNo(boardNo);
@@ -148,16 +110,10 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
     public void addDeleteDataList(List<DeleteGroupListDTO> groupList, long delNo, int indent, List<Long> deleteList) {
 
         for(int i = 0; i < groupList.size(); i++){
-//            List<String> upperList = Arrays.asList(groupList.get(i).getBoardUpperNo().split(","));
-
             String[] upperArr = groupList.get(i).getBoardUpperNo().split(",");
-
-            /*if(upperList.contains(String.valueOf(delNo)))
-                deleteList.add(groupList.get(i).getBoardNo());*/
 
             if(upperArr.length > indent && upperArr[indent].equals(String.valueOf(delNo)))
                 deleteList.add(groupList.get(i).getBoardNo());
-
         }
 
     }
@@ -169,10 +125,6 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
         log.info("getHierarchicalBoard list");
 
         Page<HierarchicalBoardDTO> dto;
-
-        log.info("service pageNum : " + cri.getPageNum());
-        log.info("service keyword : " + cri.getKeyword());
-        log.info("service searchType : " + cri.getSearchType());
 
         if(cri.getKeyword() != null)
             cri.setKeyword("%"+cri.getKeyword()+"%");

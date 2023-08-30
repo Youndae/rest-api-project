@@ -47,7 +47,6 @@ public class MemberServiceImpl implements MemberService{
 
     // 사용자 회원가입(체크 후 메소드 호출로 save 처리)
     @Override
-    @Transactional(rollbackOn = Exception.class)
     public int memberJoinProc(MemberDTO dto) {
         if(dto.getUserId() == null || dto.getUserPw().length() == 0 || dto.getUserName() == null)
             return 0;
@@ -56,36 +55,27 @@ public class MemberServiceImpl implements MemberService{
     }
 
     // 사용자 데이터 save
+    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
     private int joinMember(MemberDTO member){
-        try{
-            Member memberEntity = Member.builder()
-                    .userId(member.getUserId())
-                    .userPw(passwordEncoder.encode(member.getUserPw()))
-                    .userName(member.getUserName())
-                    .build();
+        Member memberEntity = Member.builder()
+                .userId(member.getUserId())
+                .userPw(passwordEncoder.encode(member.getUserPw()))
+                .userName(member.getUserName())
+                .build();
 
-            memberRepository.save(memberEntity);
-            authRepository.save(Auth.builder()
-                    .userId(member.getUserId())
-                    .auth("ROLE_MEMBER")
-                    .build());
-            log.info("join success");
-            return 1;
-        }catch (Exception e){
-            log.info("failed Join");
-            return 0;
-        }
+        memberRepository.save(memberEntity);
+        authRepository.save(Auth.builder()
+                .userId(member.getUserId())
+                .auth("ROLE_MEMBER")
+                .build());
+        log.info("join success");
+        return 1;
     }
 
     @Override
     public JwtDTO memberLogin(Member member) {
 
         log.info("member login service");
-
-        log.info("userId : " + member.getUserId());
-        log.info("userPw : " + member.getUserPw());
-
-        log.info("encode Pw : {}", passwordEncoder.encode(member.getUserPw()));
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getUserId(), member.getUserPw());
@@ -145,12 +135,6 @@ public class MemberServiceImpl implements MemberService{
             new Exception();
             return 0;
         }
-
-        /**
-         * tokenprovider 수정 필요.
-         * verifyRefreshToken에서 너무 많은걸 처리하고 있음.
-         * 딱 검증만 하도록 메소드 분리해서 수정.
-         */
 
     }
 }

@@ -15,38 +15,6 @@ import java.util.Set;
 
 public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long> {
 
-    /*@Query(value = "SELECT new com.example.boardrest.domain.dto.ImageDTO(" +
-            "b.imageNo" +
-            ", d.imageName" +
-            ", b.imageContent" +
-            ", b.imageDate" +
-            ", b.imageTitle" +
-            ", b.member.userId" +
-            ", d.imageStep" +
-            ", d.oldName) " +
-            "FROM ImageBoard b " +
-            "INNER JOIN ImageData d " +
-            "ON b.imageNo = d.imageBoard.imageNo " +
-            "GROUP BY b.imageNo " +
-            "ORDER BY b.imageNo DESC")
-    List<ImageDTO> imageBoardList();*/
-
-    /*@Query(value = "SELECT new com.example.boardrest.domain.dto.ImageDTO(" +
-            "b.imageNo" +
-            ", d.imageName" +
-            ", b.imageContent" +
-            ", b.imageDate" +
-            ", b.imageTitle" +
-            ", b.member.userId" +
-            ", d.imageStep" +
-            ", d.oldName) " +
-            "FROM ImageBoard b " +
-            "INNER JOIN ImageData d " +
-            "ON b.imageNo = d.imageBoard.imageNo " +
-            "WHERE b.imageNo = ?1 " +
-            "ORDER BY d.imageStep ASC")
-    List<ImageDTO> imageDetailDTO(long imageNo);*/
-
     //default List
     @Query(value = "SELECT new com.example.boardrest.domain.dto.ImageBoardDTO(" +
             "ib.imageNo" +

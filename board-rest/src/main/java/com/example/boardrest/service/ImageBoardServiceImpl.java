@@ -226,14 +226,9 @@ public class ImageBoardServiceImpl implements ImageBoardService{
         if(!entity.get().getMember().getUserId().equals(principal.getName()))
             return 0;
 
-
         List<String> deleteFileName = imageDataRepository.deleteImageDataList(imageNo);
 
-        try{
-            deleteFilesProc(deleteFileName);
-        }catch (Exception e){
-            new Exception();
-        }
+        deleteFilesProc(deleteFileName);
 
         imageBoardRepository.deleteById(imageNo);
 

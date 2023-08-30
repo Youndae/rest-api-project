@@ -103,17 +103,7 @@ public class CommentServiceImpl implements CommentService{
     @Override
     public BoardCommentListDTO commentList(String boardNo, String imageNo, Criteria cri, Principal principal) {
 
-        /**
-         * commentData에 넘어온 게시글 번호가
-         * boardNo인지 ImageNo인지 체크 후
-         * 그에 맞는 쿼리를 호출해 각 게시판 CommentDTO에 담아주고
-         * 모든 commentDTO를 담고 있는 CommentListDTO에 builder 패턴으로 담아준 뒤 리턴.
-         *
-         */
-
         Page<BoardCommentDTO> hBoardDTO;
-
-//        Page<BoardCommentListDTO> hBoardDTO;
 
         if(boardNo == null){// imageBoard
             log.info("boardNo is null");
@@ -128,11 +118,6 @@ public class CommentServiceImpl implements CommentService{
                     , iBoardNo
             );
 
-            /*dto = CommentListDTO.builder()
-                    .hierarchicalBoardCommentDTO(null)
-                    .imageBoardCommentDTO(commentDTO)
-                    .build();*/
-
         }else if(boardNo != null){// hierarchicalBoard
             log.info("boardNo is not null");
             long hBoardNo = Long.parseLong(boardNo);
@@ -144,11 +129,6 @@ public class CommentServiceImpl implements CommentService{
                                     .and(Sort.by("commentUpperNo").ascending()))
                     , hBoardNo);
 
-            /*dto = CommentListDTO.builder()
-                    .hierarchicalBoardCommentDTO(commentDTO)
-                    .imageBoardCommentDTO(null)
-                    .build();*/
-
         }else{
             return null;
         }
@@ -159,11 +139,6 @@ public class CommentServiceImpl implements CommentService{
 
         if(principal != null)
             uid = principal.getName();
-
-        /*BoardCommentListDTO result = BoardCommentListDTO.builder()
-                    .boardComment(hBoardDTO)
-                    .uid(uid)
-                    .build();*/
 
         BoardCommentListDTO result;
 
