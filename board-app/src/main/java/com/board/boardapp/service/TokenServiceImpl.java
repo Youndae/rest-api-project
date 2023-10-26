@@ -13,6 +13,7 @@ import org.springframework.web.util.WebUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -79,9 +80,18 @@ public class TokenServiceImpl implements TokenService{
                         .maxAge(JwtProperties.REFRESH_MAX_AGE)
                         .build();
 
+        ResponseCookie ino = ResponseCookie.from(jwtDTO.getInoHeader(), jwtDTO.getInoValue())
+                        .path("/")
+                        .maxAge(Duration.ofDays(99999))
+                        .httpOnly(true)
+                        .secure(true)
+                        .sameSite("Strict")
+                        .build();
+
         response.addHeader("Set-Cookie", at.toString());
         response.addHeader("Set-Cookie", rt.toString());
         response.addHeader("Set-Cookie", lsc.toString());
+        response.addHeader("Set-Cookie", ino.toString());
 
         log.info("save Token Success");
 
@@ -92,10 +102,12 @@ public class TokenServiceImpl implements TokenService{
 
         WebClient client = clientConfig.useWebClient();
         Cookie rt = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
+        Cookie ino = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
 
         JwtDTO dto = client.post()
                 .uri(uriBuilder -> uriBuilder.path("/token/reissued").build())
                 .cookie(rt.getName(), rt.getValue())
+                .cookie(ino.getName(), ino.getValue())
                 .retrieve()
                 .bodyToMono(JwtDTO.class)
                 .block();

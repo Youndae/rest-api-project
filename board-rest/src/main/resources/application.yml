@@ -28,9 +28,13 @@ spring:
     username: root
     password: 1234
 
+  redis:
+    host: localhost
+    port: 6379
+
 
 server:
-  port: 9095
+  port: 9096
 
 logging:
   file:

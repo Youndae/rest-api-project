@@ -12,7 +12,15 @@ public interface JwtProperties {
 
     String REFRESH_HEADER_STRING = "Authorization_Refresh";
 
+    String INO_HEADER_STRING = "Authorization_ino";
+
     long REFRESH_EXPIRATION_TIME = 60000 * 60 * 24 * 14;
+
+    String ACCESS_TOKEN_PREFIX = "at";
+
+    String REFRESH_TOKEN_PREFIX = "rt";
+
+
 
 
 }

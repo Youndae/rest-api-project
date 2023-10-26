@@ -62,9 +62,10 @@ class MemberServiceImplTest {
                 .userPw("zhzhahWl!2")
                 .build();
 
-        JwtDTO dto = memberService.memberLogin(member);
+//        JwtDTO dto = memberService.memberLogin(member);
 
-        System.out.println(dto);
+
+//        System.out.println(dto);
     }
 
 

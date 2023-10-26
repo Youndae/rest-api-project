@@ -17,4 +17,8 @@ public class JwtDTO {
     private String refreshTokenHeader;
 
     private String refreshTokenValue;
+
+    private String inoHeader;
+
+    private String inoValue;
 }

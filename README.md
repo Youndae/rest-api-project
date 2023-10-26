@@ -511,3 +511,30 @@ board-app = client Server
 >
 >> 23/08/30
 >>> 주석과 불필요 로그 제거.
+> 
+> 
+>> 23/10/26
+>>> Redis 적용.
+>>> * Spring Data Redis로 사용.
+>>> * Redis 사용으로 인해 RefreshToken Entity와 RefreshTokenDTO, RefreshTokenRepository는 Deprecated 처리.
+>>> * Redis 토큰 관리 구조.
+>>>> * "rt" + ino + userId : RefreshTokenValue,   "at" + ino + userId : AccessTokenValue
+>>> * 다중 디바이스 로그인 허용을 위해 ino(Identifier number)를 생성.
+>>>> * 최초 로그인 시에만 ino를 생성하고 클라이언트에 전달.
+>>>> * 아직 무기한 쿠키 설정 방법을 몰라 99999라는 maxAge를 세팅
+>>>> * 로그아웃 요청시에도 ino쿠키는 삭제하지 않도록 구현.
+>>>> * 다중 디바이스 로그인에 대해 고민한 내용은 아래 링크 블로그에 정리.
+>>>> * https://myyoun.tistory.com/211
+>>> * 토큰 관리 처리와 보안문제
+>>>> * 로그인
+>>>>> * 로그인 요청 시 ino가 존재한다면 쿠키에서 ino를 꺼내 사용하고 없다면 새로 생성.
+>>>>> * 로그인 요청이 들어왔는데 Redis 서버에 해당 ino의 토큰 데이터가 존재한다면 모두 삭제 후 요청 처리.
+>>>> * 재발급
+>>>>> * 재발급 요청시에는 AccessToken, RefreshToken 모두 재발급
+>>>>> * 기본적으로 RefreshToken과 ino가 존재해야 검증을 하도록 처리
+>>>>> * RefreshToken을 verify로 먼저 검증하고 ino에 해당하는 데이터의 value가 RefreshTokenValue와 동일한지 체크.
+>>>>> * 동일하지 않다면 더 이상의 처리를 진행하지 않도록 처리.
+>>>>> * 동일하다면 ino에 해당하는 AccessToken 데이터를 찾아보고 존재한다면 탈취로 판단. 모든 토큰 데이터를 제거.
+>>>>> * AccessToken의 경우 클라이언트가 1분 적은 만료기간을 갖도록 했기 때문에 60초 미만의 expire라면 정상이라고 판단. 처리를 진행
+>>>> * AuthorizationFilter에서의 검증
+>>>>> * 정상적인 사용자의 요청이라면 ino 역시 존재해야 하기 때문에 ino의 존재여부까지 체크하도록 수정. 

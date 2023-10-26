@@ -8,6 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import javax.transaction.Transactional;
 import java.util.Date;
 
+@Deprecated
+/**
+ * Redis 적용으로 인해 RefreshToken 관리를 DB -> Redis로 넘기게 되어
+ * Repository 사용 안함.
+ */
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, String> {
 
     @Modifying

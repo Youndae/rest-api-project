@@ -38,23 +38,43 @@ public class MemberWebClient {
 
         WebClient client = webClientConfig.useWebClient();
 
+        Cookie ino = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
+
         Member member = Member.builder()
                 .userId(loginData.get("userId"))
                 .userPw(loginData.get("userPw"))
                 .build();
 
-        JwtDTO responseVal = client.post()
-                .uri(uriBuilder -> uriBuilder.path("/member/login").build())
-                .bodyValue(member)
-                .retrieve()
-                .onStatus(
-                        HttpStatus::is4xxClientError, clientResponse ->
-                                Mono.error(
-                                        new CustomNotFoundException(ErrorCode.USER_NOT_FOUND)
-                                )
-                )
-                .bodyToMono(JwtDTO.class)
-                .block();
+        JwtDTO responseVal = null;
+
+        if(ino != null){
+            responseVal = client.post()
+                    .uri(uriBuilder -> uriBuilder.path("/member/login").build())
+                    .cookie(ino.getName(), ino.getValue())
+                    .bodyValue(member)
+                    .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new CustomNotFoundException(ErrorCode.USER_NOT_FOUND)
+                                    )
+                    )
+                    .bodyToMono(JwtDTO.class)
+                    .block();
+        }else{
+            responseVal = client.post()
+                    .uri(uriBuilder -> uriBuilder.path("/member/login").build())
+                    .bodyValue(member)
+                    .retrieve()
+                    .onStatus(
+                            HttpStatus::is4xxClientError, clientResponse ->
+                                    Mono.error(
+                                            new CustomNotFoundException(ErrorCode.USER_NOT_FOUND)
+                                    )
+                    )
+                    .bodyToMono(JwtDTO.class)
+                    .block();
+        }
 
         log.info("response : {}", responseVal);
 

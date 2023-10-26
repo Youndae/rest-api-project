@@ -14,7 +14,7 @@ public class WebClientConfig {
     public WebClient useWebClient(){
 
         WebClient webClient = WebClient.builder()
-                .baseUrl("http://localhost:9095")
+                .baseUrl("http://localhost:9096")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
 
@@ -29,7 +29,7 @@ public class WebClientConfig {
 
 
         WebClient webClient = WebClient.builder()
-                .baseUrl("http://localhost:9095")
+                .baseUrl("http://localhost:9096")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .exchangeStrategies(exchangeStrategies)
                 .build();

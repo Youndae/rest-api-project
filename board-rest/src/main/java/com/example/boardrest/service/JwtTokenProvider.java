@@ -3,20 +3,17 @@ package com.example.boardrest.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.boardrest.config.jwt.JwtProperties;
-import com.example.boardrest.domain.entity.RefreshToken;
 import com.example.boardrest.domain.dto.JwtDTO;
-import com.example.boardrest.domain.dto.RefreshDTO;
-import com.example.boardrest.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import java.security.Principal;
-import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,78 +24,7 @@ import java.util.UUID;
 @Slf4j
 public class JwtTokenProvider {
 
-    private final RefreshTokenRepository refreshTokenRepository;
-
-    //issued AccessToken
-    public String issuedAccessToken(String userId){
-
-        String accessToken = JWT.create()
-                .withSubject("cocoToken")
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.ACCESS_EXPIRATION_TIME))
-                .withClaim("userId", userId)
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
-
-        log.info("issuedAccessToken accessToken : {}", accessToken);
-
-        return accessToken;
-    }
-
-
-    //issued RefreshToken
-    public String issuedRefreshToken(String userId){
-
-        RefreshDTO dto = createRefreshToken();
-
-        refreshTokenRepository.save(RefreshToken.builder()
-                .rtIndex(dto.getRefreshIndex())
-                .userId(userId)
-                .expires(dto.getTokenExpires())
-                .tokenVal(dto.getTokenVal())
-                .build());
-
-        return dto.getTokenVal();
-    }
-
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
-    public String reIssuedRefreshToken(String originIndex){
-
-        log.info("reIssuedRefreshToken");
-        RefreshDTO dto = createRefreshToken();
-
-        refreshTokenRepository.patchToken(dto.getTokenVal()
-                                        , dto.getTokenExpires()
-                                        , dto.getRefreshIndex()
-                                        , originIndex
-                                    );
-
-        log.info("getTokenVal : {}", dto.getTokenVal());
-
-        return dto.getTokenVal();
-    }
-
-    public RefreshDTO createRefreshToken(){
-
-        StringBuilder sb = new StringBuilder();
-
-        String rIndex = sb.append(new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()))
-                .append(UUID.randomUUID()).toString();
-
-        Date refreshExpires = new Date(System.currentTimeMillis() + JwtProperties.REFRESH_EXPIRATION_TIME);
-
-        String refreshToken = JWT.create()
-                .withExpiresAt(refreshExpires)
-                .withClaim("refresh", rIndex)
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
-
-        RefreshDTO refreshDTO = RefreshDTO.builder()
-                .refreshIndex(rIndex)
-                .tokenVal(refreshToken)
-                .tokenExpires(refreshExpires)
-                .build();
-
-        return refreshDTO;
-    }
-
+    private final StringRedisTemplate redisTemplate;
 
     //verify AccessToken
     public String verifyAccessToken(Cookie accessToken){
@@ -121,51 +47,82 @@ public class JwtTokenProvider {
     }
 
 
-    /**
-     * AccessToken 만료시에 refreshToken과 같이 검증.
-     * accessToken과 refreshToken을 받고.
-     * 두 토큰을 모두 검증.
-     * 이때 테스트 필요한게 AccessToken이 만료된 토큰인 경우 userId를 식별할 수 있는가.
-     * 1. 식별이 안된다면
-     *      다른 방법으로 refreshToken 검증이 필요.
-     * 2. 식별이 된다면
-     *      계획했던 방법대로 refreshToken 검증이 가능.
-     * 토큰 검증을 한 뒤
-     * 둘다 null값이 아니라는 조건 하에 existsToken으로 DB 데이터와 대조.
-     *
-     * DB 데이터와 동일하다면 둘다 재발급.
-     * JwtDTO에 담아서 리턴이 필요.
-     * client로 토큰을 전달 한 뒤 다시 재 요청이 오도록 할것이기 때문.
-     */
-    //verify RefreshToken & AccessToken
+
+    //verify RefreshToken
     public Map<String, String> verifyRefreshToken(HttpServletRequest request){
 
         Cookie refreshToken = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
+        Cookie ino = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
 
+        //rt가 존재하더라도 ino가 존재하지 않는다면 rt가 탈취되었다고 판단 null을 리턴한다.
+        //굳이 해당 rt에 대한 처리를 하지 않은 이유로는 ino가 없다면 어차피 rt만으로 아무것도 할 수 없기 때문.
         if(refreshToken == null || !refreshToken.getValue().startsWith(JwtProperties.TOKEN_PREFIX)) {
             log.info("refresh Token null");
             return null;
+        }else if(ino == null){
+            return null;
         }
+
+        /*
+            토큰 상태가 정상이고 ino가 존재한다면
+            1. verify를 통해 claim인 userId를 꺼내고
+            2. "rt" + tno + userId의 value값과 refreshTokenVal을 비교한다.
+            3. 둘이 일치한다면
+                3-1. "at" + tno + userId가 존재하는지 여부를 체크
+                    3-1-1. 존재한다면 expire 리턴값이 60보다 큰 경우에는 rt, at 토큰 삭제 후 null 리턴
+
+                3-2. at가 존재하지 않거나 존재하면서 expire 리턴값이 60보다 작은 경우에는 map 데이터를 리턴
+            4. 일치하지 않는다면 해당 키값의 토큰을 모두 삭제
+
+         */
 
         String refreshTokenVal = refreshToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
+        String inoVal = ino.getValue();
 
-        String rIndex = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
+        String userId = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
                 .build()
                 .verify(refreshTokenVal)
-                .getClaim("refresh")
+                .getClaim("userId")
                 .asString();
 
-        log.info("tokenval : {}, rIndex : {}", refreshTokenVal, rIndex);
+        if(refreshTokenVal != null && userId != null){
+            String rtKey = "rt" + inoVal + userId;
+            String atKey = "at" + inoVal + userId;
 
-        if(refreshTokenVal != null && rIndex != null){
-            Map<String, String> tokenMap = new HashMap<>();
-            tokenMap.put("rIndex", rIndex);
-            tokenMap.put("refreshTokenValue", refreshTokenVal);
+            if(checkRefreshToken(rtKey, refreshTokenVal)){
+                if(checkAccessToken(atKey)){
+                    Map<String, String> tokenMap = new HashMap<>();
+                    tokenMap.put("userId", userId);
+                    tokenMap.put("ino", inoVal);
 
-            return tokenMap;
+                    return tokenMap;
+                }else{
+                    deleteTokenData(inoVal, userId);
+                }
+            }
         }
-
         return null;
+    }
+
+    public boolean checkAccessToken(String atKey){
+        long keyExpire = redisTemplate.getExpire(atKey);
+
+        //at가 -2로 삭제된 데이터이거나 60보다 작아 1분 미만으로 만료기간이 남았다면
+        if(keyExpire == -2 || keyExpire < 60)
+            return true;
+        else
+            return false;
+
+    }
+
+    public boolean checkRefreshToken(String rtKey, String tokenValue){
+        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
+        String value = stringValueOperations.get(rtKey);
+
+        if(value != null && value.equals(tokenValue))
+            return true;
+        else
+            return false;
     }
 
 
@@ -174,31 +131,131 @@ public class JwtTokenProvider {
 
         log.info("reIssuanceAllToken");
 
-        //refreshToken 검증과 동시에 userId를 획득.
-        //그럼 query는 select userId from refreshToken where rtIndex = rIndex And tokenVal = refreshTokenVal
-        // 이렇게 처리해 userId가 null인 경우 재발급을 하지 않도록.
-        String userId = refreshTokenRepository.existsByRtIndexAndUserId(
-                            reIssuedData.get("rIndex")
-                            , reIssuedData.get("refreshTokenValue")
-                        );
+        /*
+            reIssuedData = {
+                            userId : value,
+                            ino : value
+                            }
+         */
 
-        log.info("reIssued userId : {}", userId);
+        String userId = reIssuedData.get("userId");
+        String ino = reIssuedData.get("ino");
 
-        if(userId != null){
-            JwtDTO dto =  JwtDTO.builder()
-                    .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
-                    .accessTokenValue(JwtProperties.TOKEN_PREFIX + issuedAccessToken(userId))
-                    .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
-                    .refreshTokenValue(JwtProperties.TOKEN_PREFIX + reIssuedRefreshToken(reIssuedData.get("rIndex")))
-                    .build();
+        JwtDTO dto = JwtDTO.builder()
+                .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
+                .accessTokenValue(JwtProperties.TOKEN_PREFIX + issuedAccessToken(userId, ino))
+                .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
+                .refreshTokenValue(JwtProperties.TOKEN_PREFIX + issuedRefreshToken(userId, ino))
+                .inoHeader(JwtProperties.INO_HEADER_STRING)
+                .inoValue(ino)
+                .build();
 
-            log.info("reIssuanceAllToken Data : {} : {} \n {} : {}", dto.getAccessTokenHeader(), dto.getAccessTokenValue()
-                    , dto.getRefreshTokenHeader(), dto.getRefreshTokenValue());
+        return dto;
+    }
 
-            return dto;
+
+
+    public JwtDTO loginProcIssuedAllToken(String userId, HttpServletRequest request){
+
+        JwtDTO dto = null;
+
+        Cookie tnoCookie = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
+        String ino = null;
+
+        /*
+            로그인 요청이 발생.
+            if(tno == null)
+                최초 로그인 디바이스로 tno 생성과 각 토큰을 생성.
+            else if(tno != null)
+                if(checkToken)
+                    해당 토큰이 존재하지 않기 때문에 토큰 생성 후 로그인 처리
+                else
+                    해당 토큰이 존재하기 때문에 토큰 데이터 삭제 tno를 재생성하고 토큰 생성 및 로그인 처리
+
+         */
+
+        if(tnoCookie == null)
+            ino = issuedTno();
+        else {
+            if(tokenExistence(tnoCookie.getValue(), userId))
+                ino = tnoCookie.getValue();
+            else {
+                deleteTokenData(tnoCookie.getValue(), userId);
+                ino = issuedTno();
+            }
         }
 
-        return null;
+
+        dto =  JwtDTO.builder()
+                .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
+                .accessTokenValue(JwtProperties.TOKEN_PREFIX + issuedAccessToken(userId, ino))
+                .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
+                .refreshTokenValue(JwtProperties.TOKEN_PREFIX + issuedRefreshToken(userId, ino))
+                .inoHeader(JwtProperties.INO_HEADER_STRING)
+                .inoValue(ino)
+                .build();
+
+
+        return dto;
+    }
+
+    public void deleteTokenData(String ino, String userId){
+        String rtKey = JwtProperties.REFRESH_TOKEN_PREFIX + ino + userId;
+        String atKey = JwtProperties.ACCESS_TOKEN_PREFIX + ino + userId;
+
+        redisTemplate.delete(rtKey);
+        redisTemplate.delete(atKey);
+    }
+
+    public boolean tokenExistence(String ino, String userId){
+
+        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
+        String key = "rt" + ino + userId;
+
+        String value = stringValueOperations.get(key);
+
+        if(value == null)
+            return true;
+        else
+            return false;
+
+    }
+
+    public String issuedTno(){
+
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    //issued AccessToken
+    public String issuedAccessToken(String userId, String ino){
+
+        String accessToken = JWT.create()
+                .withSubject("cocoToken")
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.ACCESS_EXPIRATION_TIME))
+                .withClaim("userId", userId)
+                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+
+        log.info("issuedAccessToken accessToken : {}", accessToken);
+
+        ValueOperations<String, String> stringStringValueOperations = redisTemplate.opsForValue();
+        stringStringValueOperations.set(JwtProperties.ACCESS_TOKEN_PREFIX + ino + userId, accessToken, Duration.ofHours(2L));
+
+        return accessToken;
+    }
+
+
+    //issued RefreshToken
+    public String issuedRefreshToken(String userId, String ino){
+
+        String refreshToken = JWT.create()
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.REFRESH_EXPIRATION_TIME))
+                .withClaim("userId", userId)
+                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+
+        ValueOperations<String, String> stringStringValueOperations = redisTemplate.opsForValue();
+        stringStringValueOperations.set(JwtProperties.REFRESH_TOKEN_PREFIX + ino + userId, refreshToken, Duration.ofDays(14L));
+
+        return refreshToken;
     }
 
 }

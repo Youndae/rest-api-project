@@ -5,20 +5,15 @@ import com.example.boardrest.domain.dto.MemberDTO;
 import com.example.boardrest.domain.entity.Auth;
 import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.domain.dto.JwtDTO;
-import com.example.boardrest.domain.entity.RefreshToken;
 import com.example.boardrest.repository.AuthRepository;
 import com.example.boardrest.repository.MemberRepository;
-import com.example.boardrest.repository.RefreshTokenRepository;
 import com.example.boardrest.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.WebUtils;
 
@@ -39,8 +34,6 @@ public class MemberServiceImpl implements MemberService{
 
     private final AuthenticationManager authenticationManager;
 
-    private final RefreshTokenRepository refreshTokenRepository;
-
     private final JwtTokenProvider tokenProvider;
 
     private final AuthRepository authRepository;
@@ -56,7 +49,7 @@ public class MemberServiceImpl implements MemberService{
 
     // 사용자 데이터 save
     @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
-    private int joinMember(MemberDTO member){
+    public int joinMember(MemberDTO member){
         Member memberEntity = Member.builder()
                 .userId(member.getUserId())
                 .userPw(passwordEncoder.encode(member.getUserPw()))
@@ -73,7 +66,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public JwtDTO memberLogin(Member member) {
+    public JwtDTO memberLogin(Member member, HttpServletRequest request) {
 
         log.info("member login service");
 
@@ -94,18 +87,22 @@ public class MemberServiceImpl implements MemberService{
         String uid = customUser.getMember().getUserId();
 
         if(uid != null){
-            String accessToken = tokenProvider.issuedAccessToken(uid);
+//            String accessToken = tokenProvider.issuedAccessToken(uid);
 
-            log.info("service token : " + accessToken);
+//            log.info("service token : " + accessToken);
 
-            String refreshToken = tokenProvider.issuedRefreshToken(uid);
+//            String refreshToken = tokenProvider.issuedRefreshToken(uid);
 
-            return JwtDTO.builder()
+
+
+            /*return JwtDTO.builder()
                     .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
                     .accessTokenValue(JwtProperties.TOKEN_PREFIX + accessToken)
                     .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
                     .refreshTokenValue(JwtProperties.TOKEN_PREFIX + refreshToken)
-                    .build();
+                    .build();*/
+
+            return tokenProvider.loginProcIssuedAllToken(uid, request);
         }
 
         return null;
@@ -115,20 +112,13 @@ public class MemberServiceImpl implements MemberService{
     public int logout(HttpServletRequest request, Principal principal) {
 
         try{
-            Cookie cookie = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
-
-            log.info("cookie name : {}", cookie.getName());
-            log.info("cookie value : {}", cookie.getValue());
+            Cookie ino = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
 
             Map<String, String> verifyRefreshToken = tokenProvider.verifyRefreshToken(request);
 
-            RefreshToken refreshToken = RefreshToken.builder()
-                    .userId(principal.getName())
-                    .tokenVal(verifyRefreshToken.get("refreshTokenValue"))
-                    .rtIndex(verifyRefreshToken.get("rIndex"))
-                    .build();
+            String userId = verifyRefreshToken.get("userId");
 
-            refreshTokenRepository.delete(refreshToken);
+            tokenProvider.deleteTokenData(ino.getValue(), userId);
 
             return 1;
         }catch (Exception e){

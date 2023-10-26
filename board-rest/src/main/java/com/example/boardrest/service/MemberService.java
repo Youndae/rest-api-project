@@ -11,7 +11,7 @@ public interface MemberService {
 
     int memberJoinProc(MemberDTO dto);
 
-    JwtDTO memberLogin(Member member);
+    JwtDTO memberLogin(Member member, HttpServletRequest request);
 
     int logout(HttpServletRequest request, Principal principal);
 }

@@ -46,7 +46,7 @@ public class MemberController {
 
         log.info("controller login");
 
-        return new ResponseEntity<>(memberService.memberLogin(member), HttpStatus.OK);
+        return new ResponseEntity<>(memberService.memberLogin(member, request), HttpStatus.OK);
     }
 
     @PostMapping("/logout")
