@@ -73,6 +73,7 @@ public class CommentBoardWebClient {
                             .build())
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                     .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                    .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->
@@ -151,6 +152,7 @@ public class CommentBoardWebClient {
                             .build())
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                     .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                    .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->
@@ -218,6 +220,7 @@ public class CommentBoardWebClient {
                         .body(Mono.just(dto), CommentDTO.class)
                         .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                         .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                        .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                         .retrieve()
                         .onStatus(
                                 HttpStatus::is4xxClientError, clientResponse ->
@@ -281,6 +284,7 @@ public class CommentBoardWebClient {
                 .body(Mono.just(dto), CommentDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -315,6 +319,7 @@ public class CommentBoardWebClient {
                         .build(commentNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->

@@ -146,6 +146,7 @@ public class MemberWebClient {
                 .uri(uriBuilder -> uriBuilder.path("/member/logout").build())
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->

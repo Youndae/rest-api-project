@@ -55,7 +55,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         log.info("cookie is not null");
 
-        String username = jwtTokenProvider.verifyAccessToken(jwtCookie);
+        String username = jwtTokenProvider.verifyAccessToken(jwtCookie, ino);
 
         log.info("AuthorizationFilter verify username : " + username);
 

@@ -537,4 +537,11 @@ board-app = client Server
 >>>>> * 동일하다면 ino에 해당하는 AccessToken 데이터를 찾아보고 존재한다면 탈취로 판단. 모든 토큰 데이터를 제거.
 >>>>> * AccessToken의 경우 클라이언트가 1분 적은 만료기간을 갖도록 했기 때문에 60초 미만의 expire라면 정상이라고 판단. 처리를 진행
 >>>> * AuthorizationFilter에서의 검증
->>>>> * 정상적인 사용자의 요청이라면 ino 역시 존재해야 하기 때문에 ino의 존재여부까지 체크하도록 수정. 
+>>>>> * 정상적인 사용자의 요청이라면 ino 역시 존재해야 하기 때문에 ino의 존재여부까지 체크하도록 수정.
+>
+> 
+>> 23/11/09
+>>> Redis 적용 중 누락된 부분 수정.
+>>> * Application Server에서 Api Server로 요청시 ino cookie 전달 안하는 부분 수정.
+>>> * TokenProvider 불필요 메소드 삭제 및 코드 정리.
+>>> * Authorization 코드 정리

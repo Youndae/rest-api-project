@@ -27,11 +27,12 @@ public class JwtTokenProvider {
     private final StringRedisTemplate redisTemplate;
 
     //verify AccessToken
-    public String verifyAccessToken(Cookie accessToken){
+    public String verifyAccessToken(Cookie accessToken, Cookie ino){
 
         log.info("verify AccessToken");
 
        String tokenVal = accessToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
+       String inoVal = ino.getValue();
 
        log.info("verify token value : " + tokenVal);
 
@@ -42,6 +43,17 @@ public class JwtTokenProvider {
                .asString();
 
        log.info("claim userId : " + claimByUserId);
+
+       if(claimByUserId == null)
+           return null;
+
+       String atKey = "at" + inoVal + claimByUserId;
+
+       String redisAtValue = redisTemplate.opsForValue().get(atKey);
+
+       if(redisAtValue == null || !tokenVal.equals(redisAtValue))
+           return null;
+
 
         return claimByUserId;
     }
@@ -159,7 +171,7 @@ public class JwtTokenProvider {
 
         JwtDTO dto = null;
 
-        Cookie tnoCookie = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
+        Cookie inoCookie = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
         String ino = null;
 
         /*
@@ -174,13 +186,13 @@ public class JwtTokenProvider {
 
          */
 
-        if(tnoCookie == null)
+        if(inoCookie == null)
             ino = issuedTno();
         else {
-            if(tokenExistence(tnoCookie.getValue(), userId))
-                ino = tnoCookie.getValue();
+            if(tokenExistence(inoCookie.getValue(), userId))
+                ino = inoCookie.getValue();
             else {
-                deleteTokenData(tnoCookie.getValue(), userId);
+                deleteTokenData(inoCookie.getValue(), userId);
                 ino = issuedTno();
             }
         }

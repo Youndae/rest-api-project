@@ -143,6 +143,7 @@ public class HierarchicalBoardWebClient {
                             .build(boardNo))
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                     .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                    .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->
@@ -193,6 +194,7 @@ public class HierarchicalBoardWebClient {
                 .body(Mono.just(dto), HierarchicalBoardDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -228,6 +230,7 @@ public class HierarchicalBoardWebClient {
                         .build(boardNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -272,6 +275,7 @@ public class HierarchicalBoardWebClient {
                 .body(Mono.just(dto), HierarchicalBoardModifyDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -304,6 +308,7 @@ public class HierarchicalBoardWebClient {
                             .build(boardNo))
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                     .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                    .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->
@@ -349,6 +354,7 @@ public class HierarchicalBoardWebClient {
                 .body(Mono.just(dto), HierarchicalBoardModifyDTO.class)
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->

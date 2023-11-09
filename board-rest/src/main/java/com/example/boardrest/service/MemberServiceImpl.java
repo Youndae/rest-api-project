@@ -87,6 +87,7 @@ public class MemberServiceImpl implements MemberService{
         String uid = customUser.getMember().getUserId();
 
         if(uid != null){
+            //Redis 사용 이전 처리 코드
 //            String accessToken = tokenProvider.issuedAccessToken(uid);
 
 //            log.info("service token : " + accessToken);

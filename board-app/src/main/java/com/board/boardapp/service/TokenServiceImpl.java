@@ -32,6 +32,7 @@ public class TokenServiceImpl implements TokenService{
 
         Cookie at = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
         Cookie rt = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
+        Cookie ino = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
 
         /**
          * 리턴 조건.
@@ -48,6 +49,8 @@ public class TokenServiceImpl implements TokenService{
                     .accessTokenValue(at.getValue())
                     .refreshTokenHeader(rt.getName())
                     .refreshTokenValue(rt.getValue())
+                    .inoHeader(ino.getName())
+                    .inoValue(ino.getValue())
                     .build();
 
         return null;

@@ -171,6 +171,7 @@ public class ImageBoardWebClient {
                             .build(imageNo))
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                     .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                    .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->
@@ -228,6 +229,7 @@ public class ImageBoardWebClient {
                 .body(BodyInserters.fromMultipartData(mbBuilder.build()))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -260,6 +262,7 @@ public class ImageBoardWebClient {
                 .uri(uriBuilder -> uriBuilder.path("/image-board/modify-data/{imageNo}").build(imageNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -296,6 +299,7 @@ public class ImageBoardWebClient {
                 .uri(uriBuilder -> uriBuilder.path("/image-board/modify-image-attach/{imageNo}").build(imageNo))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -369,6 +373,7 @@ public class ImageBoardWebClient {
                 .body(BodyInserters.fromMultipartData(mbBuilder.build()))
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -404,6 +409,7 @@ public class ImageBoardWebClient {
                     .uri(uriBuilder -> uriBuilder.path("/image-board/image-delete/{imageNo}").build(imageNo))
                     .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                     .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
+                    .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
                     .retrieve()
                     .onStatus(
                             HttpStatus::is4xxClientError, clientResponse ->
