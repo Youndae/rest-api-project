@@ -1,6 +1,8 @@
 package com.example.boardrest.domain.entity;
 
 import lombok.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.List;
@@ -10,7 +12,6 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class Member {
 
@@ -36,5 +37,14 @@ public class Member {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public Member(String userId, String userPw, String userName, List<Auth> auths) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        this.userId = userId;
+        this.userPw = passwordEncoder.encode(userPw);
+        this.userName = userName;
+        this.auths = auths;
     }
 }

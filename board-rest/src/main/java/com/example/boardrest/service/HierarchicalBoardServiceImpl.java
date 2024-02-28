@@ -16,9 +16,7 @@ import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,83 +29,72 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
     // 계층형 게시판 insert
     @Override
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackOn = Exception.class)
     public long insertBoard(HierarchicalBoardDTO dto, Principal principal) {
 
-        log.info("content : {}", dto.getBoardContent());
-
-        long boardNo = insertGetBoardNo(dto, principal);
-
-        dto = HierarchicalBoardDTO.builder()
-                        .boardNo(boardNo)
-                        .boardGroupNo(boardNo)
-                        .boardIndent(0)
-                        .boardUpperNo(String.valueOf(boardNo))
-                        .build();
-
-        insertPatchHierarchicalBoard(dto);
-
-        return boardNo;
+        return insertBoardProc(dto, principal);
     }
 
     // 계층형 게시판 답글 insert
     @Override
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackOn = Exception.class)
     public long insertBoardReply(HierarchicalBoardModifyDTO dto, Principal principal) {
-
-        HierarchicalBoardDTO saveDTO = HierarchicalBoardDTO.builder()
-                .boardTitle(dto.getBoardTitle())
-                .boardContent(dto.getBoardContent())
-                .build();
-
-        long boardNo = insertGetBoardNo(saveDTO, principal);
-
         HierarchicalBoardReplyDTO replyDTO = hierarchicalBoardRepository.getReplyData(dto.getBoardNo());
 
-        saveDTO = HierarchicalBoardDTO.builder()
-                .boardIndent(replyDTO.getBoardIndent() + 1)
-                .boardGroupNo(replyDTO.getBoardGroupNo())
-                .boardUpperNo(replyDTO.getBoardUpperNo() + "," + boardNo)
-                .boardNo(boardNo)
-                .build();
+        HierarchicalBoardDTO boardDTO = HierarchicalBoardDTO.builder()
+                                                            .boardTitle(dto.getBoardTitle())
+                                                            .boardContent(dto.getBoardContent())
+                                                            .boardGroupNo(replyDTO.getBoardGroupNo())
+                                                            .boardIndent(replyDTO.getBoardIndent() + 1)
+                                                            .boardUpperNo(replyDTO.getBoardUpperNo())
+                                                            .build();
 
-        insertPatchHierarchicalBoard(saveDTO);
+        return insertBoardProc(boardDTO, principal);
+    }
 
-        return boardNo;
 
+    public long insertBoardProc(HierarchicalBoardDTO dto, Principal principal) {
+
+        HierarchicalBoard board = HierarchicalBoard.builder()
+                                                    .boardTitle(dto.getBoardTitle())
+                                                    .boardContent(dto.getBoardContent())
+                                                    .member(principalService.checkPrincipal(principal))
+                                                    .boardDate(Date.valueOf(LocalDate.now()))
+                                                    .build();
+
+        hierarchicalBoardRepository.save(board);
+        board.setPatchBoardData(dto);
+        hierarchicalBoardRepository.save(board);
+
+        return board.getBoardNo();
     }
 
     // 계층형 게시판 delete
     @Override
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackOn = Exception.class)
     public long deleteBoard(long boardNo, Principal principal) {
-
         //principal을 받고 작성자와 비교 필요.
         if(!principal.getName().equals(hierarchicalBoardRepository.checkWriter(boardNo)))
             new AccessDeniedException("AccessDenied");
 
         DeleteBoardDTO deleteData = hierarchicalBoardRepository.getDeleteData(boardNo);
 
-
         if(deleteData.getBoardIndent() == 0)
             hierarchicalBoardRepository.deleteByBoardGroupNo(boardNo);
         else {
             List<DeleteGroupListDTO> groupList = hierarchicalBoardRepository.getGroupList(deleteData.getBoardGroupNo());
 
-            List<Long> deleteList = new ArrayList<>();
-
-            //메소드 호출
-            addDeleteDataList(groupList, boardNo, deleteData.getBoardIndent(), deleteList);
+            List<Long> deleteList = addDeleteDataList(groupList, boardNo, deleteData.getBoardIndent());
 
             hierarchicalBoardRepository.deleteAllByBoardNoList(deleteList);
         }
 
         log.info(boardNo + " board delete success");
         return 1L;
-
     }
 
-    public void addDeleteDataList(List<DeleteGroupListDTO> groupList, long delNo, int indent, List<Long> deleteList) {
+    public List<Long> addDeleteDataList(List<DeleteGroupListDTO> groupList, long delNo, int indent) {
+        List<Long> deleteList = new ArrayList<>();
 
         for(int i = 0; i < groupList.size(); i++){
             String[] upperArr = groupList.get(i).getBoardUpperNo().split(",");
@@ -116,18 +103,14 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
                 deleteList.add(groupList.get(i).getBoardNo());
         }
 
+        return deleteList;
     }
 
     // 계층형 게시판 List
     @Override
     public Page<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri) {
 
-        log.info("getHierarchicalBoard list");
-
         Page<HierarchicalBoardDTO> dto;
-
-        if(cri.getKeyword() != null)
-            cri.setKeyword("%"+cri.getKeyword()+"%");
 
         if (cri.getKeyword() == null) { //default List
             log.info("default");
@@ -187,7 +170,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
     // 계층형 게시판 patch
     @Override
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackOn = Exception.class)
     public long patchBoard(HierarchicalBoardModifyDTO dto, Principal principal) {
 
         hierarchicalBoardRepository.boardModify(
@@ -196,40 +179,10 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
                 , dto.getBoardNo());
 
         return dto.getBoardNo();
-
-    }
-
-    // 1차 save 처리로 boardNo 리턴
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
-    public long insertGetBoardNo(HierarchicalBoardDTO dto, Principal principal){
-
-        return hierarchicalBoardRepository.save(
-                HierarchicalBoard.builder()
-                        .boardTitle(dto.getBoardTitle())
-                        .boardContent(dto.getBoardContent())
-                        .member(principalService.checkPrincipal(principal))
-                        .boardDate(Date.valueOf(LocalDate.now()))
-                        .boardGroupNo(0)
-                        .boardIndent(0)
-                        .boardUpperNo("")
-                        .build()
-        ).getBoardNo();
-    }
-
-
-    // 계층형 게시판 insert 후 patch 처리(groupNo, UpperNo 값 설정을 위해 분리해서 처리)
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
-    public void insertPatchHierarchicalBoard(HierarchicalBoardDTO dto) {
-
-        hierarchicalBoardRepository.boardInsertPatch(dto.getBoardIndent()
-                , dto.getBoardGroupNo()
-                , dto.getBoardUpperNo()
-                , dto.getBoardNo()
-        );
     }
 
     @Override
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackOn = Exception.class)
     public HierarchicalBoardModifyDTO getModifyData(long boardNo, Principal principal) {
 
         String userId = hierarchicalBoardRepository.checkWriter(boardNo);

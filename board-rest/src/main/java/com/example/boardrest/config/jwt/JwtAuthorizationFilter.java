@@ -48,26 +48,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if(jwtCookie == null || !jwtCookie.getValue().startsWith(JwtProperties.TOKEN_PREFIX) ||
                 rtCookie == null || !rtCookie.getValue().startsWith(JwtProperties.TOKEN_PREFIX) ||
                 ino == null){
-            log.info("cookie is null or prefix value not Bearer");
             chain.doFilter(request, response);
             return;
         }
 
-        log.info("cookie is not null");
-
         String username = jwtTokenProvider.verifyAccessToken(jwtCookie, ino);
 
-        log.info("AuthorizationFilter verify username : " + username);
-
         if(username != null){
-            log.info("username is nomal state");
-
             Member memberEntity = memberRepository.findByUserId(username);
-
-            log.info("AuthorizationFilter memberEntity : " + memberEntity.getUserId());
-
             CustomUser customUser = new CustomUser(memberEntity);
-
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(customUser, null, customUser.getAuthorities());
 

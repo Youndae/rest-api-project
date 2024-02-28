@@ -10,7 +10,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
 public class WebClientConfig {
-
     public WebClient useWebClient(){
 
         WebClient webClient = WebClient.builder()
@@ -25,8 +24,6 @@ public class WebClientConfig {
         ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
                 .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
                         .maxInMemorySize(20 * 1024 * 1024)).build();
-
-
 
         WebClient webClient = WebClient.builder()
                 .baseUrl("http://localhost:9096")

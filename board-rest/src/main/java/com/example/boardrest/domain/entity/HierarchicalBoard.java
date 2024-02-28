@@ -1,5 +1,6 @@
 package com.example.boardrest.domain.entity;
 
+import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -37,6 +38,14 @@ public class HierarchicalBoard {
     /*@OneToMany(mappedBy = "hierarchicalBoard")
     private final Set<Comment> comments = new HashSet<>();*/
 
+    public void setBoardNo(long boardNo) {
+        this.boardNo = boardNo;
+    }
 
-
+    public void setPatchBoardData(HierarchicalBoardDTO dto) {
+        String bno = String.valueOf(this.boardNo);
+        this.boardGroupNo = dto.getBoardGroupNo() == 0 ? this.boardNo : dto.getBoardGroupNo();
+        this.boardUpperNo = dto.getBoardUpperNo() == null ? bno : dto.getBoardUpperNo() + "," + bno;
+        this.boardIndent = dto.getBoardGroupNo() == 0 ? 0 : dto.getBoardIndent() + 1;
+    }
 }

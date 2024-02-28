@@ -34,6 +34,10 @@ public class ImageBoard {
     @OneToMany(mappedBy = "imageBoard", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final Set<ImageData> imageDataSet = new HashSet<>();
 
+    public void setImageNo(long imageNo) {
+        this.imageNo = imageNo;
+    }
+
     public void addImageData(ImageData imageData){
         imageDataSet.add(imageData);
         imageData.setImageBoard(this);

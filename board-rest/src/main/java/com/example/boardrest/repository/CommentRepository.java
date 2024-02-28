@@ -51,29 +51,18 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "WHERE c.imageBoard.imageNo = :imageNo")
     Page<BoardCommentDTO> getImageBoardCommentList(Pageable pageable, @Param("imageNo") long imageNo);
 
-    // patch after saving ImageBoard comments
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE comment " +
-            "SET commentGroupNo = ?1" +
-            ", commentIndent = ?2" +
-            ", commentUpperNo = ?3" +
-            ", imageNo = ?4 " +
-            "WHERE commentNo = ?5"
-    , nativeQuery = true)
-    void patchImageComment(long commentGroupNo, int commentIndent, String commentUpperNo, long imageNo, long commentNo);
 
-    // Patch after saving HierarchicalBoard comments
     @Modifying
     @Transactional
     @Query(value = "UPDATE comment " +
             "SET commentGroupNo = ?1" +
             ", commentIndent = ?2" +
             ", commentUpperNo = ?3" +
-            ", boardNo = ?4 " +
-            "WHERE commentNo = ?5"
+            ", boardNo = ?4" +
+            ", imageNo = ?5 " +
+            "WHERE commentNo = ?6"
             , nativeQuery = true)
-    void patchHierarchicalComment(long commentGroupNo, int commentIndent, String commentUpperNo, long boardNo, long commentNo);
+    void patchComment(long commentGroupNo, long commentIndent, String commentUpperNo, Long boardNo, Long imageNo, long commentNo);
 
 
     @Query(value = "select userId " +

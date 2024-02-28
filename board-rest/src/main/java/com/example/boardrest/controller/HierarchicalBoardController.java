@@ -35,9 +35,14 @@ public class HierarchicalBoardController {
         log.info("keyword : " + keyword);
         log.info("pageNum : " + pageNum);
 
-        Criteria cri = new Criteria();
+        Criteria cri = Criteria.builder()
+                                .pageNum(pageNum)
+                                .boardAmount(amount)
+                                .keyword(keyword)
+                                .searchType(searchType)
+                                .build();
 
-        if(keyword != null){
+        /*if(keyword != null){
             log.info("keyword is not null");
             cri = Criteria.builder()
                     .pageNum(pageNum)
@@ -50,8 +55,11 @@ public class HierarchicalBoardController {
             cri = Criteria.builder()
                     .pageNum(pageNum)
                     .boardAmount(amount)
+                    .keyword(keyword)
+                    .searchType(searchType)
                     .build();
-        }
+            System.out.println("controller cri : " + cri);
+        }*/
 
         return new ResponseEntity<>(hierarchicalBoardService.getHierarchicalBoardList(cri), HttpStatus.OK);
     }

@@ -8,9 +8,7 @@ import java.security.Principal;
 
 public interface CommentService {
 
-    long commentInsert(CommentInsertDTO dto, Principal principal);
-
-    long commentReplyInsert(CommentInsertDTO dto, Principal principal);
+    long commentInsertProc(CommentInsertDTO dto, Principal principal);
 
     int commentDelete(long commentNo, Principal principal);
 

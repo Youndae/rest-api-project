@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriBuilderFactory;
 import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
@@ -329,24 +331,16 @@ public class ImageBoardWebClient {
        return dto;
     }
 
-    public long imageBoardModify(long imageNo
-                                    , String imageTitle
-                                    , String imageContent
-                                    , List<MultipartFile> files
-                                    , List<String> deleteFiles
-                                    , HttpServletRequest request
-                                    , HttpServletResponse response){
-
+    public Long imageBoardModify(long imageNo, String imageTitle, String imageContent
+                                    , List<MultipartFile> files, List<String> deleteFiles
+                                    , HttpServletRequest request, HttpServletResponse response){
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
         if(tokenDTO == null)
             new AccessDeniedException("Denied Exception");
 
         WebClient client = webClientConfig.useImageWebClient();
-
         MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
-
-
 
         if(files != null){
             log.info("files is not null");
@@ -367,7 +361,7 @@ public class ImageBoardWebClient {
         mbBuilder.part("imageContent", imageContent);
         mbBuilder.part("imageNo", imageNo);
 
-        long responseVal = client.patch()
+        return client.patch()
                 .uri(uriBuilder -> uriBuilder.path("/image-board/image-modify").build())
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(mbBuilder.build()))
@@ -377,23 +371,14 @@ public class ImageBoardWebClient {
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
-                                Mono.error(
-                                        new NotFoundException("not found")
-                                )
+                                Mono.error(new NotFoundException("not found"))
                 )
                 .onStatus(
                         HttpStatus::is5xxServerError, clientResponse ->
-                                Mono.error(
-                                        new NullPointerException()
-                                )
+                                Mono.error(new NullPointerException())
                 )
                 .bodyToMono(Long.class)
                 .block();
-
-
-        log.info("responseVal : {}", responseVal);
-
-        return responseVal;
     }
 
     public long imageBoardDelete(long imageNo, HttpServletRequest request, HttpServletResponse response) {

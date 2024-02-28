@@ -28,15 +28,10 @@ public class CommentController {
                                                         , @RequestParam(value = "amount") int amount
                                                         , Principal principal){
 
-        log.info("api comment-list");
-
         Criteria cri = Criteria.builder()
                 .pageNum(pageNum)
                 .boardAmount(amount)
                 .build();
-
-        log.info("comment-list");
-
 
         return new ResponseEntity<>(commentService.commentList(boardNo, imageNo, cri, principal), HttpStatus.OK);
     }
@@ -46,27 +41,20 @@ public class CommentController {
     public long commentInsert(@RequestBody CommentInsertDTO dto
                             , Principal principal) {
 
-        log.info("comment-insert");
-
-        return commentService.commentInsert(dto, principal);
+        return commentService.commentInsertProc(dto, principal);
     }
 
     @PostMapping("/comment-reply")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public long commentReply(@RequestBody CommentInsertDTO dto
                                 , Principal principal){
-        log.info("commentReply");
 
-
-        return commentService.commentReplyInsert(dto, principal);
+        return commentService.commentInsertProc(dto, principal);
     }
 
     @DeleteMapping("/comment-delete/{commentNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public int commentDelete(@PathVariable long commentNo, Principal principal) {
-        log.info("commentDelete");
-
-        log.info("delete commentNo : {}", commentNo);
 
         return commentService.commentDelete(commentNo, principal);
     }

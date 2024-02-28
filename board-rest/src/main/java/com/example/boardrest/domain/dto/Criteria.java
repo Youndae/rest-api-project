@@ -6,7 +6,6 @@ import lombok.*;
 @Setter
 @ToString
 @Builder
-@AllArgsConstructor
 public class Criteria {
 
     private int pageNum;
@@ -27,5 +26,13 @@ public class Criteria {
         this.pageNum = pageNum;
         this.boardAmount = boardAmount;
         this.imageAmount = imageAmount;
+    }
+
+    public Criteria(int pageNum, int boardAmount, int imageAmount, String keyword, String searchType) {
+        this.pageNum = pageNum;
+        this.boardAmount = boardAmount;
+        this.imageAmount = imageAmount;
+        this.keyword = keyword == null ? null : "%" + keyword + "%";
+        this.searchType = searchType;
     }
 }

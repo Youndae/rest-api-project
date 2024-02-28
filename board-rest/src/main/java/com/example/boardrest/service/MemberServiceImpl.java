@@ -48,41 +48,37 @@ public class MemberServiceImpl implements MemberService{
     }
 
     // 사용자 데이터 save
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackOn = Exception.class)
     public int joinMember(MemberDTO member){
-        Member memberEntity = Member.builder()
-                .userId(member.getUserId())
-                .userPw(passwordEncoder.encode(member.getUserPw()))
-                .userName(member.getUserName())
-                .build();
+        memberRepository.save(
+                                Member.builder()
+                                        .userId(member.getUserId())
+                                        .userPw(member.getUserPw())
+                                        .userName(member.getUserName())
+                                        .build()
+                        );
 
-        memberRepository.save(memberEntity);
-        authRepository.save(Auth.builder()
-                .userId(member.getUserId())
-                .auth("ROLE_MEMBER")
-                .build());
+        authRepository.save(
+                                Auth.builder()
+                                .userId(member.getUserId())
+                                .auth("ROLE_MEMBER")
+                                .build()
+                        );
         log.info("join success");
+
         return 1;
     }
 
     @Override
     public JwtDTO memberLogin(Member member, HttpServletRequest request) {
-
         log.info("member login service");
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getUserId(), member.getUserPw());
 
-        log.info("authenticationToken : " + authenticationToken);
-
         Authentication authentication =
                 authenticationManager.authenticate(authenticationToken);
-
-        log.info("authentication : " + authentication);
-
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
-
-        log.info("login service success");
 
         String uid = customUser.getMember().getUserId();
 
@@ -114,9 +110,7 @@ public class MemberServiceImpl implements MemberService{
 
         try{
             Cookie ino = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
-
             Map<String, String> verifyRefreshToken = tokenProvider.verifyRefreshToken(request);
-
             String userId = verifyRefreshToken.get("userId");
 
             tokenProvider.deleteTokenData(ino.getValue(), userId);

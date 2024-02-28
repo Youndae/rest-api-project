@@ -36,28 +36,18 @@ public class ImageBoardController {
                                                             , @RequestParam(value = "keyword", required = false) String keyword
                                                             , @RequestParam(value = "searchType", required = false) String searchType){
 
-        Criteria cri = new Criteria();
-
-        if(keyword != null){
-            cri = Criteria.builder()
-                    .pageNum(pageNum)
-                    .imageAmount(amount)
-                    .keyword(keyword)
-                    .searchType(searchType)
-                    .build();
-        }else if(keyword == null){
-            cri = Criteria.builder()
-                    .pageNum(pageNum)
-                    .imageAmount(amount)
-                    .build();
-        }
+        Criteria cri = Criteria.builder()
+                                .pageNum(pageNum)
+                                .imageAmount(amount)
+                                .keyword(keyword)
+                                .searchType(searchType)
+                                .build();
 
         return new ResponseEntity<>(imageBoardService.getImageBoardList(cri), HttpStatus.OK);
     }
 
         @GetMapping("/image-board-detail/{imageNo}")
     public ResponseEntity<ImageBoardDetailDTO> imageBoardDetail(@PathVariable long imageNo, Principal principal){
-
 
         return new ResponseEntity<>(imageBoardService.getImageBoardDetail(imageNo, principal), HttpStatus.OK);
     }

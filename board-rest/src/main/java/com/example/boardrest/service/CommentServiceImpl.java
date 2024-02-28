@@ -5,6 +5,8 @@ import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.BoardCommentDTO;
 import com.example.boardrest.domain.dto.BoardCommentListDTO;
 import com.example.boardrest.domain.dto.CommentInsertDTO;
+import com.example.boardrest.domain.entity.HierarchicalBoard;
+import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.repository.CommentRepository;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,63 +33,33 @@ public class CommentServiceImpl implements CommentService{
 
     // 댓글 insert
     @Override
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
-    public long commentInsert(CommentInsertDTO dto
-                        , Principal principal) {
+    @Transactional(rollbackOn = Exception.class)
+    public long commentInsertProc(CommentInsertDTO dto, Principal principal) {
 
+        Comment comment = Comment.builder()
+                                .member(principalService.checkPrincipal(principal))
+                                .commentContent(dto.getCommentContent())
+                                .commentDate(Date.valueOf(LocalDate.now()))
+                                .build();
 
-        log.info("commentInsertContent : {}, boardNo : {}, imageNo : {}", dto.getCommentContent(), dto.getBoardNo(), dto.getImageNo());
+        System.out.println("dto.getIndent : " + dto.getCommentIndent());
 
-        long commentNo = commentInsertGetCommentNo(dto, principal);
-
-        dto.setCommentNo(commentNo);
-        dto.setCommentGroupNo(commentNo);
-        dto.setCommentIndent(1);
-        dto.setCommentUpperNo(String.valueOf(commentNo));
-
-        checkBoard(dto);
-
-        return 1;
-    }
-
-    // 대댓글 insert
-    @Override
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
-    public long commentReplyInsert(CommentInsertDTO dto
-                        , Principal principal) {
-
-        log.info("commentReply commentNo : {}, commentContent : {}, commentGroupNo : {}, commentIndent : {}, commentUpperNo : {}, boardNo : {}"
-                    , dto.getCommentNo()
-                    , dto.getCommentContent()
-                    , dto.getCommentGroupNo()
-                    , dto.getCommentIndent()
-                    , dto.getCommentUpperNo()
-                    , dto.getBoardNo());
-
-
-        long commentNo = commentInsertGetCommentNo(dto, principal);
-
-        dto.setCommentIndent(dto.getCommentIndent() + 1);
-        dto.setCommentUpperNo(dto.getCommentUpperNo() + "," + commentNo);
-        dto.setCommentNo(commentNo);
-
-        checkBoard(dto);
+        commentRepository.save(comment);
+        comment.setCommentPatchData(dto);
+        commentRepository.save(comment);
 
         return 1;
     }
 
     // 댓글 delete
     @Override
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
+    @Transactional(rollbackOn = Exception.class)
     public int commentDelete(long commentNo, Principal principal) {
 
         /**
          * DB에 저장된 데이터의 사용자 아이디를 가져와
          * 현재 로그인한 사용자의 아이디와 비교를 해 동일할 경우만 삭제 처리.
          */
-        String uidData = commentRepository.existsComment(commentNo);
-
-        log.info("uidData : {}", uidData);
 
         if(commentRepository.existsComment(commentNo).equals(principal.getName())){
             commentRepository.deleteComment(commentNo);
@@ -95,8 +67,6 @@ public class CommentServiceImpl implements CommentService{
         }else{
             return -1;
         }
-
-
     }
 
     // 댓글 List
@@ -106,7 +76,6 @@ public class CommentServiceImpl implements CommentService{
         Page<BoardCommentDTO> hBoardDTO;
 
         if(boardNo == null){// imageBoard
-            log.info("boardNo is null");
             // getImageBoardCommentList
             long iBoardNo = Long.parseLong(imageNo);
 
@@ -117,9 +86,7 @@ public class CommentServiceImpl implements CommentService{
                                     .and(Sort.by("commentUpperNo").ascending()))
                     , iBoardNo
             );
-
         }else if(boardNo != null){// hierarchicalBoard
-            log.info("boardNo is not null");
             long hBoardNo = Long.parseLong(boardNo);
 
             hBoardDTO = commentRepository.getHierarchicalBoardCommentList(
@@ -128,97 +95,27 @@ public class CommentServiceImpl implements CommentService{
                             , Sort.by("commentGroupNo").descending()
                                     .and(Sort.by("commentUpperNo").ascending()))
                     , hBoardNo);
-
         }else{
             return null;
         }
 
-        log.info("return dto : {}", hBoardDTO.getContent());
-
-        String uid = null;
-
-        if(principal != null)
-            uid = principal.getName();
+        String uid = principal == null ? null : principal.getName();
 
         BoardCommentListDTO result;
-
 
         try{
 
             ObjectMapper om = new ObjectMapper();
-
             String boardDTOVal = om.writeValueAsString(hBoardDTO);
-
-            log.info("boardDTOVal : {]", boardDTOVal);
 
             om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
             result = om.readValue(boardDTOVal, BoardCommentListDTO.class);
-
             result.setUid(uid);
-
-            log.info("result : {}", result);
         }catch (Exception e){
-            log.info("fail");
             result = null;
         }
 
-        log.info("return result : {}", result);
-
         return result;
-
     }
-
-    // 1차 save commentNo 리턴
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
-    long commentInsertGetCommentNo(CommentInsertDTO dto, Principal principal) {
-        return commentRepository.save(
-                Comment.builder()
-                        .member(principalService.checkPrincipal(principal))
-                        .commentContent(dto.getCommentContent())
-                        .commentDate(Date.valueOf(LocalDate.now()))
-                        .build()
-        ).getCommentNo();
-    }
-
-    // 어느 게시판인지 체크(해당하는 게시판의 patch comment 호출)
-    void checkBoard(CommentInsertDTO dto) {
-
-        if(dto.getImageNo() != 0)
-            patchImageComment(dto);
-        else if(dto.getBoardNo() != 0)
-            patchHierarchicalComment(dto);
-
-    }
-
-    // 이미지 게시판 comment patch
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
-    void patchImageComment(CommentInsertDTO dto) {
-        log.info("patch imageBoard comment");
-
-        commentRepository.patchImageComment(
-                dto.getCommentGroupNo()
-                , dto.getCommentIndent()
-                , dto.getCommentUpperNo()
-                , dto.getImageNo()
-                , dto.getCommentNo()
-        );
-    }
-
-    // 계층형 게시판 comment patch
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
-    void patchHierarchicalComment(CommentInsertDTO dto) {
-        log.info("patch hierarchicalBoard comment");
-
-        commentRepository.patchHierarchicalComment(
-                dto.getCommentGroupNo()
-                , dto.getCommentIndent()
-                , dto.getCommentUpperNo()
-                , dto.getBoardNo()
-                , dto.getCommentNo()
-        );
-    }
-
-
-
 }

@@ -17,13 +17,8 @@ public class TokenServiceImpl implements TokenService{
 
     @Override
     public JwtDTO reIssuedToken(HttpServletRequest request) {
-
-        log.info("reIssuedToken");
-
         Map<String, String> reIssuedData = provider.verifyRefreshToken(request);
         JwtDTO dto = null;
-
-        log.info("reIssuedData : {}", reIssuedData);
 
         if(reIssuedData != null)
             dto = provider.reIssuanceAllToken(reIssuedData);

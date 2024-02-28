@@ -36,11 +36,7 @@ public class JwtTokenProvider {
 
        log.info("verify token value : " + tokenVal);
 
-       String claimByUserId = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
-               .build()
-               .verify(tokenVal)
-               .getClaim("userId")
-               .asString();
+       String claimByUserId = getClaimUserIdByToken(tokenVal);
 
        log.info("claim userId : " + claimByUserId);
 
@@ -48,12 +44,10 @@ public class JwtTokenProvider {
            return null;
 
        String atKey = "at" + inoVal + claimByUserId;
-
        String redisAtValue = redisTemplate.opsForValue().get(atKey);
 
        if(redisAtValue == null || !tokenVal.equals(redisAtValue))
            return null;
-
 
         return claimByUserId;
     }
@@ -91,29 +85,35 @@ public class JwtTokenProvider {
         String refreshTokenVal = refreshToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
         String inoVal = ino.getValue();
 
-        String userId = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
-                .build()
-                .verify(refreshTokenVal)
-                .getClaim("userId")
-                .asString();
+        String claimByUserId = getClaimUserIdByToken(refreshTokenVal);
 
-        if(refreshTokenVal != null && userId != null){
-            String rtKey = "rt" + inoVal + userId;
-            String atKey = "at" + inoVal + userId;
+        if(refreshTokenVal != null && claimByUserId != null){
+            String rtKey = "rt" + inoVal + claimByUserId;
+            String atKey = "at" + inoVal + claimByUserId;
 
             if(checkRefreshToken(rtKey, refreshTokenVal)){
                 if(checkAccessToken(atKey)){
                     Map<String, String> tokenMap = new HashMap<>();
-                    tokenMap.put("userId", userId);
+                    tokenMap.put("userId", claimByUserId);
                     tokenMap.put("ino", inoVal);
 
                     return tokenMap;
                 }else{
-                    deleteTokenData(inoVal, userId);
+                    deleteTokenData(inoVal, claimByUserId);
                 }
             }
         }
         return null;
+    }
+
+    //token에서 Claim으로 설정된 userId를 꺼내 반환.
+    public String getClaimUserIdByToken(String tokenValue) {
+
+        return JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
+                    .build()
+                    .verify(tokenValue)
+                    .getClaim("userId")
+                    .asString();
     }
 
     public boolean checkAccessToken(String atKey){
@@ -140,45 +140,34 @@ public class JwtTokenProvider {
 
     //reissuance AccessToken & RefreshToken
     public JwtDTO reIssuanceAllToken(Map<String, String> reIssuedData){
+        /**
+         * @Param
+         * reIssuedData = {
+         *                  userId : value,
+         *                  ino : value
+         *               }
+         */
 
         log.info("reIssuanceAllToken");
-
-        /*
-            reIssuedData = {
-                            userId : value,
-                            ino : value
-                            }
-         */
 
         String userId = reIssuedData.get("userId");
         String ino = reIssuedData.get("ino");
 
-        JwtDTO dto = JwtDTO.builder()
-                .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
-                .accessTokenValue(JwtProperties.TOKEN_PREFIX + issuedAccessToken(userId, ino))
-                .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
-                .refreshTokenValue(JwtProperties.TOKEN_PREFIX + issuedRefreshToken(userId, ino))
-                .inoHeader(JwtProperties.INO_HEADER_STRING)
-                .inoValue(ino)
-                .build();
-
-        return dto;
+        return buildJwtDTO(userId, ino);
     }
 
 
 
     public JwtDTO loginProcIssuedAllToken(String userId, HttpServletRequest request){
 
-        JwtDTO dto = null;
-
         Cookie inoCookie = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
         String ino = null;
 
         /*
             로그인 요청이 발생.
-            if(tno == null)
+            if(ino == null)
                 최초 로그인 디바이스로 tno 생성과 각 토큰을 생성.
-            else if(tno != null)
+            else if(ino != null)
                 if(checkToken)
                     해당 토큰이 존재하지 않기 때문에 토큰 생성 후 로그인 처리
                 else
@@ -187,28 +176,29 @@ public class JwtTokenProvider {
          */
 
         if(inoCookie == null)
-            ino = issuedTno();
+            ino = issuedIno();
         else {
             if(tokenExistence(inoCookie.getValue(), userId))
                 ino = inoCookie.getValue();
             else {
                 deleteTokenData(inoCookie.getValue(), userId);
-                ino = issuedTno();
+                ino = issuedIno();
             }
         }
 
+        return buildJwtDTO(userId, ino);
+    }
 
-        dto =  JwtDTO.builder()
-                .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
-                .accessTokenValue(JwtProperties.TOKEN_PREFIX + issuedAccessToken(userId, ino))
-                .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
-                .refreshTokenValue(JwtProperties.TOKEN_PREFIX + issuedRefreshToken(userId, ino))
-                .inoHeader(JwtProperties.INO_HEADER_STRING)
-                .inoValue(ino)
-                .build();
+    public JwtDTO buildJwtDTO(String userId, String ino) {
 
-
-        return dto;
+        return JwtDTO.builder()
+                    .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
+                    .accessTokenValue(JwtProperties.TOKEN_PREFIX + issuedAccessToken(userId, ino))
+                    .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
+                    .refreshTokenValue(JwtProperties.TOKEN_PREFIX + issuedRefreshToken(userId, ino))
+                    .inoHeader(JwtProperties.INO_HEADER_STRING)
+                    .inoValue(ino)
+                    .build();
     }
 
     public void deleteTokenData(String ino, String userId){
@@ -220,27 +210,24 @@ public class JwtTokenProvider {
     }
 
     public boolean tokenExistence(String ino, String userId){
-
-        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
         String key = "rt" + ino + userId;
-
+        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
         String value = stringValueOperations.get(key);
 
+        //Redis에 해당 key가 존재하지 않는다면 true를 리턴, 존재한다면 false를 리턴
         if(value == null)
             return true;
         else
             return false;
-
     }
 
-    public String issuedTno(){
+    public String issuedIno(){
 
         return UUID.randomUUID().toString().replace("-", "");
     }
 
     //issued AccessToken
     public String issuedAccessToken(String userId, String ino){
-
         String accessToken = JWT.create()
                 .withSubject("cocoToken")
                 .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.ACCESS_EXPIRATION_TIME))
@@ -258,7 +245,6 @@ public class JwtTokenProvider {
 
     //issued RefreshToken
     public String issuedRefreshToken(String userId, String ino){
-
         String refreshToken = JWT.create()
                 .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.REFRESH_EXPIRATION_TIME))
                 .withClaim("userId", userId)

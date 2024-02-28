@@ -6,7 +6,6 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
-@AllArgsConstructor
 public class CommentInsertDTO {
 
     private long commentNo;
@@ -19,24 +18,8 @@ public class CommentInsertDTO {
 
     private String commentUpperNo;
 
-    private long boardNo;
+    private Long boardNo;
 
-    private long imageNo;
+    private Long imageNo;
 
-
-    public void setCommentNo(long commentNo) {
-        this.commentNo = commentNo;
-    }
-
-    public void setCommentGroupNo(long commentGroupNo) {
-        this.commentGroupNo = commentGroupNo;
-    }
-
-    public void setCommentIndent(int commentIndent) {
-        this.commentIndent = commentIndent;
-    }
-
-    public void setCommentUpperNo(String commentUpperNo) {
-        this.commentUpperNo = commentUpperNo;
-    }
 }

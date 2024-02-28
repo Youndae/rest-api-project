@@ -1,5 +1,6 @@
 package com.example.boardrest.domain.entity;
 
+import com.example.boardrest.domain.dto.CommentInsertDTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -41,4 +42,50 @@ public class Comment {
     private HierarchicalBoard hierarchicalBoard;
 
     private int commentStatus;
+
+    /*public void setCommentGroupNo(long commentGroupNo) {
+        this.commentGroupNo = commentGroupNo == 0 ? this.commentNo : commentGroupNo;
+    }
+
+    public void setCommentIndent(int commentIndent) {
+        this.commentIndent = commentIndent;
+    }
+
+    public void setCommentUpperNo(String commentUpperNo) {
+        String cno = String.valueOf(this.commentNo);
+        this.commentUpperNo = commentUpperNo == null ? cno : commentUpperNo + "," + cno;
+    }
+
+    public void setImageBoard(ImageBoard imageBoard) {
+        this.imageBoard = imageBoard;
+    }
+
+    public void setHierarchicalBoard(HierarchicalBoard hierarchicalBoard){
+        this.hierarchicalBoard = hierarchicalBoard;
+    }*/
+
+    public void setCommentPatchData(CommentInsertDTO dto) {
+        System.out.println("setCommentPatchData");
+        String cno = String.valueOf(this.commentNo);
+        HierarchicalBoard hBoard = new HierarchicalBoard();
+        ImageBoard iBoard = new ImageBoard();
+
+        System.out.println("boardNo :  " + dto.getBoardNo() + ", imageNo : " + dto.getImageNo());
+
+        if(dto.getBoardNo() != 0)
+            hBoard.setBoardNo(dto.getBoardNo());
+        else
+            hBoard = null;
+
+        if(dto.getImageNo() != 0)
+            iBoard.setImageNo(dto.getImageNo());
+        else
+            iBoard = null;
+
+        this.commentGroupNo = dto.getCommentGroupNo() == 0 ? this.commentNo : dto.getCommentGroupNo();
+        this.commentIndent = dto.getCommentGroupNo() == 0 ? 0 : dto.getCommentIndent() + 1;
+        this.commentUpperNo = dto.getCommentUpperNo() == null ? cno : dto.getCommentUpperNo() + "," + cno;
+        this.hierarchicalBoard = hBoard;
+        this.imageBoard = iBoard;
+    }
 }

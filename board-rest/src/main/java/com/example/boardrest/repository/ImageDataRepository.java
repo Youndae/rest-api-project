@@ -4,6 +4,7 @@ import com.example.boardrest.domain.entity.ImageData;
 import com.example.boardrest.domain.dto.ImageDataDTO;
 import com.example.boardrest.domain.dto.ImageDetailDataDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public interface ImageDataRepository extends JpaRepository<ImageData, String> {
             "FROM imageData " +
             "WHERE imageNo = ?1"
     , nativeQuery = true)
-    List<String> deleteImageDataList(long imageNo);
+    List<String> getDeleteImageDataList(long imageNo);
 
     @Query(value = "SELECT MAX(d.imageStep) " +
             "FROM ImageData d " +
@@ -38,5 +39,10 @@ public interface ImageDataRepository extends JpaRepository<ImageData, String> {
             "WHERE id.imageBoard.imageNo = ?1 " +
             "ORDER BY id.imageStep asc")
     List<ImageDetailDataDTO> getImageData(long imageNo);
+
+
+    @Modifying
+    @Query(value = "DELETE FROM ImageData id WHERE id.imageName in :deleteFileList")
+    void deleteImageDataList(List<String> deleteFileList);
 
 }

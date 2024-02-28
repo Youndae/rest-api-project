@@ -545,3 +545,25 @@ board-app = client Server
 >>> * Application Server에서 Api Server로 요청시 ino cookie 전달 안하는 부분 수정.
 >>> * TokenProvider 불필요 메소드 삭제 및 코드 정리.
 >>> * Authorization 코드 정리
+>
+> 
+>> 24/02/28
+>>> 리펙토링 - Api-Server
+>>> * 계층형 게시판과 댓글 insert, 답글 insert 코드 수정.
+>>>   * 기존 코드는 save().getId() 이후 클라이언트로 부터 전달받은 DTO 데이터로 nativeQuery를 통한 update 처리.
+>>>   * 수정 코드는 동일하게 save 처리 이후 게시판, 댓글 Entity에 setPatchData라는 메소드를 생성해서 DTO 데이터를 Entity에 담도록 한 후 save()로 처리.
+>>>   * 이렇게 수정함으로써 서비스단에서 setter나 여러번의 builder 패턴을 통해 Entity에 데이터를 담아준다거나, DTO 데이터를 통한 update를 직접 작성하지 않아도 되었고 그로인해 코드가 간결해짐.
+>>> * JwtTokenProvider 수정
+>>>   * 토큰을 검증하고 Claim에 있는 userId를 꺼내는 코드를 별개의 메소드로 분리.
+>>>   * 토큰 데이터는 JwtDTO에 담아 클라이언트에 반환하게 되는데 이때 JwtDTO를 builder 패턴으로 처리하는 부분을 별개의 메소드로 분리.
+>>> * 비밀번호 암호화 처리 위치 수정
+>>>   * Bcrypt를 통해 비밀번호를 암호화 하고 있는데 이전에는 서비스단에서 처리.
+>>>   * 수정된 코드에서는 Member Entity를 builder 패턴으로 생성할 때 거치는 생성자 내부에서 encode한 뒤 필드에 담도록 수정.
+>>> * 이미지 게시판 파일 삭제 수정
+>>>   * 기존 코드는 파일 삭제 처리를 담당하는 deleteFileProc 메소드에서 데이터베이스에 접근해 삭제하도록 되어 있었으나
+>>>   * deleteFilesProc은 파일 삭제만 담당하도록 수정하고 데이터베이스에 요청하는 것은 해당 메소드를 호출하는 곳에서 List를 전달해 처리하도록 수정.
+>>>   * Repository에 List를 받아 처리하도록 새로 만들어서 처리.
+>>> * 파일경로를 FilePathProperties에 분리.
+>>>   * 파일 저장, 삭제시에 필요한 FilePath를 각 메소드에서 직접 작성하고 있었으나
+>>>   * FilePathProperties라는 인터페이스를 생성하고 그 안에 FILE_PATH를 작성해 해당 값을 가져다 사용하도록 수정.
+>>> * 수정내역 전부 테스트 완료.
