@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +33,8 @@ public class MemberWebClient {
     private final TokenService tokenService;
 
     public int loginProc(Map<String, String> loginData
-            , HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+                        , HttpServletRequest request
+                        , HttpServletResponse response) {
 
         log.info("restCall login");
 
@@ -80,6 +82,10 @@ public class MemberWebClient {
 
         if(responseVal != null){
             tokenService.saveToken(responseVal, response);
+
+            HttpSession session = request.getSession();
+            session.setAttribute("id", member.getUserId());
+
             return 1;
         }else{
             return 0;
@@ -135,14 +141,11 @@ public class MemberWebClient {
     }
 
     public int logout(HttpServletRequest request, HttpServletResponse response){
-
         log.info("logout webClient");
-
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
-
         WebClient client = webClientConfig.useWebClient();
 
-        return client.post()
+        int result = client.post()
                 .uri(uriBuilder -> uriBuilder.path("/member/logout").build())
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
@@ -157,10 +160,21 @@ public class MemberWebClient {
                 .onStatus(
                         HttpStatus::is5xxServerError, clientResponse ->
                                 Mono.error(
-                                        new NullPointerException()
+                                        new NullPointerException("NullPointerException 발생!")
                                 )
                 )
                 .bodyToMono(Integer.class)
                 .block();
+
+
+        if(result == 1) {
+            //세션 제거
+            HttpSession session = request.getSession();
+            session.invalidate();
+            //토큰 쿠키 제거
+            tokenService.deleteCookie(request, response);
+        }
+
+        return result;
     }
 }

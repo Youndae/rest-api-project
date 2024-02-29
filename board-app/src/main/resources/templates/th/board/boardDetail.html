@@ -19,7 +19,7 @@
         <div>
             <div class="form-row float-right mb-3">
                 <button class="btn btn-outline-info btn-sm" id="reply">답글</button>
-                <th:block th:if="${board.uid} eq ${board.detailData.userId}">
+                <th:block th:if="${session.id} eq ${board.detailData.userId}">
                     <button class="btn btn-outline-info btn-sm" id="modify">수정</button>
                     <button type="button" class="btn btn-outline-info btn-sm" id="deleteBoard">삭제</button>
                 </th:block>

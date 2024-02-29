@@ -84,15 +84,10 @@ public class MemberServiceImpl implements MemberService{
 
         if(uid != null){
             //Redis 사용 이전 처리 코드
-//            String accessToken = tokenProvider.issuedAccessToken(uid);
+            /*String accessToken = tokenProvider.issuedAccessToken(uid);
+            String refreshToken = tokenProvider.issuedRefreshToken(uid);
 
-//            log.info("service token : " + accessToken);
-
-//            String refreshToken = tokenProvider.issuedRefreshToken(uid);
-
-
-
-            /*return JwtDTO.builder()
+            return JwtDTO.builder()
                     .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
                     .accessTokenValue(JwtProperties.TOKEN_PREFIX + accessToken)
                     .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
@@ -109,15 +104,15 @@ public class MemberServiceImpl implements MemberService{
     public int logout(HttpServletRequest request, Principal principal) {
 
         try{
-            Cookie ino = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
+            String inoValue = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING).getValue();
             Map<String, String> verifyRefreshToken = tokenProvider.verifyRefreshToken(request);
             String userId = verifyRefreshToken.get("userId");
 
-            tokenProvider.deleteTokenData(ino.getValue(), userId);
+            tokenProvider.deleteTokenData(inoValue, userId);
 
             return 1;
         }catch (Exception e){
-            new Exception();
+            log.info("logout Exception : {}", e.getMessage());
             return 0;
         }
 

@@ -28,17 +28,9 @@ public class JwtTokenProvider {
 
     //verify AccessToken
     public String verifyAccessToken(Cookie accessToken, Cookie ino){
-
-        log.info("verify AccessToken");
-
        String tokenVal = accessToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
        String inoVal = ino.getValue();
-
-       log.info("verify token value : " + tokenVal);
-
        String claimByUserId = getClaimUserIdByToken(tokenVal);
-
-       log.info("claim userId : " + claimByUserId);
 
        if(claimByUserId == null)
            return null;
@@ -62,12 +54,11 @@ public class JwtTokenProvider {
 
         //rt가 존재하더라도 ino가 존재하지 않는다면 rt가 탈취되었다고 판단 null을 리턴한다.
         //굳이 해당 rt에 대한 처리를 하지 않은 이유로는 ino가 없다면 어차피 rt만으로 아무것도 할 수 없기 때문.
-        if(refreshToken == null || !refreshToken.getValue().startsWith(JwtProperties.TOKEN_PREFIX)) {
-            log.info("refresh Token null");
+        if(refreshToken == null || !refreshToken.getValue().startsWith(JwtProperties.TOKEN_PREFIX))
             return null;
-        }else if(ino == null){
+        else if(ino == null)
             return null;
-        }
+
 
         /*
             토큰 상태가 정상이고 ino가 존재한다면
@@ -84,7 +75,6 @@ public class JwtTokenProvider {
 
         String refreshTokenVal = refreshToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
         String inoVal = ino.getValue();
-
         String claimByUserId = getClaimUserIdByToken(refreshTokenVal);
 
         if(refreshTokenVal != null && claimByUserId != null){
@@ -119,11 +109,15 @@ public class JwtTokenProvider {
     public boolean checkAccessToken(String atKey){
         long keyExpire = redisTemplate.getExpire(atKey);
 
-        //at가 -2로 삭제된 데이터이거나 60보다 작아 1분 미만으로 만료기간이 남았다면
+        log.info("AccessToken keyExpire : {}", keyExpire);
+
+        // 클라이언트는 AccessToken의 만료시간이 1분 적기 때문에
+        // keyExpire가 -2로 삭제된 데이터이거나 60보다 작아 1분 미만으로 만료기간이 남았다면
+        // 탈취된 토큰 또는 만료된 토큰으로 판단할 수 있다.
         if(keyExpire == -2 || keyExpire < 60)
-            return true;
-        else
             return false;
+        else
+            return true;
 
     }
 
@@ -205,8 +199,12 @@ public class JwtTokenProvider {
         String rtKey = JwtProperties.REFRESH_TOKEN_PREFIX + ino + userId;
         String atKey = JwtProperties.ACCESS_TOKEN_PREFIX + ino + userId;
 
+        log.info("deleteTokenData");
+
         redisTemplate.delete(rtKey);
         redisTemplate.delete(atKey);
+
+        log.info("deleteToken Success");
     }
 
     public boolean tokenExistence(String ino, String userId){

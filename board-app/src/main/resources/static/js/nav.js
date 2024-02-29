@@ -100,7 +100,7 @@ function ajaxUnloadEvent(){
 }
 
 $(function(){
-   console.log("nav log");
+   /*console.log("nav log");
    var lsc = document.cookie.match("lsc");
    console.log("lsc : " + lsc);
 
@@ -114,5 +114,5 @@ $(function(){
       $(".login ul").append(
           "<button class=\"user_status_btn\" onclick=\"location.href=\'/member/loginForm\'\">" + "로그인" + "</button>"
       )
-   }
+   }*/
 })

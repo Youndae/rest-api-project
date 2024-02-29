@@ -56,6 +56,5 @@ public class MemberController {
         log.info("logout");
 
         return memberService.logout(request, principal);
-
     }
 }

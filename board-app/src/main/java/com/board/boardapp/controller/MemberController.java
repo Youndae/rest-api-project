@@ -45,7 +45,8 @@ public class MemberController {
     @PostMapping("/login")
     @ResponseBody
     public int loginProc(@RequestBody Map<String, String> loginData
-            , HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+                        , HttpServletRequest request
+                        , HttpServletResponse response) throws JsonProcessingException {
 
 
         return memberWebClient.loginProc(loginData, request, response);
@@ -76,21 +77,12 @@ public class MemberController {
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response){
 
-        log.info("logout controller");
-
         int result = memberWebClient.logout(request, response);
 
-        if(result == 1){
-            /**
-             * 로그아웃 처리가 정상적으로 동작했다면
-             * lsc, Authorization, Authorization_Refresh 쿠키 전체 삭제.
-             **/
-            tokenService.deleteCookie(request, response);
-            log.info("Logout success");
+        if(result == 1)
             return "redirect:/board/boardList";
-        }else{
+        else
             return "th/error/error";
-        }
     }
 
 }
