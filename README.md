@@ -588,3 +588,6 @@ board-app = client Server
 >>>     * Comment-list 요청시 로그인한 사용자의 아이디를 Api-Server로부터 반환받고 그걸 사용해 버튼 상태 관리를 해왔는데 session.id를 통해 값의 존재 여부에 따라 버튼 출력을 제어하도록 수정.
 >>>     * comment.js에서 comment-table 파싱하는 함수 코드 수정.
 >>>     * commentList가 들어가는 imageBoardDetail, boardDetail 모두 테스트 완료. 
+>>>     * boardDetail과 imageBoardDetail 페이지 요청 시 comment 말고도 기본적인 게시글 정보 반환 역시 uid를 받고 있었기에 해당 DTO를 제거하고 그 안에 있던 DTO인 게시글 정보 DTO만을 전달해 처리하도록 수정.
+>>>     * Api-Server에서도 uid를 따로 담지 않고 전달하도록 수정.
+>>>     * 각 게시판 Detail 페이지 정상 작동 테스트 완료.

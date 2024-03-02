@@ -1,7 +1,6 @@
 package com.board.boardapp.controller;
 
 import com.board.boardapp.connection.webClient.CommentBoardWebClient;
-import com.board.boardapp.dto.CommentDTO;
 import com.board.boardapp.dto.CommentListDTO;
 import com.board.boardapp.dto.Criteria;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,12 +8,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.Map;
 
 @RestController

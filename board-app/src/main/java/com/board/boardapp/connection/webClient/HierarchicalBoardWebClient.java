@@ -112,7 +112,7 @@ public class HierarchicalBoardWebClient {
     }
 
     //계층형 게시판 상세페이지
-    public HierarchicalBoardDetailDTO getHierarchicalBoardDetail(long boardNo, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+    public HierarchicalBoardDTO getHierarchicalBoardDetail(long boardNo, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
 
         WebClient client = webClientConfig.useWebClient();
 
@@ -169,7 +169,7 @@ public class HierarchicalBoardWebClient {
 
         ObjectMapper om = new ObjectMapper();
 
-        HierarchicalBoardDetailDTO dto = om.readValue(responseVal, HierarchicalBoardDetailDTO.class);
+        HierarchicalBoardDTO dto = om.readValue(responseVal, HierarchicalBoardDTO.class);
 
         return dto;
     }

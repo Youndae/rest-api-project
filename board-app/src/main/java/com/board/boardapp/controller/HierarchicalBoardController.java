@@ -1,10 +1,7 @@
 package com.board.boardapp.controller;
 
 import com.board.boardapp.connection.webClient.HierarchicalBoardWebClient;
-import com.board.boardapp.dto.Criteria;
-import com.board.boardapp.dto.HierarchicalBoardDetailDTO;
-import com.board.boardapp.dto.HierarchicalBoardModifyDTO;
-import com.board.boardapp.dto.JwtDTO;
+import com.board.boardapp.dto.*;
 import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javassist.NotFoundException;
@@ -49,11 +46,9 @@ public class HierarchicalBoardController {
 
         System.out.println("boardNo : " + boardNo);
 
-        HierarchicalBoardDetailDTO dto = hierarchicalBoardWebClient.getHierarchicalBoardDetail(boardNo, request, response);
+        HierarchicalBoardDTO dto = hierarchicalBoardWebClient.getHierarchicalBoardDetail(boardNo, request, response);
 
         model.addAttribute("board", dto);
-
-        model.addAttribute("uid", response.getHeader("uid"));
 
         return "th/board/boardDetail";
     }

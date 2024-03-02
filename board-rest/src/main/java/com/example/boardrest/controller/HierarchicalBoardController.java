@@ -2,7 +2,6 @@ package com.example.boardrest.controller;
 
 import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
-import com.example.boardrest.domain.dto.HierarchicalBoardDetailDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
 import com.example.boardrest.service.HierarchicalBoardService;
@@ -66,13 +65,11 @@ public class HierarchicalBoardController {
 
 
     @GetMapping("/board-detail/{boardNo}")
-    public ResponseEntity<HierarchicalBoardDetailDTO> hierarchicalBoardDetail(@PathVariable long boardNo, Principal principal){
+    public ResponseEntity<HierarchicalBoardDTO> hierarchicalBoardDetail(@PathVariable long boardNo){
 
-        log.info("detail");
+//        HierarchicalBoardDTO dto = hierarchicalBoardRepository.findByBoardNo(boardNo);
 
-        HierarchicalBoardDetailDTO dto = null;
-
-        if(principal != null) {
+        /*if(principal != null) {
             log.info("userId : " + principal.getName());
             dto = HierarchicalBoardDetailDTO.builder()
                     .detailData(hierarchicalBoardRepository.findByBoardNo(boardNo))
@@ -84,9 +81,9 @@ public class HierarchicalBoardController {
                     .detailData(hierarchicalBoardRepository.findByBoardNo(boardNo))
                     .uid(null)
                     .build();
-        }
+        }*/
 
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return new ResponseEntity<>(hierarchicalBoardRepository.findByBoardNo(boardNo), HttpStatus.OK);
     }
 
     @GetMapping("/board-reply-info/{boardNo}")
