@@ -1,6 +1,6 @@
 $(document).ready(function(){
     //Paging
-    var actionForm = $("#pageActionForm");
+    const actionForm = $("#pageActionForm");
 
     /*$(".paginate_button a").on('click', function(e){
         e.preventDefault();

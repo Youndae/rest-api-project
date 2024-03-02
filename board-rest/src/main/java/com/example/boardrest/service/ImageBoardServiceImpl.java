@@ -38,13 +38,11 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     private final ImageDataRepository imageDataRepository;
 
     @Override
-    public ImageBoardDetailDTO getImageBoardDetail(long imageNo, Principal principal) {
+    public ImageBoardDetailDTO getImageBoardDetail(long imageNo) {
 
         ImageDetailDTO detailDTO = imageBoardRepository.imageDetailDTO(imageNo);
 
         List<ImageDetailDataDTO> dataDTO = imageDataRepository.getImageData(imageNo);
-
-        String uid = principal == null ? null : principal.getName();
 
         ImageBoardDetailDTO dto = ImageBoardDetailDTO.builder()
                 .imageNo(detailDTO.getImageNo())
@@ -53,7 +51,6 @@ public class ImageBoardServiceImpl implements ImageBoardService{
                 .imageContent(detailDTO.getImageContent())
                 .imageDate(detailDTO.getImageDate())
                 .imageData(dataDTO)
-                .uid(uid)
                 .build();
 
         return dto;

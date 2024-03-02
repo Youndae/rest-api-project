@@ -7,8 +7,8 @@ import java.util.Date;
 @Getter
 @ToString
 @EqualsAndHashCode
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class CommentDTO {
 
@@ -26,8 +26,7 @@ public class CommentDTO {
 
     private String commentUpperNo;
 
-    private long boardNo;
+    private Long boardNo;
 
-    private long imageNo;
-
+    private Long imageNo;
 }

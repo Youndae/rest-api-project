@@ -46,10 +46,10 @@ public class ImageBoardController {
         return new ResponseEntity<>(imageBoardService.getImageBoardList(cri), HttpStatus.OK);
     }
 
-        @GetMapping("/image-board-detail/{imageNo}")
-    public ResponseEntity<ImageBoardDetailDTO> imageBoardDetail(@PathVariable long imageNo, Principal principal){
+    @GetMapping("/image-board-detail/{imageNo}")
+    public ResponseEntity<ImageBoardDetailDTO> imageBoardDetail(@PathVariable long imageNo){
 
-        return new ResponseEntity<>(imageBoardService.getImageBoardDetail(imageNo, principal), HttpStatus.OK);
+        return new ResponseEntity<>(imageBoardService.getImageBoardDetail(imageNo), HttpStatus.OK);
     }
 
 

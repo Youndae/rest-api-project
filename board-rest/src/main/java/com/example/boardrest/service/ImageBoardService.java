@@ -25,7 +25,7 @@ public interface ImageBoardService {
 
     long deleteImageBoard(long imageNo, Principal principal);
 
-    ImageBoardDetailDTO getImageBoardDetail(long imageNo, Principal principal);
+    ImageBoardDetailDTO getImageBoardDetail(long imageNo);
 
     ImageDetailDTO getModifyData(long imageNo, Principal principal);
 

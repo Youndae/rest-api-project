@@ -24,4 +24,12 @@ public class Criteria {
         this.boardAmount = boardAmount;
         this.imageAmount = imageAmount;
     }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword.equals("") ? null : keyword;
+    }
+
+    public void setSearchType(String searchType) {
+        this.searchType = searchType.equals("") ? null : searchType;
+    }
 }

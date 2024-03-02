@@ -1,20 +1,7 @@
-/*$(document).ready(function(){
-   console.log("nav log");
-   var lsc = document.cookie.match("lsc");
-   console.log("lsc : " + lsc);
+//브라우저 종료시 발생하는 이벤트.
+//될때도 있고 안될때도 있어서 체크 후 수정 필요.
 
-   /!*if(lsc != null){
-      $(".login ul").append(
-          "<a href=\"/member/loginout\" class=\"nav-link\">" + "로그아웃" + "</a>"
-      )
-   }else{
-      $(".login ul").append(
-          "<a href=\"/member/loginForm\" class=\"nav-link\">" + "로그인" + "</a>"
-      )
-   }*!/
-});*/
-
-var closing_window = false;
+let closing_window = false;
 $(window).on('focus', function () {
    closing_window = false;
    //if the user interacts with the window, then the window is not being
@@ -98,21 +85,3 @@ function ajaxUnloadEvent(){
       });
    });
 }
-
-$(function(){
-   /*console.log("nav log");
-   var lsc = document.cookie.match("lsc");
-   console.log("lsc : " + lsc);
-
-   if(lsc != null){
-      $(".login ul").append(
-          "<form action=\"/member/logout\" method=\"post\" class=\"logoutForm\" id=\"logoutBtn\">" +
-          "<button class=\"user_status_btn\">" + "로그아웃" + "</button>" +
-          "</form>"
-      )
-   }else{
-      $(".login ul").append(
-          "<button class=\"user_status_btn\" onclick=\"location.href=\'/member/loginForm\'\">" + "로그인" + "</button>"
-      )
-   }*/
-})

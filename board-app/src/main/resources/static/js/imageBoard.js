@@ -1,12 +1,12 @@
-var files = {};
-var previewIndex = 0;
-var deleteFiles = {};
-var step = 0;
-var deleteNo = 0;
+let files = {};
+let previewIndex = 0;
+let deleteFiles = {};
+let step = 0;
+let deleteNo = 0;
 
 $(function(){
 
-    var imageNo = $("#imageNo").val();
+    const imageNo = $("#imageNo").val();
 
     $("#modify").on('click', function(){
         location.href='/imageBoard/imageBoardModify/' + imageNo;
@@ -32,11 +32,8 @@ $(function(){
     });
 
     $("#imageInsert").on('click', function(){
-        var form = $("#uploadForm")[0];
-        var formData = new FormData(form);
-
-        console.log("files.length : " + Object.keys(files).length);
-
+        const form = $("#uploadForm")[0];
+        let formData = new FormData(form);
 
         /**
          * 이미지 하나 등록시 step == 1 imageNo == 0
@@ -67,7 +64,7 @@ $(function(){
         if(Object.keys(files).length == 0){
             alert("이미지를 최소 1장은 등록해야 합니다.");
         }else{
-            for(var index = 0; index < step; index++){
+            for(let index = 0; index < step; index++){
                 if(files[index] != undefined){
                     formData.append('files', files[index]);
                 }
@@ -100,17 +97,18 @@ $(function(){
         }
     })
 
-    var modifyImageNo = $("#modifyImageNo").val();
+    const modifyImageNo = $("#modifyImageNo").val();
 
     if(modifyImageNo != undefined){
         $.getJSON("/imageBoard/modifyImageAttach", {imageNo: modifyImageNo}, function(arr){
             $(arr).each(function(i, attach){
                 $("#preview").append(
                     "<div class=\"preview-box\" value=\"old" + attach.imageStep + "\">" +
-                    "<img class=\"thumbnail\" id=\"imgName\" src=\"/imageBoard/display/" + attach.imageName + "\"\/>" +
-                    "<p>" + attach.oldName + "</p>" +
-                    "<a href=\"#\" value=\"" + attach.imageStep + "\" onclick=\"deleteOldPreview(this)\">" +
-                    "삭제" + "</a>" +
+                        "<img class=\"thumbnail\" id=\"imgName\" src=\"/imageBoard/display/" + attach.imageName + "\"\/>" +
+                        "<p>" + attach.oldName + "</p>" +
+                        "<a href=\"#\" value=\"" + attach.imageStep + "\" onclick=\"deleteOldPreview(this)\">" +
+                            "삭제" +
+                        "</a>" +
                     "</div>"
                 );
             });
@@ -118,14 +116,14 @@ $(function(){
     }
 
     $("#imageModify").on('click', function(){
-        var form = $("#uploadForm")[0];
-        var formData = new FormData(form);
+        const form = $("#uploadForm")[0];
+        let formData = new FormData(form);
 
-        for(var index = 0; index < Object.keys(files).length; index++){
+        for(let index = 0; index < Object.keys(files).length; index++){
             formData.append('files', files[index]);
         }
 
-        for(var index = 0; index < Object.keys(deleteFiles).length; index++){
+        for(let index = 0; index < Object.keys(deleteFiles).length; index++){
             formData.append('deleteFiles', deleteFiles[index]);
         }
 
@@ -138,7 +136,6 @@ $(function(){
             cache: false,
             data: formData,
             success: function(result){
-                console.log("imageModify result : " + result);
                 if(result == -1){
                     alert("오류가 발생했습니다 다시 시도해주세요.\n 문제가 계속되면 관리자에게 문의해주세요.");
                 }else if(result == -2){
@@ -158,8 +155,8 @@ $(function(){
 
 function addPreview(input){
     if(input[0].files.length <= (5 - ($('.preview-box').length))){
-        for(var fileIndex = 0; fileIndex < input[0].files.length; fileIndex++){
-            var file = input[0].files[fileIndex];
+        for(let fileIndex = 0; fileIndex < input[0].files.length; fileIndex++){
+            const file = input[0].files[fileIndex];
 
             if(validation(file.name))
                 setPreviewForm(file);
@@ -172,9 +169,9 @@ function addPreview(input){
 }
 
 function setPreviewForm(file){
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = function(img){
-        var imgNum = step;
+        const imgNum = step;
 
         $("#preview").append(
             "<div class=\"preview-box\" id=\"newImg\" value=\"" + imgNum +"\">" +
@@ -194,11 +191,11 @@ function setPreviewForm(file){
 
 function validation(fileName){
     fileName = fileName + "";
-    var fileNameExtensionIndex = fileName.lastIndexOf('.') + 1;
-    var fileNameExtension = fileName.toLowerCase().substring(
-        fileNameExtensionIndex, fileName.length);
+    const fileNameExtensionIndex = fileName.lastIndexOf('.') + 1;
+    const fileNameExtension = fileName.toLowerCase().substring(fileNameExtensionIndex, fileName.length);
 
-    if((fileNameExtension === 'jpg') || (fileNameExtension === 'gif') || (fileNameExtension === 'png') || (fileNameExtension === 'jpeg')){
+    if((fileNameExtension === 'jpg') || (fileNameExtension === 'gif')
+            || (fileNameExtension === 'png') || (fileNameExtension === 'jpeg')){
         return true;
     }else {
         alert('jpg, gif, png 확장자만 업로드가 가능합니다.');
@@ -207,19 +204,17 @@ function validation(fileName){
 }
 
 function deletePreview(obj){
-    console.log("deletePreview");
-    var imgNum = obj.attributes['value'].value;
+    const imgNum = obj.attributes['value'].value;
     delete files[imgNum];
 
     $("#preview .preview-box[value=" + imgNum + "]").remove();
 }
 
 function deleteOldPreview(obj){
-    console.log("deleteOldPreview");
-    var imgNum = obj.attributes['value'].value;
-    var imgName = $("#preview .preview-box[value=old" + imgNum +"] .thumbnail").attr('src');
-    var idx = imgName.lastIndexOf('/');
-    var deleteImg = imgName.substring(idx + 1);
+    const imgNum = obj.attributes['value'].value;
+    const imgName = $("#preview .preview-box[value=old" + imgNum +"] .thumbnail").attr('src');
+    const idx = imgName.lastIndexOf('/');
+    const deleteImg = imgName.substring(idx + 1);
 
     deleteFiles[deleteNo] = deleteImg;
     deleteNo++;

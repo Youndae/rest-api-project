@@ -1,15 +1,16 @@
 package com.board.boardapp.connection.webClient;
 
+import com.board.boardapp.ExceptionHandle.CustomNotFoundException;
+import com.board.boardapp.ExceptionHandle.ErrorCode;
 import com.board.boardapp.config.WebClientConfig;
+import com.board.boardapp.config.properties.JwtProperties;
+import com.board.boardapp.config.properties.PathProperties;
 import com.board.boardapp.dto.*;
 import com.board.boardapp.service.TokenService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.WebUtils;
@@ -19,8 +20,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.nio.file.AccessDeniedException;
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -28,19 +27,19 @@ import java.util.Map;
 @Slf4j
 public class MemberWebClient {
 
-    private final WebClientConfig webClientConfig;
+    private final WebClient client = new WebClientConfig().useWebClient();
 
     private final TokenService tokenService;
+
+    private static final String memberPath = PathProperties.MEMBER_PATH;
 
     public int loginProc(Map<String, String> loginData
                         , HttpServletRequest request
                         , HttpServletResponse response) {
 
-        log.info("restCall login");
-
-        WebClient client = webClientConfig.useWebClient();
-
         Cookie ino = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
+
+        String path = memberPath + "/login";
 
         Member member = Member.builder()
                 .userId(loginData.get("userId"))
@@ -51,7 +50,7 @@ public class MemberWebClient {
 
         if(ino != null){
             responseVal = client.post()
-                    .uri(uriBuilder -> uriBuilder.path("/member/login").build())
+                    .uri(uriBuilder -> uriBuilder.path(path).build())
                     .cookie(ino.getName(), ino.getValue())
                     .bodyValue(member)
                     .retrieve()
@@ -65,7 +64,7 @@ public class MemberWebClient {
                     .block();
         }else{
             responseVal = client.post()
-                    .uri(uriBuilder -> uriBuilder.path("/member/login").build())
+                    .uri(uriBuilder -> uriBuilder.path(path).build())
                     .bodyValue(member)
                     .retrieve()
                     .onStatus(
@@ -77,8 +76,6 @@ public class MemberWebClient {
                     .bodyToMono(JwtDTO.class)
                     .block();
         }
-
-        log.info("response : {}", responseVal);
 
         if(responseVal != null){
             tokenService.saveToken(responseVal, response);
@@ -93,10 +90,10 @@ public class MemberWebClient {
 
     }
 
-    public int checkUserId(String userId){
+    public Long checkUserId(String userId){
 
-        return webClientConfig.useWebClient().get()
-                .uri(uriBuilder -> uriBuilder.path("/member/check-user-id")
+        return client.get()
+                .uri(uriBuilder -> uriBuilder.path(memberPath + "/check-user-id")
                         .queryParam("userId", userId)
                         .build())
                 .retrieve()
@@ -112,14 +109,14 @@ public class MemberWebClient {
                                         new NullPointerException()
                                 )
                 )
-                .bodyToMono(Integer.class)
+                .bodyToMono(Long.class)
                 .block();
     }
 
-    public int joinProc(MemberDTO dto){
+    public Long joinProc(MemberDTO dto){
 
-        return webClientConfig.useWebClient().post()
-                .uri(uriBuilder -> uriBuilder.path("/member/join-proc").build())
+        return client.post()
+                .uri(uriBuilder -> uriBuilder.path(memberPath + "/join-proc").build())
                 .accept()
                 .body(Mono.just(dto), MemberDTO.class)
                 .retrieve()
@@ -135,18 +132,17 @@ public class MemberWebClient {
                                         new NullPointerException()
                                 )
                 )
-                .bodyToMono(Integer.class)
+                .bodyToMono(Long.class)
                 .block();
 
     }
 
-    public int logout(HttpServletRequest request, HttpServletResponse response){
+    public Long logout(HttpServletRequest request, HttpServletResponse response){
         log.info("logout webClient");
         JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
-        WebClient client = webClientConfig.useWebClient();
 
-        int result = client.post()
-                .uri(uriBuilder -> uriBuilder.path("/member/logout").build())
+        Long result = client.post()
+                .uri(uriBuilder -> uriBuilder.path(memberPath + "/logout").build())
                 .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
                 .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
                 .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
@@ -163,11 +159,11 @@ public class MemberWebClient {
                                         new NullPointerException("NullPointerException 발생!")
                                 )
                 )
-                .bodyToMono(Integer.class)
+                .bodyToMono(Long.class)
                 .block();
 
 
-        if(result == 1) {
+        if(result == 1L) {
             //세션 제거
             HttpSession session = request.getSession();
             session.invalidate();

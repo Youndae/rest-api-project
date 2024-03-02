@@ -25,5 +25,4 @@ public class ImageBoardDetailDTO {
 
     private List<ImageDataDTO> imageData;
 
-    private String uid;
 }

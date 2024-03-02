@@ -1,14 +1,12 @@
 $(document).ready(function(){
 
     $("#insertProc").on('click', function(){
-        var form = $("#insertBoardFrm");
+        const form = $("#insertBoardFrm");
 
         if($("#boardTitle").val() == ""){
             alert("제목을 입력해주세요");
             $("#boardTitle").focus();
         }else{
-            console.log("insert!");
-
             form.submit();
         }
 
@@ -16,26 +14,19 @@ $(document).ready(function(){
     })
 
     $("#modify").on('click', function(){
-        var boardNo = $("#boardNo").val();
-
-        console.log("boardNo : " + boardNo);
+        const boardNo = $("#boardNo").val();
 
         location.href = '/board/boardModify/' + boardNo;
     })
 
     $("#modifyProc").on('click', function(){
-        var form = $("#insertBoardFrm");
-
-        console.log("modify btn click!");
+        const form = $("#insertBoardFrm");
 
         form.submit();
     })
 
     $("#deleteBoard").on('click', function(){
-
-        var boardNo = $("#boardNo").val();
-
-        console.log("delete boardNo : " + boardNo);
+        const boardNo = $("#boardNo").val();
 
         $.ajax({
             url: '/board/boardDelete/' + boardNo,
@@ -56,14 +47,12 @@ $(document).ready(function(){
     })
 
     $("#reply").on('click', function(){
-        var boardNo = $("#boardNo").val();
+        const boardNo = $("#boardNo").val();
         location.href='/board/boardReply/' + boardNo;
     })
 
     $("#replyInsertProc").on('click', function(){
-        var form = $("#insertBoardFrm");
-
-        console.log("reply insert btn");
+        const form = $("#insertBoardFrm");
 
         form.submit();
     })

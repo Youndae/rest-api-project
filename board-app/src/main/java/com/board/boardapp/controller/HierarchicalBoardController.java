@@ -26,27 +26,16 @@ public class HierarchicalBoardController {
     private final TokenService tokenService;
 
     @GetMapping("/boardList")
-    public String hierarchicalBoardMain(Model model
-                                            , Criteria cri) throws Exception {
-
-
-
+    public String hierarchicalBoardMain(Model model, Criteria cri) throws Exception {
         model.addAttribute("boardList", hierarchicalBoardWebClient.getHierarchicalBoardList(cri));
-
-        log.info("boardList Controller");
 
         return "th/board/boardList";
     }
 
     @GetMapping("/boardDetail/{boardNo}")
     public String hierarchicalBoardDetail(Model model
-                                            , @PathVariable long boardNo
-                                            , HttpServletRequest request
-                                            , HttpServletResponse response) throws JsonProcessingException {
-
-        System.out.println("boardNo : " + boardNo);
-
-        HierarchicalBoardDTO dto = hierarchicalBoardWebClient.getHierarchicalBoardDetail(boardNo, request, response);
+                                            , @PathVariable long boardNo) {
+        HierarchicalBoardDTO dto = hierarchicalBoardWebClient.getHierarchicalBoardDetail(boardNo);
 
         model.addAttribute("board", dto);
 
@@ -55,8 +44,6 @@ public class HierarchicalBoardController {
 
     @PatchMapping("/boardModify")
     public String hierarchicalBoardModifyProc(HttpServletRequest request, HttpServletResponse response){
-        log.info("title : {}, content : {}, boardNo : {}", request.getParameter("boardTitle"), request.getParameter("boardContent"), request.getParameter("boardNo"));
-
         long responseVal = hierarchicalBoardWebClient.modifyPatch(request, response);
 
         if(responseVal == -1L)

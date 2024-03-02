@@ -21,8 +21,6 @@ public class ImageBoardDTO {
 
     private String imageContent;
 
-    private String uid;
-
     private String imageName;
 
 }

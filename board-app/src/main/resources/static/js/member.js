@@ -1,13 +1,12 @@
-var idPattern = /^[A-Za-z0-9]{5,15}$/;
-var pwPattern = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,16}$/;
-var checkId = "";
+const idPattern = /^[A-Za-z0-9]{5,15}$/;
+const pwPattern = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,16}$/;
+let checkId = "";
 
 $(function(){
     $('#userLogin').click(function(){
-
-        var id = $('#userId').val();
-        var pw = $('#userPw').val();
-        var formData = {
+        const id = $('#userId').val();
+        const pw = $('#userPw').val();
+        let formData = {
             userId: id,
             userPw: pw,
         }
@@ -49,7 +48,7 @@ $(function(){
     })
 
     $('#userId').on("propertychange change keyup paste input", function(){
-        var userId = $("#userId").val();
+        const userId = $("#userId").val();
         if(checkId != "" && checkId == userId){
             $("#check").val("check");
         }else{
@@ -59,10 +58,10 @@ $(function(){
 
 
     $('#idCheck').on('click', function(){
-        var userId = {
+        const userId = {
             userId : $("#userId").val(),
         };
-        console.log("checkUserId");
+
         if(userId.userId == ""){
             $("#overlap").text("아이디를 입력하세요");
             $("#overlap").css("color", "red");
@@ -118,9 +117,7 @@ $(function(){
     })
 
     $("#checkUserPw").on("propertychange change keyup paste input", function(){
-        console.log("checkUserPw change");
         if($("#userPw").val() != $("#checkUserPw").val()){
-            console.log("not equals");
             $("#checkPwOverlap").text("비밀번호가 일치하지 않습니다.");
             $("#pwStat").val("");
         }else {
@@ -130,10 +127,7 @@ $(function(){
     })
 
     $("#join").click(function(){
-
-        var checkVal = $("#check").val();
-
-        console.log("pwStat : " + $("#pwStat").val());
+        const checkVal = $("#check").val();
 
         if(checkVal == ""){
             $("#overlap").text("아이디 중복체크를 해주세요.");
@@ -151,8 +145,8 @@ $(function(){
             $("#checkUserPw").focus();
         }else if(checkVal == "check" && $("#pwStat").val() == "check"){
 
-            var form = $('#joinForm')[0];
-            var formData = new FormData(form);
+            const form = $('#joinForm')[0];
+            let formData = new FormData(form);
 
             $.ajaxSettings.traditional = true;
             $.ajax({

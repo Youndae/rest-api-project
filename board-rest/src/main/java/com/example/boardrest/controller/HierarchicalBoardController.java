@@ -32,6 +32,7 @@ public class HierarchicalBoardController {
                                                                                 , @RequestParam(value = "searchType", required = false) String searchType) {
 
         log.info("keyword : " + keyword);
+        log.info("searchType : " + searchType);
         log.info("pageNum : " + pageNum);
 
         Criteria cri = Criteria.builder()

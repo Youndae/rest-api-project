@@ -2,7 +2,7 @@ package com.board.boardapp.service;
 
 import com.board.boardapp.config.WebClientConfig;
 import com.board.boardapp.dto.JwtDTO;
-import com.board.boardapp.dto.JwtProperties;
+import com.board.boardapp.config.properties.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
@@ -13,10 +13,6 @@ import org.springframework.web.util.WebUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j

@@ -1,27 +1,18 @@
 $(function(){
-    var boardNo = $("#boardNo").val();
-    var imageNo = $("#imageNo").val();
-    var pageNum;
+    const boardNo = $("#boardNo").val();
+    const imageNo = $("#imageNo").val();
+    let pageNum;
 
     if($("#pageNum").val() == null || $("#pageNum").val() == undefined)
         pageNum = 1;
     else
         pageNum = $("#pageNum").val();
 
-    if(boardNo != null){
-        console.log("hierarchicalBoardComment");
-        console.log("boardNo : " + boardNo);
-
+    if(boardNo != null)
         hierarchicalBoardComment(boardNo, pageNum);
 
-    }
-
-    if(imageNo != null){
-        console.log("imageBoardComment");
-        console.log("imageBoard : " + imageNo);
-
+    if(imageNo != null)
         imageBoardComment(imageNo, pageNum);
-    }
 
     $("#commentContent").keydown(function(key){
         if(key.keyCode == 13){
@@ -32,15 +23,11 @@ $(function(){
 })
 
 $(document).on('click', '#commentInsert', function(){
-    var boardNo = $("#boardNo").val();
-    var imageNo = $("#imageNo").val();
-    var content = $("#commentContent").val();
+    const boardNo = $("#boardNo").val();
+    const imageNo = $("#imageNo").val();
+    const content = $("#commentContent").val();
 
-    console.log("boardNo : " + boardNo);
-    console.log("imageNo : " + imageNo);
-    console.log("content : " + content);
-
-    var commentData = {
+    let commentData = {
         boardNo : boardNo,
         imageNo : imageNo,
         commentContent : content
@@ -50,7 +37,6 @@ $(document).on('click', '#commentInsert', function(){
         alert("댓글을 입력해주세요");
         $("#commentContent").focus();
     }else{
-
         commentData = JSON.stringify(commentData);
 
         $.ajax({
@@ -75,22 +61,14 @@ $(document).on('click', '#commentInsert', function(){
 })
 
 $(document).on('click', '#commentReplyInsert', function(){
-    var groupNo = $("#commentGroupNo").val();
-    var indent = $("#commentIndent").val();
-    var upperNo = $("#commentUpperNo").val();
-    var content = $("#commentReplyContent").val();
-    var boardNo = $("#boardNo").val();
-    var imageNo = $("#imageNo").val();
-    console.log("commentReply Insert!");
+    const groupNo = $("#commentGroupNo").val();
+    const indent = $("#commentIndent").val();
+    const upperNo = $("#commentUpperNo").val();
+    const content = $("#commentReplyContent").val();
+    const boardNo = $("#boardNo").val();
+    const imageNo = $("#imageNo").val();
 
-    console.log("groupNo : " + groupNo);
-    console.log("indent : " + indent);
-    console.log("upperNo : " + upperNo);
-    console.log("content : " + content);
-    console.log("boardNo : " + boardNo);
-    console.log("imageNo : " + imageNo);
-
-    var commentData = {
+    let commentData = {
         commentGroupNo : groupNo,
         commentIndent : indent,
         commentUpperNo : upperNo,
@@ -153,16 +131,16 @@ function commentPaging(obj){
 
 function commentPagingParsing(res){
 
-    var comment_paging = $(".comment-paging");
+    const comment_paging = $(".comment-paging");
 
     comment_paging.empty();
 
-    var cpStr = "";
-    var startPage = res.pageDTO.startPage;
-    var endPage = res.pageDTO.endPage;
-    var pageNum = res.pageDTO.cri.pageNum;
-    var prev = res.pageDTO.prev;
-    var next = res.pageDTO.next;
+    let cpStr = "";
+    const startPage = res.pageDTO.startPage;
+    const endPage = res.pageDTO.endPage;
+    const pageNum = res.pageDTO.cri.pageNum;
+    const prev = res.pageDTO.prev;
+    const next = res.pageDTO.next;
 
     if(prev){
         cpStr += "<ul>" +
@@ -173,7 +151,7 @@ function commentPagingParsing(res){
         cpStr += "<ul>";
     }
 
-    for(var i = startPage; i <= endPage; i++){
+    for(let i = startPage; i <= endPage; i++){
         if(startPage != endPage){
             if(i == pageNum){
                 cpStr += "<li>" +
@@ -200,9 +178,6 @@ function commentPagingParsing(res){
 }
 
 function commentEachParsing(arr){
-
-    console.log("commentEachParsing")
-
     const comment_area = $(".comment-area");
 
     comment_area.empty();
@@ -262,79 +237,6 @@ function commentEachParsing(arr){
     comment_area.append(commentStr);
 }
 
-
-
-/*function commentEachParsing(arr, uid){
-
-    console.log("commentEachParsing")
-
-    var comment_area = $(".comment-area");
-
-    comment_area.empty();
-
-    var commentStr = "";
-
-    $(arr).each(function(i, res){
-        commentStr += "<div class=\"comment-box\" value=\"" + res.commentNo + "\">" +
-                    "<table class=\"table table-hover\">" +
-                        "<tr>" +
-                            "<td>";
-
-        var commentContent = "삭제된 댓글입니다.";
-
-        if(res.commentContent != null){
-            commentContent = res.commentContent;
-        }
-
-
-        if (res.commentIndent == 0) {
-            commentStr += "<span class=\"comment_userId\">" + res.userId + "</span>" +
-                            "<span class=\"comment_date\">" + formatDate(res.commentDate) + "</span>" +
-                            "<p class=\"comment_content\">" + commentContent + "</p>";
-        }else if(res.commentIndent == 1){
-            commentStr += "<span class=\"comment_userId indent_size_1\">" + res.userId + "</span>" +
-                            "<span class=\"comment_date indent_size_1\">" + formatDate(res.commentDate) + "</span>" +
-                            "<p class=\"comment_content indent_size_1\">" + commentContent + "</p>";
-        }else if(res.commentIndent == 2){
-            commentStr += "<span class=\"comment_userId indent_size_2\">" + res.userId + "</span>" +
-                            "<span class=\"comment_date indent_size_2\">" + formatDate(res.commentDate) + "</span>" +
-                            "<p class=\"comment_content indent_size_2\">" + commentContent + "</p>";
-        }else if(res.commentIndent == 3){
-            commentStr += "<span class=\"comment_userId indent_size_3\">" + res.userId + "</span>" +
-                            "<span class=\"comment_date indent_size_3\">" + formatDate(res.commentDate) + "</span>" +
-                            "<p class=\"comment_content indent_size_3\">" + commentContent + "</p>";
-        }else if(res.commentIndent == 4){
-            commentStr += "<span class=\"comment_userId indent_size_4\">" + res.userId + "</span>" +
-                            "<span class=\"comment_date indent_size_4\">" + formatDate(res.commentDate) + "</span>" +
-                            "<p class=\"comment_content indent_size_4\">" + commentContent + "</p>";
-        }
-
-
-        if(uid != null && res.commentIndent != 4){
-            commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
-                "onclick=\"cReply(this)\" value=\"" + res.commentNo + "\">답글</button>";
-        }
-
-        if(res.userId == uid){
-            console.log("uid equals userId");
-            commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
-                "onclick=\"cDel(this)\" value=\"" + res.commentNo + "\">삭제</button>";
-        }
-
-        commentStr += "</p>" +
-            "</td>" +
-            "<input type=\"hidden\" class=\"commentNo\" value=\"" + res.commentNo + "\">" +
-            "<input type=\"hidden\" class=\"commentUpperNo\" value=\"" + res.commentUpperNo + "\">" +
-            "<input type=\"hidden\" class=\"commentGroupNo\" value=\"" + res.commentGroupNo + "\">" +
-            "<input type=\"hidden\" class=\"commentIndent\" value=\"" + res.commentIndent + "\">" +
-            "</tr>" +
-            "</table>" +
-            "</div>";
-    })
-
-    comment_area.append(commentStr);
-}*/
-
 function formatDate(date){
     const d = new Date(date);
     let month = '' + (d.getMonth() + 1);
@@ -350,19 +252,19 @@ function formatDate(date){
 }
 
 function cReply(obj){
-    var replyInput_div_val = $(".commentReplyContent").val();
-    var replyInput_div = $(".commentReplyContent");
+    const replyInput_div_val = $(".commentReplyContent").val();
+    const replyInput_div = $(".commentReplyContent");
 
     if(replyInput_div_val != null){
         replyInput_div.remove();
     }
 
-    var commentNo = obj.attributes['value'].value;
-    var comment_box = $(".comment-box[value=" + commentNo + "]");
-    var comment_groupNo = $(".comment-box[value=" + commentNo + "] .commentGroupNo").val();
-    var comment_indent = $(".comment-box[value=" + commentNo + "] .commentIndent").val();
-    var comment_upperNo = $(".comment-box[value=" + commentNo + "] .commentUpperNo").val();
-    var upper_str = "";
+    const commentNo = obj.attributes['value'].value;
+    const comment_box = $(".comment-box[value=" + commentNo + "]");
+    const comment_groupNo = $(".comment-box[value=" + commentNo + "] .commentGroupNo").val();
+    const comment_indent = $(".comment-box[value=" + commentNo + "] .commentIndent").val();
+    const comment_upperNo = $(".comment-box[value=" + commentNo + "] .commentUpperNo").val();
+    let upper_str = "";
 
 
     if(comment_upperNo == commentNo){ // upperNo와 commentNo가 같은 경우는 답글이 아니라는 의미. 그래서 upperNo의 value로 원글의 commentNo를 갖도록 한다.
@@ -371,7 +273,7 @@ function cReply(obj){
         upper_str = "<input type=\"hidden\" id=\"commentUpperNo\" value=\"" + comment_upperNo + "\">";
     }
 
-    var reply_str = "<div class=\"commentReplyContent\" value=\"replyContent\">" +
+    const reply_str = "<div class=\"commentReplyContent\" value=\"replyContent\">" +
                         "<input type=\"text\" id=\"commentReplyContent\">" +
                         "<button type=\"button\" class=\"btn btn-outline-info btn-sm\" id=\"commentReplyInsert\" value=\"" + commentNo + "\">작성</button>" +
                         "<input type=\"hidden\" id=\"commentGroupNo\" value=\"" + comment_groupNo + "\">" +
@@ -386,9 +288,7 @@ function cReply(obj){
 }
 
 function cDel(obj){
-    var commentNo = obj.attributes['value'].value;
-
-    console.log("delete commentNo : " + commentNo);
+    const commentNo = obj.attributes['value'].value;
 
     $.ajax({
         url: '/comment/commentDelete/' + commentNo,

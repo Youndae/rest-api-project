@@ -72,12 +72,12 @@ public class Comment {
 
         System.out.println("boardNo :  " + dto.getBoardNo() + ", imageNo : " + dto.getImageNo());
 
-        if(dto.getBoardNo() != 0)
+        if(dto.getBoardNo() != null)
             hBoard.setBoardNo(dto.getBoardNo());
         else
             hBoard = null;
 
-        if(dto.getImageNo() != 0)
+        if(dto.getImageNo() != null)
             iBoard.setImageNo(dto.getImageNo());
         else
             iBoard = null;

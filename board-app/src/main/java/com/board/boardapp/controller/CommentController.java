@@ -33,7 +33,7 @@ public class CommentController {
         Criteria cri = new Criteria();
         cri.setPageNum(pageNum);
 
-        CommentListDTO dto = commentBoardWebClient.getBoardComment(boardNo, request, response, cri);
+        CommentListDTO dto = commentBoardWebClient.getBoardComment(boardNo, cri);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
@@ -48,7 +48,7 @@ public class CommentController {
         Criteria cri = new Criteria();
         cri.setPageNum(pageNum);
 
-        CommentListDTO dto = commentBoardWebClient.getImageComment(imageNo, request, response, cri);
+        CommentListDTO dto = commentBoardWebClient.getImageComment(imageNo, cri);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
@@ -71,7 +71,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/commentDelete/{commentNo}")
-    public int commentDelete(@PathVariable long commentNo
+    public Long commentDelete(@PathVariable long commentNo
                                 , HttpServletRequest request
                                 , HttpServletResponse response){
 

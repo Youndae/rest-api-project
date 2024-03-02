@@ -1,24 +1,18 @@
 package com.board.boardapp.controller;
 
-import com.board.boardapp.connection.webClient.HierarchicalBoardWebClient;
 import com.board.boardapp.connection.webClient.MemberWebClient;
 import com.board.boardapp.dto.JwtDTO;
-import com.board.boardapp.dto.JwtProperties;
 import com.board.boardapp.dto.MemberDTO;
 import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.WebUtils;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/member")
@@ -59,7 +53,7 @@ public class MemberController {
 
     @PostMapping("/joinProc")
     @ResponseBody
-    public int joinProc(MemberDTO memberDTO){
+    public Long joinProc(MemberDTO memberDTO){
         log.info("joinProc");
 
         return memberWebClient.joinProc(memberDTO);
@@ -67,7 +61,7 @@ public class MemberController {
 
     @GetMapping("/checkUserId")
     @ResponseBody
-    public int checkUserId(@RequestParam("userId") String userId){
+    public Long checkUserId(@RequestParam("userId") String userId){
 
         log.info("checkUserId");
 
@@ -77,9 +71,9 @@ public class MemberController {
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response){
 
-        int result = memberWebClient.logout(request, response);
+        Long result = memberWebClient.logout(request, response);
 
-        if(result == 1)
+        if(result == 1L)
             return "redirect:/board/boardList";
         else
             return "th/error/error";

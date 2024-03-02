@@ -158,14 +158,13 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
             );
         } else {
             log.info("error");
-            return null;
+            throw new IllegalArgumentException("IllegalArg");
         }
 
         log.info("ok");
         log.info("response : " + dto);
 
         return dto;
-
     }
 
     // 계층형 게시판 patch

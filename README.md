@@ -591,3 +591,27 @@ board-app = client Server
 >>>     * boardDetail과 imageBoardDetail 페이지 요청 시 comment 말고도 기본적인 게시글 정보 반환 역시 uid를 받고 있었기에 해당 DTO를 제거하고 그 안에 있던 DTO인 게시글 정보 DTO만을 전달해 처리하도록 수정.
 >>>     * Api-Server에서도 uid를 따로 담지 않고 전달하도록 수정.
 >>>     * 각 게시판 Detail 페이지 정상 작동 테스트 완료.
+>>>   * HierarchicalBoard의 list 조회 코드 개선
+>>>     * 기존 코드는 keyword 값의 유무에 따라 조건문을 통해 두가지 요청 중 하나로 Api-Server에 요청하도록 했었으나 UriComponents를 통해 조건에 따른 객체를 만들어주고 그 객체를 통해 요청하도록 하는 방법으로 수정.
+>>>     * 기존 코드에서 uri의 차이만 있던 요청코드였기 때문에 UriComponents 객체만 조건에 따라 생성해주는 방법으로 중복 코드 삭제.
+>>>   * 댓글, 댓글답글 insert 코드 개선
+>>>     * 기존에는 boardNo, imageNo 유무에 따라 조건문을 통해 DTO build를 하도록 되어있었으나
+>>>     * DTO에서 해당 값들을 Wrapper class로 수정 null을 받을 수 있도록 수정.
+>>>     * 그리고 각 필드에 해당하는 값 또는 null을 담아 요청하도록 수정함으로써 한번의 build로 처리가 가능해짐.
+>>>   * 댓글 리스트 조회와 각 게시판 상세 페이지 조회 코드 개선
+>>>     * 기존 코드는 HtpSession을 사용하지 않았기 때문에 사용자의 아이디(uid)를 같이 반환받으려고 로그인한 사용자는 쿠키를 전달, 비로그인 상태라면 쿠키를 전달하지 않는 요청으로 두가지가 있었지만
+>>>     * HttpSession을 사용하면서 권한이 필요없는 기능에 쿠키를 굳이 전달할 필요가 없어졌기 때문에 쿠키를 전달하지 않는 요청으로 수정.
+>>>   * 반환받은 데이터의 DTO 매핑 분리
+>>>     * 리스트나 상세 페이지 같은 경우 ObjectMapper를 통한 DTO 매핑을 처리하고 있는데 이걸 각 메소드에서 인스턴스 생성 후 처리하는 것이 아닌
+>>>     * ObjectReadValueService를 새로 만들어 제네릭으로 해당 기능을 처리하도록 분리.
+>>>   * 요청 시작 url PathProperties로 분리
+>>>     * 시작 url로는 board, image-board, comment, member로 되어있는데 이 시작 url들은 많은 곳에서 중복적으로 사용되기 때문에
+>>>     * 추후 변경을 고려해 PathProperties라는 인터페이스를 통해 사용하도록 수정.
+>>>     * 뒤에 위치하는 url들의 경우는 대부분 요청마다 다른 경우가 대부분이기 때문에 굳이 한곳에서 관리할 필요가 없다고 생각해 앞쪽만 분리.
+>>>   * 이미지 게시판 글 작성, 수정 처리 코드 stream으로 수정
+>>>     * 개선이라기 보다는 stream으로 처리해보고자 수정.
+>>>     * stream으로만 처리하고자 하면 null체크가 안되기 때문에 NullPointerException이 발생할 수 있다.
+>>>     * 그래서 Optional.ofNullable(List).orElseGet(Collections::emptyList)를 통해 처리.
+>>>     * 그럼 NullPointerException이 발생하지 않고 처리가 가능하다.
+>>>     * 글 작성의 경우 사진이 하나도 없을수는 없기 때문에 stream으로만 처리.
+>>>   * 테스트 완료.
