@@ -125,14 +125,9 @@ $(function(){
             formData.append('files', files[index]);
         }
 
-        console.log("deleteFiles : " + deleteFiles[0]);
-
         for(var index = 0; index < Object.keys(deleteFiles).length; index++){
             formData.append('deleteFiles', deleteFiles[index]);
         }
-
-        console.log("formdata files : " + formData.get('files'));
-        console.log("formData deleteFiles: " + formData.get('deleteFiles'));
 
         $.ajax({
             url: '/imageBoard/imageBoardModify',

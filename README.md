@@ -580,3 +580,11 @@ board-app = client Server
 >>>     * 쿠키 생성 메소들 분리해서 처리하게 되면서 JwtProperties에 작성한 각 쿠키 만료일을 모두 Duration 타입으로 처리하도록 수정. 
 >>>     * 쿠키의 삭제를 좀 더 간결하고 확실하게 하기 위해 JwtProperties에 COOKIE_ARRAY라는 배열에 각 쿠키 헤더값을 담아두고 반복문으로 삭제 처리를 하도록 수정.
 >>>     * 쿠키 삭제 기능을 수행하던 분리된 메소드를 삭제하고 반복문 내에서 삭제까지 모두 처리하도록 수정.
+>
+> 
+>> 24/03/02
+>>> * 리펙토링
+>>>   * Client-Server에서 HttpSession을 통한 사용자 상태 관리를 담당하게 되면서 Api-Server로부터 전달받던 사용자 아이디 반환을 수정.
+>>>     * Comment-list 요청시 로그인한 사용자의 아이디를 Api-Server로부터 반환받고 그걸 사용해 버튼 상태 관리를 해왔는데 session.id를 통해 값의 존재 여부에 따라 버튼 출력을 제어하도록 수정.
+>>>     * comment.js에서 comment-table 파싱하는 함수 코드 수정.
+>>>     * commentList가 들어가는 imageBoardDetail, boardDetail 모두 테스트 완료. 

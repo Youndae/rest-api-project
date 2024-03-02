@@ -10,6 +10,7 @@ import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.reactive.ClientHttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.file.AccessDeniedException;
 import java.time.Duration;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,8 @@ public class HierarchicalBoardWebClient {
     private final WebClientConfig webClientConfig;
 
     private final TokenService tokenService;
+
+    private final WebClient clientConfig = new WebClientConfig().useImageWebClient();
 
     //계층형 게시판 list
     public HierarchicalBoardListDTO getHierarchicalBoardList(Criteria cri) throws JsonProcessingException {

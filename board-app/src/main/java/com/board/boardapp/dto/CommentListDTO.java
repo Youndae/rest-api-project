@@ -19,7 +19,7 @@ public class CommentListDTO {
 
     private long totalElements;
 
-    private String uid;
+//    private String uid;
 
     private PageDTO pageDTO;
 

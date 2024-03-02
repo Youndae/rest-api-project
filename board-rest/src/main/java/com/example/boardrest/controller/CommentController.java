@@ -33,6 +33,8 @@ public class CommentController {
                 .boardAmount(amount)
                 .build();
 
+        log.info("comment-list boardNo : {}, imageNo : {}", boardNo, imageNo);
+
         return new ResponseEntity<>(commentService.commentList(boardNo, imageNo, cri, principal), HttpStatus.OK);
     }
 

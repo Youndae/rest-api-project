@@ -32,10 +32,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             roleNames.add(authority.getAuthority());
         });
 
-        log.info("session : " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        /*log.info("session : " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 
         log.info("cookie : " + response.getHeaderNames());
 
-        log.info("cookie jsessionid : " + response.getHeader("JSESSIONID"));
+        log.info("cookie jsessionid : " + response.getHeader("JSESSIONID"));*/
     }
 }

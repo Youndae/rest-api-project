@@ -114,11 +114,13 @@ public class JwtTokenProvider {
         // 클라이언트는 AccessToken의 만료시간이 1분 적기 때문에
         // keyExpire가 -2로 삭제된 데이터이거나 60보다 작아 1분 미만으로 만료기간이 남았다면
         // 탈취된 토큰 또는 만료된 토큰으로 판단할 수 있다.
-        if(keyExpire == -2 || keyExpire < 60)
+        if(keyExpire == -2 || keyExpire < 60) {
+            log.info("AccessToekn Expire return false");
             return false;
-        else
+        }else {
+            log.info("AccessToken Expire return true");
             return true;
-
+        }
     }
 
     public boolean checkRefreshToken(String rtKey, String tokenValue){

@@ -125,35 +125,30 @@ $(document).on('click', '#commentReplyInsert', function(){
 
 function hierarchicalBoardComment(boardNo, pageNum){
     $.getJSON('/comment/boardComment/' + boardNo + "/" + pageNum, function(arr){
-
-        commentEachParsing(arr.content, arr.uid);
-
+        commentEachParsing(arr.content);
         commentPagingParsing(arr);
-
     })
 }
 
 function imageBoardComment(imageNo, pageNum){
     $.getJSON('/comment/imageComment/' + imageNo + "/" + pageNum, function(arr){
-        console.log("imageBoardComment arr.content : " + arr.content + "\n arr.uid : " + arr.uid);
-        commentEachParsing(arr.content, arr.uid);
-
+        commentEachParsing(arr.content);
         commentPagingParsing(arr);
     })
 }
 
 function commentPaging(obj){
-    var boardNo = $("#boardNo").val();
-    var imageNo = $("#imageNo").val();
-    var pageNum = obj;
+    const boardNo = $("#boardNo").val();
+    const imageNo = $("#imageNo").val();
+    const pageNum = obj;
 
-    if(boardNo != null){
+    if(boardNo != null)
         hierarchicalBoardComment(boardNo, pageNum);
-    }
 
-    if(imageNo != null){
+
+    if(imageNo != null)
         imageBoardComment(imageNo, pageNum);
-    }
+
 }
 
 function commentPagingParsing(res){
@@ -204,7 +199,72 @@ function commentPagingParsing(res){
     comment_paging.append(cpStr);
 }
 
-function commentEachParsing(arr, uid){
+function commentEachParsing(arr){
+
+    console.log("commentEachParsing")
+
+    const comment_area = $(".comment-area");
+
+    comment_area.empty();
+
+    let commentStr = "";
+
+    const uid = document.getElementById('uid').getAttribute('value');
+
+    $(arr).each(function(i, res){
+        commentStr += "<div class=\"comment-box\" value=\"" + res.commentNo + "\">" +
+            "<table class=\"table table-hover\">" +
+            "<tr>" +
+            "<td>";
+
+        let commentContent = "삭제된 댓글입니다.";
+        let writer = '';
+
+        if(res.commentContent != null){
+            commentContent = res.commentContent;
+            writer = res.userId;
+        }
+
+        let commentIndentClassName = '';
+
+        if(res.commentIndent == 1)
+            commentIndentClassName = ' indent_size_1';
+        else if(res.commentIndent == 2)
+            commentIndentClassName = ' indent_size_2';
+        else if(res.commentIndent == 3)
+            commentIndentClassName = ' indent_size_3';
+        else if(res.commentIndent == 4)
+            commentIndentClassName = ' indent_size_4';
+
+        commentStr += "<span class=\"comment_userId" + commentIndentClassName + "\">" + writer + "</span>" +
+                        "<span class=\"comment_date" + commentIndentClassName + "\">" + formatDate(res.commentDate) + "</span>" +
+                        "<p class=\"comment_content" + commentIndentClassName + "\">" + commentContent + "</p>";
+
+        if(uid != '' && res.commentIndent != 4 && res.commentContent != null)
+            commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
+                            "onclick=\"cReply(this)\" value=\"" + res.commentNo + "\">답글</button>";
+
+        if(res.userId == uid && res.commentContent != null)
+            commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
+                "onclick=\"cDel(this)\" value=\"" + res.commentNo + "\">삭제</button>";
+
+        commentStr += "</p>" +
+                    "</td>" +
+                    "<input type=\"hidden\" class=\"commentNo\" value=\"" + res.commentNo + "\">" +
+                    "<input type=\"hidden\" class=\"commentUpperNo\" value=\"" + res.commentUpperNo + "\">" +
+                    "<input type=\"hidden\" class=\"commentGroupNo\" value=\"" + res.commentGroupNo + "\">" +
+                    "<input type=\"hidden\" class=\"commentIndent\" value=\"" + res.commentIndent + "\">" +
+                    "</tr>" +
+                    "</table>" +
+                    "</div>";
+    })
+
+    comment_area.append(commentStr);
+}
+
+
+
+/*function commentEachParsing(arr, uid){
 
     console.log("commentEachParsing")
 
@@ -273,13 +333,13 @@ function commentEachParsing(arr, uid){
     })
 
     comment_area.append(commentStr);
-}
+}*/
 
 function formatDate(date){
-    var d = new Date(date);
-    var month = '' + (d.getMonth() + 1);
-    var day = '' + d.getDate();
-    var year = d.getFullYear();
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
 
     if(month.length < 2)
         month = '0' + month;

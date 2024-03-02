@@ -44,6 +44,7 @@
 
         <input type="hidden" id="boardNo" name="boardNo" th:value="${board.detailData.boardNo}">
         <input type="hidden" id="boardIndent" th:value="${board.detailData.boardIndent}">
+        <input type="hidden" id="uid" th:value="${session.id}"/>
 
         <!-- comment -->
         <th:block th:replace="th/comment/comment::commentFragment"></th:block>

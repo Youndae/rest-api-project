@@ -46,6 +46,7 @@
         </div>
 
         <input type="hidden" id="imageNo" th:value="${image.imageNo}">
+        <input type="hidden" id="uid" th:value="${session.id}"/>
 
         <!-- comment -->
         <th:block th:replace="th/comment/comment::commentFragment"></th:block>

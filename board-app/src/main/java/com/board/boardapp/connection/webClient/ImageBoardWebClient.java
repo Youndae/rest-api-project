@@ -213,10 +213,12 @@ public class ImageBoardWebClient {
         if(tokenDTO == null)
             new AccessDeniedException("Denied Exception");
 
-
         WebClient client = webClientConfig.useImageWebClient();
-
         MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
+
+        /*files.stream().forEach(file -> {
+            mbBuilder.part("files", file.getResource());
+        });*/
 
         for(int i = 0; i < files.size(); i++){
             mbBuilder.part("files", files.get(i).getResource());
@@ -294,7 +296,6 @@ public class ImageBoardWebClient {
         if(tokenDTO == null)
             new AccessDeniedException("Denied Exception");
 
-
         WebClient client = webClientConfig.useImageWebClient();
 
        String responseVal = client.get()
@@ -324,10 +325,6 @@ public class ImageBoardWebClient {
 
        List<ImageDataDTO> dto = om.readValue(responseVal, List.class);
 
-       for(int i = 0; i < dto.size(); i++){
-           log.info("dto : {}", dto.get(i));
-       }
-
        return dto;
     }
 
@@ -342,16 +339,21 @@ public class ImageBoardWebClient {
         WebClient client = webClientConfig.useImageWebClient();
         MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
 
+        /*files.stream().forEach(file -> {
+            mbBuilder.part("files", file.getResource());
+        });
+
+        deleteFiles.stream().forEach(file -> {
+            mbBuilder.part("deleteFiles", file);
+        });*/
+
         if(files != null){
-            log.info("files is not null");
             for(MultipartFile file : files){
-                log.info("file.originName : {}", file.getOriginalFilename());
                 mbBuilder.part("files", file.getResource());
             }
         }
 
         if(deleteFiles != null){
-            log.info("delete file is not null");
             for(String file : deleteFiles){
                 mbBuilder.part("deleteFiles", file);
             }

@@ -99,8 +99,6 @@ public class CommentServiceImpl implements CommentService{
             return null;
         }
 
-        String uid = principal == null ? null : principal.getName();
-
         BoardCommentListDTO result;
 
         try{
@@ -111,7 +109,6 @@ public class CommentServiceImpl implements CommentService{
             om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
             result = om.readValue(boardDTOVal, BoardCommentListDTO.class);
-            result.setUid(uid);
         }catch (Exception e){
             result = null;
         }

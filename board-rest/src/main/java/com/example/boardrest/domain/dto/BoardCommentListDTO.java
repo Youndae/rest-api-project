@@ -22,9 +22,4 @@ public class BoardCommentListDTO {
 
     private long totalElements;
 
-    private String uid;
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
 }
