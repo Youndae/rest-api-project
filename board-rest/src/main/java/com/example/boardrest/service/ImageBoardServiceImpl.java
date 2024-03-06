@@ -4,13 +4,13 @@ import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.ImageData;
 import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.properties.FilePathProperties;
-import com.example.boardrest.properties.ImageSizeProperties;
 import com.example.boardrest.repository.ImageBoardRepository;
 import com.example.boardrest.repository.ImageDataRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,12 +18,13 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,83 +40,32 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
     @Override
     public ImageBoardDetailDTO getImageBoardDetail(long imageNo) {
+        ImageBoard imageBoard = imageBoardRepository
+                                    .findById(imageNo)
+                                    .orElseThrow(() -> new NullPointerException("nullPointerException"));
 
-        ImageDetailDTO detailDTO = imageBoardRepository.imageDetailDTO(imageNo);
-
-        List<ImageDetailDataDTO> dataDTO = imageDataRepository.getImageData(imageNo);
+        List<ImageDataDTO> dataDTO = imageDataRepository.getImageData(imageNo);
 
         ImageBoardDetailDTO dto = ImageBoardDetailDTO.builder()
-                .imageNo(detailDTO.getImageNo())
-                .imageTitle(detailDTO.getImageTitle())
-                .userId(detailDTO.getUserId())
-                .imageContent(detailDTO.getImageContent())
-                .imageDate(detailDTO.getImageDate())
-                .imageData(dataDTO)
-                .build();
+                                                .imageNo(imageBoard.getImageNo())
+                                                .imageTitle(imageBoard.getImageTitle())
+                                                .userId(imageBoard.getMember().getUserId())
+                                                .imageContent(imageBoard.getImageContent())
+                                                .imageDate(imageBoard.getImageDate())
+                                                .imageData(dataDTO)
+                                                .build();
 
         return dto;
     }
 
     @Override
     public Page<ImageBoardDTO> getImageBoardList(Criteria cri) {
-        Page<ImageBoardDTO> dto;
+        Pageable pageable = PageRequest.of(cri.getPageNum() - 1
+            , cri.getImageAmount()
+                , Sort.by("imageNo").descending()
+        );
 
-        if(cri.getKeyword() == null){//default
-            dto = imageBoardRepository.getImageBoardList(
-                    PageRequest.of(cri.getPageNum() - 1
-                            , cri.getImageAmount()
-                            , Sort.by("imageNo").descending())
-            );
-        }else if(cri.getSearchType().equals("t")){//제목 검색
-            dto = imageBoardRepository.getImageBoardSearchTitle(
-                    cri.getKeyword()
-                    , PageRequest.of(cri.getPageNum() - 1
-                    , cri.getImageAmount()
-                    , Sort.by("imageNo").descending())
-            );
-        }else if(cri.getSearchType().equals("c")){//내용 검색
-            dto = imageBoardRepository.getImageBoardSearchContent(
-                    cri.getKeyword()
-                    , PageRequest.of(cri.getPageNum() - 1
-                            , cri.getImageAmount()
-                            , Sort.by("imageNo").descending())
-            );
-        }else if(cri.getSearchType().equals("u")){//작성자 검색
-            dto = imageBoardRepository.getImageBoardSearchWriter(
-                    cri.getKeyword()
-                    , PageRequest.of(cri.getPageNum() - 1
-                            , cri.getImageAmount()
-                            , Sort.by("imageNo").descending())
-            );
-        }else if(cri.getSearchType().equals("tc")){//제목 + 내용 검색
-            dto = imageBoardRepository.getImageBoardSearchTitleAndContent(
-                    cri.getKeyword()
-                    , PageRequest.of(cri.getPageNum() - 1
-                            , cri.getImageAmount()
-                            , Sort.by("imageNo").descending())
-            );
-        }else{
-            dto = null;
-        }
-
-        return dto;
-    }
-
-    // 이미지파일 사이즈 체크
-    public long imageSizeCheck(List<MultipartFile> images) throws Exception {
-        log.info("image size Check");
-
-        for(MultipartFile image : images){
-
-            if(image.getSize() >= ImageSizeProperties.LIMIT_SIZE){
-                log.info("image size is larger than the limit size");
-                return ImageSizeProperties.RESULT_EXCEED_SIZE;
-            }
-        }
-
-        log.info("image size check success");
-
-        return ImageSizeProperties.RESULT_SUCCESS;
+        return imageBoardRepository.findAll(cri, pageable);
     }
 
     // 이미지 게시판 insert
@@ -126,22 +76,15 @@ public class ImageBoardServiceImpl implements ImageBoardService{
                                 , String imageContent
                                 , HttpServletRequest request
                                 , Principal principal) {
-        log.info("image insert check");
-
-        try{
-            if(imageSizeCheck(images) == ImageSizeProperties.RESULT_EXCEED_SIZE)
-                return ImageSizeProperties.RESULT_EXCEED_SIZE;
-        }catch (Exception e){
-            log.error("size check Exception");
-            return -1;
-        }
 
         ImageBoard imageBoard = ImageBoard.builder()
-                .member(principalService.checkPrincipal(principal))
-                .imageTitle(request.getParameter("imageTitle"))
-                .imageContent(request.getParameter("imageContent"))
-                .imageDate(Date.valueOf(LocalDate.now()))
-                .build();
+                                        .member(principalService.checkPrincipal(principal))
+                                        .imageTitle(request.getParameter("imageTitle"))
+                                        .imageContent(request.getParameter("imageContent"))
+                                        .imageDate(Date.valueOf(LocalDate.now()))
+                                        .build();
+
+
 
         imageInsert(images,  1, imageBoard);
 
@@ -155,33 +98,26 @@ public class ImageBoardServiceImpl implements ImageBoardService{
                                 , List<String> deleteFiles
                                 , HttpServletRequest request
                                 , Principal principal) {
-        log.info("image patch check");
-
-        try{
-            if(images != null){
-                if(imageSizeCheck(images) == ImageSizeProperties.RESULT_EXCEED_SIZE)
-                    return ImageSizeProperties.RESULT_EXCEED_SIZE;
-            }
-        }catch (Exception e){
-            log.info("patch size check exception!");
-            return -1;
-        }
 
         long imageNo = Long.parseLong(request.getParameter("imageNo"));
 
-        Optional<ImageBoard> entity = imageBoardRepository.findById(imageNo);
+        ImageBoard imageBoard = imageBoardRepository
+                .findById(imageNo)
+                .orElseThrow(() -> new NullPointerException("NullPointerException"));
 
-        if(!entity.get().getMember().getUserId().equals(principal.getName()))
-            return -1;
+        String writer = imageBoard.getMember().getUserId();
 
 
-        ImageBoard imageBoard = ImageBoard.builder()
-                .member(principalService.checkPrincipal(principal))
-                .imageNo(imageNo)
-                .imageTitle(request.getParameter("imageTitle"))
-                .imageContent(request.getParameter("imageContent"))
-                .imageDate(Date.valueOf(LocalDate.now()))
-                .build();
+        if(!writer.equals(principal.getName()))
+            new AccessDeniedException("AccessDenied");
+
+        imageBoard = ImageBoard.builder()
+                                .member(principalService.checkPrincipal(principal))
+                                .imageNo(imageNo)
+                                .imageTitle(request.getParameter("imageTitle"))
+                                .imageContent(request.getParameter("imageContent"))
+                                .imageDate(imageBoard.getImageDate())
+                                .build();
 
         if(deleteFiles != null) {
             deleteFilesProc(deleteFiles);
@@ -198,10 +134,14 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     @Override
     @Transactional(rollbackOn = Exception.class)
     public long deleteImageBoard(long imageNo, Principal principal) {
-        Optional<ImageBoard> entity = imageBoardRepository.findById(imageNo);
+        String writer = imageBoardRepository
+                                .findById(imageNo)
+                                .orElseThrow(() -> new NullPointerException("NullPointerException"))
+                                .getMember()
+                                .getUserId();
 
-        if(!entity.get().getMember().getUserId().equals(principal.getName()))
-            return 0;
+        if(!writer.equals(principal.getName()))
+            new AccessDeniedException("AccessDenied");
 
         List<String> deleteFiles = imageDataRepository.getDeleteImageDataList(imageNo);
         deleteFilesProc(deleteFiles);
@@ -230,7 +170,7 @@ public class ImageBoardServiceImpl implements ImageBoardService{
             try{
                 image.transferTo(new File(saveFile));
             }catch (Exception e){
-                new Exception();
+                new IOException();
             }
 
             imageBoard.addImageData(
@@ -259,15 +199,15 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     public ImageDetailDTO getModifyData(long imageNo, Principal principal) {
         ImageDetailDTO dto = imageBoardRepository.imageDetailDTO(imageNo);
 
-        if(!dto.getUserId().equals(principal.getName()) || principal == null)
-            throw new NullPointerException();
+        if(principal == null || !dto.getUserId().equals(principal.getName()))
+            new AccessDeniedException("AccessDenied");
 
         return dto;
     }
 
     @Override
-    public List<ImageDataDTO> getModifyImageAttach(long imageNo, Principal principal) {
+    public List<ImageDataDTO> getModifyImageAttach(long imageNo) {
 
-        return imageDataRepository.imageDataList(imageNo);
+        return imageDataRepository.getImageData(imageNo);
     }
 }

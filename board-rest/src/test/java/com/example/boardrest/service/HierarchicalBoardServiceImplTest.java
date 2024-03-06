@@ -1,8 +1,18 @@
 package com.example.boardrest.service;
 
+import com.example.boardrest.domain.dto.Criteria;
+import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
+import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
+import com.example.boardrest.domain.entity.HierarchicalBoard;
+import com.example.boardrest.repository.HierarchicalBoardRepository;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
@@ -19,11 +29,29 @@ class HierarchicalBoardServiceImplTest {
     @Autowired
     private HierarchicalBoardService service;
 
+    @Autowired
+    private HierarchicalBoardRepository repository;
+
     @Test
     void hTest() {
         long boardNo = 100018L;
 
 //        service.deleteBoard(boardNo);
+    }
+
+    @Test
+    void queryDSLPaginationTest() {
+        Criteria cri = new Criteria(1, 20, 15, "9999", "t");
+
+        Pageable pageable = PageRequest.of(cri.getPageNum()
+                , cri.getBoardAmount()
+                , Sort.by("boardGroupNo").descending()
+                        .and(Sort.by("boardUpperNo").ascending()));
+
+        Page<HierarchicalBoardListDTO> result = repository.findAll(cri, pageable);
+
+        System.out.println("totalPages : " + result.getTotalPages());
+        System.out.println("total Elements : " + result.getTotalElements());
     }
 
 

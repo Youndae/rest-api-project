@@ -14,6 +14,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.FileNotFoundException;
+import java.nio.file.AccessDeniedException;
 
 @RestControllerAdvice
 @Slf4j
@@ -25,6 +26,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionLog(e);
 
         return ResponseEntity.status(HttpStatus.valueOf(500)).build();
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity accessDeniedExceptionHandler(Exception e) {
+
+        exceptionLog(e);
+
+        return ResponseEntity.status(HttpStatus.valueOf(403)).build();
     }
 
     @ExceptionHandler(FileNotFoundException.class)

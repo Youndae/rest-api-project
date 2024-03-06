@@ -5,9 +5,7 @@ import com.example.boardrest.domain.entity.HierarchicalBoard;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -39,14 +37,16 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public long insertBoardReply(HierarchicalBoardModifyDTO dto, Principal principal) {
-        HierarchicalBoardReplyDTO replyDTO = hierarchicalBoardRepository.getReplyData(dto.getBoardNo());
+        HierarchicalBoard board = hierarchicalBoardRepository
+                                        .findById(dto.getBoardNo())
+                                        .orElseThrow(() -> new NullPointerException("NullPointerException"));
 
         HierarchicalBoardDTO boardDTO = HierarchicalBoardDTO.builder()
                                                             .boardTitle(dto.getBoardTitle())
                                                             .boardContent(dto.getBoardContent())
-                                                            .boardGroupNo(replyDTO.getBoardGroupNo())
-                                                            .boardIndent(replyDTO.getBoardIndent() + 1)
-                                                            .boardUpperNo(replyDTO.getBoardUpperNo())
+                                                            .boardGroupNo(board.getBoardGroupNo())
+                                                            .boardIndent(board.getBoardIndent() + 1)
+                                                            .boardUpperNo(board.getBoardUpperNo())
                                                             .build();
 
         return insertBoardProc(boardDTO, principal);
@@ -83,7 +83,6 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
             hierarchicalBoardRepository.deleteByBoardGroupNo(boardNo);
         else {
             List<DeleteGroupListDTO> groupList = hierarchicalBoardRepository.getGroupList(deleteData.getBoardGroupNo());
-
             List<Long> deleteList = addDeleteDataList(groupList, boardNo, deleteData.getBoardIndent());
 
             hierarchicalBoardRepository.deleteAllByBoardNoList(deleteList);
@@ -108,91 +107,45 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
     // 계층형 게시판 List
     @Override
-    public Page<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri) {
+    public Page<HierarchicalBoardListDTO> getHierarchicalBoardList(Criteria cri) {
 
-        Page<HierarchicalBoardDTO> dto;
+        Pageable pageable = PageRequest.of(cri.getPageNum() - 1
+                                            , cri.getBoardAmount()
+                                            , Sort.by("boardGroupNo").descending()
+                                                    .and(Sort.by("boardUpperNo").ascending()));
 
-        if (cri.getKeyword() == null) { //default List
-            log.info("default");
-            dto = hierarchicalBoardRepository.hierarchicalBoardList(
-                    PageRequest.of(cri.getPageNum() - 1
-                            , cri.getBoardAmount()
-                            , Sort.by("boardGroupNo").descending()
-                                    .and(Sort.by("boardUpperNo").ascending()))
-            );
-        } else if (cri.getSearchType().equals("t")) {//title 검색시 사용
-            log.info("searchType is t");
-            dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitle(
-                    cri.getKeyword()
-                    , PageRequest.of(cri.getPageNum() - 1
-                            , cri.getBoardAmount()
-                            , Sort.by("boardGroupNo").descending()
-                                    .and(Sort.by("boardUpperNo").ascending()))
-            );
-        } else if (cri.getSearchType().equals("c")) {//content 검색시 사용
-            log.info("searchType is c");
-            dto = hierarchicalBoardRepository.hierarchicalBoardListSearchContent(
-                    cri.getKeyword()
-                    , PageRequest.of(cri.getPageNum() - 1
-                            , cri.getBoardAmount()
-                            , Sort.by("boardGroupNo").descending()
-                                    .and(Sort.by("boardUpperNo").ascending()))
-            );
-        } else if (cri.getSearchType().equals("u")) {// user 검색 시 사용
-            log.info("searchType is u");
-            dto = hierarchicalBoardRepository.hierarchicalBoardListSearchUser(
-                    cri.getKeyword()
-                    , PageRequest.of(cri.getPageNum() - 1
-                            , cri.getBoardAmount()
-                            , Sort.by("boardGroupNo").descending()
-                                    .and(Sort.by("boardUpperNo").ascending()))
-            );
-        } else if (cri.getSearchType().equals("tc")) {// title and content 검색시 사용
-            log.info("searchType is tc");
-            dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitleOrContent(
-                    cri.getKeyword()
-                    , PageRequest.of(cri.getPageNum() - 1
-                            , cri.getBoardAmount()
-                            , Sort.by("boardGroupNo").descending()
-                                    .and(Sort.by("boardUpperNo").ascending()))
-            );
-        } else {
-            log.info("error");
-            throw new IllegalArgumentException("IllegalArg");
-        }
-
-        log.info("ok");
-        log.info("response : " + dto);
-
-        return dto;
+        return hierarchicalBoardRepository.findAll(cri, pageable);
     }
 
     // 계층형 게시판 patch
     @Override
     @Transactional(rollbackOn = Exception.class)
     public long patchBoard(HierarchicalBoardModifyDTO dto, Principal principal) {
+        HierarchicalBoard board = hierarchicalBoardRepository
+                                    .findById(dto.getBoardNo())
+                                    .orElseThrow(() -> new NullPointerException("NullPointerException"));
 
-        hierarchicalBoardRepository.boardModify(
-                dto.getBoardTitle()
-                , dto.getBoardContent()
-                , dto.getBoardNo());
+        String writer = board.getMember().getUserId();
+
+        if(writer.equals(principal.getName())){
+            board.setBoardTitle(dto.getBoardTitle());
+            board.setBoardContent(dto.getBoardContent());
+            hierarchicalBoardRepository.save(board);
+        }
 
         return dto.getBoardNo();
     }
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
     public HierarchicalBoardModifyDTO getModifyData(long boardNo, Principal principal) {
-
         String userId = hierarchicalBoardRepository.checkWriter(boardNo);
 
-        if(principal == null || !principal.getName().equals(userId))
+        if(!principal.getName().equals(userId))
             throw new NullPointerException();
 
         HierarchicalBoardModifyDTO dto = hierarchicalBoardRepository.getModifyData(boardNo);
 
         return dto;
     }
-
 
 }

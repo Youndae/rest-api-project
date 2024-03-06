@@ -29,5 +29,5 @@ public interface ImageBoardService {
 
     ImageDetailDTO getModifyData(long imageNo, Principal principal);
 
-    List<ImageDataDTO> getModifyImageAttach(long imageNo, Principal principal);
+    List<ImageDataDTO> getModifyImageAttach(long imageNo);
 }

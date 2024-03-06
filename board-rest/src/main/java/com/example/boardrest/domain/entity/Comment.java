@@ -2,6 +2,7 @@ package com.example.boardrest.domain.entity;
 
 import com.example.boardrest.domain.dto.CommentInsertDTO;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@DynamicUpdate
 public class Comment {
 
     @Id
@@ -43,6 +45,10 @@ public class Comment {
 
     private int commentStatus;
 
+    public void setCommentStatus(int commentStatus) {
+        this.commentStatus = commentStatus;
+    }
+
     /*public void setCommentGroupNo(long commentGroupNo) {
         this.commentGroupNo = commentGroupNo == 0 ? this.commentNo : commentGroupNo;
     }
@@ -65,12 +71,9 @@ public class Comment {
     }*/
 
     public void setCommentPatchData(CommentInsertDTO dto) {
-        System.out.println("setCommentPatchData");
         String cno = String.valueOf(this.commentNo);
         HierarchicalBoard hBoard = new HierarchicalBoard();
         ImageBoard iBoard = new ImageBoard();
-
-        System.out.println("boardNo :  " + dto.getBoardNo() + ", imageNo : " + dto.getImageNo());
 
         if(dto.getBoardNo() != null)
             hBoard.setBoardNo(dto.getBoardNo());

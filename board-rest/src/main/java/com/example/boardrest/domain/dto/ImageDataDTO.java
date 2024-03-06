@@ -1,12 +1,18 @@
 package com.example.boardrest.domain.dto;
 
-public interface ImageDataDTO {
+import lombok.*;
 
-    String getImageName();
+@Getter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ImageDataDTO {
+//
+    private String imageName;
 
-    Long getImageNo();
+    private String oldName;
 
-    String getOldName();
-
-    Integer getImageStep();
+    private int imageStep;
 }

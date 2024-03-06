@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class MemberDTO {
-
+//
     private String userId;
 
     private String userPw;

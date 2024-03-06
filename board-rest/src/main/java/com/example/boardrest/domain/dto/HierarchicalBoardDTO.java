@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class HierarchicalBoardDTO {
-
+//
     private Long boardNo;
 
     private String boardTitle;

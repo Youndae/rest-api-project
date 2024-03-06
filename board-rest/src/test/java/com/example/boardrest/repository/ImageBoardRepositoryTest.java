@@ -1,30 +1,24 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.dto.ImageBoardDetailDTO;
-import com.example.boardrest.domain.dto.ImageDataDTO;
-import com.example.boardrest.domain.dto.ImageDetailDTO;
-import com.example.boardrest.domain.dto.ImageDetailDataDTO;
+import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.ImageData;
-import com.example.boardrest.domain.entity.Member;
+import com.example.boardrest.service.ImageBoardService;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ImageBoardRepositoryTest {
@@ -35,13 +29,31 @@ class ImageBoardRepositoryTest {
     @Autowired
     private ImageDataRepository imageDataRepository;
 
+    @Autowired
+    private ImageBoardService imageBoardService;
+
+    @Test
+    void imageListDTOTest() {
+
+        Criteria cri = new Criteria();
+
+        Page<ImageBoardDTO> dtolist = imageBoardService.getImageBoardList(cri);
+    }
+
+    @Test
+    void imageDataListTest() {
+        List<ImageData> dataList = imageDataRepository.findAllByImageBoard_ImageNoOrderByImageStepAsc(56L);
+
+        System.out.println(dataList);
+    }
+
     @Test
     public void imageDataTest(){
         long imageNo = 10;
 
         ImageDetailDTO imageDTO = repository.imageDetailDTO(imageNo);
 
-        List<ImageDetailDataDTO> imageDataList = imageDataRepository.getImageData(imageNo);
+        List<ImageDataDTO> imageDataList = imageDataRepository.getImageData(imageNo);
 
         ImageBoardDetailDTO dto = ImageBoardDetailDTO.builder()
                 .imageNo(imageDTO.getImageNo())

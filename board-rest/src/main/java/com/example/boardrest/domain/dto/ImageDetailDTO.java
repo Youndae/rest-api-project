@@ -10,7 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ImageDetailDTO {
-
+//
     private long imageNo;
 
     private String imageTitle;

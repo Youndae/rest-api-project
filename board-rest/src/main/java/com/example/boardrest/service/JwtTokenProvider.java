@@ -234,8 +234,6 @@ public class JwtTokenProvider {
                 .withClaim("userId", userId)
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
 
-        log.info("issuedAccessToken accessToken : {}", accessToken);
-
         ValueOperations<String, String> stringStringValueOperations = redisTemplate.opsForValue();
         stringStringValueOperations.set(JwtProperties.ACCESS_TOKEN_PREFIX + ino + userId, accessToken, Duration.ofHours(2L));
 

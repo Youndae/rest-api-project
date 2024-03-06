@@ -1,8 +1,7 @@
 package com.example.boardrest.controller;
 
 import com.example.boardrest.domain.dto.*;
-import com.example.boardrest.repository.ImageBoardRepository;
-import com.example.boardrest.repository.ImageDataRepository;
+import com.example.boardrest.properties.FilePathProperties;
 import com.example.boardrest.service.ImageBoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +63,7 @@ public class ImageBoardController {
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public ResponseEntity<List<ImageDataDTO>> modifyImageAttach(@PathVariable long imageNo, Principal principal){
 
-        return new ResponseEntity<>(imageBoardService.getModifyImageAttach(imageNo, principal), HttpStatus.OK);
+        return new ResponseEntity<>(imageBoardService.getModifyImageAttach(imageNo), HttpStatus.OK);
     }
 
     // 등록된 boardNo return
@@ -73,9 +72,8 @@ public class ImageBoardController {
     public long imageBoardInsert(@RequestParam List<MultipartFile> files
                                 , @RequestParam String imageTitle
                                 , @RequestParam String imageContent
-                                    , HttpServletRequest request
-                                    , Principal principal) {
-        log.info("image Insert");
+                                , HttpServletRequest request
+                                , Principal principal) {
 
         return imageBoardService.imageInsertCheck(files, imageTitle, imageContent, request, principal);
     }
@@ -87,7 +85,6 @@ public class ImageBoardController {
                                 , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
                                 , HttpServletRequest request
                                 , Principal principal){
-        log.info("image modify");
 
         return imageBoardService.imagePatchCheck(files, deleteFiles, request, principal);
     }
@@ -95,9 +92,6 @@ public class ImageBoardController {
     @DeleteMapping("/image-delete/{imageNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public long imageBoardDelete(@PathVariable long imageNo, Principal principal){
-        log.info("delete imageBoard");
-
-        log.info("delete imageNo : {}", imageNo);
 
         return imageBoardService.deleteImageBoard(imageNo, principal);
     }
@@ -105,16 +99,13 @@ public class ImageBoardController {
     @GetMapping("/display")
     public ResponseEntity<byte[]> getFile(@RequestParam(value = "imageName") String imageName){
 
-        log.info("imageController display imageName : {}", imageName);
-
-        File file = new File("E:\\upload\\boardProject\\" + imageName);
-
+        File file = new File(FilePathProperties.FILE_PATH + imageName);
         ResponseEntity<byte[]> result = null;
 
         try{
             HttpHeaders header = new HttpHeaders();
-
             header.add("Content-Type", Files.probeContentType(file.toPath()));
+
             result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
         }catch (IOException e){
             e.printStackTrace();

@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardCommentDTO {
-
+//
     private long commentNo;
 
     private String userId;

@@ -27,7 +27,6 @@ public class MemberController {
 
     @PostMapping("/join-proc")
     public int joinProc(@RequestBody MemberDTO dto){
-        log.info("join Process");
 
         return memberService.memberJoinProc(dto);
     }
@@ -44,16 +43,12 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<JwtDTO> loginProc(@RequestBody Member member, HttpServletRequest request) throws Exception {
 
-        log.info("controller login");
-
         return new ResponseEntity<>(memberService.memberLogin(member, request), HttpStatus.OK);
     }
 
     @PostMapping("/logout")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_MANAGER', 'ROLE_ADMIN')")
     public int logout(HttpServletRequest request, Principal principal){
-
-        log.info("logout");
 
         return memberService.logout(request, principal);
     }

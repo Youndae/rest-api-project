@@ -7,11 +7,11 @@ import org.springframework.data.domain.Page;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 @Builder
 public class CommentListDTO {
 
-    private Page<BoardCommentDTO> hierarchicalBoardCommentDTO;
+    /*private Page<BoardCommentDTO> hierarchicalBoardCommentDTO;
 
-    private Page<ImageBoardCommentDTO> imageBoardCommentDTO;
+    private Page<ImageBoardCommentDTO> imageBoardCommentDTO;*/
 }

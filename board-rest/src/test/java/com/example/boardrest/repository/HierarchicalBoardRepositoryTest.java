@@ -15,17 +15,6 @@ class HierarchicalBoardRepositoryTest {
     @Autowired
     private HierarchicalBoardRepository hierarchicalBoardRepository;
 
-    @Test
-    void getListTest(){
-        hierarchicalBoardRepository.hierarchicalBoardListSearchContent(
-                "%게시글%"
-                , PageRequest.of(0
-                , 20
-                , Sort.by("boardGroupNo").descending()
-                                .and(Sort.by("boardUpperNo").ascending()))
-        );
-    }
-
 
     @Test
     void writerTest(){

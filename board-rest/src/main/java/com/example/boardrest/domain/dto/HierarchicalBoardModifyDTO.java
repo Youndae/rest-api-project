@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class HierarchicalBoardModifyDTO {
-
+//
     private Long boardNo;
 
     private String boardTitle;

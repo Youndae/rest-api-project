@@ -2,7 +2,9 @@ package com.example.boardrest.service;
 
 import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
+import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardModifyDTO;
+import com.example.boardrest.domain.entity.HierarchicalBoard;
 import org.springframework.data.domain.Page;
 
 import java.security.Principal;
@@ -15,7 +17,7 @@ public interface HierarchicalBoardService {
 
     long deleteBoard(long boardNo, Principal principal);
 
-    Page<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri) ;
+    Page<HierarchicalBoardListDTO> getHierarchicalBoardList(Criteria cri) ;
 
     long patchBoard(HierarchicalBoardModifyDTO dto, Principal principal);
 

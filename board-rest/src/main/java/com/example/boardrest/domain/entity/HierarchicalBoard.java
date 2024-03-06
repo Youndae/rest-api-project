@@ -35,11 +35,16 @@ public class HierarchicalBoard {
 
     private String boardUpperNo;
 
-    /*@OneToMany(mappedBy = "hierarchicalBoard")
-    private final Set<Comment> comments = new HashSet<>();*/
-
     public void setBoardNo(long boardNo) {
         this.boardNo = boardNo;
+    }
+
+    public void setBoardTitle(String boardTitle) {
+        this.boardTitle = boardTitle;
+    }
+
+    public void setBoardContent(String boardContent) {
+        this.boardContent = boardContent;
     }
 
     public void setPatchBoardData(HierarchicalBoardDTO dto) {

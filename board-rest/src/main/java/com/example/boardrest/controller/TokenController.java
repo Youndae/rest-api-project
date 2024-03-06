@@ -28,8 +28,6 @@ public class TokenController {
 
     @PostMapping("/reissued")
     public ResponseEntity<JwtDTO> reissuedToken(HttpServletRequest request){
-      log.info("reissued Token");
-
       JwtDTO dto = tokenService.reIssuedToken(request);
 
       return new ResponseEntity<>(dto, HttpStatus.OK);

@@ -7,7 +7,7 @@ import lombok.*;
 @EqualsAndHashCode
 @NoArgsConstructor
 public class CommentInsertDTO {
-
+//
     private long commentNo;
 
     private String commentContent;

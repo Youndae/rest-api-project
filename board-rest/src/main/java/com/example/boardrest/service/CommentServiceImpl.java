@@ -3,17 +3,13 @@ package com.example.boardrest.service;
 import com.example.boardrest.domain.entity.Comment;
 import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.BoardCommentDTO;
-import com.example.boardrest.domain.dto.BoardCommentListDTO;
 import com.example.boardrest.domain.dto.CommentInsertDTO;
-import com.example.boardrest.domain.entity.HierarchicalBoard;
-import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.repository.CommentRepository;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -42,8 +38,6 @@ public class CommentServiceImpl implements CommentService{
                                 .commentDate(Date.valueOf(LocalDate.now()))
                                 .build();
 
-        System.out.println("dto.getIndent : " + dto.getCommentIndent());
-
         commentRepository.save(comment);
         comment.setCommentPatchData(dto);
         commentRepository.save(comment);
@@ -61,8 +55,15 @@ public class CommentServiceImpl implements CommentService{
          * 현재 로그인한 사용자의 아이디와 비교를 해 동일할 경우만 삭제 처리.
          */
 
-        if(commentRepository.existsComment(commentNo).equals(principal.getName())){
-            commentRepository.deleteComment(commentNo);
+        Comment comment = commentRepository
+                .findById(commentNo)
+                .orElseThrow(() -> new NullPointerException("NullPointerException"));
+
+        String writer = comment.getMember().getUserId();
+
+        if(writer.equals(principal.getName())){
+            comment.setCommentStatus(1);
+            commentRepository.save(comment);
             return 1;
         }else{
             return -1;
@@ -71,48 +72,14 @@ public class CommentServiceImpl implements CommentService{
 
     // 댓글 List
     @Override
-    public BoardCommentListDTO commentList(String boardNo, String imageNo, Criteria cri, Principal principal) {
+    public Page<BoardCommentDTO> commentList(String boardNo, String imageNo, Criteria cri, Principal principal) {
+        Pageable pageable = PageRequest.of(cri.getPageNum() - 1
+                , cri.getBoardAmount()
+                , Sort.by("commentGroupNo").descending()
+                        .and(Sort.by("commentUpperNo").ascending()));
 
-        Page<BoardCommentDTO> hBoardDTO;
+        Page<BoardCommentDTO> comments = commentRepository.findAll(cri, pageable, boardNo, imageNo);
 
-        if(boardNo == null){// imageBoard
-            // getImageBoardCommentList
-            long iBoardNo = Long.parseLong(imageNo);
-
-            hBoardDTO = commentRepository.getImageBoardCommentList(
-                    PageRequest.of(cri.getPageNum() - 1
-                            , cri.getBoardAmount()
-                            , Sort.by("commentGroupNo").descending()
-                                    .and(Sort.by("commentUpperNo").ascending()))
-                    , iBoardNo
-            );
-        }else if(boardNo != null){// hierarchicalBoard
-            long hBoardNo = Long.parseLong(boardNo);
-
-            hBoardDTO = commentRepository.getHierarchicalBoardCommentList(
-                    PageRequest.of(cri.getPageNum() - 1
-                            , cri.getBoardAmount()
-                            , Sort.by("commentGroupNo").descending()
-                                    .and(Sort.by("commentUpperNo").ascending()))
-                    , hBoardNo);
-        }else{
-            return null;
-        }
-
-        BoardCommentListDTO result;
-
-        try{
-
-            ObjectMapper om = new ObjectMapper();
-            String boardDTOVal = om.writeValueAsString(hBoardDTO);
-
-            om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-            result = om.readValue(boardDTOVal, BoardCommentListDTO.class);
-        }catch (Exception e){
-            result = null;
-        }
-
-        return result;
+        return comments;
     }
 }

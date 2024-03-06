@@ -157,6 +157,10 @@ public class ImageBoardWebClient {
         if(tokenDTO == null)
             new AccessDeniedException("Denied Exception");
 
+        if(imageSizeCheck(files) == -2L)
+            return -2L;
+
+
         MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
 
         files.stream().forEach(file -> {
@@ -190,6 +194,18 @@ public class ImageBoardWebClient {
                         .bodyToMono(Long.class)
                         .block();
 
+    }
+
+    // 이미지파일 사이즈 체크
+    public long imageSizeCheck(List<MultipartFile> images) {
+        for(MultipartFile image : images){
+            if(image.getSize() >= 10 * 1024 * 1024){
+                log.info("image size is larger than the limit size");
+                return -2;
+            }
+        }
+
+        return 1;
     }
 
     public ImageBoardDTO getModifyData(long imageNo
@@ -266,6 +282,9 @@ public class ImageBoardWebClient {
 
         if(tokenDTO == null)
             new AccessDeniedException("Denied Exception");
+
+        if(files.size() > 0 && imageSizeCheck(files) == -2L)
+            return -2L;
 
         MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
 

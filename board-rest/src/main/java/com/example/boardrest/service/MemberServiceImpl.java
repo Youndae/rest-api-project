@@ -71,8 +71,6 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public JwtDTO memberLogin(Member member, HttpServletRequest request) {
-        log.info("member login service");
-
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getUserId(), member.getUserPw());
 
@@ -82,20 +80,8 @@ public class MemberServiceImpl implements MemberService{
 
         String uid = customUser.getMember().getUserId();
 
-        if(uid != null){
-            //Redis 사용 이전 처리 코드
-            /*String accessToken = tokenProvider.issuedAccessToken(uid);
-            String refreshToken = tokenProvider.issuedRefreshToken(uid);
-
-            return JwtDTO.builder()
-                    .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
-                    .accessTokenValue(JwtProperties.TOKEN_PREFIX + accessToken)
-                    .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
-                    .refreshTokenValue(JwtProperties.TOKEN_PREFIX + refreshToken)
-                    .build();*/
-
+        if(uid != null)
             return tokenProvider.loginProcIssuedAllToken(uid, request);
-        }
 
         return null;
     }

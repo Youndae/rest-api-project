@@ -10,7 +10,6 @@ import java.util.Set;
 
 @Entity
 @Getter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -23,7 +22,7 @@ public class ImageBoard {
     @NonNull
     private String imageTitle;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "userId")
     private Member member;
 
@@ -31,7 +30,7 @@ public class ImageBoard {
 
     private String imageContent;
 
-    @OneToMany(mappedBy = "imageBoard", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "imageBoard", cascade = CascadeType.ALL)
     private final Set<ImageData> imageDataSet = new HashSet<>();
 
     public void setImageNo(long imageNo) {

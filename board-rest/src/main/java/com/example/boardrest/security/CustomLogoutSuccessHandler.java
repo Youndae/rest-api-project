@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
+@Deprecated
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override

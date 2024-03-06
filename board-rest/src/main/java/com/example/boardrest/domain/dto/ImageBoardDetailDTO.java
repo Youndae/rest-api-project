@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ImageBoardDetailDTO {
-
+//
     private long imageNo;
 
     private String imageTitle;
@@ -23,5 +23,5 @@ public class ImageBoardDetailDTO {
 
     private String imageContent;
 
-    private List<ImageDetailDataDTO> imageData;
+    private List<ImageDataDTO> imageData;
 }

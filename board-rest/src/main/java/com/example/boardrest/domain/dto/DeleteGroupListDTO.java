@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeleteGroupListDTO {
-
+//
     private long boardNo;
 
     private String boardUpperNo;

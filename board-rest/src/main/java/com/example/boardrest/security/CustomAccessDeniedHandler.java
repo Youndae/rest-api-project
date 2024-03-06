@@ -12,6 +12,7 @@ import java.io.IOException;
 
 @Slf4j
 @Service
+@Deprecated
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override

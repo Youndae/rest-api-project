@@ -1,11 +1,12 @@
 package com.example.boardrest.controller;
 
+import com.example.boardrest.domain.dto.BoardCommentDTO;
 import com.example.boardrest.domain.dto.Criteria;
-import com.example.boardrest.domain.dto.BoardCommentListDTO;
 import com.example.boardrest.domain.dto.CommentInsertDTO;
 import com.example.boardrest.service.CommentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,18 +23,15 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("/comment-list")
-    public ResponseEntity<BoardCommentListDTO> commentList(@RequestParam(value = "boardNo", required = false) String boardNo
-                                                        , @RequestParam(value = "imageNo", required = false) String imageNo
-                                                        , @RequestParam(value = "pageNum") int pageNum
-                                                        , @RequestParam(value = "amount") int amount
-                                                        , Principal principal){
-
+    public ResponseEntity<Page<BoardCommentDTO>> commentList(@RequestParam(value = "boardNo", required = false) String boardNo
+                                                            , @RequestParam(value = "imageNo", required = false) String imageNo
+                                                            , @RequestParam(value = "pageNum") int pageNum
+                                                            , @RequestParam(value = "amount") int amount
+                                                            , Principal principal){
         Criteria cri = Criteria.builder()
                 .pageNum(pageNum)
                 .boardAmount(amount)
                 .build();
-
-        log.info("comment-list boardNo : {}, imageNo : {}", boardNo, imageNo);
 
         return new ResponseEntity<>(commentService.commentList(boardNo, imageNo, cri, principal), HttpStatus.OK);
     }

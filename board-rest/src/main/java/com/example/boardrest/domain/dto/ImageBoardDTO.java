@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class ImageBoardDTO {
-
+//
     private long imageNo;
 
     private String imageTitle;
