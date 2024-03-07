@@ -74,7 +74,10 @@
 
         <form th:action="@{/imageBoard/imageBoardList}" id="pageActionForm" method="get">
             <input type="hidden" name="pageNum" th:value="${imageList.pageDTO.cri.pageNum}">
-            <input type="hidden" name="amount" th:value="${imageList.pageDTO.cri.imageAmount}">
+        </form>
+
+        <form th:action="@{/imageBoard/imageBoardList}" id="pageSearchActionForm" method="get">
+            <input type="hidden" name="pageNum" th:value="${imageList.pageDTO.cri.pageNum}">
             <input type="hidden" name="searchType" th:value="${imageList.pageDTO.cri.searchType}">
             <input type="hidden" name="keyword" th:value="${imageList.pageDTO.cri.keyword}">
         </form>

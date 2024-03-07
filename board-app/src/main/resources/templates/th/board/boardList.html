@@ -118,7 +118,10 @@
 
         <form th:action="@{/board/boardList}" id="pageActionForm" method="get">
             <input type="hidden" name="pageNum" th:value="${boardList.pageDTO.cri.pageNum}">
-            <input type="hidden" name="amount" th:value="${boardList.pageDTO.cri.boardAmount}">
+        </form>
+
+        <form th:action="@{/board/boardList}" id="pageSearchActionForm" method="get">
+            <input type="hidden" name="pageNum" th:value="${boardList.pageDTO.cri.pageNum}">
             <input type="hidden" name="searchType" th:value="${boardList.pageDTO.cri.searchType}">
             <input type="hidden" name="keyword" th:value="${boardList.pageDTO.cri.keyword}">
         </form>

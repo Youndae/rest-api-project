@@ -39,14 +39,12 @@ public class HierarchicalBoardWebClient {
         UriComponents ub = UriComponentsBuilder.newInstance()
                                                 .path(path)
                                                 .queryParam("pageNum", cri.getPageNum())
-                                                .queryParam("amount", cri.getBoardAmount())
                                                 .build();
 
         if(cri.getKeyword() != null)
             ub = UriComponentsBuilder.newInstance()
                     .path(path)
                     .queryParam("pageNum", cri.getPageNum())
-                    .queryParam("amount", cri.getBoardAmount())
                     .queryParam("keyword", cri.getKeyword())
                     .queryParam("searchType", cri.getSearchType())
                     .build();

@@ -49,14 +49,12 @@ public class ImageBoardWebClient {
         UriComponents ub = UriComponentsBuilder.newInstance()
                                                 .path(path)
                                                 .queryParam("pageNum", cri.getPageNum())
-                                                .queryParam("amount", cri.getImageAmount())
                                                 .build();
 
         if(cri.getKeyword() != null)
             ub = UriComponentsBuilder.newInstance()
                                     .path(path)
                                     .queryParam("pageNum", cri.getPageNum())
-                                    .queryParam("amount", cri.getImageAmount())
                                     .queryParam("keyword", cri.getKeyword())
                                     .queryParam("searchType", cri.getSearchType())
                                     .build();

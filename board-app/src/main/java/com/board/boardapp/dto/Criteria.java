@@ -7,22 +7,16 @@ public class Criteria {
 
     private int pageNum;
 
-    private int boardAmount;
-
-    private int imageAmount;
-
     private String keyword;
 
     private String searchType;
 
     public Criteria(){
-        this(1, 20, 15);
+        this(1);
     }
 
-    public Criteria(int pageNum, int boardAmount, int imageAmount){
+    public Criteria(int pageNum){
         this.pageNum = pageNum;
-        this.boardAmount = boardAmount;
-        this.imageAmount = imageAmount;
     }
 
     public void setKeyword(String keyword) {

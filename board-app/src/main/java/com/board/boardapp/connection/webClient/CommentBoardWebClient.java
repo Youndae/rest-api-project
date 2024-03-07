@@ -39,7 +39,6 @@ public class CommentBoardWebClient {
                                     .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-list")
                                             .queryParam("boardNo", String.valueOf(boardNo))
                                             .queryParam("pageNum", cri.getPageNum())
-                                            .queryParam("amount", cri.getBoardAmount())
                                             .build())
                                     .retrieve()
                                     .onStatus(
@@ -71,7 +70,6 @@ public class CommentBoardWebClient {
                                     .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-list")
                                             .queryParam("imageNo", String.valueOf(imageNo))
                                             .queryParam("pageNum", cri.getPageNum())
-                                            .queryParam("amount", cri.getBoardAmount())
                                             .build())
                                     .retrieve()
                                     .onStatus(

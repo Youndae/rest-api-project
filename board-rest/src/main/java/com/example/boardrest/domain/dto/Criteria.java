@@ -10,29 +10,27 @@ public class Criteria {
 
     private int pageNum;
 
-    private int boardAmount;
+    private final int boardAmount = 20;
 
-    private int imageAmount;
+    private final int imageAmount = 15;
 
     private String keyword;
 
     private String searchType;
 
     public Criteria(){
-        this(1, 20, 15);
+        this(1);
     }
 
-    public Criteria(int pageNum, int boardAmount, int imageAmount){
+    public Criteria(int pageNum){
         this.pageNum = pageNum;
-        this.boardAmount = boardAmount;
-        this.imageAmount = imageAmount;
     }
 
-    public Criteria(int pageNum, int boardAmount, int imageAmount, String keyword, String searchType) {
+    public Criteria(int pageNum, String keyword, String searchType) {
         this.pageNum = pageNum;
-        this.boardAmount = boardAmount;
-        this.imageAmount = imageAmount;
         this.keyword = keyword == null ? null : "%" + keyword + "%";
         this.searchType = searchType;
     }
+
+
 }

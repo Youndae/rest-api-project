@@ -29,13 +29,11 @@ public class HierarchicalBoardController {
 
     @GetMapping("/board-list")
     public ResponseEntity<Page<HierarchicalBoardListDTO>> hierarchicalBoardMain(@RequestParam(value = "pageNum") int pageNum
-                                                                                , @RequestParam(value = "amount") int amount
                                                                                 , @RequestParam(value = "keyword", required = false) String keyword
                                                                                 , @RequestParam(value = "searchType", required = false) String searchType) {
 
         Criteria cri = Criteria.builder()
                                 .pageNum(pageNum)
-                                .boardAmount(amount)
                                 .keyword(keyword)
                                 .searchType(searchType)
                                 .build();

@@ -31,13 +31,11 @@ public class ImageBoardController {
 
     @GetMapping("/image-board-list")
     public ResponseEntity<Page<ImageBoardDTO>> imageBoardList(@RequestParam(value = "pageNum") int pageNum
-                                                            , @RequestParam(value = "amount") int amount
                                                             , @RequestParam(value = "keyword", required = false) String keyword
                                                             , @RequestParam(value = "searchType", required = false) String searchType){
 
         Criteria cri = Criteria.builder()
                                 .pageNum(pageNum)
-                                .imageAmount(amount)
                                 .keyword(keyword)
                                 .searchType(searchType)
                                 .build();

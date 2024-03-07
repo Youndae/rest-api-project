@@ -154,11 +154,11 @@ function commentPagingParsing(res){
     for(let i = startPage; i <= endPage; i++){
         if(startPage != endPage){
             if(i == pageNum){
-                cpStr += "<li>" +
+                cpStr += "<li class=\"paginate_button\">" +
                     "<a href=\"#\" style=\"font-weight: bold; color: black;\" onclick=\"commentPaging(" + i + ")\">" + i + "</a>" +
                     "</li>"
             }else {
-                cpStr += "<li>" +
+                cpStr += "<li class=\"paginate_button\">" +
                     "<a href=\"#\" onclick=\"commentPaging(" + i + ")\">" + i + "</a>" +
                     "</li>"
             }

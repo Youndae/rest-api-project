@@ -26,11 +26,9 @@ public class CommentController {
     public ResponseEntity<Page<BoardCommentDTO>> commentList(@RequestParam(value = "boardNo", required = false) String boardNo
                                                             , @RequestParam(value = "imageNo", required = false) String imageNo
                                                             , @RequestParam(value = "pageNum") int pageNum
-                                                            , @RequestParam(value = "amount") int amount
                                                             , Principal principal){
         Criteria cri = Criteria.builder()
                 .pageNum(pageNum)
-                .boardAmount(amount)
                 .build();
 
         return new ResponseEntity<>(commentService.commentList(boardNo, imageNo, cri, principal), HttpStatus.OK);
