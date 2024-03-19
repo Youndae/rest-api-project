@@ -652,3 +652,18 @@ board-app = client Server
 >>>   * 현재 프로젝트에서 사용자가 출력하고자 하는 게시글의 개수를 제어하도록 하고 있지 않기 때문에 계층형 게시판과 댓글은 페이지당 20개, 이미지 게시판은 15개로 고정되어있는 상태.
 >>>   * 하지만 Client-Server에 해당 값이 amount로 제공되고 있고 그럼 사용자가 임의로 수정할 수 있는 문제가 있기 때문에 아예 Client-Server에서는 amount값을 제어하지 못하도록 수정.
 >>>   * Api-Server에서도 수정되는 경우를 방지하기 위해 두 amount 값을 final로 고정.
+>
+> 
+>> 24/03/19
+>>> * 수정
+>>>   * CorsConfig 수정.
+>>>     * React로 클라이언트를 하나 더 만드는 과정에서 axios로 요청 시 cors 문제가 발생.
+>>>     * IllegalArgumentsException으로 AllowCredentials 설정에 의한 AllowedOrigins 설정 문제.
+>>>     * 오류의 자세한 내용은 블로그에 정리.
+>>>     * addAllowedOrigin을 addAllowedOriginPattern으로 수정하는 것으로 문제 해결.
+>>>   * ImageBoardList QueryDSL 부분 수정.
+>>>     * 데스크탑에서는 문제가 없었으나 React 개발하면서 맥으로 사용하다보니 설정 문제가 발생.
+>>>     * 맥에서의 MySQL은 sql_mode에 only_full_group_by가 설정되어있어서 imageNo 하나만으로 group by를 처리하지 못하는 문제가 발생.
+>>>     * sql_mode에서 only_full_group_by 설정을 제외시키는 방법도 있었으나 문제가 되는 ImageData.imageName를 group by 절에 추가해주는 것으로 문제 해결.
+>>>   * MemberServiceImpl은 테스트 해볼게 있어서 해보고 다시 원상복구.
+ 

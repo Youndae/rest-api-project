@@ -46,7 +46,7 @@ public class MemberWebClient {
                 .userPw(loginData.get("userPw"))
                 .build();
 
-        JwtDTO responseVal = null;
+        Long responseVal = null;
 
         if(ino != null){
             responseVal = client.post()
@@ -60,7 +60,7 @@ public class MemberWebClient {
                                             new CustomNotFoundException(ErrorCode.USER_NOT_FOUND)
                                     )
                     )
-                    .bodyToMono(JwtDTO.class)
+                    .bodyToMono(Long.class)
                     .block();
         }else{
             responseVal = client.post()
@@ -73,12 +73,18 @@ public class MemberWebClient {
                                             new CustomNotFoundException(ErrorCode.USER_NOT_FOUND)
                                     )
                     )
-                    .bodyToMono(JwtDTO.class)
+                    .bodyToMono(Long.class)
                     .block();
         }
 
-        if(responseVal != null){
-            tokenService.saveToken(responseVal, response);
+        System.out.println("return success");
+
+        System.out.println("responseHeader : " + response.getHeaderNames());
+
+
+
+        if(responseVal != 0){
+//            tokenService.saveToken(responseVal, response);
 
             HttpSession session = request.getSession();
             session.setAttribute("id", member.getUserId());
