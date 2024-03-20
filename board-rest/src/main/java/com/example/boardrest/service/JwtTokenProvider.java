@@ -8,11 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
@@ -135,7 +137,7 @@ public class JwtTokenProvider {
 
 
     //reissuance AccessToken & RefreshToken
-    public JwtDTO reIssuanceAllToken(Map<String, String> reIssuedData){
+    public JwtDTO reIssuanceAllToken(Map<String, String> reIssuedData, HttpServletResponse response){
         /**
          * @Param
          * reIssuedData = {
@@ -149,12 +151,17 @@ public class JwtTokenProvider {
         String userId = reIssuedData.get("userId");
         String ino = reIssuedData.get("ino");
 
-        return buildJwtDTO(userId, ino);
+        String atValue = issuedAccessToken(userId, ino);
+        String rtValue = issuedRefreshToken(userId, ino);
+
+        setTokenToCookie(atValue, rtValue, ino, response);
+
+        return buildJwtDTO(atValue, rtValue, ino);
     }
 
 
 
-    public JwtDTO loginProcIssuedAllToken(String userId, HttpServletRequest request){
+    public String loginProcIssuedAllToken(String userId, HttpServletRequest request, HttpServletResponse response){
 
         Cookie inoCookie = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
         String ino = null;
@@ -182,16 +189,61 @@ public class JwtTokenProvider {
             }
         }
 
-        return buildJwtDTO(userId, ino);
+//        return buildJwtDTO(userId, ino);
+
+        String atValue = issuedAccessToken(userId, ino);
+        String rtValue = issuedRefreshToken(userId, ino);
+
+        return setTokenToCookie(atValue, rtValue, ino, response);
     }
 
-    public JwtDTO buildJwtDTO(String userId, String ino) {
+    public String setTokenToCookie(String atValue, String rtValue, String ino, HttpServletResponse response) {
+
+        response.addHeader("Set-Cookie"
+                , createCookie(
+                        JwtProperties.ACCESS_HEADER_STRING
+                        , JwtProperties.TOKEN_PREFIX + atValue
+                        , JwtProperties.ACCESS_COOKIE_MAX_AGE
+                ));
+
+        response.addHeader("Set-Cookie"
+                , createCookie(
+                        JwtProperties.REFRESH_HEADER_STRING
+                        , JwtProperties.TOKEN_PREFIX + rtValue
+                        , JwtProperties.REFRESH_COOKIE_MAX_AGE
+                ));
+
+        response.addHeader("Set-Cookie"
+                , createCookie(
+                        JwtProperties.INO_HEADER_STRING
+                        , ino
+                        , JwtProperties.INO_COOKIE_MAX_AGE
+                ));
+
+        return "success";
+    }
+
+    public String createCookie(String name, String value, long expires){
+        return ResponseCookie
+                .from(name, value)
+                .path("/")
+                .maxAge(expires)
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("Strict")
+                .build()
+                .toString();
+    }
+
+
+
+    public JwtDTO buildJwtDTO(String atValue, String rtValue, String ino) {
 
         return JwtDTO.builder()
                     .accessTokenHeader(JwtProperties.ACCESS_HEADER_STRING)
-                    .accessTokenValue(JwtProperties.TOKEN_PREFIX + issuedAccessToken(userId, ino))
+                    .accessTokenValue(JwtProperties.TOKEN_PREFIX + atValue)
                     .refreshTokenHeader(JwtProperties.REFRESH_HEADER_STRING)
-                    .refreshTokenValue(JwtProperties.TOKEN_PREFIX + issuedRefreshToken(userId, ino))
+                    .refreshTokenValue(JwtProperties.TOKEN_PREFIX + rtValue)
                     .inoHeader(JwtProperties.INO_HEADER_STRING)
                     .inoValue(ino)
                     .build();
@@ -230,7 +282,7 @@ public class JwtTokenProvider {
     public String issuedAccessToken(String userId, String ino){
         String accessToken = JWT.create()
                 .withSubject("cocoToken")
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.ACCESS_EXPIRATION_TIME))
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.ACCESS_TOKEN_EXPIRATION_TIME))
                 .withClaim("userId", userId)
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
 
@@ -244,7 +296,7 @@ public class JwtTokenProvider {
     //issued RefreshToken
     public String issuedRefreshToken(String userId, String ino){
         String refreshToken = JWT.create()
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.REFRESH_EXPIRATION_TIME))
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.REFRESH_TOKEN_EXPIRATION_TIME))
                 .withClaim("userId", userId)
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
 

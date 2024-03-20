@@ -10,8 +10,6 @@ public interface TokenService {
     //토큰 존재 여부 체크
     JwtDTO checkExistsToken(HttpServletRequest request, HttpServletResponse response);
 
-    void saveToken(JwtDTO jwtDTO, HttpServletResponse response);
-
     JwtDTO reIssuedToken(HttpServletRequest request, HttpServletResponse response);
 
     void deleteCookie(HttpServletRequest request, HttpServletResponse response);

@@ -10,8 +10,11 @@ import com.board.boardapp.service.TokenService;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.WebUtils;
 import reactor.core.publisher.Mono;
@@ -20,6 +23,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 @Service
@@ -52,40 +56,42 @@ public class MemberWebClient {
             responseVal = client.post()
                     .uri(uriBuilder -> uriBuilder.path(path).build())
                     .cookie(ino.getName(), ino.getValue())
+                    .acceptCharset(Charset.forName("UTF-8"))
                     .bodyValue(member)
-                    .retrieve()
-                    .onStatus(
-                            HttpStatus::is4xxClientError, clientResponse ->
-                                    Mono.error(
-                                            new CustomNotFoundException(ErrorCode.USER_NOT_FOUND)
-                                    )
-                    )
-                    .bodyToMono(Long.class)
+                    .exchangeToMono(resp -> {
+                        if(resp.statusCode().equals(HttpStatus.OK)) {
+                            System.out.println("login Success");
+                            resp.cookies()
+                                    .forEach((k, v) ->
+                                            response.addHeader("Set-Cookie", v.get(0).toString()
+                                            ));
+                        }else if(resp.statusCode().is4xxClientError())
+                            new CustomNotFoundException(ErrorCode.USER_NOT_FOUND);
+
+                        return resp.bodyToMono(Long.class);
+                    })
                     .block();
-        }else{
+        }else {
             responseVal = client.post()
                     .uri(uriBuilder -> uriBuilder.path(path).build())
+                    .acceptCharset(Charset.forName("UTF-8"))
                     .bodyValue(member)
-                    .retrieve()
-                    .onStatus(
-                            HttpStatus::is4xxClientError, clientResponse ->
-                                    Mono.error(
-                                            new CustomNotFoundException(ErrorCode.USER_NOT_FOUND)
-                                    )
-                    )
-                    .bodyToMono(Long.class)
+                    .exchangeToMono(resp -> {
+                        if(resp.statusCode().equals(HttpStatus.OK)) {
+                            System.out.println("login Success");
+                            resp.cookies()
+                                    .forEach((k, v) ->
+                                            response.addHeader("Set-Cookie", v.get(0).toString()
+                                            ));
+                        }else if(resp.statusCode().is4xxClientError())
+                            new CustomNotFoundException(ErrorCode.USER_NOT_FOUND);
+
+                        return resp.bodyToMono(Long.class);
+                    })
                     .block();
         }
 
-        System.out.println("return success");
-
-        System.out.println("responseHeader : " + response.getHeaderNames());
-
-
-
-        if(responseVal != 0){
-//            tokenService.saveToken(responseVal, response);
-
+        if(responseVal == 1L){
             HttpSession session = request.getSession();
             session.setAttribute("id", member.getUserId());
 

@@ -73,19 +73,33 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public JwtDTO memberLogin(Member member, HttpServletRequest request) {
+    public Long memberLogin(Member member, HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("memberLogin service");
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getUserId(), member.getUserPw());
 
+        System.out.println("authenticationToken success : " + authenticationToken);
+
         Authentication authentication =
                 authenticationManager.authenticate(authenticationToken);
+
+        System.out.println("authentication success");
+
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
+
+        System.out.println("customUser success");
 
         String uid = customUser.getMember().getUserId();
 
-        if(uid != null)
-            return tokenProvider.loginProcIssuedAllToken(uid, request);
+        System.out.println("uid : " + uid);
 
+        if(uid != null) {
+            String result = tokenProvider.loginProcIssuedAllToken(uid, request, response);
+            if(result.equals("success"))
+                return 1L;
+        }
         return null;
     }
 

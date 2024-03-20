@@ -33,6 +33,8 @@ public class CustomUser extends User {
         ).collect(Collectors.toList()));
         log.info("customUser auths : {}", member.getAuths());*/
 
+        System.out.println("customUser");
+
         this.member = member;
     }
 }

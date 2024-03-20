@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/token")
@@ -27,9 +28,8 @@ public class TokenController {
     private final TokenService tokenService;
 
     @PostMapping("/reissued")
-    public ResponseEntity<JwtDTO> reissuedToken(HttpServletRequest request){
-      JwtDTO dto = tokenService.reIssuedToken(request);
+    public ResponseEntity<JwtDTO> reissuedToken(HttpServletRequest request, HttpServletResponse response){
 
-      return new ResponseEntity<>(dto, HttpStatus.OK);
+      return new ResponseEntity<>(tokenService.reIssuedToken(request, response), HttpStatus.OK);
     }
 }

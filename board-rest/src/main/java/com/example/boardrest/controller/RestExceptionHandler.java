@@ -56,7 +56,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity badCredentialsExceptionHandler(Exception e){
         exceptionLog(e);
 
-        return ResponseEntity.status(HttpStatus.valueOf(400)).build();
+        return ResponseEntity.status(HttpStatus.valueOf(403)).build();
     }
 
 

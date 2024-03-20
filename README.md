@@ -666,4 +666,21 @@ board-app = client Server
 >>>     * 맥에서의 MySQL은 sql_mode에 only_full_group_by가 설정되어있어서 imageNo 하나만으로 group by를 처리하지 못하는 문제가 발생.
 >>>     * sql_mode에서 only_full_group_by 설정을 제외시키는 방법도 있었으나 문제가 되는 ImageData.imageName를 group by 절에 추가해주는 것으로 문제 해결.
 >>>   * MemberServiceImpl은 테스트 해볼게 있어서 해보고 다시 원상복구.
- 
+>
+> 
+>> 24/03/20
+>>> * 수정
+>>>   * JWT 와 ino 쿠키 생성 역할을 클라이언트 서버에서 수행하지 않고 API 서버에서 수행하도록 수정.
+>>>     * Api-Server
+>>>       * TokenProvider에서 토큰 생성과 쿠키 생성을 처리하도록 수정.
+>>>       * 쿠키는 ResponseCookie로 생성하고, HttpServletResponse.addHeader()에 쿠키를 담아 반환.   
+>>>       * 메소드는 쿠키를 response header에 담아주는 setTokenToCookie()와 쿠키를 생성하는 createCookie()로 생성.
+>>>       * 로그인 과정에서는 더이상 JwtDTO에 데이터를 담아 반환하지 않도록 수정.
+>>>       * 토큰 재발급의 경우 클라이언트 서버에서 재발급 받은 후 바로 요청할 수 있도록 동일한 과정을 거쳐 토큰 재발급과 쿠키 생성을 한 뒤 JwtDTO에 데이터를 담아 반환하도록 수정.
+>>>       * 로그인 실패 시 발생하는 BadCredentialsException이 발생했을 때 반환되는 상태코드를 400에서 403으로 수정.
+>>>     * Client-Server
+>>>       * WebClient에서 ClientResponse와 헤더, 상태값을 받아 처리하기 위해 retrieve()가 아닌 exchangeToMono()로 수정.
+>>>       * WebConfig 클래스 설정에서 allowCredentials, allowedOriginPatterns, allowedHeaders, allowedMethods 설정을 추가.
+>>>       * TokenService에서 더이상 쿠키 생성을 할 필요가 없기 때문에 해당 메소드 제거.
+>>>       * 재발급 요청 exchangeToMono()로 수정. 바로 토큰값을 사용하기 위해 JwtDTO로 반환받고 해당 dto를 리턴하는 것은 유지.
+>>>     * 테스트 완료.
