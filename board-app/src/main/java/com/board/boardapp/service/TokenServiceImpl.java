@@ -26,11 +26,11 @@ public class TokenServiceImpl implements TokenService{
     private final WebClientConfig clientConfig;
 
     @Override
-    public JwtDTO checkExistsToken(HttpServletRequest request, HttpServletResponse response) {
+    public boolean checkExistsToken(HttpServletRequest request) {
 
         log.info("referer : " + request.getHeader("Referer"));
 
-        Cookie at = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
+//        Cookie at = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
         Cookie rt = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
         Cookie ino = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
 
@@ -41,7 +41,7 @@ public class TokenServiceImpl implements TokenService{
          * 3. at와 rt 모두 null일때.                - N
          */
 
-        if(at == null && rt != null)
+        /*if(at == null && rt != null)
             return reIssuedToken(request, response);
         else if(at != null && rt != null)
             return JwtDTO.builder()
@@ -51,12 +51,20 @@ public class TokenServiceImpl implements TokenService{
                     .refreshTokenValue(rt.getValue())
                     .inoHeader(ino.getName())
                     .inoValue(ino.getValue())
-                    .build();
+                    .build();*/
 
-        return null;
+        /**
+         * 단지 insert 페이지 접근을 위한 체크이기 때문에 rt, ino가 존재하는지만 체크.
+         * 둘다 존재하는 경우에만 true를 반환해 접근을 허용.
+         */
+
+        if(rt != null && ino != null)
+            return true;
+
+        return false;
     }
 
-    @Override
+    /*@Override
     public JwtDTO reIssuedToken(HttpServletRequest request, HttpServletResponse response) {
 
         WebClient client = clientConfig.useWebClient();
@@ -82,17 +90,5 @@ public class TokenServiceImpl implements TokenService{
                 .block();
 
         return dto;
-    }
-
-    @Override
-    public void deleteCookie(HttpServletRequest request, HttpServletResponse response) {
-
-        for(String cookieHeader : JwtProperties.COOKIE_ARRAY) {
-            Cookie cookie = WebUtils.getCookie(request, cookieHeader);
-
-            cookie.setMaxAge(0);
-            cookie.setPath("/");
-            response.addCookie(cookie);
-        }
-    }
+    }*/
 }

@@ -28,4 +28,6 @@ public class HierarchicalBoardDTO {
 
     private String boardUpperNo;
 
+    private UserStatusDTO userStats;
+
 }

@@ -11,18 +11,25 @@ import java.util.List;
 
 public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalBoard, Long>, HierarchicalBoardRepositoryCustom {
 
-    @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardDTO(" +
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardDetailDTO(" +
             "b.boardNo" +
             ", b.boardTitle" +
             ", b.member.userId" +
             ", b.boardContent" +
-            ", b.boardDate" +
+            ", b.boardDate) " +
+            "FROM HierarchicalBoard b " +
+            "WHERE b.boardNo = ?1")
+    HierarchicalBoardDetailDTO findBoardDetailByBoardNo(long boardNo);
+
+
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardReplyInfoDTO(" +
+            "b.boardNo" +
             ", b.boardGroupNo" +
             ", b.boardIndent" +
             ", b.boardUpperNo) " +
-            "FROM HierarchicalBoard b " +
+            "FROM HierarchicalBoard  b " +
             "WHERE b.boardNo = ?1")
-    HierarchicalBoardDTO findByBoardNo(long boardNo);
+    HierarchicalBoardReplyInfoDTO findReplyInfoByBoardNo(long boardNo);
 
 
     @Query(value = "SELECT b.member.userId " +

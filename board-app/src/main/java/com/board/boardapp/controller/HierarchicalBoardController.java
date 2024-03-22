@@ -26,18 +26,22 @@ public class HierarchicalBoardController {
     private final TokenService tokenService;
 
     @GetMapping("/boardList")
-    public String hierarchicalBoardMain(Model model, Criteria cri) throws Exception {
-        model.addAttribute("boardList", hierarchicalBoardWebClient.getHierarchicalBoardList(cri));
+    public String hierarchicalBoardMain(Model model, Criteria cri, HttpServletRequest request, HttpServletResponse response) {
+        HierarchicalBoardListDTO dto = hierarchicalBoardWebClient.getHierarchicalBoardList(cri, request, response);
+
+        model.addAttribute("data", dto);
 
         return "th/board/boardList";
     }
 
     @GetMapping("/boardDetail/{boardNo}")
     public String hierarchicalBoardDetail(Model model
-                                            , @PathVariable long boardNo) {
-        HierarchicalBoardDTO dto = hierarchicalBoardWebClient.getHierarchicalBoardDetail(boardNo);
+                                            , @PathVariable long boardNo
+                                            , HttpServletRequest request
+                                            , HttpServletResponse response) {
+        BoardDetailAndModifyDTO<HierarchicalBoardDTO> dto = hierarchicalBoardWebClient.getHierarchicalBoardDetail(boardNo, request, response);
 
-        model.addAttribute("board", dto);
+        model.addAttribute("data", dto);
 
         return "th/board/boardDetail";
     }
@@ -56,40 +60,42 @@ public class HierarchicalBoardController {
     public String hierarchicalBoardModify(Model model
                                             , @PathVariable long boardNo
                                             , HttpServletRequest request
-                                            , HttpServletResponse response) throws JsonProcessingException {
+                                            , HttpServletResponse response) {
 
         log.info("modify boardNo : {}", boardNo);
 
-        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+//        boolean checkToken = tokenService.checkExistsToken(request, response);
 
-        if(tokenDTO == null){
-            return "th/member/loginForm";
-        }
+//        if(checkToken)
+//            return "th/member/loginForm";
 
-        HierarchicalBoardModifyDTO dto = hierarchicalBoardWebClient.getModifyData(boardNo, request, response);
+        BoardDetailAndModifyDTO<HierarchicalBoardModifyDTO> dto = hierarchicalBoardWebClient.getModifyData(boardNo, request, response);
 
         if(dto == null)
             return "th/error/error";
 
-        model.addAttribute("modify", dto);
+        model.addAttribute("data", dto);
 
         return "th/board/boardModify";
     }
 
     @GetMapping("/boardInsert")
-    public String hierarchicalBoardInsert(HttpServletRequest request, HttpServletResponse response){
+    public String hierarchicalBoardInsert(HttpServletRequest request, Model model){
 
-        JwtDTO existsToken = tokenService.checkExistsToken(request, response);
+        boolean checkToken = tokenService.checkExistsToken(request);
 
-        if(existsToken != null)
+        if(checkToken) {
+            LoginDTO dto = new LoginDTO(new UserStatusDTO(true));
+            model.addAttribute("data", dto);
             return "th/board/boardInsert";
-        else
-            return "th/member/loginForm";
+        }else
+            return "redirect:/member/loginForm";
 
     }
 
     @PostMapping("/boardInsert")
-    public String hierarchicalBoardInsertProc(HttpServletRequest request, HttpServletResponse response){
+    public String hierarchicalBoardInsertProc(HttpServletRequest request
+            , HttpServletResponse response){
 
 
         long responseVal = hierarchicalBoardWebClient.hierarchicalBoardInsert(request, response);
@@ -97,7 +103,7 @@ public class HierarchicalBoardController {
         log.info("controller insertProc response : {}", response);
 
         if(responseVal < 0)
-            return "th/member/join";
+            return "th/error/error";
         else
             return "redirect:/board/boardDetail/" + responseVal;
     }
@@ -108,14 +114,16 @@ public class HierarchicalBoardController {
                                             , HttpServletRequest request
                                             , HttpServletResponse response){
 
-        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+        /*boolean checkToken = tokenService.checkExistsToken(request);
 
-        if(tokenDTO == null){
+        if(!checkToken)
             return "th/member/loginForm";
-        }
 
+        model.addAttribute("boardNo", boardNo);*/
 
-        model.addAttribute("boardNo", boardNo);
+        BoardDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO> dto = hierarchicalBoardWebClient.getHierarchicalBoardReplyInfo(request, response, boardNo);
+
+        model.addAttribute("data", dto);
 
         return "th/board/boardReply";
     }
@@ -124,10 +132,13 @@ public class HierarchicalBoardController {
     public String hierarchicalBoardReplyProc(HttpServletRequest request, HttpServletResponse response){
         log.info("boardReply Proc");
 
-        log.info("title : {}, content : {}, boardNo : {}"
+        log.info("title : {}, content : {}, boardNo : {}, indent : {}, groupNo : {}, upperNo : {}"
                 , request.getParameter("boardTitle")
                 , request.getParameter("boardContent")
-                , request.getParameter("boardNo"));
+                , request.getParameter("boardNo")
+                , request.getParameter("boardIndent")
+                , request.getParameter("boardGroupNo")
+                , request.getParameter("boardUpperNo"));
 
         long responseVal = hierarchicalBoardWebClient.hierarchicalBoardReply(request, response);
 
@@ -138,7 +149,7 @@ public class HierarchicalBoardController {
 
     @DeleteMapping("/boardDelete/{boardNo}")
     @ResponseBody
-    public int deleteBoard(@PathVariable long boardNo
+    public Long deleteBoard(@PathVariable long boardNo
                                     , HttpServletRequest request
                                     , HttpServletResponse response){
 

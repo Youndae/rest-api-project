@@ -23,6 +23,8 @@ public class CommentListDTO {
 
     private PageDTO pageDTO;
 
+    private UserStatusDTO userStatus;
+
     public void setPageDTO(PageDTO pageDTO) {
         this.pageDTO = pageDTO;
     }

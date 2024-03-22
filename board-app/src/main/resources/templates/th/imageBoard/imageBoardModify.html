@@ -26,13 +26,13 @@
             <form id="uploadForm">
                 <div>
                     <label for="imageTitle">제목</label>
-                    <input type="text" id="imageTitle" name="imageTitle" th:value="${image.imageTitle}">
+                    <input type="text" id="imageTitle" name="imageTitle" th:value="${data.content.imageTitle}">
                 </div>
                 <div>
                     <label for="imageContent">내용</label>
-                    <textarea name="imageContent" id="imageContent" style="width: 300px; height: 300px" th:text="${image.imageContent}"></textarea>
+                    <textarea name="imageContent" id="imageContent" style="width: 300px; height: 300px" th:text="${data.content.imageContent}"></textarea>
                 </div>
-                <input type="hidden" id="modifyImageNo" name="imageNo" th:value="${image.imageNo}">
+                <input type="hidden" id="modifyImageNo" name="imageNo" th:value="${data.content.imageNo}">
             </form>
             <div class="attach">
                 <input type="file" id="uploadInputBox" name="fileData" value="사진 첨부" multiple>

@@ -17,33 +17,33 @@
     <div class="container">
         <div>
             <div class="form-row float-right mb-3">
-                <button class="btn btn-outline-info btn-sm" id="reply">답글</button>
-                <th:block th:if="${session.id} eq ${board.userId}">
+                <th:block th:if="${data.userStatus.uid} ne null">
+                    <button class="btn btn-outline-info btn-sm" id="reply">답글</button>
+                </th:block>
+                <th:block th:if="${data.userStatus.uid} eq ${data.content.userId}">
                     <button class="btn btn-outline-info btn-sm" id="modify">수정</button>
                     <button type="button" class="btn btn-outline-info btn-sm" id="deleteBoard">삭제</button>
                 </th:block>
             </div>
             <div class="form-group">
                 <label>제목</label>
-                <p th:text="${board.boardTitle}"/>
+                <p th:text="${data.content.boardTitle}"/>
             </div>
             <div class="form-group">
                 <label>작성자</label>
-                <p th:text="${board.userId}"/>
+                <p th:text="${data.content.userId}"/>
             </div>
             <div class="form-group">
                 <label>작성일</label>
-                <p th:text="${#dates.format(board.boardDate, 'yyyy-MM-dd')}"/>
+                <p th:text="${#dates.format(data.content.boardDate, 'yyyy-MM-dd')}"/>
             </div>
             <div class="form-group">
                 <label>내용</label>
-                <p th:text="${board.boardContent}"/>
+                <p th:text="${data.content.boardContent}"/>
             </div>
         </div>
 
-        <input type="hidden" id="boardNo" name="boardNo" th:value="${board.boardNo}">
-        <input type="hidden" id="boardIndent" th:value="${board.boardIndent}">
-        <input type="hidden" id="uid" th:value="${session.id}"/>
+        <input type="hidden" id="boardNo" name="boardNo" th:value="${data.content.boardNo}">
 
         <!-- comment -->
         <th:block th:replace="th/comment/comment::commentFragment"></th:block>

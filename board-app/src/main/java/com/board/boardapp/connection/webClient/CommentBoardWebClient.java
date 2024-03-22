@@ -3,6 +3,8 @@ package com.board.boardapp.connection.webClient;
 import com.board.boardapp.config.WebClientConfig;
 import com.board.boardapp.config.properties.PathProperties;
 import com.board.boardapp.dto.*;
+import com.board.boardapp.service.CookieService;
+import com.board.boardapp.service.ExchangeService;
 import com.board.boardapp.service.ObjectReadValueService;
 import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,7 +12,10 @@ import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.reactive.ClientHttpResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyExtractor;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -30,16 +35,39 @@ public class CommentBoardWebClient {
 
     private final ObjectReadValueService readValueService;
 
+    private final CookieService cookieService;
+
+    private final ExchangeService exchangeService;
+
     private static final String commentPath = PathProperties.COMMENT_PATH;
 
     public CommentListDTO getBoardComment(long boardNo
-                                            , Criteria cri) {
+                                            , Criteria cri
+                                            , HttpServletRequest request
+                                            , HttpServletResponse response) {
 
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
+        String responseVal = client.get()
+                .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-list")
+                        .queryParam("boardNo", String.valueOf(boardNo))
+                        .queryParam("pageNum", cri.getPageNum())
+                        .build())
+                .cookies(cookies -> cookies.addAll(cookieMap))
+                .exchangeToMono(resp -> {
+                    exchangeService.checkExchangeResponse(resp, response);
+                    return resp.bodyToMono(String.class);
+                })
+                .block();
+
+
+/*
         String responseVal = client.get()
                                     .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-list")
                                             .queryParam("boardNo", String.valueOf(boardNo))
                                             .queryParam("pageNum", cri.getPageNum())
                                             .build())
+                                    .cookies(cookies -> cookies.addAll(cookieMap))
                                     .retrieve()
                                     .onStatus(
                                             HttpStatus::is4xxClientError, clientResponse ->
@@ -54,7 +82,7 @@ public class CommentBoardWebClient {
                                                     )
                                     )
                                     .bodyToMono(String.class)
-                                    .block();
+                                    .block();*/
 
 
         CommentListDTO dto = new CommentListDTO();
@@ -65,12 +93,29 @@ public class CommentBoardWebClient {
     }
 
     public CommentListDTO getImageComment(long imageNo
-                                            , Criteria cri) {
+                                            , Criteria cri
+                                            , HttpServletRequest request
+                                            , HttpServletResponse response) {
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
         String responseVal = client.get()
+                .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-list")
+                        .queryParam("imageNo", String.valueOf(imageNo))
+                        .queryParam("pageNum", cri.getPageNum())
+                        .build())
+                .cookies(cookies -> cookies.addAll(cookieMap))
+                .exchangeToMono(resp -> {
+                    exchangeService.checkExchangeResponse(resp, response);
+                    return resp.bodyToMono(String.class);
+                })
+                .block();
+
+        /*String responseVal = client.get()
                                     .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-list")
                                             .queryParam("imageNo", String.valueOf(imageNo))
                                             .queryParam("pageNum", cri.getPageNum())
                                             .build())
+                                    .cookies(cookies -> cookies.addAll(cookieMap))
                                     .retrieve()
                                     .onStatus(
                                             HttpStatus::is4xxClientError, clientResponse ->
@@ -85,7 +130,7 @@ public class CommentBoardWebClient {
                                                     )
                                     )
                                     .bodyToMono(String.class)
-                                    .block();
+                                    .block();*/
 
         CommentListDTO dto = new CommentListDTO();
         dto = readValueService.setReadValue(dto, responseVal);
@@ -97,10 +142,10 @@ public class CommentBoardWebClient {
     public Long commentInsert(Map<String, Object> commentData
                                 , HttpServletRequest request
                                 , HttpServletResponse response){
-        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+//        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
-        if(tokenDTO == null)
-            new AccessDeniedException("Denied Exception");
+//        if(tokenDTO == null)
+//            new AccessDeniedException("Denied Exception");
 
         Long imageNo = commentData.get("imageNo") == null ? null : Long.parseLong(commentData.get("imageNo").toString());
         Long boardNo = commentData.get("boardNo") == null ? null : Long.parseLong(commentData.get("boardNo").toString());
@@ -111,12 +156,23 @@ public class CommentBoardWebClient {
                                     .boardNo(boardNo)
                                     .build();
 
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
         Long result = client.post()
+                .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-insert").build())
+                .body(Mono.just(dto), CommentDTO.class)
+                .cookies(cookies -> cookies.addAll(cookieMap))
+                .exchangeToMono(resp -> {
+                    exchangeService.checkExchangeResponse(resp, response);
+                    return resp.bodyToMono(Long.class);
+                })
+                .block();
+
+
+        /*Long result = client.post()
                         .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-insert").build())
                         .body(Mono.just(dto), CommentDTO.class)
-                        .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                        .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
-                        .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
+                        .cookies(cookies -> cookies.addAll(cookieMap))
                         .retrieve()
                         .onStatus(
                                 HttpStatus::is4xxClientError, clientResponse ->
@@ -131,7 +187,7 @@ public class CommentBoardWebClient {
                                         )
                         )
                         .bodyToMono(Long.class)
-                        .block();
+                        .block();*/
 
         return result;
     }
@@ -139,10 +195,10 @@ public class CommentBoardWebClient {
     public Long commentReplyInsert(Map<String, Object> commentData
                                     , HttpServletRequest request
                                     , HttpServletResponse response){
-        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+//        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
-        if(tokenDTO == null)
-            new AccessDeniedException("AccessDined");
+//        if(tokenDTO == null)
+//            new AccessDeniedException("AccessDined");
 
         String commentContent = commentData.get("commentContent").toString();
         long commentGroupNo = Long.parseLong(commentData.get("commentGroupNo").toString());
@@ -160,12 +216,22 @@ public class CommentBoardWebClient {
                                     .boardNo(boardNo)
                                     .build();
 
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
         Long result = client.post()
                 .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-reply").build())
                 .body(Mono.just(dto), CommentDTO.class)
-                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
-                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
+                .cookies(cookies -> cookies.addAll(cookieMap))
+                .exchangeToMono(resp -> {
+                    exchangeService.checkExchangeResponse(resp, response);
+                    return resp.bodyToMono(Long.class);
+                })
+                .block();
+
+        /*Long result = client.post()
+                .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-reply").build())
+                .body(Mono.just(dto), CommentDTO.class)
+                .cookies(cookies -> cookies.addAll(cookieMap))
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -180,24 +246,24 @@ public class CommentBoardWebClient {
                                 )
                 )
                 .bodyToMono(Long.class)
-                .block();
+                .block();*/
 
 
         return result;
     }
 
     public Long commentDelete(long commentNo, HttpServletRequest request, HttpServletResponse response){
-        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+//        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
 
-        if(tokenDTO == null)
-            new AccessDeniedException("AccessDenied");
+//        if(tokenDTO == null)
+//            new AccessDeniedException("AccessDenied");
 
-        Long result = client.delete()
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
+        /*Long result = client.delete()
                 .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-delete/{commentNo}")
                         .build(commentNo))
-                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
-                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
+                .cookies(cookies -> cookies.addAll(cookieMap))
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, clientResponse ->
@@ -212,6 +278,18 @@ public class CommentBoardWebClient {
                                 )
                 )
                 .bodyToMono(Long.class)
+                .block();*/
+
+
+        Long result = client.delete()
+                .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-delete/{commentNo}")
+                        .build(commentNo))
+                .cookies(cookies -> cookies.addAll(cookieMap))
+                .exchangeToMono(resp -> {
+                    exchangeService.checkExchangeResponse(resp, response);
+
+                    return resp.bodyToMono(Long.class);
+                })
                 .block();
 
         return result;

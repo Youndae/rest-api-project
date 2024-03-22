@@ -103,14 +103,14 @@ $(document).on('click', '#commentReplyInsert', function(){
 
 function hierarchicalBoardComment(boardNo, pageNum){
     $.getJSON('/comment/boardComment/' + boardNo + "/" + pageNum, function(arr){
-        commentEachParsing(arr.content);
+        commentEachParsing(arr.content, arr.userStatus);
         commentPagingParsing(arr);
     })
 }
 
 function imageBoardComment(imageNo, pageNum){
     $.getJSON('/comment/imageComment/' + imageNo + "/" + pageNum, function(arr){
-        commentEachParsing(arr.content);
+        commentEachParsing(arr.content, arr.userStatus);
         commentPagingParsing(arr);
     })
 }
@@ -177,14 +177,16 @@ function commentPagingParsing(res){
     comment_paging.append(cpStr);
 }
 
-function commentEachParsing(arr){
+function commentEachParsing(arr, userStatus){
     const comment_area = $(".comment-area");
 
     comment_area.empty();
 
     let commentStr = "";
 
-    const uid = document.getElementById('uid').getAttribute('value');
+    // const uid = document.getElementById('uid').getAttribute('value');
+
+    const uid = userStatus.uid;
 
     $(arr).each(function(i, res){
         commentStr += "<div class=\"comment-box\" value=\"" + res.commentNo + "\">" +
@@ -192,34 +194,35 @@ function commentEachParsing(arr){
             "<tr>" +
             "<td>";
 
-        let commentContent = "삭제된 댓글입니다.";
+
+        const commentContent = "삭제된 댓글입니다.";
         let writer = '';
 
-        if(res.commentContent != null){
-            commentContent = res.commentContent;
+        if(res.commentContent !== commentContent)
             writer = res.userId;
-        }
+
+
 
         let commentIndentClassName = '';
 
-        if(res.commentIndent == 1)
+        if(res.commentIndent === 1)
             commentIndentClassName = ' indent_size_1';
-        else if(res.commentIndent == 2)
+        else if(res.commentIndent === 2)
             commentIndentClassName = ' indent_size_2';
-        else if(res.commentIndent == 3)
+        else if(res.commentIndent === 3)
             commentIndentClassName = ' indent_size_3';
-        else if(res.commentIndent == 4)
+        else if(res.commentIndent === 4)
             commentIndentClassName = ' indent_size_4';
 
         commentStr += "<span class=\"comment_userId" + commentIndentClassName + "\">" + writer + "</span>" +
                         "<span class=\"comment_date" + commentIndentClassName + "\">" + formatDate(res.commentDate) + "</span>" +
-                        "<p class=\"comment_content" + commentIndentClassName + "\">" + commentContent + "</p>";
+                        "<p class=\"comment_content" + commentIndentClassName + "\">" + res.commentContent + "</p>";
 
-        if(uid != '' && res.commentIndent != 4 && res.commentContent != null)
+        if(uid != null && res.commentIndent !== 4 && res.commentContent !== commentContent)
             commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
                             "onclick=\"cReply(this)\" value=\"" + res.commentNo + "\">답글</button>";
 
-        if(res.userId == uid && res.commentContent != null)
+        if(res.userId === uid && res.commentContent !== commentContent)
             commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
                 "onclick=\"cDel(this)\" value=\"" + res.commentNo + "\">삭제</button>";
 

@@ -1,5 +1,6 @@
 package com.example.boardrest.service;
 
+import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
 import com.example.boardrest.domain.entity.Comment;
 import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.BoardCommentDTO;
@@ -72,7 +73,7 @@ public class CommentServiceImpl implements CommentService{
 
     // 댓글 List
     @Override
-    public Page<BoardCommentDTO> commentList(String boardNo, String imageNo, Criteria cri, Principal principal) {
+    public ResponsePageableListDTO<BoardCommentDTO> commentList(String boardNo, String imageNo, Criteria cri, Principal principal) {
         Pageable pageable = PageRequest.of(cri.getPageNum() - 1
                 , cri.getBoardAmount()
                 , Sort.by("commentGroupNo").descending()
@@ -80,6 +81,22 @@ public class CommentServiceImpl implements CommentService{
 
         Page<BoardCommentDTO> comments = commentRepository.findAll(cri, pageable, boardNo, imageNo);
 
-        return comments;
+        ResponsePageableListDTO<BoardCommentDTO> responseDTO = new ResponsePageableListDTO<>(comments, principal);
+
+//        return comments;
+
+        return responseDTO;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+

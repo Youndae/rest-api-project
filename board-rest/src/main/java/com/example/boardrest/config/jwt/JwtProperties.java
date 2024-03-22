@@ -7,7 +7,7 @@ public interface JwtProperties {
     String SECRET = "cocos";
     long ACCESS_TOKEN_EXPIRATION_TIME = 60000 * 60;
 
-    long ACCESS_COOKIE_MAX_AGE = 60 * 2;
+    long ACCESS_COOKIE_MAX_AGE = 60 * 59;
 
     String TOKEN_PREFIX = "Bearer";
     String ACCESS_HEADER_STRING = "Authorization";

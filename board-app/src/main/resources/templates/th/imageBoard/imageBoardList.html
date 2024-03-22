@@ -29,7 +29,7 @@
         </div>
         <div class="row">
             <!-- 이미지 파일 배치 -->
-            <th:block th:each="img : ${imageList.content}">
+            <th:block th:each="img : ${data.content}">
                 <div class="col-md-4">
                     <a th:href="@{/imageBoard/imageBoardDetail/{imageNo}(imageNo=${img.imageNo})}">
                         <img class="imageData" th:src="@{/imageBoard/display/{imageName}(imageName=${img.imageName})}" style="width: 300px; height: 300px"/>
@@ -41,45 +41,45 @@
         <div class="search">
             <form action="/imageBoard/imageBoardList" id="search_form" method="get">
                 <select name="searchType">
-                    <option th:value="t" th:selected="${imageList.pageDTO.cri.searchType == 't'}">제목</option>
-                    <option th:value="c" th:selected="${imageList.pageDTO.cri.searchType == 'c'}">내용</option>
-                    <option th:value="u" th:selected="${imageList.pageDTO.cri.searchType == 'u'}">작성자</option>
-                    <option th:value="tc" th:selected="${imageList.pageDTO.cri.searchType == 'tc'}">제목+내용</option>
+                    <option th:value="t" th:selected="${data.pageDTO.cri.searchType == 't'}">제목</option>
+                    <option th:value="c" th:selected="${data.pageDTO.cri.searchType == 'c'}">내용</option>
+                    <option th:value="u" th:selected="${data.pageDTO.cri.searchType == 'u'}">작성자</option>
+                    <option th:value="tc" th:selected="${data.pageDTO.cri.searchType == 'tc'}">제목+내용</option>
                 </select>
-                <input type="text" id="keywordInput" name="keyword" th:value="${imageList.pageDTO.cri.keyword}">
+                <input type="text" id="keywordInput" name="keyword" th:value="${data.pageDTO.cri.keyword}">
                 <button class="btn btn-outline-info btn-sm" id="searchBtn">검색</button>
             </form>
         </div>
         <div class="board-list-paging">
             <ul>
-                <th:block th:if="${imageList.pageDTO.prev}">
+                <th:block th:if="${data.pageDTO.prev}">
                     <li>
-                        <a th:href="${imageList.pageDTO.startPage - 1}" th:text="prev"></a>
+                        <a th:href="${data.pageDTO.startPage - 1}" th:text="prev"></a>
                     </li>
                 </th:block>
 
-                <th:block th:each="num : ${#numbers.sequence(imageList.pageDTO.startPage, imageList.pageDTO.endPage)}">
+                <th:block th:each="num : ${#numbers.sequence(data.pageDTO.startPage, data.pageDTO.endPage)}">
                     <li class="paginate_button">
-                        <a th:href="${num}" th:classappend="${num eq imageList.pageDTO.cri.pageNum} ? active : ''" th:text="${num}"></a>
+                        <a th:href="${num}" th:classappend="${num eq data.pageDTO.cri.pageNum} ? active : ''" th:text="${num}"></a>
                     </li>
                 </th:block>
 
-                <th:block th:if="${imageList.pageDTO.next}">
+                <th:block th:if="${data.pageDTO.next}">
                     <li>
-                        <a th:href="${imageList.pageDTO.endPage + 1}" th:text="next"></a>
+                        <a th:href="${data.pageDTO.endPage + 1}" th:text="next"></a>
                     </li>
                 </th:block>
             </ul>
         </div>
 
         <form th:action="@{/imageBoard/imageBoardList}" id="pageActionForm" method="get">
-            <input type="hidden" name="pageNum" th:value="${imageList.pageDTO.cri.pageNum}">
+            <input type="hidden" name="pageNum" th:value="${data.pageDTO.cri.pageNum}">
         </form>
 
         <form th:action="@{/imageBoard/imageBoardList}" id="pageSearchActionForm" method="get">
-            <input type="hidden" name="pageNum" th:value="${imageList.pageDTO.cri.pageNum}">
-            <input type="hidden" name="searchType" th:value="${imageList.pageDTO.cri.searchType}">
-            <input type="hidden" name="keyword" th:value="${imageList.pageDTO.cri.keyword}">
+            <input type="hidden" name="pageNum" th:value="${data.pageDTO.cri.pageNum}">
+            <input type="hidden" name="searchType" th:value="${data.pageDTO.cri.searchType}">
+            <input type="hidden" name="keyword" th:value="${data.pageDTO.cri.keyword}">
         </form>
     </div>
 </div>

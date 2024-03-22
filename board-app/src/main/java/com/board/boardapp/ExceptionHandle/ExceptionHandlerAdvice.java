@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +59,15 @@ public class ExceptionHandlerAdvice {
         return ResponseEntity.status(HttpStatus.valueOf(400))
                 .body(result);
     }
+
+    @ExceptionHandler(CustomTokenStealingException.class)
+    public String tokenStealingExceptionHandler(CustomTokenStealingException e) {
+
+        log.info("TokenStealingException : " + e.getMessage());
+
+        return "th/member/userError";
+    }
+
 
 
 }

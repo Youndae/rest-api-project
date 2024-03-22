@@ -14,5 +14,5 @@ public interface MemberService {
 
     Long memberLogin(Member member, HttpServletRequest request, HttpServletResponse response);
 
-    int logout(HttpServletRequest request, Principal principal);
+    int logout(HttpServletRequest request, HttpServletResponse response, Principal principal);
 }

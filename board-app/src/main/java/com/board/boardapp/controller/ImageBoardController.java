@@ -1,9 +1,7 @@
 package com.board.boardapp.controller;
 
 import com.board.boardapp.connection.webClient.ImageBoardWebClient;
-import com.board.boardapp.dto.Criteria;
-import com.board.boardapp.dto.ImageDataDTO;
-import com.board.boardapp.dto.JwtDTO;
+import com.board.boardapp.dto.*;
 import com.board.boardapp.service.TokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +28,9 @@ public class ImageBoardController {
     private final TokenService tokenService;
 
     @GetMapping("/imageBoardList")
-    public String imageBoardMain(Model model, Criteria cri) throws JsonProcessingException {
+    public String imageBoardMain(Model model, Criteria cri, HttpServletRequest request, HttpServletResponse response) {
 
-        model.addAttribute("imageList", imageBoardWebClient.getImageBoardList(cri));
+        model.addAttribute("data", imageBoardWebClient.getImageBoardList(cri, request, response));
 
         return "th/imageBoard/imageBoardList";
     }
@@ -43,19 +41,22 @@ public class ImageBoardController {
                                     , HttpServletRequest request
                                     , HttpServletResponse response) throws JsonProcessingException {
 
-        model.addAttribute("image", imageBoardWebClient.getImageDetail(imageNo, request, response));
+        model.addAttribute("data", imageBoardWebClient.getImageDetail(imageNo, request, response));
 
         return "th/imageBoard/imageBoardDetail";
     }
 
     @GetMapping("/imageBoardInsert")
-    public String imageBoardInsert(HttpServletRequest request, HttpServletResponse response){
+    public String imageBoardInsert(HttpServletRequest request, Model model){
 
-        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+        boolean checkToken = tokenService.checkExistsToken(request);
 
-        if(tokenDTO == null){
-            return "th/member/loginForm";
-        }
+        if(!checkToken)
+            return "redirect:/member/loginForm";
+
+
+        LoginDTO dto = new LoginDTO(new UserStatusDTO(true));
+        model.addAttribute("data", dto);
 
         return "th/imageBoard/imageBoardInsert";
     }
@@ -79,14 +80,12 @@ public class ImageBoardController {
                                     , HttpServletRequest request
                                     , HttpServletResponse response){
 
-        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
+        boolean checkToken = tokenService.checkExistsToken(request);
 
-        if(tokenDTO == null){
+        if(!checkToken)
             return "th/member/loginForm";
-        }
 
-
-        model.addAttribute("image", imageBoardWebClient.getModifyData(imageNo, request, response));
+        model.addAttribute("data", imageBoardWebClient.getModifyData(imageNo, request, response));
 
         return "th/imageBoard/imageBoardModify";
     }

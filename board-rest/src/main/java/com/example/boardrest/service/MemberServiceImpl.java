@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.security.Principal;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Map;
 
 @Service
@@ -104,7 +105,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public int logout(HttpServletRequest request, Principal principal) {
+    public int logout(HttpServletRequest request, HttpServletResponse response, Principal principal) {
 
         try{
             String inoValue = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING).getValue();
@@ -113,11 +114,28 @@ public class MemberServiceImpl implements MemberService{
 
             tokenProvider.deleteTokenData(inoValue, userId);
 
+            deleteCookie(request, response);
+
             return 1;
         }catch (Exception e){
             log.info("logout Exception : {}", e.getMessage());
             return 0;
         }
 
+    }
+
+    public void deleteCookie(HttpServletRequest request, HttpServletResponse response) {
+        String[] cookie_arr = {
+                JwtProperties.ACCESS_HEADER_STRING
+                , JwtProperties.REFRESH_HEADER_STRING
+                , JwtProperties.INO_HEADER_STRING
+        };
+
+        Arrays.stream(cookie_arr).forEach(name -> {
+            Cookie cookie = WebUtils.getCookie(request, name);
+            cookie.setMaxAge(0);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+        });
     }
 }

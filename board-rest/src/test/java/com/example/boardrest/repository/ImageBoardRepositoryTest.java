@@ -1,6 +1,7 @@
 package com.example.boardrest.repository;
 
 import com.example.boardrest.domain.dto.*;
+import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
 import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.ImageData;
 import com.example.boardrest.service.ImageBoardService;
@@ -11,11 +12,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +42,12 @@ class ImageBoardRepositoryTest {
 
         Criteria cri = new Criteria();
 
-        Page<ImageBoardDTO> dtolist = imageBoardService.getImageBoardList(cri);
+        Pageable pageable = PageRequest.of(cri.getPageNum() - 1
+                , cri.getImageAmount()
+                , Sort.by("imageNo").descending()
+        );
+
+        Page<ImageBoardDTO> dto = repository.findAll(cri, pageable);
     }
 
     @Test
@@ -51,7 +61,7 @@ class ImageBoardRepositoryTest {
     public void imageDataTest(){
         long imageNo = 10;
 
-        ImageDetailDTO imageDTO = repository.imageDetailDTO(imageNo);
+        ImageModifyInfoDTO imageDTO = repository.imageDetailDTO(imageNo);
 
         List<ImageDataDTO> imageDataList = imageDataRepository.getImageData(imageNo);
 

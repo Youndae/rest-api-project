@@ -3,6 +3,7 @@ package com.example.boardrest.controller;
 import com.example.boardrest.domain.dto.BoardCommentDTO;
 import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.CommentInsertDTO;
+import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
 import com.example.boardrest.service.CommentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("/comment-list")
-    public ResponseEntity<Page<BoardCommentDTO>> commentList(@RequestParam(value = "boardNo", required = false) String boardNo
+    public ResponseEntity<ResponsePageableListDTO<BoardCommentDTO>> commentList(@RequestParam(value = "boardNo", required = false) String boardNo
                                                             , @RequestParam(value = "imageNo", required = false) String imageNo
                                                             , @RequestParam(value = "pageNum") int pageNum
                                                             , Principal principal){

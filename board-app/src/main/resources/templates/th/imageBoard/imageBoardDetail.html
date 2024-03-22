@@ -16,37 +16,36 @@
 <div layout:fragment="content">
     <div class="container">
         <div class="form-row float-right mb-3">
-            <th:block th:if="${session.id} eq ${image.userId}">
+            <th:block th:if="${session.id} eq ${data.userStatus.uid}">
                 <button class="btn btn-outline-info btn-sm" id="modify">수정</button>
                 <button class="btn btn-outline-info btn-sm" id="deleteBoard">삭제</button>
             </th:block>
         </div>
         <div class="form-group">
             <label>제목</label>
-            <p th:text="${image.imageTitle}"></p>
+            <p th:text="${data.content.imageTitle}"></p>
         </div>
         <div class="form-group">
             <label>작성자</label>
-            <p th:text="${image.userId}"></p>
+            <p th:text="${data.content.userId}"></p>
         </div>
         <div class="form-group">
             <label>작성일</label>
-            <p th:text="${#dates.format(image.imageDate, 'yyyy-MM-dd')}"></p>
+            <p th:text="${#dates.format(data.content.imageDate, 'yyyy-MM-dd')}"></p>
         </div>
         <div class="form-group">
             <label>내용</label>
             <div class="mt-4">
-                <th:block th:each="imageData : ${image.imageData}">
+                <th:block th:each="imageData : ${data.content.imageData}">
                     <div class="mb-4">
                         <img class="imageData" th:src="@{/imageBoard/display/{imageName}(imageName=${imageData.imageName})}" style="width: 300px; height: 300px"/>
                     </div>
                 </th:block>
             </div>
-            <p th:text="${image.imageContent}"></p>
+            <p th:text="${data.content.imageContent}"></p>
         </div>
 
-        <input type="hidden" id="imageNo" th:value="${image.imageNo}">
-        <input type="hidden" id="uid" th:value="${session.id}"/>
+        <input type="hidden" id="imageNo" th:value="${data.content.imageNo}">
 
         <!-- comment -->
         <th:block th:replace="th/comment/comment::commentFragment"></th:block>

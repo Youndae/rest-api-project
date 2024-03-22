@@ -1,6 +1,8 @@
 package com.example.boardrest.controller;
 
 import com.example.boardrest.domain.dto.*;
+import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
+import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
 import com.example.boardrest.properties.FilePathProperties;
 import com.example.boardrest.service.ImageBoardService;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +32,10 @@ public class ImageBoardController {
     private final ImageBoardService imageBoardService;
 
     @GetMapping("/image-board-list")
-    public ResponseEntity<Page<ImageBoardDTO>> imageBoardList(@RequestParam(value = "pageNum") int pageNum
+    public ResponseEntity<ResponsePageableListDTO<ImageBoardDTO>> imageBoardList(@RequestParam(value = "pageNum") int pageNum
                                                             , @RequestParam(value = "keyword", required = false) String keyword
-                                                            , @RequestParam(value = "searchType", required = false) String searchType){
+                                                            , @RequestParam(value = "searchType", required = false) String searchType
+                                                            , Principal principal){
 
         Criteria cri = Criteria.builder()
                                 .pageNum(pageNum)
@@ -40,26 +43,26 @@ public class ImageBoardController {
                                 .searchType(searchType)
                                 .build();
 
-        return new ResponseEntity<>(imageBoardService.getImageBoardList(cri), HttpStatus.OK);
+        return new ResponseEntity<>(imageBoardService.getImageBoardList(cri, principal), HttpStatus.OK);
     }
 
     @GetMapping("/image-board-detail/{imageNo}")
-    public ResponseEntity<ImageBoardDetailDTO> imageBoardDetail(@PathVariable long imageNo){
+    public ResponseEntity<ResponseDetailAndModifyDTO<ImageBoardDetailDTO>> imageBoardDetail(@PathVariable long imageNo, Principal principal){
 
-        return new ResponseEntity<>(imageBoardService.getImageBoardDetail(imageNo), HttpStatus.OK);
+        return new ResponseEntity<>(imageBoardService.getImageBoardDetail(imageNo, principal), HttpStatus.OK);
     }
 
 
     @GetMapping("/modify-data/{imageNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public ResponseEntity<ImageDetailDTO> imageBoardModifyInfo(@PathVariable long imageNo, Principal principal) {
+    public ResponseEntity<ResponseDetailAndModifyDTO<ImageModifyInfoDTO>> imageBoardModifyInfo(@PathVariable long imageNo, Principal principal) {
 
         return new ResponseEntity<>(imageBoardService.getModifyData(imageNo, principal), HttpStatus.OK);
     }
 
     @GetMapping("/modify-image-attach/{imageNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public ResponseEntity<List<ImageDataDTO>> modifyImageAttach(@PathVariable long imageNo, Principal principal){
+    public ResponseEntity<List<ImageDataDTO>> modifyImageAttach(@PathVariable long imageNo){
 
         return new ResponseEntity<>(imageBoardService.getModifyImageAttach(imageNo), HttpStatus.OK);
     }

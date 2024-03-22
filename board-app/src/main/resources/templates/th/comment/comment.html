@@ -21,10 +21,10 @@
     <form id="commentFrm">
         <div>
             <input type="text" id="commentContent" name="commentContent" placeholder="댓글을 작성해주세요">
-            <th:block th:if="${session.id} eq null">
+            <th:block th:if="${data.userStatus.uid} eq null">
                 <button class="btn btn-outline-info btn-sm" type="button" disabled>작성</button>
             </th:block>
-            <th:block th:if="${session.id} ne null">
+            <th:block th:if="${data.userStatus.uid} ne null">
                 <button class="btn btn-outline-info btn-sm" id="commentInsert" type="button">작성</button>
             </th:block>
         </div>

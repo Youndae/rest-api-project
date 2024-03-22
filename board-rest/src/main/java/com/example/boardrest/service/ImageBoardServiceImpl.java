@@ -1,5 +1,7 @@
 package com.example.boardrest.service;
 
+import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
+import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
 import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.ImageData;
 import com.example.boardrest.domain.dto.*;
@@ -39,7 +41,7 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     private final ImageDataRepository imageDataRepository;
 
     @Override
-    public ImageBoardDetailDTO getImageBoardDetail(long imageNo) {
+    public ResponseDetailAndModifyDTO<ImageBoardDetailDTO> getImageBoardDetail(long imageNo, Principal principal) {
         ImageBoard imageBoard = imageBoardRepository
                                     .findById(imageNo)
                                     .orElseThrow(() -> new NullPointerException("nullPointerException"));
@@ -55,17 +57,22 @@ public class ImageBoardServiceImpl implements ImageBoardService{
                                                 .imageData(dataDTO)
                                                 .build();
 
-        return dto;
+        ResponseDetailAndModifyDTO<ImageBoardDetailDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principal);
+
+        return responseDTO;
     }
 
     @Override
-    public Page<ImageBoardDTO> getImageBoardList(Criteria cri) {
+    public ResponsePageableListDTO<ImageBoardDTO> getImageBoardList(Criteria cri, Principal principal) {
         Pageable pageable = PageRequest.of(cri.getPageNum() - 1
             , cri.getImageAmount()
                 , Sort.by("imageNo").descending()
         );
 
-        return imageBoardRepository.findAll(cri, pageable);
+        Page<ImageBoardDTO> dto = imageBoardRepository.findAll(cri, pageable);
+        ResponsePageableListDTO<ImageBoardDTO> responseDTO = new ResponsePageableListDTO<>(dto, principal);
+
+        return responseDTO;
     }
 
     // 이미지 게시판 insert
@@ -83,8 +90,6 @@ public class ImageBoardServiceImpl implements ImageBoardService{
                                         .imageContent(request.getParameter("imageContent"))
                                         .imageDate(Date.valueOf(LocalDate.now()))
                                         .build();
-
-
 
         imageInsert(images,  1, imageBoard);
 
@@ -196,13 +201,15 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     }
 
     @Override
-    public ImageDetailDTO getModifyData(long imageNo, Principal principal) {
-        ImageDetailDTO dto = imageBoardRepository.imageDetailDTO(imageNo);
+    public ResponseDetailAndModifyDTO<ImageModifyInfoDTO> getModifyData(long imageNo, Principal principal) {
+        ImageModifyInfoDTO dto = imageBoardRepository.imageDetailDTO(imageNo);
 
         if(principal == null || !dto.getUserId().equals(principal.getName()))
             new AccessDeniedException("AccessDenied");
 
-        return dto;
+        ResponseDetailAndModifyDTO<ImageModifyInfoDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principal);
+
+        return responseDTO;
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -54,6 +56,22 @@ public class MemberController {
 
         return new ResponseEntity<>(memberService.memberLogin(member, request, response), HttpStatus.OK);
     }
+
+    @PostMapping("/login2")
+    public ResponseEntity<String> loginProc2(@RequestBody Member member, HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        System.out.println("member : " + member);
+
+        /*Cookie cookie1 = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
+        Cookie cookie2 = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
+
+        System.out.println("cookie1 : " + cookie1.getName() + ", " + cookie1.getValue());
+        System.out.println("cookie2 : " + cookie2.getName() + ", " + cookie2.getValue());*/
+
+        return new ResponseEntity<>(member.getUserId(), HttpStatus.OK);
+    }
+
+
 
     /*@PostMapping("/login")
     public ResponseEntity loginProc2(@RequestBody Member member
@@ -106,8 +124,19 @@ public class MemberController {
 
     @PostMapping("/logout")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_MANAGER', 'ROLE_ADMIN')")
-    public int logout(HttpServletRequest request, Principal principal){
+    public int logout(HttpServletRequest request, HttpServletResponse response, Principal principal){
 
-        return memberService.logout(request, principal);
+        return memberService.logout(request, response, principal);
+    }
+
+    @PostMapping("/logout2")
+    public int logoutProc2(HttpServletRequest request, HttpServletResponse response) {
+
+        Arrays.stream(request.getCookies()).forEach(i -> {
+            System.out.println(i.getName() + " : " + i.getValue());
+        });
+
+
+        return 1;
     }
 }

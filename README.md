@@ -684,3 +684,31 @@ board-app = client Server
 >>>       * TokenService에서 더이상 쿠키 생성을 할 필요가 없기 때문에 해당 메소드 제거.
 >>>       * 재발급 요청 exchangeToMono()로 수정. 바로 토큰값을 사용하기 위해 JwtDTO로 반환받고 해당 dto를 리턴하는 것은 유지.
 >>>     * 테스트 완료.
+>
+> 
+>> 24/03/22
+>>> * 수정
+>>>   * 사용자 로그인 여부 관련 수정.
+>>>     * JWT 관리와 쿠키 생성 역할을 API 서버로 넘기게 되면서 발생한 문제인 로그인 여부와 사용자 아이디 체크를 수정.
+>>>     * 모든 요청에서 UserStatusDTO라는 DTO에 loggedIn(로그인 여부, boolean), uid(사용자 아이디, String) 이렇게 두 필드에 담아 반환하도록 수정. 
+>>>     * API-Server
+>>>       * 반환하는 DTO의 틀을 정형화 하고자 ResponseDetailAndModifyDTO, ResponsePageableListDTO 이렇게 두개의 DTO를 새로 생성.
+>>>       * 이름대로 PageableListDTO는 리스트 데이터를 담아 전달하는데 기존 Page\<DTO\> 구조로 바로 전달하던 것을 제네릭 타입의 content와 팔요하다고 생각한 pageable 필드들, UserStatusDTO 구조로 설계.
+>>>       * DetailAndModifyDTO 역시 제네릭 타입의 content에 게시글 상세 데이터나 수정 데이터 DTO를 담을 수 있도록 했고 UserStatusDTO를 같이 담아 반환하도록 설계.
+>>>       * 제네릭 타입의 content로 처리하도록 하게 되면서 이 틀에 맞는 구조를 갖는 데이터는 같은 구조로 반환하게 됨.
+>>>       * 여러 클라이언트가 확장 되더라도 일정한 틀의 구조로 반환받을 수 있고, 수정이 발생하더라도 좀 더 수월하게 수정할 수 있을 것이라고 기대됨.
+>>>       * 모든 GET 요청에 대해 UserStatusDTO를 반환해 클라이언트에서 사용자의 로그인 여부와 아이디를 알 수 있도록 수정.
+>>>       * 중첩되어 사용되던 DTO를 기능별로 좀 더 분리하고자 추가 생성 및 분리.
+>>>     * Client-Server
+>>>       * 토큰 관리를 API 서버로 넘기게 되면서 클라이언트 서버에서는 토큰에 대한 처리를 아예 하지 않도록 수정.
+>>>       * 게시글 작성 페이지 같은 API 서버에 요청할 데이터가 없는 요청에 대해서만 RefreshToken과 ino 쿠키의 존재 여부로 페이지 접근만 제어하도록 수정.
+>>>       * 위와 같은 경우를 제외하고는 클라이언트에서 토큰 여부를 전혀 파악하지 않고 API 서버에서 확인 후 재발급 처리 및 사용자 요청 처리를 하거나 탈취 판단을 하도록 할 계획이기 때문에 모든 WebClient 요청은 exchangeToMono로 처리.
+>>>       * WebClient 응답에 대한 처리는 아직까지는 모두 중복되기 때문에 ExchangeService를 새로 만들어 결과에 대한 쿠키 처리 및 Exception 처리를 하도록 구현.
+>>>         * 각 기능별 응답에 대한 처리가 달라지는 경우에는 요청마다 응답 코드에 대한 처리를 작성해야 하겠지만 현재는 그렇게 할 필요가 없기 때문에 ExchangeService의 메소드를 통해 처리하도록 함.
+>>>         * 처리는 HttpStatus.OK인 경우 쿠키가 존재한다면 쿠키 저장.
+>>>         * API 서버에서 탈취로 판단하는 경우 Redis에서 해당 토큰 값 삭제를 처리할 계획이므로 만료기간 0의 쿠키 삭제 응답이 돌아오며 800번의 오류 코드를 반환할 예정. 이 경우 클라이언트 서버에서 800번으로 응답을 받는다면 쿠키를 저장하도록 처리해 갖고 있는 쿠키 삭제 처리 및 로그아웃 처리가 된다.
+>>>         * 토큰 탈취에 대한 Exception으로 CustomTokenStealingException을 생성했고 alert 처리 후 로그인 페이지로 이동하도록 처리.
+>>>         * 그 외 403은 AccessDeniedException, 4xx는 RuntimeException, 5xx는 NullPointerException으로 처리. ExceptionHandler를 통해 오류 페이지로 Redirect 처리가 된다.
+>>>         * 200, 800, 403을 제외한 나머지 오류에 대해서는 임시 처리이며 CustomException으로 수정할 예정.
+>>>       * WebClient 요청시 쿠키 상태와 상관없이 모든 쿠키를 담아서 보낼 수 있도록 cookies 옵션을 사용. MultiValueMap\<String, String\> 타입의 cookieMap을 CookieService 메소드를 통해 생성하도록 처리.
+>>>         * MultiValueMap을 생성할 때 토큰 쿠키만 담을 수 있도록 Authorization으로 시작하는 쿠키만 담도록 처리.

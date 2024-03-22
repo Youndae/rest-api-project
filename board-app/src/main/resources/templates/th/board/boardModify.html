@@ -16,14 +16,14 @@
         <form th:action="@{/board/boardModify}" id="insertBoardFrm" th:method="patch">
             <div>
                 <label for="boardTitle">제목</label>
-                <input type="text" id="boardTitle" name="boardTitle" th:value="${modify.boardTitle}">
+                <input type="text" id="boardTitle" name="boardTitle" th:value="${data.content.boardTitle}">
             </div>
             <div class="mb-4">
                 <label for="boardContent">내용</label>
-                <textarea name="boardContent" id="boardContent" th:text="${modify.boardContent}"></textarea>
+                <textarea name="boardContent" id="boardContent" th:text="${data.content.boardContent}"></textarea>
             </div>
             <button class="btn btn-outline-info btn-sm" id="modifyProc" name="modifyProc" type="button">등록</button>
-            <input type="hidden" name="boardNo" th:value="${modify.boardNo}">
+            <input type="hidden" name="boardNo" th:value="${data.content.boardNo}">
         </form>
     </div>
 </div>

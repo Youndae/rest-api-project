@@ -33,7 +33,7 @@ public class CommentController {
         Criteria cri = new Criteria();
         cri.setPageNum(pageNum);
 
-        CommentListDTO dto = commentBoardWebClient.getBoardComment(boardNo, cri);
+        CommentListDTO dto = commentBoardWebClient.getBoardComment(boardNo, cri, request, response);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
@@ -48,7 +48,7 @@ public class CommentController {
         Criteria cri = new Criteria();
         cri.setPageNum(pageNum);
 
-        CommentListDTO dto = commentBoardWebClient.getImageComment(imageNo, cri);
+        CommentListDTO dto = commentBoardWebClient.getImageComment(imageNo, cri, request, response);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }

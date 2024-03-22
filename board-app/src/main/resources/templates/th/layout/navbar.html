@@ -27,13 +27,12 @@
                 </ul>
                 <div class="form-inline my-2 my-md-0 login">
                     <ul>
-                        <th:block th:if="${session.id} eq null">
+                        <th:block th:if="${data.userStatus.loggedIn} eq false">
                             <button class="user_status_btn" onclick="location.href='/member/loginForm'">로그인</button>
                         </th:block>
-                        <th:block th:if="${session.id} ne null">
+                        <th:block th:if="${data.userStatus.loggedIn} eq true">
                             <form action="/member/logout" method="post" class="logoutForm" id="logoutBtn">
                                 <button class="user_status_btn">로그아웃</button>
-                                <p th:value="${session.id}"></p>
                             </form>
                         </th:block>
                     </ul>
