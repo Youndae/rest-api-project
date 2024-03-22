@@ -712,3 +712,8 @@ board-app = client Server
 >>>         * 200, 800, 403을 제외한 나머지 오류에 대해서는 임시 처리이며 CustomException으로 수정할 예정.
 >>>       * WebClient 요청시 쿠키 상태와 상관없이 모든 쿠키를 담아서 보낼 수 있도록 cookies 옵션을 사용. MultiValueMap\<String, String\> 타입의 cookieMap을 CookieService 메소드를 통해 생성하도록 처리.
 >>>         * MultiValueMap을 생성할 때 토큰 쿠키만 담을 수 있도록 Authorization으로 시작하는 쿠키만 담도록 처리.
+>>>       * navbar에서 로그인 상태에 따른 로그인, 로그아웃 버튼 출력 여부를 결정하기 위해 loggedIn을 사용해 처리하고 있으나, 로그인, 회원가입, 게시글 작성 페이지의 경우 api 서버에 요청하지 않고 접근하게 되어있는 페이지이기 때문에 LoginDTO 라는 DTO를 생성. 그 안에 UserStatusDTO를 필드로 담아 처리.
+>>>         * navbar는 모든 페이지에서 layout으로 들어가있기 때문에 특정 페이지만 차별을 두기에는 애매하다고 판단. 방법을 좀 찾아보려고 했으나 다른 페이지에서 data.userStatus.loggedIn으로 접근해야 했기 때문에 불가피하게 일단은 DTO를 새로 하나 생성한 뒤 필드로 갖도록 처리.
+>>>         * 이 문제에 대해서는 다른 요청 응답에 대한 매핑 처리 시 UserStatus를 분리하는게 좋을지 고민과 상황 파악이 필요.
+>>>       * comment.js 수정.
+>>>         * 기존에는 삭제된 댓글에 대해 null로 반환되어 null인 경우~~~~ 이런형태로 처리하고 있었으나 QueryDSL을 적용하면서 '삭제된 댓글입니다.' 라는 content를 가진 상태로 조회되기 때문에 해당 부분을 수정.
