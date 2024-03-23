@@ -9,6 +9,8 @@ public interface JwtProperties {
 
     long ACCESS_COOKIE_MAX_AGE = 60 * 59;
 
+    Duration ACCESS_REDIS_EXPIRES = Duration.ofHours(2L);
+
     String TOKEN_PREFIX = "Bearer";
     String ACCESS_HEADER_STRING = "Authorization";
 
@@ -19,6 +21,8 @@ public interface JwtProperties {
     long REFRESH_TOKEN_EXPIRATION_TIME = 60000 * 60 * 24 * 14;
 
     long REFRESH_COOKIE_MAX_AGE = 60 * 60 * 24 * 14;
+
+    Duration REFRESH_REDIS_EXPIRES = Duration.ofDays(14L);
 
     String ACCESS_TOKEN_PREFIX = "at";
 

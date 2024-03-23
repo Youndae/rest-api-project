@@ -1,5 +1,6 @@
 package com.example.boardrest.controller;
 
+import com.example.boardrest.customException.CustomTokenStealingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,12 +14,22 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.nio.file.AccessDeniedException;
 
 @RestControllerAdvice
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(CustomTokenStealingException.class)
+    public ResponseEntity tokenStealingExceptionHandler(Exception e){
+        exceptionLog(e);
+
+        //response 를 통한 모든 쿠키 삭제.
+
+        return ResponseEntity.status(HttpStatus.valueOf(800)).build();
+    }
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity nullPointerExceptionHandler(Exception e){

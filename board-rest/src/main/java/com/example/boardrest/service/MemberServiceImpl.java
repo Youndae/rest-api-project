@@ -97,9 +97,18 @@ public class MemberServiceImpl implements MemberService{
         System.out.println("uid : " + uid);
 
         if(uid != null) {
-            String result = tokenProvider.loginProcIssuedAllToken(uid, request, response);
+            Cookie inoCookie = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
+
+            if(inoCookie == null)
+                tokenProvider.issuedAllToken(uid, response);
+            else
+                tokenProvider.issuedToken(uid, inoCookie.getValue(), response);
+
+            return 1L;
+
+            /*String result = tokenProvider.loginProcIssuedAllToken(uid, request, response);
             if(result.equals("success"))
-                return 1L;
+                return 1L;*/
         }
         return null;
     }
@@ -109,10 +118,10 @@ public class MemberServiceImpl implements MemberService{
 
         try{
             String inoValue = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING).getValue();
-            Map<String, String> verifyRefreshToken = tokenProvider.verifyRefreshToken(request);
-            String userId = verifyRefreshToken.get("userId");
+            Cookie refreshTokenCookie = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
+            String claimRefreshToken = tokenProvider.verifyRefreshToken(refreshTokenCookie, inoValue);
 
-            tokenProvider.deleteTokenData(inoValue, userId);
+            tokenProvider.deleteTokenData(inoValue, claimRefreshToken);
 
             deleteCookie(request, response);
 

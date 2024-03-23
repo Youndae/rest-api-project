@@ -3,23 +3,16 @@ package com.example.boardrest.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.boardrest.config.jwt.JwtProperties;
-import com.example.boardrest.domain.dto.JwtDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.Duration;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -27,6 +20,248 @@ import java.util.UUID;
 public class JwtTokenProvider {
 
     private final StringRedisTemplate redisTemplate;
+
+
+    public String verifyAccessToken(Cookie accessToken, String inoValue) {
+        String accessTokenValue = accessToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
+        String accessClaimByUserId = getClaimUserIdByToken(accessTokenValue);
+
+        if (accessClaimByUserId == null)
+            return null;
+
+        String accessTokenKey = "at" + inoValue + accessClaimByUserId;
+        String redisValue = getTokenValueData(accessTokenKey);
+
+        if(accessTokenValue.equals(redisValue))
+            return accessClaimByUserId;
+        else {
+            deleteTokenData(accessClaimByUserId, inoValue);
+            return "st";
+        }
+        /*if(checkAccessToken(accessTokenKey))
+            return accessClaimByUserId;
+        else
+            return null;*/
+    }
+
+    public String verifyRefreshToken(Cookie refreshToken, String inoValue) {
+         String refreshTokenValue = refreshToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
+         String refreshClaimByUserId = getClaimUserIdByToken(refreshTokenValue);
+
+         if(refreshClaimByUserId == null)
+             return null;
+
+         String refreshTokenKey = "rt" + inoValue + refreshClaimByUserId;
+         String redisValue = getTokenValueData(refreshTokenKey);
+
+         if(refreshTokenValue.equals(redisValue))
+             return refreshClaimByUserId;
+         else {
+             deleteTokenData(refreshClaimByUserId, inoValue);
+             return "st";
+         }
+    }
+
+    public String getTokenValueData(String tokenKey) {
+        long keyExpire = redisTemplate.getExpire(tokenKey);
+
+        //AccessToken이 존재하는데 Redis에 -2로 삭제된 데이터일 수 없고
+        //AccessToken Cookie는 Redis 데이터보다 1분 적은 만료 시간을 갖기 때문에 요청이 도달하는 시간을 감안하더라도 반환값이 59보다 작을 수 없다.
+        //이 둘중 하나라도 만족한다면 정상적인 토큰이 아니므로 탈취로 판단할 수 있다.
+        if(keyExpire == -2 || keyExpire < 59)
+            return null;
+
+
+        return redisTemplate.opsForValue().get(tokenKey);
+    }
+
+    //token에서 Claim으로 설정된 userId를 꺼내 반환.
+    public String getClaimUserIdByToken(String tokenValue) {
+
+        return JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
+                .build()
+                .verify(tokenValue)
+                .getClaim("userId")
+                .asString();
+    }
+
+    //ino를 제외한 accessToken, refreshToken 생성
+    public void issuedToken(String userId, String inoValue, HttpServletResponse response) {
+        String accessToken = issuedAccessToken(userId, inoValue);
+        String refreshToken = issuedRefreshToken(userId, inoValue);
+
+        //쿠키 생성 메소드 호출 (@Param accessToken, refreshToken, inoValue, response)
+        setTokenToCookie(accessToken, refreshToken, response);
+    }
+
+    //ino까지 모두 생성
+    public void issuedAllToken(String userId, HttpServletResponse response) {
+        String inoValue = issuedIno();
+        String accessToken = issuedAccessToken(userId, inoValue);
+        String refreshToken = issuedRefreshToken(userId, inoValue);
+
+        //쿠키 생성 메소드 호출 (@Param accessToken, refreshToken, inoValue, response)
+        setTokenToCookie(accessToken, refreshToken, response);
+        setInoToCookie(inoValue, response);
+    }
+
+    public String issuedAccessToken(String userId, String inoValue) {
+        String accessToken = JWT.create()
+                .withSubject("cocoToken")
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.ACCESS_TOKEN_EXPIRATION_TIME))
+                .withClaim("userId", userId)
+                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+
+        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
+        stringValueOperations.set(JwtProperties.ACCESS_TOKEN_PREFIX + inoValue + userId, accessToken, JwtProperties.ACCESS_REDIS_EXPIRES);
+
+        return JwtProperties.TOKEN_PREFIX + accessToken;
+    }
+
+    public String issuedRefreshToken(String userId, String inoValue) {
+        String refreshToken = JWT.create()
+                .withSubject("cocoRefresh")
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.REFRESH_TOKEN_EXPIRATION_TIME))
+                .withClaim("userId", userId)
+                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+
+        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
+        stringValueOperations.set(JwtProperties.REFRESH_TOKEN_PREFIX + inoValue + userId, refreshToken, JwtProperties.REFRESH_REDIS_EXPIRES);
+
+        return JwtProperties.TOKEN_PREFIX + refreshToken;
+    }
+
+    public String issuedIno(){
+
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public void setTokenToCookie(String atValue, String rtValue, HttpServletResponse response) {
+
+        response.addHeader("Set-Cookie"
+                , createCookie(
+                        JwtProperties.ACCESS_HEADER_STRING
+                        , JwtProperties.TOKEN_PREFIX + atValue
+                        , JwtProperties.ACCESS_COOKIE_MAX_AGE
+                ));
+
+        response.addHeader("Set-Cookie"
+                , createCookie(
+                        JwtProperties.REFRESH_HEADER_STRING
+                        , JwtProperties.TOKEN_PREFIX + rtValue
+                        , JwtProperties.REFRESH_COOKIE_MAX_AGE
+                ));
+
+//        return "success";
+    }
+
+    public void setInoToCookie(String ino, HttpServletResponse response) {
+        response.addHeader("Set-Cookie"
+                , createCookie(
+                        JwtProperties.INO_HEADER_STRING
+                        , ino
+                        , JwtProperties.INO_COOKIE_MAX_AGE
+                ));
+    }
+
+    public String createCookie(String name, String value, long expires){
+        return ResponseCookie
+                .from(name, value)
+                .path("/")
+                .maxAge(expires)
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("Strict")
+                .build()
+                .toString();
+    }
+
+    public void deleteToken(String userId, String inoValue, HttpServletResponse response) {
+        deleteTokenData(userId, inoValue);
+        deleteTokenCookie(response);
+    }
+
+    public void deleteTokenData(String userId, String inoValue) {
+        String accessTokenKey = JwtProperties.ACCESS_TOKEN_PREFIX + inoValue + userId;
+        String refreshTokenKey = JwtProperties.REFRESH_TOKEN_PREFIX + inoValue + userId;
+
+        redisTemplate.delete(accessTokenKey);
+        redisTemplate.delete(refreshTokenKey);
+    }
+
+    public void deleteTokenCookie(HttpServletResponse response) {
+        String[] cookie_arr = {
+                JwtProperties.ACCESS_HEADER_STRING
+                , JwtProperties.REFRESH_HEADER_STRING
+                , JwtProperties.INO_HEADER_STRING
+        };
+
+        Arrays.stream(cookie_arr).forEach(name -> {
+            Cookie cookie = new Cookie(name, null);
+            cookie.setMaxAge(0);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+
+
+    public boolean checkAccessToken(String accessTokenKey, String accessTokenValue){
+        long keyExpire = redisTemplate.getExpire(accessTokenKey);
+
+        log.info("AccessToken keyExpire : {}", keyExpire);
+
+        // 클라이언트는 AccessToken의 만료시간이 1분 적기 때문에
+        // AccessToken이 존재하는데 keyExpire가 -2로 삭제된 데이터이거나 60보다 작아 1분 미만으로 만료기간이 남을 수 없기 때문에
+        // 탈취된 토큰으로 판단할 수 있다.
+        if(keyExpire == -2 || keyExpire < 60) {
+            log.info("AccessToekn Expire return false");
+            return false;
+        }else {
+            log.info("AccessToken Expire return true");
+            String redisAccessTokenValue = redisTemplate.opsForValue().get(accessTokenKey);
+
+            if(redisAccessTokenValue == null || !redisAccessTokenValue.equals(accessTokenValue))
+
+
+            return true;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //old method
 
     //verify AccessToken
     public String verifyAccessToken(Cookie accessToken, Cookie ino){
@@ -62,7 +297,7 @@ public class JwtTokenProvider {
             return null;
 
 
-        /*
+        *//*
             토큰 상태가 정상이고 ino가 존재한다면
             1. verify를 통해 claim인 userId를 꺼내고
             2. "rt" + tno + userId의 value값과 refreshTokenVal을 비교한다.
@@ -73,7 +308,7 @@ public class JwtTokenProvider {
                 3-2. at가 존재하지 않거나 존재하면서 expire 리턴값이 60보다 작은 경우에는 map 데이터를 리턴
             4. 일치하지 않는다면 해당 키값의 토큰을 모두 삭제
 
-         */
+         *//*
 
         String refreshTokenVal = refreshToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
         String inoVal = ino.getValue();
@@ -98,32 +333,7 @@ public class JwtTokenProvider {
         return null;
     }
 
-    //token에서 Claim으로 설정된 userId를 꺼내 반환.
-    public String getClaimUserIdByToken(String tokenValue) {
 
-        return JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
-                    .build()
-                    .verify(tokenValue)
-                    .getClaim("userId")
-                    .asString();
-    }
-
-    public boolean checkAccessToken(String atKey){
-        long keyExpire = redisTemplate.getExpire(atKey);
-
-        log.info("AccessToken keyExpire : {}", keyExpire);
-
-        // 클라이언트는 AccessToken의 만료시간이 1분 적기 때문에
-        // keyExpire가 -2로 삭제된 데이터이거나 60보다 작아 1분 미만으로 만료기간이 남았다면
-        // 탈취된 토큰 또는 만료된 토큰으로 판단할 수 있다.
-        if(keyExpire == -2 || keyExpire < 60) {
-            log.info("AccessToekn Expire return false");
-            return false;
-        }else {
-            log.info("AccessToken Expire return true");
-            return true;
-        }
-    }
 
     public boolean checkRefreshToken(String rtKey, String tokenValue){
         ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
@@ -138,13 +348,13 @@ public class JwtTokenProvider {
 
     //reissuance AccessToken & RefreshToken
     public JwtDTO reIssuanceAllToken(Map<String, String> reIssuedData, HttpServletResponse response){
-        /**
+        *//**
          * @Param
          * reIssuedData = {
          *                  userId : value,
          *                  ino : value
          *               }
-         */
+         *//*
 
         log.info("reIssuanceAllToken");
 
@@ -166,7 +376,7 @@ public class JwtTokenProvider {
         Cookie inoCookie = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
         String ino = null;
 
-        /*
+        *//*
             로그인 요청이 발생.
             if(ino == null)
                 최초 로그인 디바이스로 tno 생성과 각 토큰을 생성.
@@ -176,7 +386,7 @@ public class JwtTokenProvider {
                 else
                     해당 토큰이 존재하기 때문에 토큰 데이터 삭제 tno를 재생성하고 토큰 생성 및 로그인 처리
 
-         */
+         *//*
 
         if(inoCookie == null)
             ino = issuedIno();
@@ -197,43 +407,7 @@ public class JwtTokenProvider {
         return setTokenToCookie(atValue, rtValue, ino, response);
     }
 
-    public String setTokenToCookie(String atValue, String rtValue, String ino, HttpServletResponse response) {
 
-        response.addHeader("Set-Cookie"
-                , createCookie(
-                        JwtProperties.ACCESS_HEADER_STRING
-                        , JwtProperties.TOKEN_PREFIX + atValue
-                        , JwtProperties.ACCESS_COOKIE_MAX_AGE
-                ));
-
-        response.addHeader("Set-Cookie"
-                , createCookie(
-                        JwtProperties.REFRESH_HEADER_STRING
-                        , JwtProperties.TOKEN_PREFIX + rtValue
-                        , JwtProperties.REFRESH_COOKIE_MAX_AGE
-                ));
-
-        response.addHeader("Set-Cookie"
-                , createCookie(
-                        JwtProperties.INO_HEADER_STRING
-                        , ino
-                        , JwtProperties.INO_COOKIE_MAX_AGE
-                ));
-
-        return "success";
-    }
-
-    public String createCookie(String name, String value, long expires){
-        return ResponseCookie
-                .from(name, value)
-                .path("/")
-                .maxAge(expires)
-                .secure(true)
-                .httpOnly(true)
-                .sameSite("Strict")
-                .build()
-                .toString();
-    }
 
 
 
@@ -273,10 +447,7 @@ public class JwtTokenProvider {
             return false;
     }
 
-    public String issuedIno(){
 
-        return UUID.randomUUID().toString().replace("-", "");
-    }
 
     //issued AccessToken
     public String issuedAccessToken(String userId, String ino){
@@ -304,6 +475,6 @@ public class JwtTokenProvider {
         stringStringValueOperations.set(JwtProperties.REFRESH_TOKEN_PREFIX + ino + userId, refreshToken, Duration.ofDays(14L));
 
         return refreshToken;
-    }
+    }*/
 
 }

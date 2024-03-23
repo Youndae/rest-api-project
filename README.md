@@ -717,3 +717,11 @@ board-app = client Server
 >>>         * 이 문제에 대해서는 다른 요청 응답에 대한 매핑 처리 시 UserStatus를 분리하는게 좋을지 고민과 상황 파악이 필요.
 >>>       * comment.js 수정.
 >>>         * 기존에는 삭제된 댓글에 대해 null로 반환되어 null인 경우~~~~ 이런형태로 처리하고 있었으나 QueryDSL을 적용하면서 '삭제된 댓글입니다.' 라는 content를 가진 상태로 조회되기 때문에 해당 부분을 수정.
+>
+> 
+>> 24/03/23
+>>> * first commit
+>>>   * 수정
+>>>     * api-server
+>>>       * AuthorizationFilter, TokenProvider 전체적으로 수정.
+>>>       * 아직 테스트 이전. 데스크탑에 pull 받아 테스트 한 뒤 수정 내역 작성. 

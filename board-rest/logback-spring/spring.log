@@ -27660,3 +27660,1247 @@ java.net.ConnectException: Connection refused
 2024-03-23 00:05:07.089  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 31. Connection.new Connection returned 
 2024-03-23 00:05:07.089  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 31. Connection.isReadOnly() returned false
 2024-03-23 00:05:07.089  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 31. Connection.getAutoCommit() returned true
+2024-03-23 00:05:54.579  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 22. Connection closed
+2024-03-23 00:05:54.582  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 22. Connection.close() returned 
+2024-03-23 00:05:54.608  INFO 7788 --- [HikariPool-1 connection adder] j.connection                             : 32. Connection opened
+2024-03-23 00:05:54.608  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 32. Connection.new Connection returned 
+2024-03-23 00:05:54.608  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 32. Connection.isReadOnly() returned false
+2024-03-23 00:05:54.609  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 32. Connection.getAutoCommit() returned true
+2024-03-23 00:05:58.016  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 23. Connection closed
+2024-03-23 00:05:58.017  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 23. Connection.close() returned 
+2024-03-23 00:05:58.037  INFO 7788 --- [HikariPool-1 connection adder] j.connection                             : 33. Connection opened
+2024-03-23 00:05:58.037  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 33. Connection.new Connection returned 
+2024-03-23 00:05:58.038  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 33. Connection.isReadOnly() returned false
+2024-03-23 00:05:58.038  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 33. Connection.getAutoCommit() returned true
+2024-03-23 00:06:00.208  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 24. Connection closed
+2024-03-23 00:06:00.208  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 24. Connection.close() returned 
+2024-03-23 00:06:00.230  INFO 7788 --- [HikariPool-1 connection adder] j.connection                             : 34. Connection opened
+2024-03-23 00:06:00.230  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 34. Connection.new Connection returned 
+2024-03-23 00:06:00.230  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 34. Connection.isReadOnly() returned false
+2024-03-23 00:06:00.231  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 34. Connection.getAutoCommit() returned true
+2024-03-23 00:06:15.149  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 25. Connection closed
+2024-03-23 00:06:15.149  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 25. Connection.close() returned 
+2024-03-23 00:06:15.170  INFO 7788 --- [HikariPool-1 connection adder] j.connection                             : 35. Connection opened
+2024-03-23 00:06:15.170  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 35. Connection.new Connection returned 
+2024-03-23 00:06:15.170  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 35. Connection.isReadOnly() returned false
+2024-03-23 00:06:15.170  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 35. Connection.getAutoCommit() returned true
+2024-03-23 00:06:26.593  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 26. Connection closed
+2024-03-23 00:06:26.593  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 26. Connection.close() returned 
+2024-03-23 00:06:26.613  INFO 7788 --- [HikariPool-1 connection adder] j.connection                             : 36. Connection opened
+2024-03-23 00:06:26.613  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 36. Connection.new Connection returned 
+2024-03-23 00:06:26.614  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 36. Connection.isReadOnly() returned false
+2024-03-23 00:06:26.614  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 36. Connection.getAutoCommit() returned true
+2024-03-23 00:06:27.570  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 27. Connection closed
+2024-03-23 00:06:27.570  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 27. Connection.close() returned 
+2024-03-23 00:06:27.585  INFO 7788 --- [HikariPool-1 connection adder] j.connection                             : 37. Connection opened
+2024-03-23 00:06:27.585  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 37. Connection.new Connection returned 
+2024-03-23 00:06:27.586  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 37. Connection.isReadOnly() returned false
+2024-03-23 00:06:27.586  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 37. Connection.getAutoCommit() returned true
+2024-03-23 00:06:30.253  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 28. Connection closed
+2024-03-23 00:06:30.254  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 28. Connection.close() returned 
+2024-03-23 00:06:30.277  INFO 7788 --- [HikariPool-1 connection adder] j.connection                             : 38. Connection opened
+2024-03-23 00:06:30.277  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 38. Connection.new Connection returned 
+2024-03-23 00:06:30.277  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 38. Connection.isReadOnly() returned false
+2024-03-23 00:06:30.277  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 38. Connection.getAutoCommit() returned true
+2024-03-23 00:06:40.624  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 29. Connection closed
+2024-03-23 00:06:40.625  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 29. Connection.close() returned 
+2024-03-23 00:06:40.649  INFO 7788 --- [HikariPool-1 connection adder] j.connection                             : 39. Connection opened
+2024-03-23 00:06:40.649  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 39. Connection.new Connection returned 
+2024-03-23 00:06:40.649  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 39. Connection.isReadOnly() returned false
+2024-03-23 00:06:40.650  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 39. Connection.getAutoCommit() returned true
+2024-03-23 00:06:45.712  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 30. Connection closed
+2024-03-23 00:06:45.712  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 30. Connection.close() returned 
+2024-03-23 00:06:45.728  INFO 7788 --- [HikariPool-1 connection adder] j.connection                             : 40. Connection opened
+2024-03-23 00:06:45.728  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 40. Connection.new Connection returned 
+2024-03-23 00:06:45.729  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 40. Connection.isReadOnly() returned false
+2024-03-23 00:06:45.729  INFO 7788 --- [HikariPool-1 connection adder] j.audit                                  : 40. Connection.getAutoCommit() returned true
+2024-03-23 00:11:43.516  INFO 7788 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-03-23 00:11:43.521  INFO 7788 --- [SpringApplicationShutdownHook] c.z.h.HikariDataSource                   : HikariPool-1 - Shutdown initiated...
+2024-03-23 00:11:43.522  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 31. Connection closed
+2024-03-23 00:11:43.522  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 31. Connection.close() returned 
+2024-03-23 00:11:43.522  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 32. Connection closed
+2024-03-23 00:11:43.522  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 32. Connection.close() returned 
+2024-03-23 00:11:43.523  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 33. Connection closed
+2024-03-23 00:11:43.523  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 33. Connection.close() returned 
+2024-03-23 00:11:43.523  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 34. Connection closed
+2024-03-23 00:11:43.523  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 34. Connection.close() returned 
+2024-03-23 00:11:43.523  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 35. Connection closed
+2024-03-23 00:11:43.523  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 35. Connection.close() returned 
+2024-03-23 00:11:43.523  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 36. Connection closed
+2024-03-23 00:11:43.523  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 36. Connection.close() returned 
+2024-03-23 00:11:43.525  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 37. Connection closed
+2024-03-23 00:11:43.525  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 37. Connection.close() returned 
+2024-03-23 00:11:43.525  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 38. Connection closed
+2024-03-23 00:11:43.525  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 38. Connection.close() returned 
+2024-03-23 00:11:43.525  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 39. Connection closed
+2024-03-23 00:11:43.525  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 39. Connection.close() returned 
+2024-03-23 00:11:43.526  INFO 7788 --- [HikariPool-1 connection closer] j.connection                             : 40. Connection closed
+2024-03-23 00:11:43.526  INFO 7788 --- [HikariPool-1 connection closer] j.audit                                  : 40. Connection.close() returned 
+2024-03-23 00:11:43.526  INFO 7788 --- [SpringApplicationShutdownHook] c.z.h.HikariDataSource                   : HikariPool-1 - Shutdown completed.
+2024-03-23 22:32:09.048  INFO 14470 --- [restartedMain] c.e.b.BoardRestApplication               : Starting BoardRestApplication using Java 17.0.9 on nam-yundaeui-MacBookAir.local with PID 14470 (/Users/youn/Documents/rest-api-project/board-rest/build/classes/java/main started by youn in /Users/youn/Documents/rest-api-project/board-rest)
+2024-03-23 22:32:09.051  INFO 14470 --- [restartedMain] c.e.b.BoardRestApplication               : No active profile set, falling back to 1 default profile: "default"
+2024-03-23 22:32:09.078  INFO 14470 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-03-23 22:32:09.078  INFO 14470 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-03-23 22:32:09.570  INFO 14470 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-03-23 22:32:09.570  INFO 14470 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-03-23 22:32:09.630  INFO 14470 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 51 ms. Found 7 JPA repository interfaces.
+2024-03-23 22:32:09.640  INFO 14470 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-03-23 22:32:09.640  INFO 14470 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-03-23 22:32:09.648  INFO 14470 --- [restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.boardrest.repository.AuthRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-03-23 22:32:09.649  INFO 14470 --- [restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.boardrest.repository.CommentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-03-23 22:32:09.650  INFO 14470 --- [restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.boardrest.repository.HierarchicalBoardRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-03-23 22:32:09.650  INFO 14470 --- [restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.boardrest.repository.ImageBoardRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-03-23 22:32:09.650  INFO 14470 --- [restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.boardrest.repository.ImageDataRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-03-23 22:32:09.651  INFO 14470 --- [restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.boardrest.repository.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-03-23 22:32:09.651  INFO 14470 --- [restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.boardrest.repository.RefreshTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-03-23 22:32:09.651  INFO 14470 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 6 ms. Found 0 Redis repository interfaces.
+2024-03-23 22:32:10.132  INFO 14470 --- [restartedMain] o.s.b.w.e.t.TomcatWebServer              : Tomcat initialized with port(s): 9096 (http)
+2024-03-23 22:32:10.141  INFO 14470 --- [restartedMain] o.a.c.c.StandardService                  : Starting service [Tomcat]
+2024-03-23 22:32:10.141  INFO 14470 --- [restartedMain] o.a.c.c.StandardEngine                   : Starting Servlet engine: [Apache Tomcat/9.0.69]
+2024-03-23 22:32:10.211  INFO 14470 --- [restartedMain] o.a.c.c.C.[.[.[/]                        : Initializing Spring embedded WebApplicationContext
+2024-03-23 22:32:10.211  INFO 14470 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1132 ms
+2024-03-23 22:32:10.454  INFO 14470 --- [restartedMain] o.h.j.i.u.LogHelper                      : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-03-23 22:32:10.484  INFO 14470 --- [restartedMain] o.h.Version                              : HHH000412: Hibernate ORM core version 5.6.14.Final
+2024-03-23 22:32:10.685  INFO 14470 --- [restartedMain] o.h.a.c.Version                          : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2024-03-23 22:32:10.737  INFO 14470 --- [restartedMain] c.z.h.HikariDataSource                   : HikariPool-1 - Starting...
+2024-03-23 22:32:11.063  INFO 14470 --- [restartedMain] j.connection                             : 1. Connection opened
+2024-03-23 22:32:11.063  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.new Connection returned 
+2024-03-23 22:32:11.063  INFO 14470 --- [restartedMain] c.z.h.p.PoolBase                         : HikariPool-1 - Driver does not support get/set network timeout for connections. (Receiver class net.sf.log4jdbc.sql.jdbcapi.ConnectionSpy does not define or inherit an implementation of the resolved method 'abstract int getNetworkTimeout()' of interface java.sql.Connection.)
+2024-03-23 22:32:11.064  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.isReadOnly() returned false
+2024-03-23 22:32:11.064  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.getAutoCommit() returned true
+2024-03-23 22:32:11.065  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.isValid(1) returned true
+2024-03-23 22:32:11.066  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.getTransactionIsolation() returned 4
+2024-03-23 22:32:11.071  INFO 14470 --- [restartedMain] c.z.h.HikariDataSource                   : HikariPool-1 - Start completed.
+2024-03-23 22:32:11.074  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.getMetaData() returned com.mysql.cj.jdbc.DatabaseMetaDataUsingInfoSchema@4eee81fc
+2024-03-23 22:32:11.079  INFO 14470 --- [restartedMain] o.h.d.Dialect                            : HHH000400: Using dialect: org.hibernate.dialect.MySQL57Dialect
+2024-03-23 22:32:11.085  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.getCatalog() returned boardproject
+2024-03-23 22:32:11.088  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.getMetaData() returned com.mysql.cj.jdbc.DatabaseMetaDataUsingInfoSchema@3ed8308f
+2024-03-23 22:32:11.089  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.createClob() returned com.mysql.cj.jdbc.Clob@7bce8529
+2024-03-23 22:32:11.092  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.clearWarnings() returned 
+2024-03-23 22:32:11.193  INFO 14470 --- [HikariPool-1 connection adder] j.connection                             : 2. Connection opened
+2024-03-23 22:32:11.194  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 2. Connection.new Connection returned 
+2024-03-23 22:32:11.195  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 2. Connection.isReadOnly() returned false
+2024-03-23 22:32:11.195  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 2. Connection.getAutoCommit() returned true
+2024-03-23 22:32:11.213  INFO 14470 --- [HikariPool-1 connection adder] j.connection                             : 3. Connection opened
+2024-03-23 22:32:11.213  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 3. Connection.new Connection returned 
+2024-03-23 22:32:11.214  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 3. Connection.isReadOnly() returned false
+2024-03-23 22:32:11.214  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 3. Connection.getAutoCommit() returned true
+2024-03-23 22:32:11.228  INFO 14470 --- [HikariPool-1 connection adder] j.connection                             : 4. Connection opened
+2024-03-23 22:32:11.228  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 4. Connection.new Connection returned 
+2024-03-23 22:32:11.229  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 4. Connection.isReadOnly() returned false
+2024-03-23 22:32:11.229  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 4. Connection.getAutoCommit() returned true
+2024-03-23 22:32:11.241  INFO 14470 --- [HikariPool-1 connection adder] j.connection                             : 5. Connection opened
+2024-03-23 22:32:11.241  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 5. Connection.new Connection returned 
+2024-03-23 22:32:11.242  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 5. Connection.isReadOnly() returned false
+2024-03-23 22:32:11.242  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 5. Connection.getAutoCommit() returned true
+2024-03-23 22:32:11.255  INFO 14470 --- [HikariPool-1 connection adder] j.connection                             : 6. Connection opened
+2024-03-23 22:32:11.255  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 6. Connection.new Connection returned 
+2024-03-23 22:32:11.256  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 6. Connection.isReadOnly() returned false
+2024-03-23 22:32:11.256  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 6. Connection.getAutoCommit() returned true
+2024-03-23 22:32:11.268  INFO 14470 --- [HikariPool-1 connection adder] j.connection                             : 7. Connection opened
+2024-03-23 22:32:11.269  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 7. Connection.new Connection returned 
+2024-03-23 22:32:11.270  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 7. Connection.isReadOnly() returned false
+2024-03-23 22:32:11.270  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 7. Connection.getAutoCommit() returned true
+2024-03-23 22:32:11.285  INFO 14470 --- [HikariPool-1 connection adder] j.connection                             : 8. Connection opened
+2024-03-23 22:32:11.285  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 8. Connection.new Connection returned 
+2024-03-23 22:32:11.286  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 8. Connection.isReadOnly() returned false
+2024-03-23 22:32:11.286  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 8. Connection.getAutoCommit() returned true
+2024-03-23 22:32:11.297  INFO 14470 --- [HikariPool-1 connection adder] j.connection                             : 9. Connection opened
+2024-03-23 22:32:11.297  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 9. Connection.new Connection returned 
+2024-03-23 22:32:11.298  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 9. Connection.isReadOnly() returned false
+2024-03-23 22:32:11.298  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 9. Connection.getAutoCommit() returned true
+2024-03-23 22:32:11.315  INFO 14470 --- [HikariPool-1 connection adder] j.connection                             : 10. Connection opened
+2024-03-23 22:32:11.315  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 10. Connection.new Connection returned 
+2024-03-23 22:32:11.316  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 10. Connection.isReadOnly() returned false
+2024-03-23 22:32:11.316  INFO 14470 --- [HikariPool-1 connection adder] j.audit                                  : 10. Connection.getAutoCommit() returned true
+2024-03-23 22:32:11.418  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.getAutoCommit() returned true
+2024-03-23 22:32:11.418  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.getMetaData() returned com.mysql.cj.jdbc.DatabaseMetaDataUsingInfoSchema@2e40cb0e
+2024-03-23 22:32:11.450  INFO 14470 --- [restartedMain] j.audit                                  : 1. Statement.new Statement returned 
+2024-03-23 22:32:11.450  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.createStatement() returned net.sf.log4jdbc.sql.jdbcapi.StatementSpy@15fbbc04
+2024-03-23 22:32:11.451  INFO 14470 --- [restartedMain] j.sqlonly                                : create table Auth (
+       authNo bigint not null auto_increment,
+        auth varchar(255),
+        userId varchar(255),
+        primary key (authNo)
+    ) engine=InnoDB
+
+2024-03-23 22:32:11.458 ERROR 14470 --- [restartedMain] j.audit                                  : 1. Statement.execute(
+    create table Auth (
+       authNo bigint not null auto_increment,
+        auth varchar(255),
+        userId varchar(255),
+        primary key (authNo)
+    ) engine=InnoDB) create table Auth (
+       authNo bigint not null auto_increment,
+        auth varchar(255),
+        userId varchar(255),
+        primary key (authNo)
+    ) engine=InnoDB
+
+
+java.sql.SQLSyntaxErrorException: Table 'auth' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+
+2024-03-23 22:32:11.461 ERROR 14470 --- [restartedMain] j.sqlonly                                : 1. Statement.execute(
+    create table Auth (
+       authNo bigint not null auto_increment,
+        auth varchar(255),
+        userId varchar(255),
+        primary key (authNo)
+    ) engine=InnoDB) create table Auth (
+       authNo bigint not null auto_increment,
+        auth varchar(255),
+        userId varchar(255),
+        primary key (authNo)
+    ) engine=InnoDB
+
+
+java.sql.SQLSyntaxErrorException: Table 'auth' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+
+2024-03-23 22:32:11.461 ERROR 14470 --- [restartedMain] j.sqltiming                              : 1. Statement.execute(
+    create table Auth (
+       authNo bigint not null auto_increment,
+        auth varchar(255),
+        userId varchar(255),
+        primary key (authNo)
+    ) engine=InnoDB) FAILED! create table Auth (
+       authNo bigint not null auto_increment,
+        auth varchar(255),
+        userId varchar(255),
+        primary key (authNo)
+    ) engine=InnoDB
+ {FAILED after 7 msec}
+
+java.sql.SQLSyntaxErrorException: Table 'auth' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+
+2024-03-23 22:32:11.462  WARN 14470 --- [restartedMain] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+    create table Auth (
+       authNo bigint not null auto_increment,
+        auth varchar(255),
+        userId varchar(255),
+        primary key (authNo)
+    ) engine=InnoDB" via JDBC Statement
+
+org.hibernate.tool.schema.spi.CommandAcceptanceException: Error executing DDL "
+    create table Auth (
+       authNo bigint not null auto_increment,
+        auth varchar(255),
+        userId varchar(255),
+        primary key (authNo)
+    ) engine=InnoDB" via JDBC Statement
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:67) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+Caused by: java.sql.SQLSyntaxErrorException: Table 'auth' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	... 39 more
+
+2024-03-23 22:32:11.463  INFO 14470 --- [restartedMain] j.sqlonly                                : create table Member (
+       userId varchar(255) not null,
+        userName varchar(255),
+        userPw varchar(255),
+        primary key (userId)
+    ) engine=InnoDB
+
+2024-03-23 22:32:11.464 ERROR 14470 --- [restartedMain] j.audit                                  : 1. Statement.execute(
+    create table Member (
+       userId varchar(255) not null,
+        userName varchar(255),
+        userPw varchar(255),
+        primary key (userId)
+    ) engine=InnoDB) create table Member (
+       userId varchar(255) not null,
+        userName varchar(255),
+        userPw varchar(255),
+        primary key (userId)
+    ) engine=InnoDB
+
+
+java.sql.SQLSyntaxErrorException: Table 'member' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+
+2024-03-23 22:32:11.464 ERROR 14470 --- [restartedMain] j.sqlonly                                : 1. Statement.execute(
+    create table Member (
+       userId varchar(255) not null,
+        userName varchar(255),
+        userPw varchar(255),
+        primary key (userId)
+    ) engine=InnoDB) create table Member (
+       userId varchar(255) not null,
+        userName varchar(255),
+        userPw varchar(255),
+        primary key (userId)
+    ) engine=InnoDB
+
+
+java.sql.SQLSyntaxErrorException: Table 'member' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+
+2024-03-23 22:32:11.464 ERROR 14470 --- [restartedMain] j.sqltiming                              : 1. Statement.execute(
+    create table Member (
+       userId varchar(255) not null,
+        userName varchar(255),
+        userPw varchar(255),
+        primary key (userId)
+    ) engine=InnoDB) FAILED! create table Member (
+       userId varchar(255) not null,
+        userName varchar(255),
+        userPw varchar(255),
+        primary key (userId)
+    ) engine=InnoDB
+ {FAILED after 1 msec}
+
+java.sql.SQLSyntaxErrorException: Table 'member' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+
+2024-03-23 22:32:11.464  WARN 14470 --- [restartedMain] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+    create table Member (
+       userId varchar(255) not null,
+        userName varchar(255),
+        userPw varchar(255),
+        primary key (userId)
+    ) engine=InnoDB" via JDBC Statement
+
+org.hibernate.tool.schema.spi.CommandAcceptanceException: Error executing DDL "
+    create table Member (
+       userId varchar(255) not null,
+        userName varchar(255),
+        userPw varchar(255),
+        primary key (userId)
+    ) engine=InnoDB" via JDBC Statement
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:67) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+Caused by: java.sql.SQLSyntaxErrorException: Table 'member' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	... 39 more
+
+2024-03-23 22:32:11.465  INFO 14470 --- [restartedMain] j.sqlonly                                : create table RefreshToken (
+       rtIndex varchar(255) not null,
+        expires datetime(6),
+        tokenVal varchar(255),
+        userId varchar(255),
+        primary key (rtIndex)
+    ) engine=InnoDB
+
+2024-03-23 22:32:11.466 ERROR 14470 --- [restartedMain] j.audit                                  : 1. Statement.execute(
+    create table RefreshToken (
+       rtIndex varchar(255) not null,
+        expires datetime(6),
+        tokenVal varchar(255),
+        userId varchar(255),
+        primary key (rtIndex)
+    ) engine=InnoDB) create table RefreshToken (
+       rtIndex varchar(255) not null,
+        expires datetime(6),
+        tokenVal varchar(255),
+        userId varchar(255),
+        primary key (rtIndex)
+    ) engine=InnoDB
+
+
+java.sql.SQLSyntaxErrorException: Table 'refreshtoken' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+
+2024-03-23 22:32:11.467 ERROR 14470 --- [restartedMain] j.sqlonly                                : 1. Statement.execute(
+    create table RefreshToken (
+       rtIndex varchar(255) not null,
+        expires datetime(6),
+        tokenVal varchar(255),
+        userId varchar(255),
+        primary key (rtIndex)
+    ) engine=InnoDB) create table RefreshToken (
+       rtIndex varchar(255) not null,
+        expires datetime(6),
+        tokenVal varchar(255),
+        userId varchar(255),
+        primary key (rtIndex)
+    ) engine=InnoDB
+
+
+java.sql.SQLSyntaxErrorException: Table 'refreshtoken' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+
+2024-03-23 22:32:11.467 ERROR 14470 --- [restartedMain] j.sqltiming                              : 1. Statement.execute(
+    create table RefreshToken (
+       rtIndex varchar(255) not null,
+        expires datetime(6),
+        tokenVal varchar(255),
+        userId varchar(255),
+        primary key (rtIndex)
+    ) engine=InnoDB) FAILED! create table RefreshToken (
+       rtIndex varchar(255) not null,
+        expires datetime(6),
+        tokenVal varchar(255),
+        userId varchar(255),
+        primary key (rtIndex)
+    ) engine=InnoDB
+ {FAILED after 1 msec}
+
+java.sql.SQLSyntaxErrorException: Table 'refreshtoken' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+
+2024-03-23 22:32:11.467  WARN 14470 --- [restartedMain] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+    create table RefreshToken (
+       rtIndex varchar(255) not null,
+        expires datetime(6),
+        tokenVal varchar(255),
+        userId varchar(255),
+        primary key (rtIndex)
+    ) engine=InnoDB" via JDBC Statement
+
+org.hibernate.tool.schema.spi.CommandAcceptanceException: Error executing DDL "
+    create table RefreshToken (
+       rtIndex varchar(255) not null,
+        expires datetime(6),
+        tokenVal varchar(255),
+        userId varchar(255),
+        primary key (rtIndex)
+    ) engine=InnoDB" via JDBC Statement
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:67) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.createTable(AbstractSchemaMigrator.java:293) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:74) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341) ~[spring-orm-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[spring-beans-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[spring-context-5.3.24.jar:5.3.24]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1303) ~[spring-boot-2.7.6.jar:2.7.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1292) ~[spring-boot-2.7.6.jar:2.7.6]
+	at com.example.boardrest.BoardRestApplication.main(BoardRestApplication.java:10) ~[main/:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49) ~[spring-boot-devtools-2.7.6.jar:2.7.6]
+Caused by: java.sql.SQLSyntaxErrorException: Table 'refreshtoken' already exists
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.executeInternal(StatementImpl.java:763) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at com.mysql.cj.jdbc.StatementImpl.execute(StatementImpl.java:648) ~[mysql-connector-j-8.0.31.jar:8.0.31]
+	at net.sf.log4jdbc.sql.jdbcapi.StatementSpy.execute(StatementSpy.java:923) ~[log4jdbc-log4j2-jdbc4-1.16.jar:?]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-4.0.3.jar:?]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-4.0.3.jar:?]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54) ~[hibernate-core-5.6.14.Final.jar:5.6.14.Final]
+	... 39 more
+
+2024-03-23 22:32:11.483  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.483  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`HierarchicalBoard` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@7a7f5690
+2024-03-23 22:32:11.483  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`HierarchicalBoard` where 1=0
+
+2024-03-23 22:32:11.484  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`HierarchicalBoard` where 1=0
+ {executed in 1 msec}
+2024-03-23 22:32:11.486  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.486  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@33b5451b
+2024-03-23 22:32:11.487  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@6aa6bf28 - Field level information: 
+	com.mysql.cj.result.Field@6018f604[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardNo,originalColumnName=boardNo,mysqlType=3(FIELD_TYPE_INT),sqlType=4,flags= AUTO_INCREMENT PRIMARY_KEY MULTI_KEY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@7c7dd896[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardTitle,originalColumnName=boardTitle,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@5925e18a[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= MULTI_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@6255a79[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardContent,originalColumnName=boardContent,mysqlType=252(FIELD_TYPE_TEXT),sqlType=-1,flags= BLOB, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@21aa346f[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardDate,originalColumnName=boardDate,mysqlType=10(FIELD_TYPE_DATE),sqlType=91,flags= BINARY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@3381f1a4[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardGroupNo,originalColumnName=boardGroupNo,mysqlType=3(FIELD_TYPE_INT),sqlType=4,flags=, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@455e6fef[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardIndent,originalColumnName=boardIndent,mysqlType=3(FIELD_TYPE_INT),sqlType=4,flags=, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@690413af[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardUpperNo,originalColumnName=boardUpperNo,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.488  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|--------|-----------|-------|-------------|----------|-------------|------------|-------------|
+|boardno |boardtitle |userid |boardcontent |boarddate |boardgroupno |boardindent |boardupperno |
+|--------|-----------|-------|-------------|----------|-------------|------------|-------------|
+|--------|-----------|-------|-------------|----------|-------------|------------|-------------|
+
+2024-03-23 22:32:11.488  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.488  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.490  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.490  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`HierarchicalBoard` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@424df16
+2024-03-23 22:32:11.490  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`HierarchicalBoard` where 1=0
+
+2024-03-23 22:32:11.490  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`HierarchicalBoard` where 1=0
+ {executed in 0 msec}
+2024-03-23 22:32:11.490  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.490  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@602f483f
+2024-03-23 22:32:11.490  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@414c9bd6 - Field level information: 
+	com.mysql.cj.result.Field@4f36692e[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardNo,originalColumnName=boardNo,mysqlType=3(FIELD_TYPE_INT),sqlType=4,flags= AUTO_INCREMENT PRIMARY_KEY MULTI_KEY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@6d48c3b1[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardTitle,originalColumnName=boardTitle,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@773c1097[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= MULTI_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@520ba78d[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardContent,originalColumnName=boardContent,mysqlType=252(FIELD_TYPE_TEXT),sqlType=-1,flags= BLOB, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@2e08dbfb[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardDate,originalColumnName=boardDate,mysqlType=10(FIELD_TYPE_DATE),sqlType=91,flags= BINARY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@576d0c0[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardGroupNo,originalColumnName=boardGroupNo,mysqlType=3(FIELD_TYPE_INT),sqlType=4,flags=, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@1259d051[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardIndent,originalColumnName=boardIndent,mysqlType=3(FIELD_TYPE_INT),sqlType=4,flags=, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@1de12a58[dbName=boardproject,tableName=HierarchicalBoard,originalTableName=hierarchicalboard,columnName=boardUpperNo,originalColumnName=boardUpperNo,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.491  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|--------|-----------|-------|-------------|----------|-------------|------------|-------------|
+|boardno |boardtitle |userid |boardcontent |boarddate |boardgroupno |boardindent |boardupperno |
+|--------|-----------|-------|-------------|----------|-------------|------------|-------------|
+|--------|-----------|-------|-------------|----------|-------------|------------|-------------|
+
+2024-03-23 22:32:11.491  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.491  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.493  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.493  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`ImageBoard` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@461dc3b7
+2024-03-23 22:32:11.494  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`ImageBoard` where 1=0
+
+2024-03-23 22:32:11.494  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`ImageBoard` where 1=0
+ {executed in 0 msec}
+2024-03-23 22:32:11.494  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.494  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@1a1a487d
+2024-03-23 22:32:11.495  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@e3d028c - Field level information: 
+	com.mysql.cj.result.Field@c09b85a[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageNo,originalColumnName=imageNo,mysqlType=3(FIELD_TYPE_INT),sqlType=4,flags= AUTO_INCREMENT PRIMARY_KEY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@24a1d217[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageTitle,originalColumnName=imageTitle,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@6cb02f5e[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= MULTI_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@a7f6926[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageDate,originalColumnName=imageDate,mysqlType=10(FIELD_TYPE_DATE),sqlType=91,flags= BINARY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@4b75db5b[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageContent,originalColumnName=imageContent,mysqlType=252(FIELD_TYPE_TEXT),sqlType=-1,flags= BLOB, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.495  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|--------|-----------|-------|----------|-------------|
+|imageno |imagetitle |userid |imagedate |imagecontent |
+|--------|-----------|-------|----------|-------------|
+|--------|-----------|-------|----------|-------------|
+
+2024-03-23 22:32:11.495  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.495  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.497  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.497  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`ImageBoard` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@c4990e4
+2024-03-23 22:32:11.497  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`ImageBoard` where 1=0
+
+2024-03-23 22:32:11.498  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`ImageBoard` where 1=0
+ {executed in 1 msec}
+2024-03-23 22:32:11.498  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.498  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@7d0eee12
+2024-03-23 22:32:11.498  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@18445deb - Field level information: 
+	com.mysql.cj.result.Field@d75b362[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageNo,originalColumnName=imageNo,mysqlType=3(FIELD_TYPE_INT),sqlType=4,flags= AUTO_INCREMENT PRIMARY_KEY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@4d7bcc98[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageTitle,originalColumnName=imageTitle,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@478fd55b[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= MULTI_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@7d1e7344[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageDate,originalColumnName=imageDate,mysqlType=10(FIELD_TYPE_DATE),sqlType=91,flags= BINARY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@5d503126[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageContent,originalColumnName=imageContent,mysqlType=252(FIELD_TYPE_TEXT),sqlType=-1,flags= BLOB, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.498  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|--------|-----------|-------|----------|-------------|
+|imageno |imagetitle |userid |imagedate |imagecontent |
+|--------|-----------|-------|----------|-------------|
+|--------|-----------|-------|----------|-------------|
+
+2024-03-23 22:32:11.498  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.498  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.500  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.500  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`member` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@77400885
+2024-03-23 22:32:11.500  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`member` where 1=0
+
+2024-03-23 22:32:11.501  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`member` where 1=0
+ {executed in 1 msec}
+2024-03-23 22:32:11.501  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.501  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@794ac17a
+2024-03-23 22:32:11.501  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@25cf1674 - Field level information: 
+	com.mysql.cj.result.Field@a747f2c[dbName=boardproject,tableName=member,originalTableName=member,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= PRIMARY_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@7d875ac7[dbName=boardproject,tableName=member,originalTableName=member,columnName=userPw,originalColumnName=userPw,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@52e9151c[dbName=boardproject,tableName=member,originalTableName=member,columnName=userName,originalColumnName=userName,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.501  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|-------|-------|---------|
+|userid |userpw |username |
+|-------|-------|---------|
+|-------|-------|---------|
+
+2024-03-23 22:32:11.501  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.501  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.504  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.504  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`member` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@26ec4649
+2024-03-23 22:32:11.504  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`member` where 1=0
+
+2024-03-23 22:32:11.505  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`member` where 1=0
+ {executed in 0 msec}
+2024-03-23 22:32:11.505  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.505  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@617a7131
+2024-03-23 22:32:11.505  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@7ba1d9f7 - Field level information: 
+	com.mysql.cj.result.Field@328cefdd[dbName=boardproject,tableName=member,originalTableName=member,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= PRIMARY_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@761629cb[dbName=boardproject,tableName=member,originalTableName=member,columnName=userPw,originalColumnName=userPw,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@44d73dc1[dbName=boardproject,tableName=member,originalTableName=member,columnName=userName,originalColumnName=userName,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.505  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|-------|-------|---------|
+|userid |userpw |username |
+|-------|-------|---------|
+|-------|-------|---------|
+
+2024-03-23 22:32:11.505  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.505  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.515  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.515  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`member` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@3624cbd8
+2024-03-23 22:32:11.515  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`member` where 1=0
+
+2024-03-23 22:32:11.516  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`member` where 1=0
+ {executed in 1 msec}
+2024-03-23 22:32:11.516  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.516  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@130ffe23
+2024-03-23 22:32:11.516  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@3300d072 - Field level information: 
+	com.mysql.cj.result.Field@218332b5[dbName=boardproject,tableName=member,originalTableName=member,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= PRIMARY_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@31695756[dbName=boardproject,tableName=member,originalTableName=member,columnName=userPw,originalColumnName=userPw,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@5dfb49be[dbName=boardproject,tableName=member,originalTableName=member,columnName=userName,originalColumnName=userName,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.516  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|-------|-------|---------|
+|userid |userpw |username |
+|-------|-------|---------|
+|-------|-------|---------|
+
+2024-03-23 22:32:11.516  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.516  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.518  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.518  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`member` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@50631005
+2024-03-23 22:32:11.518  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`member` where 1=0
+
+2024-03-23 22:32:11.518  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`member` where 1=0
+ {executed in 0 msec}
+2024-03-23 22:32:11.518  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.518  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@2bcb2eb8
+2024-03-23 22:32:11.518  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@2cfa24c6 - Field level information: 
+	com.mysql.cj.result.Field@28baec73[dbName=boardproject,tableName=member,originalTableName=member,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= PRIMARY_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@60113259[dbName=boardproject,tableName=member,originalTableName=member,columnName=userPw,originalColumnName=userPw,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@12dd6e0d[dbName=boardproject,tableName=member,originalTableName=member,columnName=userName,originalColumnName=userName,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.519  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|-------|-------|---------|
+|userid |userpw |username |
+|-------|-------|---------|
+|-------|-------|---------|
+
+2024-03-23 22:32:11.519  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.519  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.541  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.542  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`member` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@105a046c
+2024-03-23 22:32:11.542  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`member` where 1=0
+
+2024-03-23 22:32:11.542  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`member` where 1=0
+ {executed in 0 msec}
+2024-03-23 22:32:11.542  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.542  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@79306fc4
+2024-03-23 22:32:11.542  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@64cbe9 - Field level information: 
+	com.mysql.cj.result.Field@ab607e5[dbName=boardproject,tableName=member,originalTableName=member,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= PRIMARY_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@4a8f1bbb[dbName=boardproject,tableName=member,originalTableName=member,columnName=userPw,originalColumnName=userPw,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@303b1361[dbName=boardproject,tableName=member,originalTableName=member,columnName=userName,originalColumnName=userName,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.542  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|-------|-------|---------|
+|userid |userpw |username |
+|-------|-------|---------|
+|-------|-------|---------|
+
+2024-03-23 22:32:11.543  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.543  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.546  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.546  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`member` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@2c951912
+2024-03-23 22:32:11.546  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`member` where 1=0
+
+2024-03-23 22:32:11.546  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`member` where 1=0
+ {executed in 0 msec}
+2024-03-23 22:32:11.546  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.546  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@1ef59df8
+2024-03-23 22:32:11.547  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@763d355c - Field level information: 
+	com.mysql.cj.result.Field@5550b84a[dbName=boardproject,tableName=member,originalTableName=member,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= PRIMARY_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@5109767b[dbName=boardproject,tableName=member,originalTableName=member,columnName=userPw,originalColumnName=userPw,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@63212bff[dbName=boardproject,tableName=member,originalTableName=member,columnName=userName,originalColumnName=userName,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.547  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|-------|-------|---------|
+|userid |userpw |username |
+|-------|-------|---------|
+|-------|-------|---------|
+
+2024-03-23 22:32:11.547  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.547  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.557  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.557  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`ImageBoard` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@2c6b1025
+2024-03-23 22:32:11.557  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`ImageBoard` where 1=0
+
+2024-03-23 22:32:11.558  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`ImageBoard` where 1=0
+ {executed in 1 msec}
+2024-03-23 22:32:11.558  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.558  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@364b117d
+2024-03-23 22:32:11.558  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@5cdfba98 - Field level information: 
+	com.mysql.cj.result.Field@6b6945f4[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageNo,originalColumnName=imageNo,mysqlType=3(FIELD_TYPE_INT),sqlType=4,flags= AUTO_INCREMENT PRIMARY_KEY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@1f779a84[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageTitle,originalColumnName=imageTitle,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@71d9b0ee[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= MULTI_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@50f3df37[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageDate,originalColumnName=imageDate,mysqlType=10(FIELD_TYPE_DATE),sqlType=91,flags= BINARY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@71946638[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageContent,originalColumnName=imageContent,mysqlType=252(FIELD_TYPE_TEXT),sqlType=-1,flags= BLOB, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.559  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|--------|-----------|-------|----------|-------------|
+|imageno |imagetitle |userid |imagedate |imagecontent |
+|--------|-----------|-------|----------|-------------|
+|--------|-----------|-------|----------|-------------|
+
+2024-03-23 22:32:11.559  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.559  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.562  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.new PreparedStatement returned 
+2024-03-23 22:32:11.562  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.prepareStatement(select * from `boardproject`.`ImageBoard` where 1=0) returned net.sf.log4jdbc.sql.jdbcapi.PreparedStatementSpy@6e76e558
+2024-03-23 22:32:11.562  INFO 14470 --- [restartedMain] j.sqlonly                                : select * from `boardproject`.`ImageBoard` where 1=0
+
+2024-03-23 22:32:11.563  INFO 14470 --- [restartedMain] j.sqltiming                              : select * from `boardproject`.`ImageBoard` where 1=0
+ {executed in 1 msec}
+2024-03-23 22:32:11.563  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.new ResultSet returned 
+2024-03-23 22:32:11.563  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.executeQuery() returned net.sf.log4jdbc.sql.jdbcapi.ResultSetSpy@203295c6
+2024-03-23 22:32:11.563  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.getMetaData() returned com.mysql.cj.jdbc.result.ResultSetMetaData@72c5825e - Field level information: 
+	com.mysql.cj.result.Field@3a940f3[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageNo,originalColumnName=imageNo,mysqlType=3(FIELD_TYPE_INT),sqlType=4,flags= AUTO_INCREMENT PRIMARY_KEY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@5aac29fb[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageTitle,originalColumnName=imageTitle,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags=, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@6e040bcd[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=userId,originalColumnName=userId,mysqlType=253(FIELD_TYPE_VARCHAR),sqlType=12,flags= MULTI_KEY, charsetIndex=255, charsetName=UTF-8]
+	com.mysql.cj.result.Field@300db321[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageDate,originalColumnName=imageDate,mysqlType=10(FIELD_TYPE_DATE),sqlType=91,flags= BINARY, charsetIndex=63, charsetName=ISO-8859-1]
+	com.mysql.cj.result.Field@796ac30b[dbName=boardproject,tableName=ImageBoard,originalTableName=imageboard,columnName=imageContent,originalColumnName=imageContent,mysqlType=252(FIELD_TYPE_TEXT),sqlType=-1,flags= BLOB, charsetIndex=255, charsetName=UTF-8]
+2024-03-23 22:32:11.564  INFO 14470 --- [restartedMain] j.resultsettable                         : 
+|--------|-----------|-------|----------|-------------|
+|imageno |imagetitle |userid |imagedate |imagecontent |
+|--------|-----------|-------|----------|-------------|
+|--------|-----------|-------|----------|-------------|
+
+2024-03-23 22:32:11.564  INFO 14470 --- [restartedMain] j.resultset                              : 1. ResultSet.close() returned void
+2024-03-23 22:32:11.564  INFO 14470 --- [restartedMain] j.audit                                  : 1. PreparedStatement.close() returned 
+2024-03-23 22:32:11.564  INFO 14470 --- [restartedMain] j.audit                                  : 1. Statement.close() returned 
+2024-03-23 22:32:11.564  INFO 14470 --- [restartedMain] j.audit                                  : 1. Connection.clearWarnings() returned 
+2024-03-23 22:32:11.564  INFO 14470 --- [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-03-23 22:32:11.568  INFO 14470 --- [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-03-23 22:32:12.198  INFO 14470 --- [restartedMain] o.s.s.w.DefaultSecurityFilterChain       : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@5c9e3584, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@9d40297, org.springframework.security.web.context.SecurityContextPersistenceFilter@434346aa, org.springframework.security.web.header.HeaderWriterFilter@6add687, org.springframework.web.filter.CorsFilter@50308f51, org.springframework.security.web.authentication.logout.LogoutFilter@24faea20, com.example.boardrest.config.jwt.JwtAuthorizationFilter@589214c0, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@688635ef, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@550d4dd, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@57231e7, org.springframework.security.web.session.SessionManagementFilter@2750d9b1, org.springframework.security.web.access.ExceptionTranslationFilter@5a404a49, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@1806db8a]
+2024-03-23 22:32:12.206  WARN 14470 --- [restartedMain] o.s.s.c.a.w.b.WebSecurity                : You are asking Spring Security to ignore Ant [pattern='/token/reissued']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-03-23 22:32:12.206  INFO 14470 --- [restartedMain] o.s.s.w.DefaultSecurityFilterChain       : Will not secure Ant [pattern='/token/reissued']
+2024-03-23 22:32:12.217  WARN 14470 --- [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-03-23 22:32:12.478  INFO 14470 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2024-03-23 22:32:12.495  INFO 14470 --- [restartedMain] o.s.b.w.e.t.TomcatWebServer              : Tomcat started on port(s): 9096 (http) with context path ''
+2024-03-23 22:32:12.503  INFO 14470 --- [restartedMain] c.e.b.BoardRestApplication               : Started BoardRestApplication in 3.696 seconds (JVM running for 4.31)
+2024-03-23 22:32:17.462  INFO 14470 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-03-23 22:32:17.464  INFO 14470 --- [SpringApplicationShutdownHook] c.z.h.HikariDataSource                   : HikariPool-1 - Shutdown initiated...
+2024-03-23 22:32:17.465  INFO 14470 --- [HikariPool-1 connection closer] j.connection                             : 1. Connection closed
+2024-03-23 22:32:17.465  INFO 14470 --- [HikariPool-1 connection closer] j.audit                                  : 1. Connection.close() returned 
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.connection                             : 2. Connection closed
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.audit                                  : 2. Connection.close() returned 
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.connection                             : 3. Connection closed
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.audit                                  : 3. Connection.close() returned 
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.connection                             : 4. Connection closed
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.audit                                  : 4. Connection.close() returned 
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.connection                             : 5. Connection closed
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.audit                                  : 5. Connection.close() returned 
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.connection                             : 6. Connection closed
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.audit                                  : 6. Connection.close() returned 
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.connection                             : 7. Connection closed
+2024-03-23 22:32:17.466  INFO 14470 --- [HikariPool-1 connection closer] j.audit                                  : 7. Connection.close() returned 
+2024-03-23 22:32:17.467  INFO 14470 --- [HikariPool-1 connection closer] j.connection                             : 8. Connection closed
+2024-03-23 22:32:17.467  INFO 14470 --- [HikariPool-1 connection closer] j.audit                                  : 8. Connection.close() returned 
+2024-03-23 22:32:17.467  INFO 14470 --- [HikariPool-1 connection closer] j.connection                             : 9. Connection closed
+2024-03-23 22:32:17.467  INFO 14470 --- [HikariPool-1 connection closer] j.audit                                  : 9. Connection.close() returned 
+2024-03-23 22:32:17.467  INFO 14470 --- [HikariPool-1 connection closer] j.connection                             : 10. Connection closed
+2024-03-23 22:32:17.467  INFO 14470 --- [HikariPool-1 connection closer] j.audit                                  : 10. Connection.close() returned 
+2024-03-23 22:32:17.467  INFO 14470 --- [SpringApplicationShutdownHook] c.z.h.HikariDataSource                   : HikariPool-1 - Shutdown completed.
