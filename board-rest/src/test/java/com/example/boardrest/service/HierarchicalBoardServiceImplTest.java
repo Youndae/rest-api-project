@@ -41,7 +41,9 @@ class HierarchicalBoardServiceImplTest {
 
     @Test
     void queryDSLPaginationTest() {
-        Criteria cri = new Criteria(1, 20, 15, "9999", "t");
+//        Criteria cri = new Criteria(1, 20, 15, "9999", "t");
+
+        Criteria cri = new Criteria();
 
         Pageable pageable = PageRequest.of(cri.getPageNum()
                 , cri.getBoardAmount()

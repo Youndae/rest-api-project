@@ -77,7 +77,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withSubject("cocoToken")
                 .withExpiresAt(new Date(System.currentTimeMillis() + 1000))
                 .withClaim("userId", customUser.getMember().getUserId())
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+                .sign(Algorithm.HMAC512(JwtProperties.ACCESS_SECRET));
 
         log.info("AuthenticationFilter's token : " + jwtToken);
 

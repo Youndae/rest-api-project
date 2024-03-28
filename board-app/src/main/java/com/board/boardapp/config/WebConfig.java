@@ -47,6 +47,5 @@ public class WebConfig implements WebMvcConfigurer {
                                         , "/error"
                                         , "/member/logout"
                 );
-
     }
 }

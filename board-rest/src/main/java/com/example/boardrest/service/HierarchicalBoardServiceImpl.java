@@ -39,15 +39,11 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public long insertBoardReply(HierarchicalBoardReplyDTO dto, Principal principal) {
-        /*HierarchicalBoard board = hierarchicalBoardRepository
-                                        .findById(dto.getBoardNo())
-                                        .orElseThrow(() -> new NullPointerException("NullPointerException"));*/
-
         HierarchicalBoardDTO boardDTO = HierarchicalBoardDTO.builder()
                                                             .boardTitle(dto.getBoardTitle())
                                                             .boardContent(dto.getBoardContent())
                                                             .boardGroupNo(dto.getBoardGroupNo())
-                                                            .boardIndent(dto.getBoardIndent() + 1)
+                                                            .boardIndent(dto.getBoardIndent())
                                                             .boardUpperNo(dto.getBoardUpperNo())
                                                             .build();
 
@@ -56,7 +52,6 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
 
     public long insertBoardProc(HierarchicalBoardDTO dto, Principal principal) {
-
         HierarchicalBoard board = HierarchicalBoard.builder()
                                                     .boardTitle(dto.getBoardTitle())
                                                     .boardContent(dto.getBoardContent())
@@ -90,7 +85,6 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
             hierarchicalBoardRepository.deleteAllByBoardNoList(deleteList);
         }
 
-        log.info(boardNo + " board delete success");
         return 1L;
     }
 
@@ -118,8 +112,6 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
         Page<HierarchicalBoardListDTO> listDTO = hierarchicalBoardRepository.findAll(cri, pageable);
         ResponsePageableListDTO<HierarchicalBoardListDTO> responseDTO = new ResponsePageableListDTO<>(listDTO, principal);
-
-//        return hierarchicalBoardRepository.findAll(cri, pageable);
 
         return responseDTO;
     }
@@ -151,10 +143,8 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
             throw new NullPointerException();
 
         HierarchicalBoardModifyDTO dto = hierarchicalBoardRepository.getModifyData(boardNo);
-
         ResponseDetailAndModifyDTO<HierarchicalBoardModifyDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principal);
 
-//        return dto;
 
         return responseDTO;
     }
@@ -162,7 +152,6 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
     @Override
     public ResponseDetailAndModifyDTO<HierarchicalBoardDetailDTO> getBoardDetail(long boardNo, Principal principal) {
         HierarchicalBoardDetailDTO dto = hierarchicalBoardRepository.findBoardDetailByBoardNo(boardNo);
-
         ResponseDetailAndModifyDTO<HierarchicalBoardDetailDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principal);
 
         return responseDTO;

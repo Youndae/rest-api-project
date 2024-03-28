@@ -56,8 +56,6 @@ $(document).on('click', '#commentInsert', function(){
 
         })
     }
-
-
 })
 
 $(document).on('click', '#commentReplyInsert', function(){
@@ -156,20 +154,20 @@ function commentPagingParsing(res){
             if(i == pageNum){
                 cpStr += "<li class=\"paginate_button\">" +
                     "<a href=\"#\" style=\"font-weight: bold; color: black;\" onclick=\"commentPaging(" + i + ")\">" + i + "</a>" +
-                    "</li>"
+                    "</li>";
             }else {
                 cpStr += "<li class=\"paginate_button\">" +
-                    "<a href=\"#\" onclick=\"commentPaging(" + i + ")\">" + i + "</a>" +
-                    "</li>"
+                            "<a href=\"#\" onclick=\"commentPaging(" + i + ")\">" + i + "</a>" +
+                        "</li>";
             }
         }
     }
 
     if(next){
         cpStr += "<li>" +
-            "<a href=\"#\" onclick=\"commentPaging(" + (endPage + 1) + ")\">다음</a>" +
-            "</li>" +
-            "</ul>";
+                    "<a href=\"#\" onclick=\"commentPaging(" + (endPage + 1) + ")\">다음</a>" +
+                "</li>" +
+                "</ul>";
     }else{
         cpStr += "</ul>";
     }
@@ -179,29 +177,22 @@ function commentPagingParsing(res){
 
 function commentEachParsing(arr, userStatus){
     const comment_area = $(".comment-area");
+    let commentStr = "";
+    const uid = userStatus.uid;
 
     comment_area.empty();
 
-    let commentStr = "";
-
-    // const uid = document.getElementById('uid').getAttribute('value');
-
-    const uid = userStatus.uid;
-
     $(arr).each(function(i, res){
         commentStr += "<div class=\"comment-box\" value=\"" + res.commentNo + "\">" +
-            "<table class=\"table table-hover\">" +
-            "<tr>" +
-            "<td>";
-
+                            "<table class=\"table table-hover\">" +
+                                "<tr>" +
+                                    "<td>";
 
         const commentContent = "삭제된 댓글입니다.";
         let writer = '';
 
         if(res.commentContent !== commentContent)
             writer = res.userId;
-
-
 
         let commentIndentClassName = '';
 
@@ -224,7 +215,7 @@ function commentEachParsing(arr, userStatus){
 
         if(res.userId === uid && res.commentContent !== commentContent)
             commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
-                "onclick=\"cDel(this)\" value=\"" + res.commentNo + "\">삭제</button>";
+                            "onclick=\"cDel(this)\" value=\"" + res.commentNo + "\">삭제</button>";
 
         commentStr += "</p>" +
                     "</td>" +
@@ -269,12 +260,11 @@ function cReply(obj){
     const comment_upperNo = $(".comment-box[value=" + commentNo + "] .commentUpperNo").val();
     let upper_str = "";
 
-
-    if(comment_upperNo == commentNo){ // upperNo와 commentNo가 같은 경우는 답글이 아니라는 의미. 그래서 upperNo의 value로 원글의 commentNo를 갖도록 한다.
+    if(comment_upperNo == commentNo) // upperNo와 commentNo가 같은 경우는 답글이 아니라는 의미. 그래서 upperNo의 value로 원글의 commentNo를 갖도록 한다.
         upper_str = "<input type=\"hidden\" id=\"commentUpperNo\" value=\"" + commentNo + "\">";
-    }else{
+    else
         upper_str = "<input type=\"hidden\" id=\"commentUpperNo\" value=\"" + comment_upperNo + "\">";
-    }
+
 
     const reply_str = "<div class=\"commentReplyContent\" value=\"replyContent\">" +
                         "<input type=\"text\" id=\"commentReplyContent\">" +
@@ -287,7 +277,6 @@ function cReply(obj){
     comment_box.append(reply_str);
 
     $("#commentReplyContent").focus();
-
 }
 
 function cDel(obj){

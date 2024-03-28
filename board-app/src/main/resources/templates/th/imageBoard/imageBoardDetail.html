@@ -16,7 +16,7 @@
 <div layout:fragment="content">
     <div class="container">
         <div class="form-row float-right mb-3">
-            <th:block th:if="${session.id} eq ${data.userStatus.uid}">
+            <th:block th:if="${data.userStatus.uid} eq ${data.content.userId}">
                 <button class="btn btn-outline-info btn-sm" id="modify">수정</button>
                 <button class="btn btn-outline-info btn-sm" id="deleteBoard">삭제</button>
             </th:block>

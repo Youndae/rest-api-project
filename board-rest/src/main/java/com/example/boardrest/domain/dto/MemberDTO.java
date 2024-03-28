@@ -1,6 +1,5 @@
 package com.example.boardrest.domain.dto;
 
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -9,7 +8,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class MemberDTO {
-//
+
     private String userId;
 
     private String userPw;

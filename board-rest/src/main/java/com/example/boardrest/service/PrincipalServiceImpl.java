@@ -8,7 +8,6 @@ import java.security.Principal;
 @Service
 public class PrincipalServiceImpl implements PrincipalService{
 
-    // 사용자 아이디 get(principal.getName())
     @Override
     public Member checkPrincipal(Principal principal) {
 

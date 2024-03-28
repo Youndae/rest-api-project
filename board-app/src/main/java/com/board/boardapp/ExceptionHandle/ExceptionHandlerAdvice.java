@@ -1,18 +1,16 @@
 package com.board.boardapp.ExceptionHandle;
 
-import com.board.boardapp.ExceptionHandle.CustomNotFoundException;
-import com.board.boardapp.ExceptionHandle.ErrorResponseEntity;
+import com.board.boardapp.dto.LoginDTO;
+import com.board.boardapp.dto.UserStatusDTO;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,24 +18,31 @@ import java.util.Map;
 @Slf4j
 public class ExceptionHandlerAdvice {
 
+    private static final LoginDTO dto = new LoginDTO(new UserStatusDTO(false));
+
     @ExceptionHandler(NotFoundException.class)
-    public String notFoundHandle(NotFoundException e){
+    public String notFoundHandle(NotFoundException e, Model model){
         log.info("NotFountException : " + e);
+
+        model.addAttribute("data", dto);
+
         return "th/error/error";
     }
 
 
     @ExceptionHandler(NullPointerException.class)
-    public String exceptionHandle(Exception e){
+    public String exceptionHandle(Exception e, Model model){
         log.info("NullPointerException e : " + e.getMessage());
+
+        model.addAttribute("data", dto);
         return "th/error/error";
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public String AccessDeniedHandle(Exception e){
-        log.info("AccessDeniedException e : " + e.getMessage());
+    @ExceptionHandler(CustomAccessDeniedException.class)
+    public String customAccessDeniedHandle(Exception e){
+        log.info("CustomAccessDeniedException e : " + e.getMessage());
 
-        return "th/member/loginForm";
+        return "redirect:/member/loginForm";
     }
 
 
@@ -62,7 +67,6 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(CustomTokenStealingException.class)
     public String tokenStealingExceptionHandler(CustomTokenStealingException e) {
-
         log.info("TokenStealingException : " + e.getMessage());
 
         return "th/member/userError";

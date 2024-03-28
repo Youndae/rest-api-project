@@ -3,7 +3,6 @@ package com.board.boardapp.controller;
 import com.board.boardapp.connection.webClient.CommentBoardWebClient;
 import com.board.boardapp.dto.CommentListDTO;
 import com.board.boardapp.dto.Criteria;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,12 +23,9 @@ public class CommentController {
 
     @GetMapping("/boardComment/{boardNo}/{pageNum}")
     public ResponseEntity<CommentListDTO> boardComment(@PathVariable("boardNo") long boardNo
-                                    , @PathVariable("pageNum") int pageNum
-                                    , HttpServletRequest request
-                                    , HttpServletResponse response) throws JsonProcessingException {
-
-        log.info("controller boardNo : {}, pageNum : {}", boardNo, pageNum);
-
+                                                        , @PathVariable("pageNum") int pageNum
+                                                        , HttpServletRequest request
+                                                        , HttpServletResponse response) {
         Criteria cri = new Criteria();
         cri.setPageNum(pageNum);
 
@@ -40,11 +36,9 @@ public class CommentController {
 
     @GetMapping("/imageComment/{imageNo}/{pageNum}")
     public ResponseEntity<CommentListDTO> imageComment(@PathVariable("imageNo") long imageNo
-            , @PathVariable("pageNum") int pageNum
-            , HttpServletRequest request
-            , HttpServletResponse response) throws JsonProcessingException {
-
-
+                                                        , @PathVariable("pageNum") int pageNum
+                                                        , HttpServletRequest request
+                                                        , HttpServletResponse response) {
         Criteria cri = new Criteria();
         cri.setPageNum(pageNum);
 
@@ -63,9 +57,8 @@ public class CommentController {
 
     @PostMapping("/commentReplyInsert")
     public long commentReplyInsert(@RequestBody Map<String, Object> commentData
-                                        , HttpServletRequest request
-                                        , HttpServletResponse response){
-
+                                    , HttpServletRequest request
+                                    , HttpServletResponse response){
 
         return commentBoardWebClient.commentReplyInsert(commentData, request, response);
     }
@@ -74,7 +67,6 @@ public class CommentController {
     public Long commentDelete(@PathVariable long commentNo
                                 , HttpServletRequest request
                                 , HttpServletResponse response){
-
 
         return commentBoardWebClient.commentDelete(commentNo, request, response);
     }

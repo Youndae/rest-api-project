@@ -3,7 +3,6 @@ package com.example.boardrest.controller;
 import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
 import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
-import com.example.boardrest.repository.HierarchicalBoardRepository;
 import com.example.boardrest.service.HierarchicalBoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 @RestController
@@ -22,13 +22,12 @@ public class HierarchicalBoardController {
 
     private final HierarchicalBoardService hierarchicalBoardService;
 
-    private final HierarchicalBoardRepository hierarchicalBoardRepository;
-
     @GetMapping("/board-list")
     public ResponseEntity<ResponsePageableListDTO> hierarchicalBoardMain(@RequestParam(value = "pageNum") int pageNum
                                                                         , @RequestParam(value = "keyword", required = false) String keyword
                                                                         , @RequestParam(value = "searchType", required = false) String searchType
-                                                                        , Principal principal) {
+                                                                        , Principal principal
+                                                                        , HttpServletRequest request) {
 
         Criteria cri = Criteria.builder()
                                 .pageNum(pageNum)
@@ -63,7 +62,6 @@ public class HierarchicalBoardController {
     @GetMapping("/board-modify/{boardNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public ResponseEntity<ResponseDetailAndModifyDTO<HierarchicalBoardModifyDTO>> hierarchicalBoardModify(@PathVariable long boardNo, Principal principal){
-
 
         return new ResponseEntity<>(hierarchicalBoardService.getModifyData(boardNo, principal), HttpStatus.OK);
     }

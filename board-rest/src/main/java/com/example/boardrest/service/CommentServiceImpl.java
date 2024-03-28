@@ -80,10 +80,7 @@ public class CommentServiceImpl implements CommentService{
                         .and(Sort.by("commentUpperNo").ascending()));
 
         Page<BoardCommentDTO> comments = commentRepository.findAll(cri, pageable, boardNo, imageNo);
-
         ResponsePageableListDTO<BoardCommentDTO> responseDTO = new ResponsePageableListDTO<>(comments, principal);
-
-//        return comments;
 
         return responseDTO;
     }

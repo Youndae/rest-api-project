@@ -28,9 +28,15 @@ public class ImageBoardController {
     private final TokenService tokenService;
 
     @GetMapping("/imageBoardList")
-    public String imageBoardMain(Model model, Criteria cri, HttpServletRequest request, HttpServletResponse response) {
+    public String imageBoardMain(Model model
+                                , Criteria cri
+                                , HttpServletRequest request
+                                , HttpServletResponse response) {
 
-        model.addAttribute("data", imageBoardWebClient.getImageBoardList(cri, request, response));
+        model.addAttribute(
+                "data"
+                , imageBoardWebClient.getImageBoardList(cri, request, response)
+        );
 
         return "th/imageBoard/imageBoardList";
     }
@@ -39,9 +45,12 @@ public class ImageBoardController {
     public String imageBoardDetail(Model model
                                     , @PathVariable long imageNo
                                     , HttpServletRequest request
-                                    , HttpServletResponse response) throws JsonProcessingException {
+                                    , HttpServletResponse response) {
 
-        model.addAttribute("data", imageBoardWebClient.getImageDetail(imageNo, request, response));
+        model.addAttribute(
+                "data"
+                , imageBoardWebClient.getImageDetail(imageNo, request, response)
+        );
 
         return "th/imageBoard/imageBoardDetail";
     }
@@ -53,7 +62,6 @@ public class ImageBoardController {
 
         if(!checkToken)
             return "redirect:/member/loginForm";
-
 
         LoginDTO dto = new LoginDTO(new UserStatusDTO(true));
         model.addAttribute("data", dto);
@@ -68,8 +76,6 @@ public class ImageBoardController {
                                         , @RequestParam("files")List<MultipartFile> images
                                         , HttpServletRequest request
                                         , HttpServletResponse response){
-
-        log.info("imageInsert");
 
         return imageBoardWebClient.imageBoardInsert(imageTitle, imageContent, images, request, response);
     }
@@ -92,7 +98,6 @@ public class ImageBoardController {
 
     @GetMapping("/modifyImageAttach")
     public ResponseEntity<List<ImageDataDTO>> modifyImageAttach(long imageNo, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
-        log.info("imageNo : {}", imageNo);
 
         return new ResponseEntity<>(imageBoardWebClient.getModifyImageList(imageNo, request, response), HttpStatus.OK);
     }
@@ -117,15 +122,12 @@ public class ImageBoardController {
                                     , HttpServletRequest request
                                     , HttpServletResponse response) {
 
-        log.info("delete imageNo : {}", imageNo);
-
         return imageBoardWebClient.imageBoardDelete(imageNo, request, response);
 
     }
 
     @GetMapping("/display/{imageName}")
     public ResponseEntity<byte[]> getImageDisplay(@PathVariable String imageName){
-        log.info("imageName : {}", imageName);
 
         return new ResponseEntity<>(imageBoardWebClient.getImageDisplay(imageName), HttpStatus.OK);
     }

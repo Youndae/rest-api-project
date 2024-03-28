@@ -725,3 +725,38 @@ board-app = client Server
 >>>     * api-server
 >>>       * AuthorizationFilter, TokenProvider 전체적으로 수정.
 >>>       * 아직 테스트 이전. 데스크탑에 pull 받아 테스트 한 뒤 수정 내역 작성. 
+>
+> 
+>> 24/03/28
+>>> * 수정
+>>>   * Api-Server
+>>>     * JwtAuthorizationFilter에서 토큰 탈취로 판단 되는 경우 response에 800의 응답코드를 담아 반환하도록 처리.
+>>>     * JwtTokenProvider 수정.
+>>>       * 각 메소드에 대해 좀 더 기능 처리에 있어서 메소드를 세분화.
+>>>       * 토큰 검증 메소드를 분리해 각 토큰 검증 메소드에서 호출하도록 수정.
+>>>       * 각 토큰 생성 메소드를 만들고 해당 메소드에서 Redis에 데이터를 저장하는것 까지 처리하도록 수정.
+>>>       * 생성된 토큰은 쿠키를 생성해 response header에 담도록 처리.
+>>>       * 재발급시 처리되는 메소드를 만들어서 해당 메소드에서 두 토큰을 생성하고 쿠키 생성까지 처리.
+>>>       * AccessToken 만료일자는 1시간, RefreshToken 만료 일자는 14일, 두 토큰에 대한 쿠키 만료 일자와 Redis 데이터 만료일자는 30일로 처리.
+>>>       * ino 쿠키는 9999일의 만료일자를 갖도록 처리.
+>>>       * 로그아웃 요청시 ino 포함 모든 토큰 데이터와 쿠키를 삭제하도록 처리.
+>>>       * JwtTokenProvider의 처리과정에 대한 반환값, 토큰 생성 및 데이터 생성에 필요한 고정적인 값은 최대한 JwtProperties에 작성해 가져다 사용하도록 처리
+>>>     * SecurityConfig 수정
+>>>       * WebSecurityConfigurerAdapter가 deprecated 되면서 애매해진 AuthenticationManager를 그대로 사용하기 위해 해당 코드를 긁어와 Bean으로 만들어 사용했었는데
+>>>       * 해당 Bean을 삭제하고 AuthenticationManagerBuilder로 사용하도록 수정.
+>>>     * 불필요한 로그 및 주석 제거
+>>>   * Client-Server
+>>>     * 기존 브라우저 종료 시 로그아웃 처리를 위해 작성했었던 navbar.js 제거.
+>>>       * 제대로 작동하지 않는 코드이기도 했고 필요가 없어졌기 때문에 제거.
+>>>     * ExchangeService 수정
+>>>       * WebClient 요청에 대한 처리를 하는 ExchangeService에서 존재하지 않는 800번이라는 응답 코드를 처리하기 위해 rawStatusCode()로 처리
+>>>       * 정상 처리 응답과 탈취 응답에 대해서는 쿠키 처리가 필요할 수 있기 때문에 CookieService를 통해 cookie를 처리
+>>>       * 200 응답을 제외한 다른 응답에 대해서는 강제로 예외를 발생시켜 ExceptionHandler로 예외처리를 하도록 처리.
+>>>     * 게시글 작성같은 API-Server에 요청해서 받을 데이터가 없는 페이지의 경우 Client-Server에서 토큰 존재 여부를 통해 판단하도록 처리.
+>>>       * 게시글 작성 페이지를 제외하고는 Api-Server에 요청해 데이터를 받아야 하는 GET 요청들이기 떄문에 각 게시판의 작성 페이지 접근에 대해서만 Client-Server에서 처리.
+>>>       * 비정상 적인 토큰으로 작성 페이지를 뚫고 접근하더라도 POST 요청을 위해서는 정상적인 토큰이 필요하기 때문에 해당 페이지 접근까지는 문제가 없을것이라는 판단.
+>>>       * AccessToken, RefreshToken, ino 쿠키가 모두 존재해야 접근할 수 있도록 처리.
+>>>     * JwtProperties에 각 쿠키명만 남기고 다 제거.
+>>>       * 쿠키명을 제외한 다른 값들은 Client-Server에서 더이상 알고 있어야할 필요가 없기 때문에 제거.
+>>>   * 테스트
+>>>     * 모든 기능에 대한 테스트 완료.

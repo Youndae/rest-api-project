@@ -2,6 +2,8 @@ package com.example.boardrest.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.boardrest.config.jwt.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,67 +24,106 @@ public class JwtTokenProvider {
     private final StringRedisTemplate redisTemplate;
 
 
+
+    public String decodeToken(Cookie tokenCookie) {
+        String tokenValue = tokenCookie.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
+
+        return JWT.decode(tokenValue)
+                .getClaim("userId")
+                .asString();
+    }
+
+    /**
+     * @param accessToken
+     * @param inoValue
+     * @return
+     *
+     * accessToken, refreshToken 검증에서 모두 만료되지 않은 토큰이라면 redis 데이터도 남아있으므로 데이터를 비교한다.
+     * 데이터가 존재하지 않는다면 null을 반환한다.
+     * 데이터가 존재하는데 일치하지 않는다면 "st"를 반환해 탈취를 알린다.
+     *
+     * 만료된 토큰이라면 "Token Expiration" 을 반환해 만료되었다는 것을 알린다.
+     *
+     */
     public String verifyAccessToken(Cookie accessToken, String inoValue) {
         String accessTokenValue = accessToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
-        String accessClaimByUserId = getClaimUserIdByToken(accessTokenValue);
+        String accessClaimByUserId = getClaimUserIdByToken(accessTokenValue, JwtProperties.ACCESS_SECRET);
 
+        //잘못된 토큰인 경우 null이 반환될 것이고,
+        //만료된 토큰이라면 Exception이 발생해 예외처리로 인해 TOKEN_EXPIRATION_RESULT가 반환된다.
         if (accessClaimByUserId == null)
             return null;
+        else if(accessClaimByUserId.equals(JwtProperties.TOKEN_EXPIRATION_RESULT))
+            return JwtProperties.TOKEN_EXPIRATION_RESULT;
+        else if(accessClaimByUserId.equals(JwtProperties.WRONG_TOKEN))
+            return JwtProperties.WRONG_TOKEN;
 
-        String accessTokenKey = "at" + inoValue + accessClaimByUserId;
+        String accessTokenKey = JwtProperties.ACCESS_TOKEN_PREFIX + inoValue + accessClaimByUserId;
         String redisValue = getTokenValueData(accessTokenKey);
 
         if(accessTokenValue.equals(redisValue))
             return accessClaimByUserId;
         else {
             deleteTokenData(accessClaimByUserId, inoValue);
-            return "st";
+            return JwtProperties.TOKEN_STEALING_RESULT;
         }
-        /*if(checkAccessToken(accessTokenKey))
-            return accessClaimByUserId;
-        else
-            return null;*/
     }
 
-    public String verifyRefreshToken(Cookie refreshToken, String inoValue) {
+    public String verifyRefreshToken(Cookie refreshToken, String inoValue, String accessTokenClaim) {
          String refreshTokenValue = refreshToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
-         String refreshClaimByUserId = getClaimUserIdByToken(refreshTokenValue);
+         String refreshClaimByUserId = getClaimUserIdByToken(refreshTokenValue, JwtProperties.REFRESH_SECRET);
 
          if(refreshClaimByUserId == null)
              return null;
+         else if(refreshClaimByUserId.equals(JwtProperties.TOKEN_EXPIRATION_RESULT))
+             return JwtProperties.TOKEN_EXPIRATION_RESULT;
+         else if(refreshClaimByUserId.equals(JwtProperties.WRONG_TOKEN))
+             return JwtProperties.WRONG_TOKEN;
+         else if(!refreshClaimByUserId.equals(accessTokenClaim)){
+             deleteTokenData(refreshClaimByUserId, inoValue);
+             return JwtProperties.TOKEN_STEALING_RESULT;
+         }
 
-         String refreshTokenKey = "rt" + inoValue + refreshClaimByUserId;
+         String refreshTokenKey = JwtProperties.REFRESH_TOKEN_PREFIX + inoValue + refreshClaimByUserId;
          String redisValue = getTokenValueData(refreshTokenKey);
 
          if(refreshTokenValue.equals(redisValue))
              return refreshClaimByUserId;
          else {
              deleteTokenData(refreshClaimByUserId, inoValue);
-             return "st";
+             return JwtProperties.TOKEN_STEALING_RESULT;
          }
     }
 
     public String getTokenValueData(String tokenKey) {
         long keyExpire = redisTemplate.getExpire(tokenKey);
 
-        //AccessToken이 존재하는데 Redis에 -2로 삭제된 데이터일 수 없고
-        //AccessToken Cookie는 Redis 데이터보다 1분 적은 만료 시간을 갖기 때문에 요청이 도달하는 시간을 감안하더라도 반환값이 59보다 작을 수 없다.
-        //이 둘중 하나라도 만족한다면 정상적인 토큰이 아니므로 탈취로 판단할 수 있다.
-        if(keyExpire == -2 || keyExpire < 59)
+        //Token이 존재하는데 -2라면 Redis 데이터가 만료되어 삭제된 것이기 때문에
+        //null을 반환한다.
+        if(keyExpire == -2)
             return null;
-
 
         return redisTemplate.opsForValue().get(tokenKey);
     }
 
     //token에서 Claim으로 설정된 userId를 꺼내 반환.
-    public String getClaimUserIdByToken(String tokenValue) {
+    public String getClaimUserIdByToken(String tokenValue, String secret) {
 
-        return JWT.require(Algorithm.HMAC512(JwtProperties.SECRET))
-                .build()
-                .verify(tokenValue)
-                .getClaim("userId")
-                .asString();
+        try {
+            String claimByUserId = JWT.require(Algorithm.HMAC512(secret))
+                    .build()
+                    .verify(tokenValue)
+                    .getClaim("userId")
+                    .asString();
+
+            return claimByUserId;
+        }catch(TokenExpiredException e) {
+            //토큰 만료 exception
+            return JwtProperties.TOKEN_EXPIRATION_RESULT;
+        }catch (JWTDecodeException e) {
+            //비정상 토큰. 검증할 수 없는 토큰.
+            return JwtProperties.WRONG_TOKEN;
+        }
     }
 
     //ino를 제외한 accessToken, refreshToken 생성
@@ -97,36 +138,27 @@ public class JwtTokenProvider {
     //ino까지 모두 생성
     public void issuedAllToken(String userId, HttpServletResponse response) {
         String inoValue = issuedIno();
-        String accessToken = issuedAccessToken(userId, inoValue);
-        String refreshToken = issuedRefreshToken(userId, inoValue);
+        issuedToken(userId, inoValue, response);
 
         //쿠키 생성 메소드 호출 (@Param accessToken, refreshToken, inoValue, response)
-        setTokenToCookie(accessToken, refreshToken, response);
+//        setTokenToCookie(accessToken, refreshToken, response);
         setInoToCookie(inoValue, response);
     }
 
     public String issuedAccessToken(String userId, String inoValue) {
-        String accessToken = JWT.create()
-                .withSubject("cocoToken")
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.ACCESS_TOKEN_EXPIRATION_TIME))
-                .withClaim("userId", userId)
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+        String accessToken = createToken(userId, JwtProperties.ACCESS_SECRET, JwtProperties.ACCESS_TOKEN_EXPIRATION_TIME);
+        String key = JwtProperties.ACCESS_TOKEN_PREFIX + inoValue + userId;
 
-        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-        stringValueOperations.set(JwtProperties.ACCESS_TOKEN_PREFIX + inoValue + userId, accessToken, JwtProperties.ACCESS_REDIS_EXPIRES);
+        setRedisByToken(key, accessToken);
 
         return JwtProperties.TOKEN_PREFIX + accessToken;
     }
 
     public String issuedRefreshToken(String userId, String inoValue) {
-        String refreshToken = JWT.create()
-                .withSubject("cocoRefresh")
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.REFRESH_TOKEN_EXPIRATION_TIME))
-                .withClaim("userId", userId)
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+        String refreshToken = createToken(userId, JwtProperties.REFRESH_SECRET, JwtProperties.REFRESH_TOKEN_EXPIRATION_TIME);
+        String key = JwtProperties.REFRESH_TOKEN_PREFIX + inoValue + userId;
 
-        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-        stringValueOperations.set(JwtProperties.REFRESH_TOKEN_PREFIX + inoValue + userId, refreshToken, JwtProperties.REFRESH_REDIS_EXPIRES);
+        setRedisByToken(key, refreshToken);
 
         return JwtProperties.TOKEN_PREFIX + refreshToken;
     }
@@ -136,23 +168,34 @@ public class JwtTokenProvider {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
+    public String createToken(String userId, String secret, long expirationTime) {
+        return JWT.create()
+                .withSubject("cocoToken")
+                .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
+                .withClaim("userId", userId)
+                .sign(Algorithm.HMAC512(secret));
+    }
+
+    public void setRedisByToken(String key, String value) {
+        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
+        stringValueOperations.set(key, value, JwtProperties.REDIS_TOKEN_DATA_EXPIRATION_TIME);
+    }
+
     public void setTokenToCookie(String atValue, String rtValue, HttpServletResponse response) {
 
         response.addHeader("Set-Cookie"
                 , createCookie(
                         JwtProperties.ACCESS_HEADER_STRING
-                        , JwtProperties.TOKEN_PREFIX + atValue
-                        , JwtProperties.ACCESS_COOKIE_MAX_AGE
+                        , atValue
+                        , JwtProperties.TOKEN_COOKIE_MAX_AGE
                 ));
 
         response.addHeader("Set-Cookie"
                 , createCookie(
                         JwtProperties.REFRESH_HEADER_STRING
-                        , JwtProperties.TOKEN_PREFIX + rtValue
-                        , JwtProperties.REFRESH_COOKIE_MAX_AGE
+                        , rtValue
+                        , JwtProperties.TOKEN_COOKIE_MAX_AGE
                 ));
-
-//        return "success";
     }
 
     public void setInoToCookie(String ino, HttpServletResponse response) {

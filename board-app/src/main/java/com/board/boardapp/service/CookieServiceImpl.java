@@ -19,7 +19,6 @@ public class CookieServiceImpl implements CookieService{
         Arrays.stream(request.getCookies()).filter(idx -> idx.getName().startsWith("Authorization"))
                 .forEach(cookie -> mvm.add(cookie.getName(), cookie.getValue()));
 
-
         return mvm;
     }
 

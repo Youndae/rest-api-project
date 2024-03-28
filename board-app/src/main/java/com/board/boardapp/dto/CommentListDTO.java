@@ -10,7 +10,7 @@ import java.util.List;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentListDTO {
+public class  CommentListDTO {
 
     @JsonProperty("content")
     private List<CommentDTO> boardContent;

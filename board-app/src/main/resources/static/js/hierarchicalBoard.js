@@ -3,14 +3,11 @@ $(document).ready(function(){
     $("#insertProc").on('click', function(){
         const form = $("#insertBoardFrm");
 
-        if($("#boardTitle").val() == ""){
+        if($("#boardTitle").val() == "") {
             alert("제목을 입력해주세요");
             $("#boardTitle").focus();
-        }else{
+        }else
             form.submit();
-        }
-
-
     })
 
     $("#modify").on('click', function(){
@@ -42,7 +39,6 @@ $(document).ready(function(){
                     + "message : " + request.responseText + "\n"
                     + "error : " + error);
             }
-
         })
     })
 

@@ -1,64 +1,37 @@
 package com.board.boardapp.service;
 
-import com.board.boardapp.ExceptionHandle.CustomNotFoundException;
-import com.board.boardapp.ExceptionHandle.ErrorCode;
-import com.board.boardapp.config.WebClientConfig;
-import com.board.boardapp.dto.JwtDTO;
 import com.board.boardapp.config.properties.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService{
 
-    private final WebClientConfig clientConfig;
-
     @Override
     public boolean checkExistsToken(HttpServletRequest request) {
-
-        log.info("referer : " + request.getHeader("Referer"));
-
-//        Cookie at = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
+        Cookie at = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
         Cookie rt = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
         Cookie ino = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
 
         /**
-         * 리턴 조건.
-         * 1. at가 null이지만 rt는 null이 아닐때      - F
-         * 2. at와 rt 모두 null이 아닐때.            - T
-         * 3. at와 rt 모두 null일때.                - N
+         * 단지 insert 페이지 접근을 위한 체크이기 때문에 모든 쿠키가 존재하는지만 체크.
+         * 만약 모든 쿠키가 존재하지 않는다면 토큰 탈취이거나, 토큰 만료일 것이기 때문에
+         * 접근을 허용할 필요가 없음.
+         *
+         * 보안 역시 insert 페이지 접근만 허용하고 이후 POST 요청에 대해서는 서버에서 토큰 검증을 수행할 것이기 때문에
+         * 접근은 존재여부로만 허용해도 되겠다고 판단.
+         *
+         * 모든 쿠키가 존재한다면 true를 반환
          */
 
-        /*if(at == null && rt != null)
-            return reIssuedToken(request, response);
-        else if(at != null && rt != null)
-            return JwtDTO.builder()
-                    .accessTokenHeader(at.getName())
-                    .accessTokenValue(at.getValue())
-                    .refreshTokenHeader(rt.getName())
-                    .refreshTokenValue(rt.getValue())
-                    .inoHeader(ino.getName())
-                    .inoValue(ino.getValue())
-                    .build();*/
-
-        /**
-         * 단지 insert 페이지 접근을 위한 체크이기 때문에 rt, ino가 존재하는지만 체크.
-         * 둘다 존재하는 경우에만 true를 반환해 접근을 허용.
-         */
-
-        if(rt != null && ino != null)
+        if(at != null && rt != null && ino != null)
             return true;
 
         return false;

@@ -1,6 +1,7 @@
 package com.board.boardapp.config.properties;
 
 
+
 public interface JwtProperties {
 
     String ACCESS_HEADER_STRING = "Authorization";

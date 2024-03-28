@@ -50,93 +50,19 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Long> loginProc(@RequestBody Member member, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        System.out.println("member : " + member);
+    public ResponseEntity<Long> loginProc(@RequestBody Member member
+                                        , HttpServletRequest request
+                                        , HttpServletResponse response) {
 
         return new ResponseEntity<>(memberService.memberLogin(member, request, response), HttpStatus.OK);
     }
 
-    @PostMapping("/login2")
-    public ResponseEntity<String> loginProc2(@RequestBody Member member, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        System.out.println("member : " + member);
-
-        /*Cookie cookie1 = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
-        Cookie cookie2 = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
-
-        System.out.println("cookie1 : " + cookie1.getName() + ", " + cookie1.getValue());
-        System.out.println("cookie2 : " + cookie2.getName() + ", " + cookie2.getValue());*/
-
-        return new ResponseEntity<>(member.getUserId(), HttpStatus.OK);
-    }
-
-
-
-    /*@PostMapping("/login")
-    public ResponseEntity loginProc2(@RequestBody Member member
-                                    , HttpServletRequest request
-                                    , HttpServletResponse response){
-        System.out.println("loginProc2 member : " + member);
-
-//        List<Cookie> cookies = new ArrayList<>();
-
-        *//*Cookie atCookie = new Cookie(JwtProperties.ACCESS_HEADER_STRING, "atTestValue");
-        atCookie.setPath("/");
-        atCookie.setHttpOnly(true);
-        atCookie.setSecure(true);
-        atCookie.setMaxAge(60 * 60 * 2);
-
-        Cookie rtCookie = new Cookie(JwtProperties.REFRESH_HEADER_STRING, "rtTestValue");
-        atCookie.setPath("/");
-        atCookie.setHttpOnly(true);
-        atCookie.setSecure(true);
-        atCookie.setMaxAge(60 * 60 * 24 * 14);*//*
-
-//        cookies.add(atCookie);
-//        cookies.add(rtCookie);
-
-//        response.addCookie(atCookie);
-//        response.addCookie(rtCookie);
-
-
-        ResponseCookie at = ResponseCookie.from(JwtProperties.ACCESS_HEADER_STRING, "atTestValue")
-                .secure(true)
-                .maxAge(Duration.ofHours(2L))
-                .path("/")
-                .httpOnly(true)
-                .sameSite("Strict")
-                .build();
-
-        ResponseCookie rt = ResponseCookie.from(JwtProperties.REFRESH_HEADER_STRING, "rtTestValue")
-                .secure(true)
-                .maxAge(Duration.ofDays(14L))
-                .path("/")
-                .httpOnly(true)
-                .sameSite("Strict")
-                .build();
-
-        response.addHeader("Set-Cookie", at.toString());
-        response.addHeader("Set-Cookie", rt.toString());
-
-        return new ResponseEntity(HttpStatus.OK);
-    }*/
-
     @PostMapping("/logout")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_MANAGER', 'ROLE_ADMIN')")
-    public int logout(HttpServletRequest request, HttpServletResponse response, Principal principal){
+    public int logout(HttpServletRequest request
+                    , HttpServletResponse response
+                    , Principal principal){
 
         return memberService.logout(request, response, principal);
-    }
-
-    @PostMapping("/logout2")
-    public int logoutProc2(HttpServletRequest request, HttpServletResponse response) {
-
-        Arrays.stream(request.getCookies()).forEach(i -> {
-            System.out.println(i.getName() + " : " + i.getValue());
-        });
-
-
-        return 1;
     }
 }

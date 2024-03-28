@@ -13,7 +13,7 @@ import java.io.IOException;
 @Slf4j
 @Service
 @Deprecated
-public class CustomAccessDeniedHandler implements AccessDeniedHandler {
+public class CustomAccessDeniedHandler2 implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {

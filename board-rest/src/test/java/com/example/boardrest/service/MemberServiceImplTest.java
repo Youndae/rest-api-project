@@ -1,15 +1,22 @@
 package com.example.boardrest.service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.example.boardrest.config.jwt.JwtProperties;
 import com.example.boardrest.domain.dto.JwtDTO;
 import com.example.boardrest.domain.dto.MemberDTO;
 import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.repository.MemberRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,6 +61,50 @@ class MemberServiceImplTest {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+    @DisplayName("토큰 생성 후 복호화 테스트")
+    @Test
+    void tokenTest () {
+        String accessToken = JWT.create()
+                .withSubject("cocoToken")
+                .withExpiresAt(new Date(System.currentTimeMillis()))
+                .withClaim("userId", "coco")
+                .sign(Algorithm.HMAC512(JwtProperties.ACCESS_SECRET));
+
+        System.out.println("token : " + accessToken);
+
+        try{
+            System.out.println("sleep");
+            Thread.sleep(2000);
+            System.out.println("sleep end");
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String verifyUid;
+
+        try {
+            verifyUid = JWT.require(Algorithm.HMAC512(JwtProperties.ACCESS_SECRET))
+                    .build()
+                    .verify(accessToken)
+                    .getClaim("userId")
+                    .asString();
+        }catch (TokenExpiredException e) {
+            System.out.println("TokenExpiredException!!");
+            verifyUid = "exception!!";
+        }
+
+        String decodeUid = JWT.decode(accessToken).getClaim("userId").asString();
+
+        assertEquals("coco", decodeUid);
+        assertEquals("exception!!", verifyUid);
+
+//        System.out.println("decodeUid : " + decodeUid);
+//        System.out.println("verifyUid : " + verifyUid);
+    }
 
     @Test
     void loginTest(){

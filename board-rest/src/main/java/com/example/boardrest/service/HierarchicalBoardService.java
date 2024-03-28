@@ -14,8 +14,6 @@ public interface HierarchicalBoardService {
 
     long deleteBoard(long boardNo, Principal principal);
 
-//    Page<HierarchicalBoardListDTO> getHierarchicalBoardList(Criteria cri, Principal principal);
-
     ResponsePageableListDTO getHierarchicalBoardList(Criteria cri, Principal principal);
 
     long patchBoard(HierarchicalBoardModifyDTO dto, Principal principal);

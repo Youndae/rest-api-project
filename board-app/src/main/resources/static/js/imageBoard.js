@@ -5,7 +5,6 @@ let step = 0;
 let deleteNo = 0;
 
 $(function(){
-
     const imageNo = $("#imageNo").val();
 
     $("#modify").on('click', function(){

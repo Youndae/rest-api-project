@@ -36,9 +36,9 @@ class CommentServiceImplTest {
             }
         };
 
-        Page<BoardCommentDTO> dto = commentService.commentList(boardNo, imageNo, cri, principal);
+//        Page<BoardCommentDTO> dto = commentService.commentList(boardNo, imageNo, cri, principal);
 
-        System.out.println(dto);
+//        System.out.println(dto);
     }
 
     @Test

@@ -6,8 +6,6 @@ import com.board.boardapp.dto.*;
 import com.board.boardapp.service.CookieService;
 import com.board.boardapp.service.ExchangeService;
 import com.board.boardapp.service.ObjectReadValueService;
-import com.board.boardapp.service.TokenService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +23,6 @@ import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,11 +33,9 @@ import java.util.Optional;
 @Slf4j
 public class ImageBoardWebClient {
 
-    private final WebClient client = new WebClientConfig().useWebClient();
+    private final WebClient webClient = new WebClientConfig().useWebClient();
 
-    private final WebClient imageClient = new WebClientConfig().useImageWebClient();
-
-//    private final TokenService tokenService;
+    private final WebClient imageWebClient = new WebClientConfig().useImageWebClient();
 
     private final ObjectReadValueService readValueService;
 
@@ -68,26 +63,7 @@ public class ImageBoardWebClient {
 
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
-        /*String result = client.get()
-                                .uri(ub.toUriString())
-                                .retrieve()
-                                .onStatus(
-                                        HttpStatus::is4xxClientError, clientResponse ->
-                                                Mono.error(
-                                                        new NotFoundException("not found")
-                                                )
-                                )
-                                .onStatus(
-                                        HttpStatus::is5xxServerError, clientResponse ->
-                                                Mono.error(
-                                                        new NullPointerException()
-                                                )
-                                )
-                                .bodyToMono(String.class)
-                                .block();*/
-
-
-        String result = client.get()
+        String result = webClient.get()
                                 .uri(ub.toUriString())
                                 .cookies(cookies -> cookies.addAll(cookieMap))
                                 .exchangeToMono(res -> {
@@ -96,9 +72,6 @@ public class ImageBoardWebClient {
                                     return res.bodyToMono(String.class);
                                 })
                                 .block();
-
-        /*if(result == null)
-            new Exception();*/
 
         ImageBoardListDTO dto = new ImageBoardListDTO();
         dto = readValueService.setReadValue(dto, result);
@@ -115,25 +88,25 @@ public class ImageBoardWebClient {
          * 문제 해결 도움된 블로그 url
          * https://flyburi.com/617
          */
-        return imageClient.get()
-                .uri(uriBuilder -> uriBuilder.path(imagePath + "/display")
-                        .queryParam("imageName", imageName)
-                        .build())
-                .retrieve()
-                .onStatus(
-                        HttpStatus::is4xxClientError, clientResponse ->
-                                Mono.error(
-                                        new NotFoundException("not found")
-                                )
-                )
-                .onStatus(
-                        HttpStatus::is5xxServerError, clientResponse ->
-                                Mono.error(
-                                        new NullPointerException()
-                                )
-                )
-                .bodyToMono(byte[].class)
-                .block();
+        return imageWebClient.get()
+                            .uri(uriBuilder -> uriBuilder.path(imagePath + "/display")
+                                    .queryParam("imageName", imageName)
+                                    .build())
+                            .retrieve()
+                            .onStatus(
+                                    HttpStatus::is4xxClientError, clientResponse ->
+                                            Mono.error(
+                                                    new NotFoundException("not found")
+                                            )
+                            )
+                            .onStatus(
+                                    HttpStatus::is5xxServerError, clientResponse ->
+                                            Mono.error(
+                                                    new NullPointerException()
+                                            )
+                            )
+                            .bodyToMono(byte[].class)
+                            .block();
     }
 
     public BoardDetailAndModifyDTO<ImageBoardDetailDTO> getImageDetail(long imageNo
@@ -142,26 +115,7 @@ public class ImageBoardWebClient {
 
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
-        /*String responseVal = client.get()
-                                    .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-board-detail/{imageNo}")
-                                            .build(imageNo))
-                                    .retrieve()
-                                    .onStatus(
-                                            HttpStatus::is4xxClientError, clientResponse ->
-                                                    Mono.error(
-                                                            new NotFoundException("not found")
-                                                    )
-                                    )
-                                    .onStatus(
-                                            HttpStatus::is5xxServerError, clientResponse ->
-                                                    Mono.error(
-                                                            new NullPointerException()
-                                                    )
-                                    )
-                                    .bodyToMono(String.class)
-                                    .block();*/
-
-        String responseVal = client.get()
+        String responseVal = webClient.get()
                                     .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-board-detail/{imageNo}")
                                             .build(imageNo))
                                     .cookies(cookies -> cookies.addAll(cookieMap))
@@ -172,7 +126,6 @@ public class ImageBoardWebClient {
                                     })
                                     .block();
 
-//        ImageBoardDetailDTO dto = new ImageBoardDetailDTO();
         BoardDetailAndModifyDTO<ImageBoardDetailDTO> dto = new BoardDetailAndModifyDTO<>();
         dto = readValueService.setReadValue(dto, responseVal);
 
@@ -184,11 +137,6 @@ public class ImageBoardWebClient {
                                 , List<MultipartFile> files
                                 , HttpServletRequest request
                                 , HttpServletResponse response){
-
-//        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
-
-//        if(tokenDTO == null)
-//            new AccessDeniedException("Denied Exception");
 
         if(imageSizeCheck(files) == -2L)
             return -2L;
@@ -204,42 +152,17 @@ public class ImageBoardWebClient {
 
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
+        return imageWebClient.post()
+                            .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-insert").build())
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .body(BodyInserters.fromMultipartData(mbBuilder.build()))
+                            .cookies(cookies -> cookies.addAll(cookieMap))
+                            .exchangeToMono(res -> {
+                                exchangeService.checkExchangeResponse(res, response);
 
-        /*return imageClient.post()
-                        .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-insert").build())
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .body(BodyInserters.fromMultipartData(mbBuilder.build()))
-                        .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                        .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
-                        .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
-                        .retrieve()
-                        .onStatus(
-                                HttpStatus::is4xxClientError, clientResponse ->
-                                        Mono.error(
-                                                new NotFoundException("not found")
-                                        )
-                        )
-                        .onStatus(
-                                HttpStatus::is5xxServerError, clientResponse ->
-                                        Mono.error(
-                                                new NullPointerException()
-                                        )
-                        )
-                        .bodyToMono(Long.class)
-                        .block();*/
-
-        return imageClient.post()
-                .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-insert").build())
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(mbBuilder.build()))
-                .cookies(cookies -> cookies.addAll(cookieMap))
-                .exchangeToMono(res -> {
-                    exchangeService.checkExchangeResponse(res, response);
-
-                    return res.bodyToMono(Long.class);
-                })
-                .block();
-
+                                return res.bodyToMono(Long.class);
+                            })
+                            .block();
     }
 
     // 이미지파일 사이즈 체크
@@ -257,35 +180,9 @@ public class ImageBoardWebClient {
     public BoardDetailAndModifyDTO<ImageBoardDTO> getModifyData(long imageNo
                                         , HttpServletRequest request
                                         , HttpServletResponse response){
-//        JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
-
-//        if(tokenDTO == null)
-//            new AccessDeniedException("Denied Exception");
-
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
-        /*ImageBoardDTO dto = client.get()
-                .uri(uriBuilder -> uriBuilder.path(imagePath + "/modify-data/{imageNo}").build(imageNo))
-                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
-                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
-                .retrieve()
-                .onStatus(
-                        HttpStatus::is4xxClientError, clientResponse ->
-                                Mono.error(
-                                        new NotFoundException("not found")
-                                )
-                )
-                .onStatus(
-                        HttpStatus::is5xxServerError, clientResponse ->
-                                Mono.error(
-                                        new NullPointerException()
-                                )
-                )
-                .bodyToMono(ImageBoardDTO.class)
-                .block();*/
-
-        String result = client.get()
+        String result = webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(imagePath + "/modify-data/{imageNo}").build(imageNo))
                 .cookies(cookies -> cookies.addAll(cookieMap))
                 .exchangeToMono(res -> {
@@ -303,36 +200,10 @@ public class ImageBoardWebClient {
 
     public List<ImageDataDTO> getModifyImageList(long imageNo
                                                     , HttpServletRequest request
-                                                    , HttpServletResponse response) throws JsonProcessingException {
-        /*JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
-
-        if(tokenDTO == null)
-            new AccessDeniedException("Denied Exception");*/
-
+                                                    , HttpServletResponse response) {
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
-       /*String responseVal = client.get()
-                .uri(uriBuilder -> uriBuilder.path(imagePath + "/modify-image-attach/{imageNo}").build(imageNo))
-                .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
-                .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
-                .retrieve()
-                .onStatus(
-                        HttpStatus::is4xxClientError, clientResponse ->
-                                Mono.error(
-                                        new NotFoundException("not found")
-                                )
-                )
-                .onStatus(
-                        HttpStatus::is5xxServerError, clientResponse ->
-                                Mono.error(
-                                        new NullPointerException()
-                                )
-                )
-                .bodyToMono(String.class)
-                .block();*/
-
-        String responseVal = client.get()
+        String responseVal = webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(imagePath + "/modify-image-attach/{imageNo}").build(imageNo))
                 .cookies(cookies -> cookies.addAll(cookieMap))
                 .exchangeToMono(res -> {
@@ -351,26 +222,21 @@ public class ImageBoardWebClient {
     public Long imageBoardModify(long imageNo, String imageTitle, String imageContent
                                     , List<MultipartFile> files, List<String> deleteFiles
                                     , HttpServletRequest request, HttpServletResponse response){
-        /*JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
-
-        if(tokenDTO == null)
-            new AccessDeniedException("Denied Exception");*/
-
-        if(files.size() > 0 && imageSizeCheck(files) == -2L)
+        if(files != null && imageSizeCheck(files) == -2L)
             return -2L;
 
         MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
 
         Optional.ofNullable(files)
-                        .orElseGet(Collections::emptyList)
-                        .forEach(file -> {
-                            mbBuilder.part("files", file.getResource());
-                        });
+                .orElseGet(Collections::emptyList)
+                .forEach(file -> {
+                    mbBuilder.part("files", file.getResource());
+                });
 
         Optional.ofNullable(deleteFiles)
                 .orElseGet(Collections::emptyList)
                 .forEach(file -> {
-                    mbBuilder.part("files", file);
+                    mbBuilder.part("deleteFiles", file);
                 });
 
         mbBuilder.part("imageTitle", imageTitle);
@@ -379,73 +245,23 @@ public class ImageBoardWebClient {
 
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
-        /*return imageClient.patch()
-                        .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-modify").build())
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .body(BodyInserters.fromMultipartData(mbBuilder.build()))
-                        .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                        .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
-                        .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
-                        .retrieve()
-                        .onStatus(
-                                HttpStatus::is4xxClientError, clientResponse ->
-                                        Mono.error(new NotFoundException("not found"))
-                        )
-                        .onStatus(
-                                HttpStatus::is5xxServerError, clientResponse ->
-                                        Mono.error(new NullPointerException())
-                        )
-                        .bodyToMono(Long.class)
-                        .block();*/
+        return imageWebClient.patch()
+                            .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-modify").build())
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .body(BodyInserters.fromMultipartData(mbBuilder.build()))
+                            .cookies(cookies -> cookies.addAll(cookieMap))
+                            .exchangeToMono(res -> {
+                                exchangeService.checkExchangeResponse(res, response);
 
-        return imageClient.patch()
-                .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-modify").build())
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(mbBuilder.build()))
-                .cookies(cookies -> cookies.addAll(cookieMap))
-                .exchangeToMono(res -> {
-                    exchangeService.checkExchangeResponse(res, response);
-
-                    return res.bodyToMono(Long.class);
-                })
-                .block();
+                                return res.bodyToMono(Long.class);
+                            })
+                            .block();
     }
 
     public Long imageBoardDelete(long imageNo, HttpServletRequest request, HttpServletResponse response) {
-        /*JwtDTO tokenDTO = tokenService.checkExistsToken(request, response);
-
-        if(tokenDTO == null)
-            new AccessDeniedException("Denied Exception");*/
-
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
-        /*try{
-            return client.delete()
-                    .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-delete/{imageNo}").build(imageNo))
-                    .cookie(tokenDTO.getAccessTokenHeader(), tokenDTO.getAccessTokenValue())
-                    .cookie(tokenDTO.getRefreshTokenHeader(), tokenDTO.getRefreshTokenValue())
-                    .cookie(tokenDTO.getInoHeader(), tokenDTO.getInoValue())
-                    .retrieve()
-                    .onStatus(
-                            HttpStatus::is4xxClientError, clientResponse ->
-                                    Mono.error(
-                                            new NotFoundException("not found")
-                                    )
-                    )
-                    .onStatus(
-                            HttpStatus::is5xxServerError, clientResponse ->
-                                    Mono.error(
-                                            new NullPointerException()
-                                    )
-                    )
-                    .bodyToMono(Long.class)
-                    .block();
-
-        }catch (Exception e){
-            return 0L;
-        }*/
-
-        return client.delete()
+        return webClient.delete()
                 .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-delete/{imageNo}").build(imageNo))
                 .cookies(cookies -> cookies.addAll(cookieMap))
                 .exchangeToMono(res -> {
@@ -455,5 +271,4 @@ public class ImageBoardWebClient {
                 })
                 .block();
     }
-
 }

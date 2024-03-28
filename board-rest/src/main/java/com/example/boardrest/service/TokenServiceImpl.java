@@ -16,14 +16,14 @@ public class TokenServiceImpl implements TokenService{
 
     private final JwtTokenProvider provider;
 
-    @Override
+    /*@Override
     public JwtDTO reIssuedToken(HttpServletRequest request, HttpServletResponse response) {
-//        Map<String, String> reIssuedData = provider.verifyRefreshToken(request);
+        Map<String, String> reIssuedData = provider.verifyRefreshToken(request);
         JwtDTO dto = null;
 
-        /*if(reIssuedData != null)
-            dto = provider.reIssuanceAllToken(reIssuedData, response);*/
+        if(reIssuedData != null)
+            dto = provider.reIssuanceAllToken(reIssuedData, response);
 
         return dto;
-    }
+    }*/
 }

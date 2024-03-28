@@ -7,5 +7,5 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface TokenService {
 
-    JwtDTO reIssuedToken(HttpServletRequest request, HttpServletResponse response);
+//    JwtDTO reIssuedToken(HttpServletRequest request, HttpServletResponse response);
 }

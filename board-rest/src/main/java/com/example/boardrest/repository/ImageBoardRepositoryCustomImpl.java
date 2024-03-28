@@ -43,7 +43,6 @@ public class ImageBoardRepositoryCustomImpl implements ImageBoardRepositoryCusto
                 .on(imageBoard.imageNo.eq(imageData.imageBoard.imageNo))
                 .where(searchTypeEq(cri.getSearchType(), cri.getKeyword()))
                 .groupBy(imageBoard.imageNo)
-                .groupBy(imageData.imageName)
                 .orderBy(imageBoard.imageNo.desc())
                 .offset((cri.getPageNum() - 1) * cri.getImageAmount())
                 .limit(cri.getImageAmount())

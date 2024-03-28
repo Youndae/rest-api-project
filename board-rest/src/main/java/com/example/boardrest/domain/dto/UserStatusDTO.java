@@ -20,9 +20,11 @@ public class UserStatusDTO {
     public UserStatusDTO(Principal principal) {
 
         if(principal == null){
+            System.out.println("principal is null");
             this.loggedIn = false;
             this.uid = null;
         }else{
+            System.out.println("userStatus principal is not null");
             this.loggedIn = true;
             this.uid = principal.getName();
         }

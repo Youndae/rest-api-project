@@ -1,20 +1,17 @@
 package com.example.boardrest.controller;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.boardrest.customException.CustomTokenStealingException;
+import com.example.boardrest.customException.ErrorCode;
+import com.example.boardrest.customException.ExceptionEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.nio.file.AccessDeniedException;
 
@@ -22,13 +19,32 @@ import java.nio.file.AccessDeniedException;
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity tokenExpiredException(Exception e) {
+        System.out.println("handling token expiredException");
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(
+                        ExceptionEntity.builder()
+                                .errorCode(String.valueOf(ErrorCode.TOKEN_STEALING.getHttpStatus()))
+                                .errorMessage(ErrorCode.TOKEN_STEALING.getMessage())
+                                .build()
+                );
+    }
+
     @ExceptionHandler(CustomTokenStealingException.class)
-    public ResponseEntity tokenStealingExceptionHandler(Exception e){
+    public ResponseEntity<ExceptionEntity> tokenStealingExceptionHandler(Exception e){
         exceptionLog(e);
 
         //response 를 통한 모든 쿠키 삭제.
 
-        return ResponseEntity.status(HttpStatus.valueOf(800)).build();
+        return ResponseEntity.status(800)
+                .body(
+                        ExceptionEntity.builder()
+                                .errorCode(String.valueOf(ErrorCode.TOKEN_STEALING.getHttpStatus()))
+                                .errorMessage(ErrorCode.TOKEN_STEALING.getMessage())
+                                .build()
+                );
     }
 
     @ExceptionHandler(NullPointerException.class)
@@ -40,11 +56,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity accessDeniedExceptionHandler(Exception e) {
+    public ResponseEntity<ExceptionEntity> accessDeniedExceptionHandler(Exception e) {
 
         exceptionLog(e);
 
-        return ResponseEntity.status(HttpStatus.valueOf(403)).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(
+                        ExceptionEntity.builder()
+                                .errorCode("403")
+                                .errorMessage("AccessDeniedException")
+                                .build()
+                );
     }
 
     @ExceptionHandler(FileNotFoundException.class)
@@ -67,14 +89,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity badCredentialsExceptionHandler(Exception e){
         exceptionLog(e);
 
+        System.out.println("BadCredentialsException");
+
         return ResponseEntity.status(HttpStatus.valueOf(403)).build();
-    }
-
-
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        System.out.println("handleMethodArgumentNotValid");
-        return super.handleMethodArgumentNotValid(ex, headers, status, request);
     }
 
     public void exceptionLog(Exception e){
@@ -85,6 +102,5 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
         for(StackTraceElement a : trace)
             log.error(a.toString());
-
     }
 }
