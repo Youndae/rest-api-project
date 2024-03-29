@@ -22,12 +22,11 @@ public class HierarchicalBoardController {
 
     private final HierarchicalBoardService hierarchicalBoardService;
 
-    @GetMapping("/board-list")
-    public ResponseEntity<ResponsePageableListDTO> hierarchicalBoardMain(@RequestParam(value = "pageNum") int pageNum
+    @GetMapping("/")
+    public ResponseEntity<ResponsePageableListDTO> getBoardList(@RequestParam(value = "pageNum") int pageNum
                                                                         , @RequestParam(value = "keyword", required = false) String keyword
                                                                         , @RequestParam(value = "searchType", required = false) String searchType
-                                                                        , Principal principal
-                                                                        , HttpServletRequest request) {
+                                                                        , Principal principal) {
 
         Criteria cri = Criteria.builder()
                                 .pageNum(pageNum)
@@ -38,51 +37,52 @@ public class HierarchicalBoardController {
         return new ResponseEntity<>(hierarchicalBoardService.getHierarchicalBoardList(cri, principal), HttpStatus.OK);
     }
 
-
-    @GetMapping("/board-detail/{boardNo}")
-    public ResponseEntity<ResponseDetailAndModifyDTO<HierarchicalBoardDetailDTO>> hierarchicalBoardDetail(@PathVariable long boardNo, Principal principal){
+    @GetMapping("/{boardNo}")
+    public ResponseEntity<ResponseDetailAndModifyDTO<HierarchicalBoardDetailDTO>> getDetail(@PathVariable long boardNo, Principal principal){
 
         return new ResponseEntity<>(hierarchicalBoardService.getBoardDetail(boardNo, principal), HttpStatus.OK);
     }
 
-    @GetMapping("/board-reply-info/{boardNo}")
+    @PostMapping("/")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public ResponseEntity<ResponseDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO>> hierarchicalBoardReplyInfo(@PathVariable long boardNo, Principal principal){
-
-        return new ResponseEntity<>(hierarchicalBoardService.getReplyInfo(boardNo, principal), HttpStatus.OK);
-    }
-
-    @PostMapping("/board-insert")
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public long hierarchicalBoardInsert(@RequestBody HierarchicalBoardDTO dto, Principal principal){
+    public long insertBoard(@RequestBody HierarchicalBoardDTO dto, Principal principal){
 
         return hierarchicalBoardService.insertBoard(dto, principal);
     }
 
-    @GetMapping("/board-modify/{boardNo}")
+    @GetMapping("/patch-detail/{boardNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public ResponseEntity<ResponseDetailAndModifyDTO<HierarchicalBoardModifyDTO>> hierarchicalBoardModify(@PathVariable long boardNo, Principal principal){
+    public ResponseEntity<ResponseDetailAndModifyDTO<HierarchicalBoardModifyDTO>> getPatchDetail(@PathVariable long boardNo, Principal principal){
 
         return new ResponseEntity<>(hierarchicalBoardService.getModifyData(boardNo, principal), HttpStatus.OK);
     }
 
-    @PatchMapping("/board-modify")
+    @PatchMapping("/{boardNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public long hierarchicalBoardModify(@RequestBody HierarchicalBoardModifyDTO dto, Principal principal){
+    public long patchBoard(@RequestBody HierarchicalBoardModifyDTO dto
+                            , @PathVariable long boardNo
+                            , Principal principal){
 
-        return hierarchicalBoardService.patchBoard(dto, principal);
+        return hierarchicalBoardService.patchBoard(dto, boardNo, principal);
     }
 
-    @DeleteMapping("/board-delete/{boardNo}")
+    @DeleteMapping("/{boardNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public long hierarchicalBoardDelete(@PathVariable long boardNo, Principal principal){
+    public long deleteBoard(@PathVariable long boardNo, Principal principal){
 
         return hierarchicalBoardService.deleteBoard(boardNo, principal);
     }
 
-    @PostMapping("/board-reply")
+    @GetMapping("/reply/{boardNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public long hierarchicalBoardReply(@RequestBody HierarchicalBoardReplyDTO dto, Principal principal){
+    public ResponseEntity<ResponseDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO>> getReplyDetail(@PathVariable long boardNo, Principal principal){
+
+        return new ResponseEntity<>(hierarchicalBoardService.getReplyInfo(boardNo, principal), HttpStatus.OK);
+    }
+
+    @PostMapping("/reply")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
+    public long insertReply(@RequestBody HierarchicalBoardReplyDTO dto, Principal principal){
 
         long responseValue = hierarchicalBoardService.insertBoardReply(dto, principal);
 

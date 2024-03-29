@@ -1,6 +1,7 @@
 package com.example.boardrest.controller;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.example.boardrest.customException.CustomAccessDeniedException;
 import com.example.boardrest.customException.CustomTokenStealingException;
 import com.example.boardrest.customException.ErrorCode;
 import com.example.boardrest.customException.ExceptionEntity;
@@ -55,7 +56,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.valueOf(500)).build();
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler({AccessDeniedException.class, CustomAccessDeniedException.class})
     public ResponseEntity<ExceptionEntity> accessDeniedExceptionHandler(Exception e) {
 
         exceptionLog(e);
@@ -63,7 +64,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(
                         ExceptionEntity.builder()
-                                .errorCode("403")
+                                .errorCode(String.valueOf(ErrorCode.ACCESS_DENIED.getHttpStatus()))
                                 .errorMessage("AccessDeniedException")
                                 .build()
                 );

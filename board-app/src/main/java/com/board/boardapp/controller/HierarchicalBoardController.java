@@ -1,5 +1,8 @@
 package com.board.boardapp.controller;
 
+import com.board.boardapp.ExceptionHandle.CustomAccessDeniedException;
+import com.board.boardapp.ExceptionHandle.CustomNotFoundException;
+import com.board.boardapp.ExceptionHandle.ErrorCode;
 import com.board.boardapp.connection.webClient.HierarchicalBoardWebClient;
 import com.board.boardapp.dto.*;
 import com.board.boardapp.service.TokenService;
@@ -23,63 +26,74 @@ public class HierarchicalBoardController {
 
     private final TokenService tokenService;
 
-    @GetMapping("/boardList")
-    public String hierarchicalBoardMain(Model model
-                                        , Criteria cri
-                                        , HttpServletRequest request
-                                        , HttpServletResponse response) {
-        HierarchicalBoardListDTO dto = hierarchicalBoardWebClient.getHierarchicalBoardList(cri, request, response);
+    @GetMapping("/")
+    public String getList(Model model
+                        , Criteria cri
+                        , HttpServletRequest request
+                        , HttpServletResponse response) {
+        HierarchicalBoardListDTO dto = hierarchicalBoardWebClient.getList(cri, request, response);
 
         model.addAttribute("data", dto);
 
         return "th/board/boardList";
     }
 
-    @GetMapping("/boardDetail/{boardNo}")
-    public String hierarchicalBoardDetail(Model model
-                                            , @PathVariable long boardNo
-                                            , HttpServletRequest request
-                                            , HttpServletResponse response) {
+    @GetMapping("/{boardNo}")
+    public String boardDetail(Model model
+                            , @PathVariable long boardNo
+                            , HttpServletRequest request
+                            , HttpServletResponse response) {
         BoardDetailAndModifyDTO<HierarchicalBoardDTO> dto = hierarchicalBoardWebClient
-                                                                .getHierarchicalBoardDetail(boardNo, request, response);
+                                                                .getDetail(boardNo, request, response);
 
         model.addAttribute("data", dto);
 
         return "th/board/boardDetail";
     }
 
-    @PatchMapping("/boardModify")
-    public String hierarchicalBoardModifyProc(HttpServletRequest request, HttpServletResponse response){
-        long responseVal = hierarchicalBoardWebClient.modifyPatch(request, response);
+    @PatchMapping("/{boardNo}")
+    public String patchBoard(@PathVariable long boardNo
+                            , HttpServletRequest request
+                            , HttpServletResponse response){
 
-        if(responseVal == -1L)
-            return "th/error/error";
+        long responseVal = hierarchicalBoardWebClient.patchBoard(boardNo, request, response);
 
-        return "redirect:/board/boardDetail/" + responseVal;
+        return "redirect:/board/" + responseVal;
     }
 
-    @GetMapping("/boardModify/{boardNo}")
-    public String hierarchicalBoardModify(Model model
+    @DeleteMapping("/{boardNo}")
+    @ResponseBody
+    public Long deleteBoard(@PathVariable long boardNo
+            , HttpServletRequest request
+            , HttpServletResponse response){
+
+        System.out.println("deleteNo : " + boardNo);
+
+        return hierarchicalBoardWebClient.deleteBoard(boardNo, request, response);
+    }
+
+    @GetMapping("/patch/{boardNo}")
+    public String getPatchDetail(Model model
                                             , @PathVariable long boardNo
                                             , HttpServletRequest request
                                             , HttpServletResponse response) {
         BoardDetailAndModifyDTO<HierarchicalBoardModifyDTO> dto = hierarchicalBoardWebClient
-                                                                    .getModifyData(boardNo, request, response);
+                                                                    .getPatchDetail(boardNo, request, response);
 
         if(dto == null)
-            return "th/error/error";
+            throw new CustomNotFoundException(ErrorCode.DATA_NOT_FOUND);
 
         model.addAttribute("data", dto);
 
         return "th/board/boardModify";
     }
 
-    @GetMapping("/boardInsert")
-    public String hierarchicalBoardInsert(HttpServletRequest request, Model model){
+    @GetMapping("/post")
+    public String getInsertPage(HttpServletRequest request, Model model){
         boolean checkToken = tokenService.checkExistsToken(request);
 
         if(!checkToken)
-            return "redirect:/member/loginForm";
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, "userNotFound");
 
         LoginDTO dto = new LoginDTO(new UserStatusDTO(true));
         model.addAttribute("data", dto);
@@ -87,42 +101,31 @@ public class HierarchicalBoardController {
         return "th/board/boardInsert";
     }
 
-    @PostMapping("/boardInsert")
-    public String hierarchicalBoardInsertProc(HttpServletRequest request, HttpServletResponse response){
-        long responseVal = hierarchicalBoardWebClient.hierarchicalBoardInsert(request, response);
+    @PostMapping("/")
+    public String insertBoard(HttpServletRequest request, HttpServletResponse response){
+        long responseVal = hierarchicalBoardWebClient.postBoard(request, response);
 
-        if(responseVal < 0)
-            return "th/error/error";
-        else
-            return "redirect:/board/boardDetail/" + responseVal;
+        return "redirect:/board/" + responseVal;
     }
 
-    @GetMapping("/boardReply/{boardNo}")
-    public String hierarchicalBoardReply(Model model
+    @GetMapping("/reply/{boardNo}")
+    public String getReplyDetail(Model model
                                         , @PathVariable long boardNo
                                         , HttpServletRequest request
                                         , HttpServletResponse response){
         BoardDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO> dto = hierarchicalBoardWebClient
-                                                                .getHierarchicalBoardReplyInfo(request, response, boardNo);
+                                                                .getReplyDetail(request, response, boardNo);
 
         model.addAttribute("data", dto);
 
         return "th/board/boardReply";
     }
 
-    @PostMapping("/boardReply")
-    public String hierarchicalBoardReplyProc(HttpServletRequest request, HttpServletResponse response){
-        long responseVal = hierarchicalBoardWebClient.hierarchicalBoardReply(request, response);
+    @PostMapping("/reply")
+    public String replyInsertBoard(HttpServletRequest request, HttpServletResponse response){
+        long responseVal = hierarchicalBoardWebClient.postReply(request, response);
 
-        return "redirect:/board/boardDetail/" + responseVal;
+        return "redirect:/board/" + responseVal;
     }
 
-    @DeleteMapping("/boardDelete/{boardNo}")
-    @ResponseBody
-    public Long deleteBoard(@PathVariable long boardNo
-                            , HttpServletRequest request
-                            , HttpServletResponse response){
-
-        return hierarchicalBoardWebClient.boardDelete(boardNo, request, response);
-    }
 }

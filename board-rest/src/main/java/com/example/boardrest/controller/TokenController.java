@@ -25,9 +25,9 @@ public class TokenController {
 
     private final TokenService tokenService;
 
-    @PostMapping("/reissued")
+    /*@PostMapping("/reissued")
     public ResponseEntity<JwtDTO> reissuedToken(HttpServletRequest request, HttpServletResponse response){
 
-      return new ResponseEntity<>(tokenService.reIssuedToken(request, response), HttpStatus.OK);
-    }
+//      return new ResponseEntity<>(tokenService.reIssuedToken(request, response), HttpStatus.OK);
+    }*/
 }

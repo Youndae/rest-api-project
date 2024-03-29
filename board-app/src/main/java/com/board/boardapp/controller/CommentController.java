@@ -21,6 +21,20 @@ public class CommentController {
 
     private final CommentBoardWebClient commentBoardWebClient;
 
+    @GetMapping("/{board}/{boardNo}/{pageNum}")
+    public ResponseEntity<CommentListDTO> getList(@PathVariable("board") String board
+                                                , @PathVariable("boardNo") long boardNo
+                                                , @PathVariable("pageNum") int pageNum
+                                                , HttpServletRequest request
+                                                , HttpServletResponse response) {
+        Criteria cri = new Criteria();
+        cri.setPageNum(pageNum);
+
+        CommentListDTO dto = commentBoardWebClient.getList(board, boardNo, cri, request, response);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+/*
     @GetMapping("/boardComment/{boardNo}/{pageNum}")
     public ResponseEntity<CommentListDTO> boardComment(@PathVariable("boardNo") long boardNo
                                                         , @PathVariable("pageNum") int pageNum
@@ -45,9 +59,9 @@ public class CommentController {
         CommentListDTO dto = commentBoardWebClient.getImageComment(imageNo, cri, request, response);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
-    }
+    }*/
 
-    @PostMapping("/commentInsert")
+    @PostMapping("/")
     public long commentInsert(@RequestBody Map<String, Object> commentData
                                 , HttpServletRequest request
                                 , HttpServletResponse response){
@@ -55,7 +69,7 @@ public class CommentController {
         return commentBoardWebClient.commentInsert(commentData, request, response);
     }
 
-    @PostMapping("/commentReplyInsert")
+    @PostMapping("/reply")
     public long commentReplyInsert(@RequestBody Map<String, Object> commentData
                                     , HttpServletRequest request
                                     , HttpServletResponse response){
@@ -63,7 +77,7 @@ public class CommentController {
         return commentBoardWebClient.commentReplyInsert(commentData, request, response);
     }
 
-    @DeleteMapping("/commentDelete/{commentNo}")
+    @DeleteMapping("/{commentNo}")
     public Long commentDelete(@PathVariable long commentNo
                                 , HttpServletRequest request
                                 , HttpServletResponse response){

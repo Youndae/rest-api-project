@@ -45,17 +45,18 @@ public class ImageBoardWebClient {
 
     private static final String imagePath = PathProperties.IMAGE_BOARD_PATH;
 
-    public ImageBoardListDTO getImageBoardList(Criteria cri, HttpServletRequest request, HttpServletResponse response) {
-        String path = imagePath + "/image-board-list";
+    private static final String imagePath_variable = PathProperties.IMAGE_BOARD_PATH_VARIABLE;
+
+    public ImageBoardListDTO getList(Criteria cri, HttpServletRequest request, HttpServletResponse response) {
 
         UriComponents ub = UriComponentsBuilder.newInstance()
-                                                .path(path)
+                                                .path(imagePath)
                                                 .queryParam("pageNum", cri.getPageNum())
                                                 .build();
 
         if(cri.getKeyword() != null)
             ub = UriComponentsBuilder.newInstance()
-                                    .path(path)
+                                    .path(imagePath)
                                     .queryParam("pageNum", cri.getPageNum())
                                     .queryParam("keyword", cri.getKeyword())
                                     .queryParam("searchType", cri.getSearchType())
@@ -89,7 +90,7 @@ public class ImageBoardWebClient {
          * https://flyburi.com/617
          */
         return imageWebClient.get()
-                            .uri(uriBuilder -> uriBuilder.path(imagePath + "/display")
+                            .uri(uriBuilder -> uriBuilder.path(imagePath + "display")
                                     .queryParam("imageName", imageName)
                                     .build())
                             .retrieve()
@@ -109,15 +110,14 @@ public class ImageBoardWebClient {
                             .block();
     }
 
-    public BoardDetailAndModifyDTO<ImageBoardDetailDTO> getImageDetail(long imageNo
+    public BoardDetailAndModifyDTO<ImageBoardDetailDTO> getDetail(long imageNo
                                                 , HttpServletRequest request
                                                 , HttpServletResponse response) {
 
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         String responseVal = webClient.get()
-                                    .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-board-detail/{imageNo}")
-                                            .build(imageNo))
+                                    .uri(uriBuilder -> uriBuilder.path(imagePath_variable).build(imageNo))
                                     .cookies(cookies -> cookies.addAll(cookieMap))
                                     .exchangeToMono(res -> {
                                         exchangeService.checkExchangeResponse(res, response);
@@ -132,7 +132,7 @@ public class ImageBoardWebClient {
         return dto;
     }
 
-    public Long imageBoardInsert(String imageTitle
+    public Long insertBoard(String imageTitle
                                 , String imageContent
                                 , List<MultipartFile> files
                                 , HttpServletRequest request
@@ -153,7 +153,7 @@ public class ImageBoardWebClient {
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         return imageWebClient.post()
-                            .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-insert").build())
+                            .uri(uriBuilder -> uriBuilder.path(imagePath).build())
                             .contentType(MediaType.MULTIPART_FORM_DATA)
                             .body(BodyInserters.fromMultipartData(mbBuilder.build()))
                             .cookies(cookies -> cookies.addAll(cookieMap))
@@ -177,13 +177,13 @@ public class ImageBoardWebClient {
         return 1;
     }
 
-    public BoardDetailAndModifyDTO<ImageBoardDTO> getModifyData(long imageNo
+    public BoardDetailAndModifyDTO<ImageBoardDTO> getPatchDetail(long imageNo
                                         , HttpServletRequest request
                                         , HttpServletResponse response){
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         String result = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(imagePath + "/modify-data/{imageNo}").build(imageNo))
+                .uri(uriBuilder -> uriBuilder.path(imagePath + "/patch-detail/{imageNo}").build(imageNo))
                 .cookies(cookies -> cookies.addAll(cookieMap))
                 .exchangeToMono(res -> {
                     exchangeService.checkExchangeResponse(res, response);
@@ -198,13 +198,13 @@ public class ImageBoardWebClient {
         return dto;
     }
 
-    public List<ImageDataDTO> getModifyImageList(long imageNo
+    public List<ImageDataDTO> getPatchImage(long imageNo
                                                     , HttpServletRequest request
                                                     , HttpServletResponse response) {
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         String responseVal = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(imagePath + "/modify-image-attach/{imageNo}").build(imageNo))
+                .uri(uriBuilder -> uriBuilder.path(imagePath + "/patch-detail/image/{imageNo}").build(imageNo))
                 .cookies(cookies -> cookies.addAll(cookieMap))
                 .exchangeToMono(res -> {
                     exchangeService.checkExchangeResponse(res, response);
@@ -219,7 +219,7 @@ public class ImageBoardWebClient {
        return dto;
     }
 
-    public Long imageBoardModify(long imageNo, String imageTitle, String imageContent
+    public Long patchBoard(long imageNo, String imageTitle, String imageContent
                                     , List<MultipartFile> files, List<String> deleteFiles
                                     , HttpServletRequest request, HttpServletResponse response){
         if(files != null && imageSizeCheck(files) == -2L)
@@ -241,12 +241,11 @@ public class ImageBoardWebClient {
 
         mbBuilder.part("imageTitle", imageTitle);
         mbBuilder.part("imageContent", imageContent);
-        mbBuilder.part("imageNo", imageNo);
 
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         return imageWebClient.patch()
-                            .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-modify").build())
+                            .uri(uriBuilder -> uriBuilder.path(imagePath_variable).build(imageNo))
                             .contentType(MediaType.MULTIPART_FORM_DATA)
                             .body(BodyInserters.fromMultipartData(mbBuilder.build()))
                             .cookies(cookies -> cookies.addAll(cookieMap))
@@ -258,11 +257,11 @@ public class ImageBoardWebClient {
                             .block();
     }
 
-    public Long imageBoardDelete(long imageNo, HttpServletRequest request, HttpServletResponse response) {
+    public Long deleteBoard(long imageNo, HttpServletRequest request, HttpServletResponse response) {
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         return webClient.delete()
-                .uri(uriBuilder -> uriBuilder.path(imagePath + "/image-delete/{imageNo}").build(imageNo))
+                .uri(uriBuilder -> uriBuilder.path(imagePath_variable).build(imageNo))
                 .cookies(cookies -> cookies.addAll(cookieMap))
                 .exchangeToMono(res -> {
                     exchangeService.checkExchangeResponse(res, response);

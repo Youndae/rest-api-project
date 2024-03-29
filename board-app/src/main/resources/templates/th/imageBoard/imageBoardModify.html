@@ -32,8 +32,8 @@
                     <label for="imageContent">내용</label>
                     <textarea name="imageContent" id="imageContent" style="width: 300px; height: 300px" th:text="${data.content.imageContent}"></textarea>
                 </div>
-                <input type="hidden" id="modifyImageNo" name="imageNo" th:value="${data.content.imageNo}">
             </form>
+            <input type="hidden" id="modifyImageNo" th:value="${data.content.imageNo}">
             <div class="attach">
                 <input type="file" id="uploadInputBox" name="fileData" value="사진 첨부" multiple>
             </div>

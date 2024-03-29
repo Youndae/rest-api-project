@@ -35,8 +35,6 @@ public class MemberWebClient {
     public Long loginProc(Map<String, String> loginData
                         , HttpServletRequest request
                         , HttpServletResponse response) {
-        String path = memberPath + "/login";
-
         Member member = Member.builder()
                 .userId(loginData.get("userId"))
                 .userPw(loginData.get("userPw"))
@@ -45,7 +43,7 @@ public class MemberWebClient {
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         return webClient.post()
-                        .uri(uriBuilder -> uriBuilder.path(path).build())
+                        .uri(uriBuilder -> uriBuilder.path(memberPath + "login").build())
                         .cookies(cookies -> cookies.addAll(cookieMap))
                         .bodyValue(member)
                         .exchangeToMono(res -> {
@@ -60,7 +58,7 @@ public class MemberWebClient {
     public Long checkUserId(String userId){
 
         return webClient.get()
-                        .uri(uriBuilder -> uriBuilder.path(memberPath + "/check-user-id")
+                        .uri(uriBuilder -> uriBuilder.path(memberPath + "check-id")
                                 .queryParam("userId", userId)
                                 .build())
                         .retrieve()
@@ -83,7 +81,7 @@ public class MemberWebClient {
     public Long joinProc(MemberDTO dto){
 
         return webClient.post()
-                        .uri(uriBuilder -> uriBuilder.path(memberPath + "/join-proc").build())
+                        .uri(uriBuilder -> uriBuilder.path(memberPath + "join").build())
                         .accept()
                         .body(Mono.just(dto), MemberDTO.class)
                         .retrieve()
@@ -107,7 +105,7 @@ public class MemberWebClient {
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         return webClient.post()
-                        .uri(uriBuilder -> uriBuilder.path(memberPath + "/logout").build())
+                        .uri(uriBuilder -> uriBuilder.path(memberPath + "logout").build())
                         .cookies(cookies -> cookies.addAll(cookieMap))
                         .acceptCharset(Charset.forName("UTF-8"))
                         .exchangeToMono(res -> {

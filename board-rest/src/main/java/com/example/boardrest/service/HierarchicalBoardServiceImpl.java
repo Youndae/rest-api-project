@@ -1,5 +1,7 @@
 package com.example.boardrest.service;
 
+import com.example.boardrest.customException.CustomAccessDeniedException;
+import com.example.boardrest.customException.ErrorCode;
 import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
 import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
@@ -119,9 +121,9 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
     // 계층형 게시판 patch
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public long patchBoard(HierarchicalBoardModifyDTO dto, Principal principal) {
+    public long patchBoard(HierarchicalBoardModifyDTO dto, long boardNo, Principal principal) {
         HierarchicalBoard board = hierarchicalBoardRepository
-                                    .findById(dto.getBoardNo())
+                                    .findById(boardNo)
                                     .orElseThrow(() -> new NullPointerException("NullPointerException"));
 
         String writer = board.getMember().getUserId();
@@ -130,9 +132,10 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
             board.setBoardTitle(dto.getBoardTitle());
             board.setBoardContent(dto.getBoardContent());
             hierarchicalBoardRepository.save(board);
-        }
 
-        return dto.getBoardNo();
+            return boardNo;
+        }else
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, "AccessDenied");
     }
 
     @Override

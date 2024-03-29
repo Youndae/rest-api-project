@@ -32,6 +32,44 @@ public class CommentBoardWebClient {
 
     private static final String commentPath = PathProperties.COMMENT_PATH;
 
+    public CommentListDTO getList(String boardType
+                                , long boardNo
+                                , Criteria cri
+                                , HttpServletRequest request
+                                , HttpServletResponse response) {
+
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
+        String boardQueryParamName;
+
+        if(boardType.equals("board")){
+            boardQueryParamName = "boardNo";
+        }else if(boardType.equals("image")) {
+            boardQueryParamName = "imageNo";
+        } else {
+            throw new NullPointerException("comment Board Type NullPointerException");
+        }
+
+        String responseVal = webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(commentPath)
+                        .queryParam(boardQueryParamName, String.valueOf(boardNo))
+                        .queryParam("pageNum", cri.getPageNum())
+                        .build())
+                .cookies(cookies -> cookies.addAll(cookieMap))
+                .exchangeToMono(resp -> {
+                    exchangeService.checkExchangeResponse(resp, response);
+
+                    return resp.bodyToMono(String.class);
+                })
+                .block();
+
+        CommentListDTO dto = new CommentListDTO();
+        dto = readValueService.setReadValue(dto, responseVal);
+        dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
+
+        return dto;
+    }
+/*
     public CommentListDTO getBoardComment(long boardNo
                                             , Criteria cri
                                             , HttpServletRequest request
@@ -81,7 +119,7 @@ public class CommentBoardWebClient {
         dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
 
         return dto;
-    }
+    }*/
 
     public Long commentInsert(Map<String, Object> commentData
                                 , HttpServletRequest request
@@ -98,7 +136,7 @@ public class CommentBoardWebClient {
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         Long result = webClient.post()
-                            .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-insert").build())
+                            .uri(uriBuilder -> uriBuilder.path(commentPath).build())
                             .body(Mono.just(dto), CommentDTO.class)
                             .cookies(cookies -> cookies.addAll(cookieMap))
                             .exchangeToMono(resp -> {
@@ -133,7 +171,7 @@ public class CommentBoardWebClient {
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         Long result = webClient.post()
-                            .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-reply").build())
+                            .uri(uriBuilder -> uriBuilder.path(commentPath + "reply").build())
                             .body(Mono.just(dto), CommentDTO.class)
                             .cookies(cookies -> cookies.addAll(cookieMap))
                             .exchangeToMono(resp -> {
@@ -149,8 +187,7 @@ public class CommentBoardWebClient {
         MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         Long result = webClient.delete()
-                            .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-delete/{commentNo}")
-                                    .build(commentNo))
+                            .uri(uriBuilder -> uriBuilder.path(commentPath + "{commentNo}").build(commentNo))
                             .cookies(cookies -> cookies.addAll(cookieMap))
                             .exchangeToMono(resp -> {
                                 exchangeService.checkExchangeResponse(resp, response);

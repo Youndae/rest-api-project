@@ -21,9 +21,10 @@ public interface ImageBoardService {
                             , Principal principal);
 
     long imagePatchCheck(List<MultipartFile> images
-            , List<String> deleteFiles
-            , HttpServletRequest request
-            , Principal principal);
+                        , List<String> deleteFiles
+                        , long imageNo
+                        , HttpServletRequest request
+                        , Principal principal);
 
     long deleteImageBoard(long imageNo, Principal principal);
 

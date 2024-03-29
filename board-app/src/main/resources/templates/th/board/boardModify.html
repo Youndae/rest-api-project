@@ -13,7 +13,7 @@
 <body>
 <div layout:fragment="content">
     <div class="container">
-        <form th:action="@{/board/boardModify}" id="insertBoardFrm" th:method="patch">
+        <form th:action="@{/board/{boardNo}(boardNo=${data.content.boardNo})}" id="patchBoardFrm" th:method="patch">
             <div>
                 <label for="boardTitle">제목</label>
                 <input type="text" id="boardTitle" name="boardTitle" th:value="${data.content.boardTitle}">
@@ -23,7 +23,6 @@
                 <textarea name="boardContent" id="boardContent" th:text="${data.content.boardContent}"></textarea>
             </div>
             <button class="btn btn-outline-info btn-sm" id="modifyProc" name="modifyProc" type="button">등록</button>
-            <input type="hidden" name="boardNo" th:value="${data.content.boardNo}">
         </form>
     </div>
 </div>

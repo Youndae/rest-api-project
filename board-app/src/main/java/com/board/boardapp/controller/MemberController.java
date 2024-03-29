@@ -25,12 +25,12 @@ public class MemberController {
 
     private final TokenService tokenService;
 
-    @GetMapping("/loginForm")
+    @GetMapping("/login")
     public String login(HttpServletRequest request, Model model) {
         boolean checkToken = tokenService.checkExistsToken(request);
 
         if(checkToken)
-            return "redirect:/board/boardList";
+            return "redirect:/board/";
 
         LoginDTO dto = new LoginDTO(new UserStatusDTO(false, null));
         model.addAttribute("data", dto);
@@ -52,7 +52,7 @@ public class MemberController {
         boolean checkToken = tokenService.checkExistsToken(request);
 
         if(checkToken)
-            return "redirect:/board/boardList";
+            return "redirect:/board/";
 
         LoginDTO dto = new LoginDTO(new UserStatusDTO(false, null));
         model.addAttribute("data", dto);
@@ -60,7 +60,7 @@ public class MemberController {
         return "th/member/join";
     }
 
-    @PostMapping("/joinProc")
+    @PostMapping("/join")
     @ResponseBody
     public Long joinProc(MemberDTO memberDTO){
 
@@ -79,7 +79,7 @@ public class MemberController {
         Long result = memberWebClient.logout(request, response);
 
         if(result == 1L)
-            return "redirect:/board/boardList";
+            return "redirect:/board/";
         else
             return "th/error/error";
     }

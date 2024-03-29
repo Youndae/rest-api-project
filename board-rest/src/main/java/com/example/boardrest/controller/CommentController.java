@@ -23,8 +23,8 @@ public class CommentController {
 
     private CommentService commentService;
 
-    @GetMapping("/comment-list")
-    public ResponseEntity<ResponsePageableListDTO<BoardCommentDTO>> commentList(@RequestParam(value = "boardNo", required = false) String boardNo
+    @GetMapping("/")
+    public ResponseEntity<ResponsePageableListDTO<BoardCommentDTO>> getList(@RequestParam(value = "boardNo", required = false) String boardNo
                                                             , @RequestParam(value = "imageNo", required = false) String imageNo
                                                             , @RequestParam(value = "pageNum") int pageNum
                                                             , Principal principal){
@@ -35,27 +35,27 @@ public class CommentController {
         return new ResponseEntity<>(commentService.commentList(boardNo, imageNo, cri, principal), HttpStatus.OK);
     }
 
-    @PostMapping("/comment-insert")
+    @PostMapping("/")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public long commentInsert(@RequestBody CommentInsertDTO dto
+    public long insertComment(@RequestBody CommentInsertDTO dto
                             , Principal principal) {
 
         return commentService.commentInsertProc(dto, principal);
     }
 
-    @PostMapping("/comment-reply")
+    @DeleteMapping("/{commentNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public long commentReply(@RequestBody CommentInsertDTO dto
+    public int deleteComment(@PathVariable long commentNo, Principal principal) {
+
+        return commentService.commentDelete(commentNo, principal);
+    }
+
+    @PostMapping("/reply")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
+    public long replyComment(@RequestBody CommentInsertDTO dto
                                 , Principal principal){
 
         return commentService.commentInsertProc(dto, principal);
-    }
-
-    @DeleteMapping("/comment-delete/{commentNo}")
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public int commentDelete(@PathVariable long commentNo, Principal principal) {
-
-        return commentService.commentDelete(commentNo, principal);
     }
 
 }

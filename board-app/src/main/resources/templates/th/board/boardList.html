@@ -46,7 +46,7 @@
 <div layout:fragment="content">
     <div class="container">
         <div class="form-row float-right mb-1">
-            <button class="btn btn-outline-info btn-sm" onclick="location.href='/board/boardInsert'">글작성</button>
+            <button class="btn btn-outline-info btn-sm" onclick="location.href='/board/post'">글작성</button>
         </div>
         <table class="table table-hover">
             <tr>
@@ -61,19 +61,19 @@
                     <td>
                         <span>
                             <th:block th:if="${data.boardIndent} eq 0">
-                                <a class="title_indent_0" th:href="@{/board/boardDetail/{boardNo}(boardNo=${data.boardNo})}" th:text="${data.boardTitle}"></a>
+                                <a class="title_indent_0" th:href="@{/board/{boardNo}(boardNo=${data.boardNo})}" th:text="${data.boardTitle}"></a>
                             </th:block>
                             <th:block th:if="${data.boardIndent} eq 1">
-                                <a class="title_indent_1" th:href="@{/board/boardDetail/{boardNo}(boardNo=${data.boardNo})}" th:text="ㄴ + ${data.boardTitle}"></a>
+                                <a class="title_indent_1" th:href="@{/board/{boardNo}(boardNo=${data.boardNo})}" th:text="ㄴ + ${data.boardTitle}"></a>
                             </th:block>
                             <th:block th:if="${data.boardIndent} eq 2">
-                                <a class="title_indent_2" th:href="@{/board/boardDetail/{boardNo}(boardNo=${data.boardNo})}" th:text="ㄴ + ${data.boardTitle}"></a>
+                                <a class="title_indent_2" th:href="@{/board/{boardNo}(boardNo=${data.boardNo})}" th:text="ㄴ + ${data.boardTitle}"></a>
                             </th:block>
                             <th:block th:if="${data.boardIndent} eq 3">
-                                <a class="title_indent_3" th:href="@{/board/boardDetail/{boardNo}(boardNo=${data.boardNo})}" th:text="ㄴ + ${data.boardTitle}"></a>
+                                <a class="title_indent_3" th:href="@{/board/{boardNo}(boardNo=${data.boardNo})}" th:text="ㄴ + ${data.boardTitle}"></a>
                             </th:block>
                             <th:block th:if="${data.boardIndent} eq 4">
-                                <a class="title_indent_4" th:href="@{/board/boardDetail/{boardNo}(boardNo=${data.boardNo})}" th:text="ㄴ + ${data.boardTitle}"></a>
+                                <a class="title_indent_4" th:href="@{/board/{boardNo}(boardNo=${data.boardNo})}" th:text="ㄴ + ${data.boardTitle}"></a>
                             </th:block>
                         </span>
                     </td>
@@ -83,7 +83,7 @@
             </th:block>
         </table>
         <div class="search">
-            <form action="/board/boardList" id="search_form" method="get">
+            <form action="/board/" id="search_form" method="get">
                 <select name="searchType">
                     <option th:value="t" th:selected="${data.pageDTO.cri.searchType == 't'}">제목</option>
                     <option th:value="c" th:selected="${data.pageDTO.cri.searchType == 'c'}">내용</option>
@@ -116,11 +116,11 @@
             </ul>
         </div>
 
-        <form th:action="@{/board/boardList}" id="pageActionForm" method="get">
+        <form th:action="@{/board/}" id="pageActionForm" method="get">
             <input type="hidden" name="pageNum" th:value="${data.pageDTO.cri.pageNum}">
         </form>
 
-        <form th:action="@{/board/boardList}" id="pageSearchActionForm" method="get">
+        <form th:action="@{/board/}" id="pageSearchActionForm" method="get">
             <input type="hidden" name="pageNum" th:value="${data.pageDTO.cri.pageNum}">
             <input type="hidden" name="searchType" th:value="${data.pageDTO.cri.searchType}">
             <input type="hidden" name="keyword" th:value="${data.pageDTO.cri.keyword}">

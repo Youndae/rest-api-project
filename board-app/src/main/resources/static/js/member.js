@@ -28,7 +28,7 @@ $(function(){
                 success: function(result){
                     console.log("result : " + result);
                     if(result == 1){
-                        location.href='/board/boardList';
+                        location.href='/board/';
                     }
                 },
                 error: function(request, status, error){
@@ -150,7 +150,7 @@ $(function(){
 
             $.ajaxSettings.traditional = true;
             $.ajax({
-                url: '/member/joinProc',
+                url: '/member/join',
                 contentType: false,
                 processData: false,
                 cache: false,
@@ -161,7 +161,7 @@ $(function(){
                         alert("가입 실패\n 다시 시도해주세요");
                     }else if(data == 1){
                         alert("가입 되었습니다.")
-                        location.href='/member/loginForm';
+                        location.href='/member/login';
                     }else{
                         alert('error');
                     }

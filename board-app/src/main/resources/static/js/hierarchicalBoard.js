@@ -11,13 +11,17 @@ $(document).ready(function(){
     })
 
     $("#modify").on('click', function(){
+        console.log("modify click");
         const boardNo = $("#boardNo").val();
 
-        location.href = '/board/boardModify/' + boardNo;
+        location.href = '/board/patch/' + boardNo;
     })
 
     $("#modifyProc").on('click', function(){
-        const form = $("#insertBoardFrm");
+        const form = $("#patchBoardFrm");
+        /*const boardNo = $("#boardNo").val();
+
+        form.attr('action', '/board/' + boardNo).submit();*/
 
         form.submit();
     })
@@ -26,11 +30,11 @@ $(document).ready(function(){
         const boardNo = $("#boardNo").val();
 
         $.ajax({
-            url: '/board/boardDelete/' + boardNo,
+            url: '/board/' + boardNo,
             method: 'delete',
             success: function(data){
                 if(data == 1)
-                    location.href='/board/boardList';
+                    location.href='/board/';
                 else
                     location.href='/error/error';
             },
@@ -44,7 +48,7 @@ $(document).ready(function(){
 
     $("#reply").on('click', function(){
         const boardNo = $("#boardNo").val();
-        location.href='/board/boardReply/' + boardNo;
+        location.href='/board/reply/' + boardNo;
     })
 
     $("#replyInsertProc").on('click', function(){

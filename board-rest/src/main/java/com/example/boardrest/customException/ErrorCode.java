@@ -7,7 +7,8 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode {
 
-    TOKEN_STEALING(800, "TokenStealingException");
+    TOKEN_STEALING(800, "TokenStealingException")
+    , ACCESS_DENIED(403, "AccessDeniedException");
 
     private final Integer httpStatus;
 

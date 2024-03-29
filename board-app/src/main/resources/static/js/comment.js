@@ -40,7 +40,7 @@ $(document).on('click', '#commentInsert', function(){
         commentData = JSON.stringify(commentData);
 
         $.ajax({
-            url: '/comment/commentInsert',
+            url: '/comment/',
             method: 'post',
             data: commentData,
             contentType: 'application/json; charset=UTF-8',
@@ -82,7 +82,7 @@ $(document).on('click', '#commentReplyInsert', function(){
         commentData = JSON.stringify(commentData);
 
         $.ajax({
-            url: '/comment/commentReplyInsert',
+            url: '/comment/reply',
             method: 'post',
             data: commentData,
             contentType: 'application/json; charset=UTF-8',
@@ -100,14 +100,14 @@ $(document).on('click', '#commentReplyInsert', function(){
 })
 
 function hierarchicalBoardComment(boardNo, pageNum){
-    $.getJSON('/comment/boardComment/' + boardNo + "/" + pageNum, function(arr){
+    $.getJSON('/comment/board/' + boardNo + "/" + pageNum, function(arr){
         commentEachParsing(arr.content, arr.userStatus);
         commentPagingParsing(arr);
     })
 }
 
 function imageBoardComment(imageNo, pageNum){
-    $.getJSON('/comment/imageComment/' + imageNo + "/" + pageNum, function(arr){
+    $.getJSON('/comment/image/' + imageNo + "/" + pageNum, function(arr){
         commentEachParsing(arr.content, arr.userStatus);
         commentPagingParsing(arr);
     })
@@ -283,7 +283,7 @@ function cDel(obj){
     const commentNo = obj.attributes['value'].value;
 
     $.ajax({
-        url: '/comment/commentDelete/' + commentNo,
+        url: '/comment/' + commentNo,
         method: 'delete',
         success: function(result){
             if(result != -1)

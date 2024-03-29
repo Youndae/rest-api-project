@@ -25,13 +25,13 @@
 <div layout:fragment="content">
     <div class="container">
         <div class="mb-4">
-            <button class="btn btn-outline-info btn-sm" onclick="location.href='/imageBoard/imageBoardInsert'">글작성</button>
+            <button class="btn btn-outline-info btn-sm" onclick="location.href='/imageBoard/post'">글작성</button>
         </div>
         <div class="row">
             <!-- 이미지 파일 배치 -->
             <th:block th:each="img : ${data.content}">
                 <div class="col-md-4">
-                    <a th:href="@{/imageBoard/imageBoardDetail/{imageNo}(imageNo=${img.imageNo})}">
+                    <a th:href="@{/imageBoard/{imageNo}(imageNo=${img.imageNo})}">
                         <img class="imageData" th:src="@{/imageBoard/display/{imageName}(imageName=${img.imageName})}" style="width: 300px; height: 300px"/>
                         <p th:text="${img.imageTitle}"></p>
                     </a>
@@ -39,7 +39,7 @@
             </th:block>
         </div>
         <div class="search">
-            <form action="/imageBoard/imageBoardList" id="search_form" method="get">
+            <form action="/imageBoard/" id="search_form" method="get">
                 <select name="searchType">
                     <option th:value="t" th:selected="${data.pageDTO.cri.searchType == 't'}">제목</option>
                     <option th:value="c" th:selected="${data.pageDTO.cri.searchType == 'c'}">내용</option>
@@ -72,11 +72,11 @@
             </ul>
         </div>
 
-        <form th:action="@{/imageBoard/imageBoardList}" id="pageActionForm" method="get">
+        <form th:action="@{/imageBoard/}" id="pageActionForm" method="get">
             <input type="hidden" name="pageNum" th:value="${data.pageDTO.cri.pageNum}">
         </form>
 
-        <form th:action="@{/imageBoard/imageBoardList}" id="pageSearchActionForm" method="get">
+        <form th:action="@{/imageBoard/}" id="pageSearchActionForm" method="get">
             <input type="hidden" name="pageNum" th:value="${data.pageDTO.cri.pageNum}">
             <input type="hidden" name="searchType" th:value="${data.pageDTO.cri.searchType}">
             <input type="hidden" name="keyword" th:value="${data.pageDTO.cri.keyword}">

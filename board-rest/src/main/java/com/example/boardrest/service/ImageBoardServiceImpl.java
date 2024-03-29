@@ -1,5 +1,7 @@
 package com.example.boardrest.service;
 
+import com.example.boardrest.customException.CustomAccessDeniedException;
+import com.example.boardrest.customException.ErrorCode;
 import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
 import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
 import com.example.boardrest.domain.entity.ImageBoard;
@@ -101,10 +103,9 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     @Transactional(rollbackOn = Exception.class)
     public long imagePatchCheck(List<MultipartFile> images
                                 , List<String> deleteFiles
+                                , long imageNo
                                 , HttpServletRequest request
                                 , Principal principal) {
-
-        long imageNo = Long.parseLong(request.getParameter("imageNo"));
 
         ImageBoard imageBoard = imageBoardRepository
                 .findById(imageNo)
@@ -112,9 +113,8 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
         String writer = imageBoard.getMember().getUserId();
 
-
         if(!writer.equals(principal.getName()))
-            new AccessDeniedException("AccessDenied");
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, "AccessDenied");
 
         imageBoard = ImageBoard.builder()
                                 .member(principalService.checkPrincipal(principal))

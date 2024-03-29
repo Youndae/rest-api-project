@@ -34,13 +34,13 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/join-proc")
+    @PostMapping("/join")
     public int joinProc(@RequestBody MemberDTO dto){
 
         return memberService.memberJoinProc(dto);
     }
 
-    @GetMapping("/check-user-id")
+    @GetMapping("/check-id")
     public int checkUserId(@RequestParam("userId") String userId){
 
         if(memberRepository.findByUserId(userId) != null)

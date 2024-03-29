@@ -8,17 +8,17 @@ $(function(){
     const imageNo = $("#imageNo").val();
 
     $("#modify").on('click', function(){
-        location.href='/imageBoard/imageBoardModify/' + imageNo;
+        location.href='/imageBoard/patch/' + imageNo;
     })
 
     $("#deleteBoard").on('click', function(){
 
         $.ajax({
-            url: '/imageBoard/imageBoardDelete/' + imageNo,
+            url: '/imageBoard/' + imageNo,
             method: 'delete',
             success: function(result){
                 if(result == 1){
-                    location.href='/imageBoard/imageBoardList';
+                    location.href='/imageBoard/';
                 }else{
                     alert("삭제 실패");
                 }
@@ -70,7 +70,7 @@ $(function(){
             }
 
             $.ajax({
-                url: '/imageBoard/imageBoardInsert',
+                url: '/imageBoard/',
                 type: 'post',
                 enctype: 'multipart/form-data',
                 processData: false,
@@ -83,8 +83,7 @@ $(function(){
                     }else if(data == 2){
                         alert("파일 사이즈 초과");
                     }else{
-                        alert("성공?");
-                        location.href="/imageBoard/imageBoardDetail/" + data;
+                        location.href="/imageBoard/" + data;
                     }
                 },
                 error: function(request){
@@ -99,7 +98,7 @@ $(function(){
     const modifyImageNo = $("#modifyImageNo").val();
 
     if(modifyImageNo != undefined){
-        $.getJSON("/imageBoard/modifyImageAttach", {imageNo: modifyImageNo}, function(arr){
+        $.getJSON("/imageBoard/patch/image", {imageNo: modifyImageNo}, function(arr){
             $(arr).each(function(i, attach){
                 $("#preview").append(
                     "<div class=\"preview-box\" value=\"old" + attach.imageStep + "\">" +
@@ -117,6 +116,7 @@ $(function(){
     $("#imageModify").on('click', function(){
         const form = $("#uploadForm")[0];
         let formData = new FormData(form);
+        const imageNo = $("#modifyImageNo").val();
 
         for(let index = 0; index < Object.keys(files).length; index++){
             formData.append('files', files[index]);
@@ -127,7 +127,7 @@ $(function(){
         }
 
         $.ajax({
-            url: '/imageBoard/imageBoardModify',
+            url: '/imageBoard/' + imageNo,
             method: 'patch',
             enctype: 'multipart/form-data',
             processData: false,
@@ -140,7 +140,7 @@ $(function(){
                 }else if(result == -2){
                     alert("파일 사이즈를 초과했습니다.");
                 }else{
-                    location.href='/imageBoard/imageBoardDetail/' + result;
+                    location.href='/imageBoard/' + result;
                 }
             },
             error: function(request, status, error){

@@ -16,7 +16,7 @@ public interface HierarchicalBoardService {
 
     ResponsePageableListDTO getHierarchicalBoardList(Criteria cri, Principal principal);
 
-    long patchBoard(HierarchicalBoardModifyDTO dto, Principal principal);
+    long patchBoard(HierarchicalBoardModifyDTO dto, long boardNo, Principal principal);
 
     ResponseDetailAndModifyDTO<HierarchicalBoardModifyDTO> getModifyData(long boardNo, Principal principal);
 

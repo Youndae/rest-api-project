@@ -47,10 +47,12 @@ public class ExceptionHandlerAdvice {
 
 
     @ExceptionHandler(CustomNotFoundException.class)
-    public ResponseEntity<ErrorResponseEntity> customNotFoundExceptionResponseEntity(CustomNotFoundException e){
-
+    public String customNotFoundExceptionResponseEntity(CustomNotFoundException e, Model model){
         log.info("CustomNotFoundException");
-        return ErrorResponseEntity.toResponseEntity(e.getErrorCode());
+
+        model.addAttribute("data", dto);
+
+        return "th/error/error";
     }
 
     @ExceptionHandler(SizeLimitExceededException.class)

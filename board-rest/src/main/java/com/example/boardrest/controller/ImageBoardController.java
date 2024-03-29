@@ -31,8 +31,8 @@ public class ImageBoardController {
 
     private final ImageBoardService imageBoardService;
 
-    @GetMapping("/image-board-list")
-    public ResponseEntity<ResponsePageableListDTO<ImageBoardDTO>> imageBoardList(@RequestParam(value = "pageNum") int pageNum
+    @GetMapping("/")
+    public ResponseEntity<ResponsePageableListDTO<ImageBoardDTO>> getList(@RequestParam(value = "pageNum") int pageNum
                                                             , @RequestParam(value = "keyword", required = false) String keyword
                                                             , @RequestParam(value = "searchType", required = false) String searchType
                                                             , Principal principal){
@@ -46,51 +46,51 @@ public class ImageBoardController {
         return new ResponseEntity<>(imageBoardService.getImageBoardList(cri, principal), HttpStatus.OK);
     }
 
-    @GetMapping("/image-board-detail/{imageNo}")
-    public ResponseEntity<ResponseDetailAndModifyDTO<ImageBoardDetailDTO>> imageBoardDetail(@PathVariable long imageNo, Principal principal){
+    @GetMapping("/{imageNo}")
+    public ResponseEntity<ResponseDetailAndModifyDTO<ImageBoardDetailDTO>> getDetail(@PathVariable long imageNo, Principal principal){
 
         return new ResponseEntity<>(imageBoardService.getImageBoardDetail(imageNo, principal), HttpStatus.OK);
     }
 
-
-    @GetMapping("/modify-data/{imageNo}")
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public ResponseEntity<ResponseDetailAndModifyDTO<ImageModifyInfoDTO>> imageBoardModifyInfo(@PathVariable long imageNo, Principal principal) {
-
-        return new ResponseEntity<>(imageBoardService.getModifyData(imageNo, principal), HttpStatus.OK);
-    }
-
-    @GetMapping("/modify-image-attach/{imageNo}")
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public ResponseEntity<List<ImageDataDTO>> modifyImageAttach(@PathVariable long imageNo){
-
-        return new ResponseEntity<>(imageBoardService.getModifyImageAttach(imageNo), HttpStatus.OK);
-    }
-
     // 등록된 boardNo return
-    @PostMapping("/image-insert")
+    @PostMapping("/")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public long imageBoardInsert(@RequestParam List<MultipartFile> files
-                                , @RequestParam String imageTitle
-                                , @RequestParam String imageContent
-                                , HttpServletRequest request
-                                , Principal principal) {
+    public long insertBoard(@RequestParam List<MultipartFile> files
+            , @RequestParam String imageTitle
+            , @RequestParam String imageContent
+            , HttpServletRequest request
+            , Principal principal) {
 
         return imageBoardService.imageInsertCheck(files, imageTitle, imageContent, request, principal);
     }
 
 
-    @PatchMapping("/image-modify")
+    @GetMapping("/patch-detail/{imageNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public long imageBoardPatch(@RequestParam(value = "files", required = false) List<MultipartFile> files
-                                , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
-                                , HttpServletRequest request
-                                , Principal principal){
+    public ResponseEntity<ResponseDetailAndModifyDTO<ImageModifyInfoDTO>> getPatchDetail(@PathVariable long imageNo, Principal principal) {
 
-        return imageBoardService.imagePatchCheck(files, deleteFiles, request, principal);
+        return new ResponseEntity<>(imageBoardService.getModifyData(imageNo, principal), HttpStatus.OK);
     }
 
-    @DeleteMapping("/image-delete/{imageNo}")
+    @GetMapping("/patch-detail/image/{imageNo}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
+    public ResponseEntity<List<ImageDataDTO>> getPatchImageData(@PathVariable long imageNo){
+
+        return new ResponseEntity<>(imageBoardService.getModifyImageAttach(imageNo), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{imageNo}")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
+    public long patchBoard(@PathVariable long imageNo
+                            , @RequestParam(value = "files", required = false) List<MultipartFile> files
+                            , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
+                            , HttpServletRequest request
+                            , Principal principal){
+
+        return imageBoardService.imagePatchCheck(files, deleteFiles, imageNo, request, principal);
+    }
+
+    @DeleteMapping("/{imageNo}")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
     public long imageBoardDelete(@PathVariable long imageNo, Principal principal){
 

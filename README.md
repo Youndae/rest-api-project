@@ -760,3 +760,15 @@ board-app = client Server
 >>>       * 쿠키명을 제외한 다른 값들은 Client-Server에서 더이상 알고 있어야할 필요가 없기 때문에 제거.
 >>>   * 테스트
 >>>     * 모든 기능에 대한 테스트 완료.
+>
+> 
+>> 24/03/29
+>>> * 수정
+>>>   * url 전체적으로 수정. rest-ful하게
+>>>   * CommentController에서 commentList 요청이 HierarchicalBoard에 대한 comment 요청, ImageBoard에 대한 comment 요청으로 두개로 구분되어있었는데 하나로 통합.
+>>>     * /{board}/{boardNo}/{pageNum} 으로 요청하게 되고 board에는 게시판 타입으로 board, imageBoard 가 들어간다.
+>>>     * WebClient로 요청을 보내는 CommentWebClient 에서는 이 board값에 따라 queryParam의 name을 변수화하고 해당 변수를 통해 queryParam을 설정해 요청을 보내도록 수정.
+>>>     * 그래서 WebClient 요청 역시 두개에서 하나로 통합.
+>>>   * API-Server CustomAccessDeniedException 생성
+>>>     * 수정이나 삭제같은 요청 발생 시 작성자와 요청자가 동일한지 체크하는데 이때 AccessDeniedException과 같은 처리를 하기 위해 CustomAccessDeniedException을 생성, RuntimeException을 상속받도록 해 불일치시 강제로 예외를 던질 수 있도록 처리.
+>>>   * url 수정으로 인해 js파일과 html 파일에서 역시 url 수정.
