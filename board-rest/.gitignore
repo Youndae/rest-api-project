@@ -4,8 +4,6 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-logback-spring/
-src/main/generated/
 
 ### STS ###
 .apt_generated
@@ -38,6 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 
-### log ###
-*.log
-*.log.gz
+!/logback-spring/
+!/src/main/generated/
