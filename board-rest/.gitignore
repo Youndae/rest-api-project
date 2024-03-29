@@ -37,7 +37,7 @@ out/
 .vscode/
 
 ### log ###
-logback-spring/
+/logback-spring/
 
 ### QEntity ###
-src/main/generated/
+/src/main/generated/
