@@ -38,6 +38,8 @@ out/
 
 ### log ###
 /logback-spring/
+*.log
+*.log.gz
 
 ### QEntity ###
 /src/main/generated/

@@ -38,3 +38,5 @@ out/
 
 ### log ###
 /logback-spring/
+*.log
+*.log.gz
