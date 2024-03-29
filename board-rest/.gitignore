@@ -37,4 +37,6 @@ out/
 .vscode/
 
 !/logback-spring/
-!/src/main/generated/
+/src/main/generated/
+*.log
+*.log.gz
