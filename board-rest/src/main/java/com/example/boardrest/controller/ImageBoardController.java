@@ -1,5 +1,7 @@
 package com.example.boardrest.controller;
 
+import com.example.boardrest.customException.CustomTokenStealingException;
+import com.example.boardrest.customException.ErrorCode;
 import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
 import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
@@ -97,8 +99,8 @@ public class ImageBoardController {
         return imageBoardService.deleteImageBoard(imageNo, principal);
     }
 
-    @GetMapping("/display")
-    public ResponseEntity<byte[]> getFile(@RequestParam(value = "imageName") String imageName){
+    @GetMapping("/display/{imageName}")
+    public ResponseEntity<byte[]> getFile(@PathVariable String imageName){
 
         File file = new File(FilePathProperties.FILE_PATH + imageName);
         ResponseEntity<byte[]> result = null;

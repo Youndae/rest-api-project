@@ -55,6 +55,8 @@ public class CommentController {
     public long replyComment(@RequestBody CommentInsertDTO dto
                                 , Principal principal){
 
+        System.out.println("commentReply dto : " + dto);
+
         return commentService.commentInsertProc(dto, principal);
     }
 

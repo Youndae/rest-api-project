@@ -11,8 +11,6 @@ import lombok.ToString;
 @NoArgsConstructor
 public class HierarchicalBoardReplyInfoDTO {
 
-    private Long boardNo;
-
     private long boardGroupNo;
 
     private int boardIndent;

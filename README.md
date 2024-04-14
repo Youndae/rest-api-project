@@ -772,3 +772,11 @@ board-app = client Server
 >>>   * API-Server CustomAccessDeniedException 생성
 >>>     * 수정이나 삭제같은 요청 발생 시 작성자와 요청자가 동일한지 체크하는데 이때 AccessDeniedException과 같은 처리를 하기 위해 CustomAccessDeniedException을 생성, RuntimeException을 상속받도록 해 불일치시 강제로 예외를 던질 수 있도록 처리.
 >>>   * url 수정으로 인해 js파일과 html 파일에서 역시 url 수정.
+>
+> 
+>> 24/04/14
+>>> * 추가
+>>>   * Api-Server
+>>>     * 리액트에서 navbar를 통해 사용자 로그인 상태 체크를 해야 했고 그로 인해 MemberController에  checkLogin 메소드 추가.
+>>>     * 단순하게 principal이 존재하면 LoginStatusDTO에 true를 담아 반환.
+>>>     * 존재하지 않는다면 false를 반환하도록 처리.

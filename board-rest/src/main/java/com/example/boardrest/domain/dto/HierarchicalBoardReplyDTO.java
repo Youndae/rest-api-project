@@ -11,8 +11,6 @@ import lombok.ToString;
 @NoArgsConstructor
 public class HierarchicalBoardReplyDTO {
 
-    private Long boardNo;
-
     private String boardTitle;
 
     private String boardContent;

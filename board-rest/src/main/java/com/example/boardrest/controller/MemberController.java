@@ -1,6 +1,7 @@
 package com.example.boardrest.controller;
 
 import com.example.boardrest.config.jwt.JwtProperties;
+import com.example.boardrest.domain.dto.LoginStateDTO;
 import com.example.boardrest.domain.dto.MemberDTO;
 import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.domain.dto.JwtDTO;
@@ -33,6 +34,18 @@ public class MemberController {
     private final MemberRepository memberRepository;
 
     private final MemberService memberService;
+
+    @GetMapping("/check-login")
+    public ResponseEntity checkLogin(Principal principal) {
+
+        LoginStateDTO responseDTO = new LoginStateDTO();
+
+        if(principal != null)
+            responseDTO.setStatusValueForTrue();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(responseDTO);
+    }
 
     @PostMapping("/join")
     public int joinProc(@RequestBody MemberDTO dto){

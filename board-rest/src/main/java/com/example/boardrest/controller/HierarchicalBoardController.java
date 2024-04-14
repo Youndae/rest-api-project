@@ -1,5 +1,7 @@
 package com.example.boardrest.controller;
 
+import com.example.boardrest.customException.CustomAccessDeniedException;
+import com.example.boardrest.customException.ErrorCode;
 import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
 import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
@@ -27,6 +29,7 @@ public class HierarchicalBoardController {
                                                                         , @RequestParam(value = "keyword", required = false) String keyword
                                                                         , @RequestParam(value = "searchType", required = false) String searchType
                                                                         , Principal principal) {
+
 
         Criteria cri = Criteria.builder()
                                 .pageNum(pageNum)
