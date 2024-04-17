@@ -6,6 +6,7 @@ import com.example.boardrest.repository.MemberRepository;
 import com.example.boardrest.security.domain.CustomUser;
 import com.example.boardrest.service.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -89,39 +90,46 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         //최종
         if (inoCookie != null) {
             if (accessTokenCookie != null && refreshTokenCookie != null) {
-                //모든 토큰이 존재
-                String inoValue = inoCookie.getValue();
-                String claimByUserIdToAccessToken = jwtTokenProvider.verifyAccessToken(accessTokenCookie, inoValue);
 
-                if (claimByUserIdToAccessToken.equals(JwtProperties.TOKEN_STEALING_RESULT) || claimByUserIdToAccessToken.equals(JwtProperties.WRONG_TOKEN)) {
-                    //토큰 검증 과정에서 탈취로 판단되었다면 redis 데이터는 삭제된 후 TOKEN_STEALING_RESULT가 반환된다.
-                    //쿠키 삭제를 위한 응답 쿠키만 처리한다.
-                    //WRONG_TOKEN 응답의 경우는 토큰이 잘못된 토큰이라 JWTDecodeException이 발생한 경우이므로
-                    //따로 처리할 것은 없이 응답으로 쿠키를 삭제하도록 처리한다.
-                    deleteTokenCookieThrowException(response);
+                if(!accessTokenCookie.getValue().startsWith(JwtProperties.TOKEN_PREFIX)
+                        || !refreshTokenCookie.getValue().startsWith(JwtProperties.TOKEN_PREFIX)){
+                    chain.doFilter(request, response);
                     return;
-                } else if (claimByUserIdToAccessToken.equals(JwtProperties.TOKEN_EXPIRATION_RESULT)) {
-                    //accessToken 복호화
-                    claimByUserIdToAccessToken = jwtTokenProvider.decodeToken(accessTokenCookie);
-                    //복호화 결과인 사용자 아이디로 refreshToken 검증 및 redis 데이터와 비교 후 일치한다면 아이디가 반환됨.
-                    String verifyRefreshTokenResult = jwtTokenProvider.verifyRefreshToken(refreshTokenCookie, inoValue, claimByUserIdToAccessToken);
-                    //일치하는 경우 토큰 재발급 수행.
-                    if (verifyRefreshTokenResult.equals(claimByUserIdToAccessToken)) {
-                        //토큰이 모두 정상이기 때문에 accessToken과 refreshToken을 재발급한다.
-                        jwtTokenProvider.issuedToken(claimByUserIdToAccessToken, inoValue, response);
-                        //이후 인증객체 처리를 위해 사용자 아이디를 username 변수에 담아준다.
-                        username = claimByUserIdToAccessToken;
-                    } else if (verifyRefreshTokenResult.equals(JwtProperties.TOKEN_STEALING_RESULT) || verifyRefreshTokenResult.equals(JwtProperties.WRONG_TOKEN)) {
-                        //일치하지 않는다면 "st" 반환으로 탈취 프로세스
-                        //refreshToken claim 데이터는 삭제된 뒤 결과가 반환되기 때문에
-                        //accessToken claim 데이터에 대한 삭제 처리 및 응답 쿠키 생성을 처리한다.
-                        //WRONG_TOKEN이 응답되면 잘못된 토큰값이므로 탈취와 같은 처리를 수행한다.
-                        deleteTokenAndCookieThrowException(claimByUserIdToAccessToken, inoValue, request, response);
+                }else {
+                    //모든 토큰이 존재
+                    String inoValue = inoCookie.getValue();
+                    String claimByUserIdToAccessToken = jwtTokenProvider.verifyAccessToken(accessTokenCookie, inoValue);
+
+                    if (claimByUserIdToAccessToken.equals(JwtProperties.TOKEN_STEALING_RESULT) || claimByUserIdToAccessToken.equals(JwtProperties.WRONG_TOKEN)) {
+                        //토큰 검증 과정에서 탈취로 판단되었다면 redis 데이터는 삭제된 후 TOKEN_STEALING_RESULT가 반환된다.
+                        //쿠키 삭제를 위한 응답 쿠키만 처리한다.
+                        //WRONG_TOKEN 응답의 경우는 토큰이 잘못된 토큰이라 JWTDecodeException이 발생한 경우이므로
+                        //따로 처리할 것은 없이 응답으로 쿠키를 삭제하도록 처리한다.
+                        deleteTokenCookieThrowException(response);
                         return;
+                    } else if (claimByUserIdToAccessToken.equals(JwtProperties.TOKEN_EXPIRATION_RESULT)) {
+                        //accessToken 복호화
+                        claimByUserIdToAccessToken = jwtTokenProvider.decodeToken(accessTokenCookie);
+                        //복호화 결과인 사용자 아이디로 refreshToken 검증 및 redis 데이터와 비교 후 일치한다면 아이디가 반환됨.
+                        String verifyRefreshTokenResult = jwtTokenProvider.verifyRefreshToken(refreshTokenCookie, inoValue, claimByUserIdToAccessToken);
+                        //일치하는 경우 토큰 재발급 수행.
+                        if (verifyRefreshTokenResult.equals(claimByUserIdToAccessToken)) {
+                            //토큰이 모두 정상이기 때문에 accessToken과 refreshToken을 재발급한다.
+                            jwtTokenProvider.issuedToken(claimByUserIdToAccessToken, inoValue, response);
+                            //이후 인증객체 처리를 위해 사용자 아이디를 username 변수에 담아준다.
+                            username = claimByUserIdToAccessToken;
+                        } else if (verifyRefreshTokenResult.equals(JwtProperties.TOKEN_STEALING_RESULT) || verifyRefreshTokenResult.equals(JwtProperties.WRONG_TOKEN)) {
+                            //일치하지 않는다면 "st" 반환으로 탈취 프로세스
+                            //refreshToken claim 데이터는 삭제된 뒤 결과가 반환되기 때문에
+                            //accessToken claim 데이터에 대한 삭제 처리 및 응답 쿠키 생성을 처리한다.
+                            //WRONG_TOKEN이 응답되면 잘못된 토큰값이므로 탈취와 같은 처리를 수행한다.
+                            deleteTokenAndCookieThrowException(claimByUserIdToAccessToken, inoValue, request, response);
+                            return;
+                        }
+                    } else {
+                        //토큰이 정상이라면
+                        username = claimByUserIdToAccessToken;
                     }
-                } else {
-                    //토큰이 정상이라면
-                    username = claimByUserIdToAccessToken;
                 }
             } else if (accessTokenCookie == null && refreshTokenCookie == null) {
                 chain.doFilter(request, response);

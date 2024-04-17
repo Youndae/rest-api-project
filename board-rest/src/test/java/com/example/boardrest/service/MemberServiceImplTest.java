@@ -11,17 +11,27 @@ import com.example.boardrest.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.servlet.http.Cookie;
+import java.time.Duration;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class MemberServiceImplTest {
+
+    @Value("#{jwt['token.prefix']}")
+    private String tokenPrefix;
+
+    @Value("#{jwt['token.access.secret']}")
+    private String accessSecret;
 
     /**
      * 비밀번호가 10자리가 넘어가니 제대로 검증하지 못하는 오류가 발생.
@@ -72,7 +82,7 @@ class MemberServiceImplTest {
                 .withSubject("cocoToken")
                 .withExpiresAt(new Date(System.currentTimeMillis()))
                 .withClaim("userId", "coco")
-                .sign(Algorithm.HMAC512(JwtProperties.ACCESS_SECRET));
+                .sign(Algorithm.HMAC512(accessSecret));
 
         System.out.println("token : " + accessToken);
 
@@ -87,7 +97,7 @@ class MemberServiceImplTest {
         String verifyUid;
 
         try {
-            verifyUid = JWT.require(Algorithm.HMAC512(JwtProperties.ACCESS_SECRET))
+            verifyUid = JWT.require(Algorithm.HMAC512(accessSecret))
                     .build()
                     .verify(accessToken)
                     .getClaim("userId")

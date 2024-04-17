@@ -2,6 +2,7 @@ package com.example.boardrest.security;
 
 import com.example.boardrest.config.jwt.JwtProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.util.WebUtils;
@@ -15,6 +16,7 @@ import java.io.IOException;
 @Slf4j
 @Deprecated
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
+
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request

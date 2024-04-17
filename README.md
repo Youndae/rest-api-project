@@ -780,3 +780,14 @@ board-app = client Server
 >>>     * 리액트에서 navbar를 통해 사용자 로그인 상태 체크를 해야 했고 그로 인해 MemberController에  checkLogin 메소드 추가.
 >>>     * 단순하게 principal이 존재하면 LoginStatusDTO에 true를 담아 반환.
 >>>     * 존재하지 않는다면 false를 반환하도록 처리.
+>
+> 
+>> 24/04/17
+>>> * 수정
+>>>   * Api-Server
+>>>     * JwtProperties에 있던 값들 jwt.properties로 이동.
+>>>       * JWT 처리 중 발생하는 탈취, 잘못된 토큰 같은 값들은 JwtProperties에 유지시키고, 각 토큰 헤더도 그대로 유지.
+>>>       * 그 외 secret 값이나 토큰 만료기간, 쿠키 만료기간 등은 모두 jwt.properties로 이동.
+>>>       * 새로 생성한 properties 사용하기 위해 PropertiesConfig 클래스 생성해서 Bean 등록.
+>>>     * JwtAuthorization에서 토큰 prefix 확인하는 코드 누락되었어서 추가.
+>>>       * ino가 존재하고 두 토큰이 모두 존재하는 경우에만 prefix를 체크한 뒤에 둘다 정상이라면 토큰 검증을 하도록 수정.

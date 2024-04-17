@@ -7,6 +7,7 @@ import com.example.boardrest.security.domain.CustomUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,9 @@ import java.util.Date;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+    @Value("#{jwt['token.access.secret']}")
+    private final String accessSecret;
 
     private final AuthenticationManager authenticationManager;
 
@@ -77,12 +81,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withSubject("cocoToken")
                 .withExpiresAt(new Date(System.currentTimeMillis() + 1000))
                 .withClaim("userId", customUser.getMember().getUserId())
-                .sign(Algorithm.HMAC512(JwtProperties.ACCESS_SECRET));
+                .sign(Algorithm.HMAC512(accessSecret));
 
         log.info("AuthenticationFilter's token : " + jwtToken);
 
-        Cookie cookie = new Cookie(JwtProperties.ACCESS_HEADER_STRING
-                                    , JwtProperties.TOKEN_PREFIX + jwtToken);
+        Cookie cookie = new Cookie(JwtProperties.ACCESS_HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
 
         cookie.setPath("/");
 //        cookie.setMaxAge(JwtProperties.MAX_AGE);
