@@ -15,9 +15,11 @@
   * Spring Boot, Spring Data JPA, MySQL 기반으로 REST-API 프로젝트의 기반이 된 버전.
     * 인증 / 인가 처리를 SpringSecurity로 처리하지 않았다는 점과 서버의 분리를 제외하고는 API 서버와 동일한 처리.
 
----
+<br />
 
 # 프로젝트 정보
+
+<br />
 
 ## 구조
 > * board-rest = RestAPI 서버
@@ -105,6 +107,8 @@ ino는 로그인 시 토큰과 같이 응답 쿠키로 전달되며 클라이언
 사용자가 접속하지 않는 동안 탈취된 토큰으로 재발급을 받아 사용하는 경우를 고려해 추후 사용자가 페이지에 접근했을 때 값을 비교해 탈취를 판단할 수 있습니다.   
 
 Redis의 키값으로는 토큰에 따라 at 또는 rt로 시작하며 이후 ino + 사용자 아이디 구조로 담아 사용자가 이후 접속했을 때 쿠키에 저장된 토큰 값과 Redis에 저장된 자신의 토큰값을 비교하는 것으로 탈취에 대응할 수 있습니다.   
+
+<br />
 
 JwtTokenProvider
 ```java
@@ -355,6 +359,8 @@ Filter에서는 ControllerAdvice Annotation을 통한 Exception Handling이 불�
 요청 후 만료 응답을 받게 되면 재발급 요청을 보내 재발급을 받고 이후 사용자 요청을 다시 전송하는 형태를 주로 보게 되었는데 그럼 AccessToken이 만료되는 1시간 마다 한 번씩 3번의 요청을 보내야 된다는 결과가 나온다고 생각했습니다.   
 그래서 이 요청 횟수를 줄여보고자 한번의 요청으로 토큰을 검증하고 재발급까지 수행할 수 있도록 구현해봤습니다.   
 
+<br />
+
 JwtTokenProvider
 ```java
     public String decodeToken(Cookie tokenCookie) {
@@ -455,6 +461,8 @@ Filter에서 토큰 검증을 요청했을 때 만료 응답을 받게 된다면
 ## API 서버와의 통신
 
 API 서버와의 통신 방법으로 Application Server에서는 WebClient를, react 클라이언트에서는 Axios를 택했습니다.   
+
+<br />
 
 ApplicationServer / WebClient
 ```java
@@ -558,7 +566,9 @@ WebClient에 대한 기본 설정은 WebClientConfig에 작성해두고 필요�
 파일 전송 처리를 위해서 MultipartBodyBuilder를 통해 처리했고, 예외처리에 대해서는 ExchangeService 내에 메소드를  생성해 그 메소드를 호출하여 핸들링 하도록 처리했습니다.   
 리팩토링 이전에는 응답에 대해 retrieve() 로 처리해 각각의 예외처리와 200 응답에 대한 처리를 수행했으나 API 서버에서 반환되는 응답 쿠키의 처리와 예외 핸들링을 직접 제어하기 위해 exchangeToMono()로 수정했습니다.   
 
-react
+<br />
+
+React
 ```javascript
 //customAxios.js
 export const imageInsertAxios = axios.create({
@@ -600,6 +610,8 @@ REST-API로 구현하던 당시에는 JPQL만 사용하고 있었습니다.
 insert, update, delete 요청에 대한 동적 쿼리는 List를 넘겨 in 절로 처리하는 방법으로 처리할 수 있었으나 검색어 여부와 검색 타입에 따른 조건에 대한 처리는 서비스단에서 조건문으로 나눈 뒤 해당 메소드들을 호출하도록 처리했습니다.   
 그렇지만 코드가 너무 길어지고 중복되는 부분이 많이 발생했기 때문에 이 부분을 개선하고자 방법을 찾아보게 되었습니다.   
 그리고 그 결과 QueryDSL을 통한 동적쿼리로 이 부분을 개선할 수 있었습니다.
+
+<br />
 
 수정 이전 코드 - HierarchicalBoardServiceImpl, HierarchicalBoardRepository
 ```java
@@ -806,6 +818,8 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 <br />
 
 ---
+
+<br />
 
 # History
 > 22/12/29 - Api Server
