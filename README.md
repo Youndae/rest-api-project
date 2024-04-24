@@ -3,25 +3,807 @@
 ---
 
 # 목적
-기본 베이스 프로젝트로 boardProject_JPA를 활용.   
-기능 구현 보다는 REST API 서버를 만들어 보는것에 집중.
+* BoardProject_JPA를 활용해 기능 추가보다는 REST-API를 만드는 것에 집중   
+* API 서버와의 통신과 여러 클라이언트에 대응할 수 있도록 설계하고 개선하는 것에 대한 목표. 
+* 동일한 서비스를 여러 클라이언트를 통해 제공할 수 있어야 한다는 전제하에 설계.
+* 가장 기본적인 CRUD에 대한 기능을 포함하고 있는 프로젝트로 새로 학습한 내용이나 테스트에 활용하는 프로젝트.
+* 가장 많이 활용하는 프로젝트인 만큼 여러 버전이 존재.
+  * Spring, JSP, Oracle, MyBatis 기반 초기 버전
+    * github : https://github.com/Youndae/BoardProject
+  * Java Servlet & JSP, MySQL 기반의 버전
+    * github : https://github.com/Youndae/BoardProject_servlet_jsp
+  * Spring Boot, Spring Data JPA, MySQL 기반으로 REST-API 프로젝트의 기반이 된 버전.
+    * 인증 / 인가 처리를 SpringSecurity로 처리하지 않았다는 점과 서버의 분리를 제외하고는 API 서버와 동일한 처리.
 
 ---
 
 # 프로젝트 정보
-board-rest = RestAPI 서버
-board-app = client Server
 
-사용 기술
-* SpringBoot 2.7.6
-* Gradle
-* Java 1.8
-* SpringSecurity & JWT
-* JQuery(ajax)
-* MySQL
-* Spring Data JPA
-* Lombok
-* Thymeleaf
+## 구조
+> * board-rest = RestAPI 서버
+> * board-app = Application 서버
+> * boardProject_client_react = Application 서버와 연결되지 않는 또 다른 클라이언트
+>   * react github : https://github.com/Youndae/boardProject_client_react
+
+<br />
+
+## 사용 기술
+* Application Server, API Server 공통
+  * SpringBoot 2.7.6
+  * Gradle
+  * Java 1.8
+  * Lombok
+* API Server
+  * SpringSecurity & JWT
+  * Spring Data JPA
+  * QueryDSL
+* Application Server
+  * JQuery(Ajax)
+  * Thymeleaf
+  * WebClient
+* React
+  * Axios
+  * Redux
+  * dayjs
+* Front End 공통
+  * BootStrap
+* DataBase
+  * MySQL
+  * Redis
+
+<br />
+
+## 기능
+* 이미지 게시판
+  * 페이징
+  * 검색(제목, 내용, 작성자, 제목+내용)
+  * 게시글 등록(텍스트 + 이미지)
+  * 게시글 수정 및 삭제
+  * 상세 페이지 내 댓글(페이징)
+* 계층형 게시판
+  * 페이징
+  * 검색(제목, 내용, 작성자, 제목+내용)
+  * 게시글 등록(텍스트)
+  * 게시글 수정 및 삭제
+  * 상세 페이지 내 댓글(페이징)
+* 사용자
+  * 로그인
+  * 회원가입
+
+<br />
+
+## ERD
+<img src="./README_image/boardProject_REST_ERD.jpg">
+
+<br />
+
+## 기능
+
+### 목차
+* 인증 / 인가(JWT 설계와 관리 및 권한 관리)
+* 인증 / 인가(filter와 토큰 검증)
+* API 서버와의 통신
+* 게시글 리스트 조회에서의 동적 쿼리(QueryDSL)
+
+<br />
+
+## 인증 / 인가(JWT 설계와 관리 및 권한 관리)   
+
+인증 / 인가에 대한 처리는 JWT와 Spring Security를 통해 처리합니다.   
+API 서버에 요청이 들어오면 Spring Security 설정에 따라 JwtAuthorizationFilter에 먼저 접근하게 되며 토큰 검증 후 정상적인 사용자라면 권한 관리를 위하 SecurityContextHolder에 인증 객체를 담습니다.   
+
+하나의 서비스를 여러 클라이언트로 제공한다는 기획에 맞게 다중 디바이스에서의 로그인을 허용합니다.   
+이때 토큰의 관리와 탈취에 대응하기 위해 식별자 개념의 ino라는 난수의 값을 만들어 클라이언트에게 같이 전달합니다.   
+ino는 로그인 시 최초 생성되고 탈취로 판단되는 경우나 로그아웃을 하는 경우에만 삭제되도록 처리했습니다.   
+ino는 로그인 시 토큰과 같이 응답 쿠키로 전달되며 클라이언트에서는 ino와 토큰 모두 쿠키에 저장합니다.   
+
+토큰은 AccessToken과 RefreshToken 두개로 나눠 생성하고 관리하며 AccessToken은 1시간, RefreshToken은 2주의 만료기간을 갖습니다.   
+두 토큰은 모두 사용자 아이디를 Claim으로 갖고 서로 다른 Secret key를 사용합니다.   
+각 토큰은 RDB에는 저장하지 않고 Redis에 저장해 관리하게 됩니다.   
+토큰 만료시간과는 상관없이 Redis에 저장되는 기간은 1달이며, 쿠키의 만료 기간 역시 1달로 설정했습니다.   
+토큰의 만료시간과 다르게 긴 기간의 데이터 만료기간을 설정한 이유로는 탈취에 대응하기 위함이었습니다.   
+사용자가 접속하지 않는 동안 탈취된 토큰으로 재발급을 받아 사용하는 경우를 고려해 추후 사용자가 페이지에 접근했을 때 값을 비교해 탈취를 판단할 수 있습니다.   
+
+Redis의 키값으로는 토큰에 따라 at 또는 rt로 시작하며 이후 ino + 사용자 아이디 구조로 담아 사용자가 이후 접속했을 때 쿠키에 저장된 토큰 값과 Redis에 저장된 자신의 토큰값을 비교하는 것으로 탈취에 대응할 수 있습니다.   
+
+JwtTokenProvider
+```java
+    @Value("#{jwt['token.access.secret']}")
+    private String accessSecret;
+
+    @Value("#{jwt['token.access.expiration']}")
+    private Long accessTokenExpiration;
+
+    @Value("#{jwt['token.refresh.secret']}")
+    private String refreshSecret;
+
+    @Value("#{jwt['token.refresh.expiration']}")
+    private Long refreshTokenExpiration;
+
+    @Value("#{jwt['redis.expirationDay']}")
+    private Long redisExpirationDay;
+
+    @Value("#{jwt['redis.accessPrefix']}")
+    private String redisAccessPrefix;
+
+    @Value("#{jwt['redis.refreshPrefix']}")
+    private String redisRefreshPrefix;
+
+    @Value("#{jwt['cookie.tokenAgeDay']}")
+    private Long tokenCookieAge;
+
+    @Value("#{jwt['cookie.inoAgeDay']}")
+    private Long inoCookieAge;
+
+    private final StringRedisTemplate redisTemplate;
+
+    public void issuedToken(String userId, String inoValue, HttpServletResponse response) {
+        String accessToken = issuedAccessToken(userId, inoValue);
+        String refreshToken = issuedRefreshToken(userId, inoValue);
+
+        //쿠키 생성 메소드 호출 (@Param accessToken, refreshToken, inoValue, response)
+        setTokenToCookie(accessToken, refreshToken, response);
+    }
+
+    //ino까지 모두 생성
+    public void issuedAllToken(String userId, HttpServletResponse response) {
+        String inoValue = issuedIno();
+        issuedToken(userId, inoValue, response);
+
+        setInoToCookie(inoValue, response);
+    }
+
+    public String issuedAccessToken(String userId, String inoValue) {
+        String accessToken = createToken(userId, accessSecret, accessTokenExpiration);
+        String key = redisAccessPrefix + inoValue + userId;
+
+        setRedisByToken(key, accessToken);
+
+        return JwtProperties.TOKEN_PREFIX + accessToken;
+    }
+
+    public String issuedRefreshToken(String userId, String inoValue) {
+        String refreshToken = createToken(userId, refreshSecret, refreshTokenExpiration);
+        String key = redisRefreshPrefix + inoValue + userId;
+
+        setRedisByToken(key, refreshToken);
+
+        return JwtProperties.TOKEN_PREFIX + refreshToken;
+    }
+
+    public String issuedIno(){
+
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+    
+    public String createToken(String userId, String secret, long expirationTime) {
+        return JWT.create()
+        .withSubject("cocoToken")
+        .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
+        .withClaim("userId", userId)
+        .sign(Algorithm.HMAC512(secret));
+    }
+
+    public void setRedisByToken(String key, String value) {
+        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
+        stringValueOperations.set(key, value, Duration.ofDays(redisExpirationDay));
+    }
+
+    public void setTokenToCookie(String atValue, String rtValue, HttpServletResponse response) {
+
+        response.addHeader("Set-Cookie"
+                            , createCookie(
+                            JwtProperties.ACCESS_HEADER_STRING
+                            , atValue
+                            , Duration.ofDays(tokenCookieAge)
+                        ));
+
+        response.addHeader("Set-Cookie"
+                            , createCookie(
+                            JwtProperties.REFRESH_HEADER_STRING
+                            , rtValue
+                            , Duration.ofDays(tokenCookieAge)
+                        ));
+    }
+
+    public void setInoToCookie(String ino, HttpServletResponse response) {
+        response.addHeader("Set-Cookie"
+                            , createCookie(
+                            JwtProperties.INO_HEADER_STRING
+                            , ino
+                            , Duration.ofDays(inoCookieAge)
+                        ));
+    }
+
+    public String createCookie(String name, String value, Duration expires){
+        return ResponseCookie
+                .from(name, value)
+                .path("/")
+                .maxAge(expires)
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("Strict")
+                .build()
+                .toString();
+    }
+```
+
+쿠키 옵션 설정으로는 secure, httpOnly, sameSite 설정을 했습니다.   
+쿠키 생성은 클라이언트 또는 Application 서버에서 직접 제어하지 않도록 하기 위해 응답 헤더로 담아 보내는 방법으로 수정했습니다.   
+여러 클라이언트가 존재하는데 각자 제어하도록 처리한다면 추후 수정이 발생할 때 여러 클라이언트를 수정해야 하기 때문에 한 곳에서 처리하는게 좋다고 생각했습니다.   
+
+Redis는 RedisTemplate을 통해 사용했고, 토큰과 쿠키에 대한 secret key나 만료기간, prefix 같은 것은 jwt.properties 파일을 생성하고 그 안에서 관리합니다.
+
+<br />
+
+## 인증 / 인가(filter와 토큰 검증)
+
+<br />
+
+JwtAuthorizationFilter
+```java
+    @Override
+    protected void doFilterInternal(HttpServletRequest request
+            , HttpServletResponse response
+            , FilterChain chain)
+            throws IOException, ServletException {
+
+        Cookie accessTokenCookie = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
+        Cookie refreshTokenCookie = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
+        Cookie inoCookie = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
+        //인증객체 생성시 필요한 사용자 아이디
+        String username = null;
+
+        if (inoCookie != null) {
+            if (accessTokenCookie != null && refreshTokenCookie != null) { //모든 토큰이 존재
+                if(!accessTokenCookie.getValue().startsWith(JwtProperties.TOKEN_PREFIX)
+                        || !refreshTokenCookie.getValue().startsWith(JwtProperties.TOKEN_PREFIX)){
+                    chain.doFilter(request, response);
+                    return;
+                }else {
+                    String inoValue = inoCookie.getValue();
+                    String claimByUserIdToAccessToken = jwtTokenProvider.verifyAccessToken(accessTokenCookie, inoValue);
+
+                    //토큰 검증 과정에서 탈취 또는 잘못된 토큰이라는 응답이 반환되는 경우 클라이언트 쿠키가 삭제되도록 response에 담아 반환
+                    if (claimByUserIdToAccessToken.equals(JwtProperties.TOKEN_STEALING_RESULT)
+                            || claimByUserIdToAccessToken.equals(JwtProperties.WRONG_TOKEN)) {
+                        deleteTokenCookieThrowException(response);
+                        return;
+                    } else if (claimByUserIdToAccessToken.equals(JwtProperties.TOKEN_EXPIRATION_RESULT)) { //AccessToken 만료 응답
+                        claimByUserIdToAccessToken = jwtTokenProvider.decodeToken(accessTokenCookie);//accessToken 복호화
+                        String verifyRefreshTokenResult = jwtTokenProvider.verifyRefreshToken(
+                                                                refreshTokenCookie, inoValue, claimByUserIdToAccessToken
+                                                            );//refreshToken 검증
+                        // 복호화한 AccessToken과 refreshToken Claim이 일치한다면 재발급 수행
+                        if (verifyRefreshTokenResult.equals(claimByUserIdToAccessToken)) {
+                            jwtTokenProvider.issuedToken(claimByUserIdToAccessToken, inoValue, response);
+                            username = claimByUserIdToAccessToken;//이후 인증객체 처리를 위해 사용자 아이디를 username 변수에 담아준다.
+                        } else if (verifyRefreshTokenResult.equals(JwtProperties.TOKEN_STEALING_RESULT)
+                                || verifyRefreshTokenResult.equals(JwtProperties.WRONG_TOKEN)) {
+                            //일치하지 않는 경우 결과가 탈취로 반환. 탈취 또는 잘못된 토큰 응답이 반환되면 redis 데이터와 쿠키 삭제
+                            deleteTokenAndCookieThrowException(claimByUserIdToAccessToken, inoValue, request, response);
+                            return;
+                        }
+                    } else {
+                        //AccessToken 검증 정상 응답
+                        username = claimByUserIdToAccessToken;
+                    }
+                }
+            } else if (accessTokenCookie == null && refreshTokenCookie == null) {
+                chain.doFilter(request, response);
+                return;
+            } else {
+                //토큰 두개중 하나만 존재하기 때문에 탈취로 판단.
+                //두개 중 존재하는 토큰을 복호화하고 그 Claim 값을 통해 redis 데이터 삭제 및 쿠키 삭제
+                String claimByUserId;
+                if (accessTokenCookie != null)
+                    claimByUserId = jwtTokenProvider.decodeToken(accessTokenCookie);
+                else
+                    claimByUserId = jwtTokenProvider.decodeToken(refreshTokenCookie);
+
+                deleteTokenAndCookieThrowException(claimByUserId, inoCookie.getValue(), request, response);
+                return;
+            }
+        }
+
+        if (username != null) {
+            Member memberEntity = memberRepository.findByUserId(username);
+            CustomUser customUser = new CustomUser(memberEntity);
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(customUser, null, customUser.getAuthorities());
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
+        chain.doFilter(request, response);
+    }
+
+    public void tokenStealingExceptionResponse(HttpServletResponse response) {
+        response.setStatus(ErrorCode.TOKEN_STEALING.getHttpStatus());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("utf-8");
+    }
+
+    public void deleteTokenAndCookieThrowException(String tokenClaim
+                                                    , String inoValue
+                                                    , HttpServletRequest request
+                                                    , HttpServletResponse response) {
+        jwtTokenProvider.deleteToken(tokenClaim, inoValue, response);
+        tokenStealingExceptionResponse(response);
+    }
+
+    public void deleteTokenCookieThrowException(HttpServletResponse response) {
+        jwtTokenProvider.deleteTokenCookie(response);
+        tokenStealingExceptionResponse(response);
+    }
+```
+
+JwtAuthorizationFilter는 Security 설정에 따라 API 서버에 요청이 발생하면 요청을 가로채 토큰 검증을 먼저 수행합니다.   
+Redis key 값으로 ino를 활용하는 만큼 ino의 유무를 먼저 판단하게 됩니다.   
+ino가 존재하지 않는다면 Redis 데이터를 체크할 수 없기 때문에 토큰 검증이나 인증 객체 생성을 하지 않고 이후 처리를 진행합니다.   
+
+ino가 존재한다면 여러가지 조건이 발생하게 됩니다.   
+두 토큰이 모두 존재하는 경우, 둘다 없는 경우, 둘중 하나만 있는 경우를 가정할 수 있었습니다.   
+두 토큰이 모두 존재한다면 토큰 검증을 수행하게 되고, 토큰 검증 과정에서 잘못된 토큰 혹은 Redis 데이터와 달라 탈취로 판단되는 경우가 발생한다면 예외처리를 하게 됩니다.   
+또한, 두 토큰의 만료기간은 동일하기 때문에 하나의 토큰만 존재하는 것도 정상적인 요청이 아니라고 볼 수 있기 때문에 하나만 존재하는 경우에도 탈취라고 판단하도록 했습니다.   
+이 경우 사용자 요청을 수행하지 않고 바로 오류 응답을 보내도록 했습니다.   
+Filter에서는 ControllerAdvice Annotation을 통한 Exception Handling이 불가했기 때문에 응답 코드를 설정하고 doFilterInternal 내부에서는 return을 찍어 이후 처리를 진행하지 않고 클라이언트에 응답하도록 처리했습니다.   
+예외 핸들링으로는 상황에 따라 Redis 데이터를 삭제하게 되며, 모든 쿠키를 삭제하도록 응답 쿠키에 담아 반환하게 됩니다.   
+
+토큰이 만료된 경우에는 클라이언트로 만료 응답을 보내는 것이 아닌 체크 후 재발급을 바로 수행한 뒤 사용자 요청까지 처리하도록 구현했습니다.   
+이 부분에 대해서 고민이 많았는데 대부분의 경우 여러번의 요청을 통해 처리하는 것을 확인할 수 있었습니다.   
+요청 후 만료 응답을 받게 되면 재발급 요청을 보내 재발급을 받고 이후 사용자 요청을 다시 전송하는 형태를 주로 보게 되었는데 그럼 AccessToken이 만료되는 1시간 마다 한 번씩 3번의 요청을 보내야 된다는 결과가 나온다고 생각했습니다.   
+그래서 이 요청 횟수를 줄여보고자 한번의 요청으로 토큰을 검증하고 재발급까지 수행할 수 있도록 구현해봤습니다.   
+
+JwtTokenProvider
+```java
+    public String decodeToken(Cookie tokenCookie) {
+        String tokenValue = tokenCookie.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
+
+        return JWT.decode(tokenValue)
+                .getClaim("userId")
+                .asString();
+    }
+
+    public String verifyAccessToken(Cookie accessToken, String inoValue) {
+        String accessTokenValue = accessToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
+        String accessClaimByUserId = getClaimUserIdByToken(accessTokenValue, accessSecret);
+
+        //잘못된 토큰인 경우 null이 반환될 것이고,
+        //만료된 토큰이라면 Exception이 발생해 예외처리로 인해 TOKEN_EXPIRATION_RESULT가 반환된다.
+        if (accessClaimByUserId == null)
+            return null;
+        else if(accessClaimByUserId.equals(JwtProperties.TOKEN_EXPIRATION_RESULT))
+            return JwtProperties.TOKEN_EXPIRATION_RESULT;
+        else if(accessClaimByUserId.equals(JwtProperties.WRONG_TOKEN))
+            return JwtProperties.WRONG_TOKEN;
+
+        String accessTokenKey = redisAccessPrefix + inoValue + accessClaimByUserId;
+        String redisValue = getTokenValueData(accessTokenKey);
+
+        if(accessTokenValue.equals(redisValue))
+            return accessClaimByUserId;
+        else {
+            deleteTokenData(accessClaimByUserId, inoValue);
+            return JwtProperties.TOKEN_STEALING_RESULT;
+        }
+    }
+
+    public String verifyRefreshToken(Cookie refreshToken, String inoValue, String accessTokenClaim) {
+        String refreshTokenValue = refreshToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
+        String refreshClaimByUserId = getClaimUserIdByToken(refreshTokenValue, refreshSecret);
+
+        if(refreshClaimByUserId == null)
+            return null;
+        else if(refreshClaimByUserId.equals(JwtProperties.TOKEN_EXPIRATION_RESULT))
+            return JwtProperties.TOKEN_EXPIRATION_RESULT;
+        else if(refreshClaimByUserId.equals(JwtProperties.WRONG_TOKEN))
+            return JwtProperties.WRONG_TOKEN;
+        else if(!refreshClaimByUserId.equals(accessTokenClaim)) {
+            deleteTokenData(refreshClaimByUserId, inoValue);
+            return JwtProperties.TOKEN_STEALING_RESULT;
+        }
+
+        String refreshTokenKey = redisRefreshPrefix + inoValue + refreshClaimByUserId;
+        String redisValue = getTokenValueData(refreshTokenKey);
+
+        if(refreshTokenValue.equals(redisValue))
+            return refreshClaimByUserId;
+        else {
+            deleteTokenData(refreshClaimByUserId, inoValue);
+            return JwtProperties.TOKEN_STEALING_RESULT;
+        }
+    }
+
+    public String getTokenValueData(String tokenKey) {
+        long keyExpire = redisTemplate.getExpire(tokenKey);
+
+        //Token이 존재하는데 -2라면 Redis 데이터가 만료되어 삭제된 것이기 때문에
+        //null을 반환한다.
+        if(keyExpire == -2)
+            return null;
+
+        return redisTemplate.opsForValue().get(tokenKey);
+    }
+
+//token에서 Claim으로 설정된 userId를 꺼내 반환.
+    public String getClaimUserIdByToken(String tokenValue, String secret) {
+
+        try {
+            String claimByUserId = JWT.require(Algorithm.HMAC512(secret))
+            .build()
+            .verify(tokenValue)
+            .getClaim("userId")
+            .asString();
+    
+            return claimByUserId;
+        }catch(TokenExpiredException e) {
+            //토큰 만료 exception
+            return JwtProperties.TOKEN_EXPIRATION_RESULT;
+        }catch (JWTDecodeException e) {
+            //비정상 토큰. 검증할 수 없는 토큰.
+            return JwtProperties.WRONG_TOKEN;
+        }
+    }
+```
+
+Filter에서 토큰 검증을 요청했을 때 만료 응답을 받게 된다면 토큰을 복호화 해 Claim 값을 받아와 사용자 아이디를 반환받고 ino와 사용자 아이디를 통해 Redis 데이터와 비교하게 됩니다.   
+만료되었지만 정상적인 토큰이라면 Redis 데이터와 일치할 것이기 때문에 그런 경우 재발급을 수행하고 다른 경우 탈취로 판단해 예외처리를 수행하도록 했습니다.   
+
+<br />
+
+## API 서버와의 통신
+
+API 서버와의 통신 방법으로 Application Server에서는 WebClient를, react 클라이언트에서는 Axios를 택했습니다.   
+
+ApplicationServer / WebClient
+```java
+@Component
+public class WebClientConfig {
+    public WebClient useWebClient(){
+
+        return WebClient.builder()
+                .baseUrl("http://localhost:9096")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+    }
+
+    public WebClient useImageWebClient(){
+        ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
+                .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
+                        .maxInMemorySize(20 * 1024 * 1024)).build();
+
+        return WebClient.builder()
+                .baseUrl("http://localhost:9096")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .exchangeStrategies(exchangeStrategies)
+                .build();
+    }
+}
+
+
+//ImageBoardWebClient
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class ImageBoardWebClient {
+
+    private final WebClient webClient = new WebClientConfig().useWebClient();
+
+    private final WebClient imageWebClient = new WebClientConfig().useImageWebClient();
+
+    public Long patchBoard(long imageNo, String imageTitle, String imageContent
+                            , List<MultipartFile> files, List<String> deleteFiles
+                            , HttpServletRequest request, HttpServletResponse response){
+        if(files != null && imageSizeCheck(files) == -2L)
+            return -2L;
+
+        MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
+
+        Optional.ofNullable(files)
+                .orElseGet(Collections::emptyList)
+                .forEach(file -> {
+                    mbBuilder.part("files", file.getResource());
+                });
+
+        Optional.ofNullable(deleteFiles)
+                .orElseGet(Collections::emptyList)
+                .forEach(file -> {
+                    mbBuilder.part("deleteFiles", file);
+                });
+
+        mbBuilder.part("imageTitle", imageTitle);
+        mbBuilder.part("imageContent", imageContent);
+
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
+        return imageWebClient.patch()
+                .uri(uriBuilder -> uriBuilder.path(imagePath_variable).build(imageNo))
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(mbBuilder.build()))
+                .cookies(cookies -> cookies.addAll(cookieMap))
+                .exchangeToMono(res -> {
+                    exchangeService.checkExchangeResponse(res, response);
+
+                    return res.bodyToMono(Long.class);
+                })
+                .block();
+    }
+}
+
+
+//ExchangeServiceImpl
+    @Override
+    public void checkExchangeResponse(ClientResponse res, HttpServletResponse response) {
+
+        if(res.statusCode().equals(HttpStatus.OK)){
+            cookieService.setCookie(res, response);
+        }else if(res.statusCode().equals(HttpStatus.FORBIDDEN)){
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, "AccessDenied");
+        }else if(res.rawStatusCode() == 800){
+            //토큰 탈취
+            cookieService.setCookie(res, response);
+            throw new CustomTokenStealingException(ErrorCode.TOKEN_STEALING);
+        }else if(res.statusCode().is4xxClientError()){
+            throw new RuntimeException();
+        }else if(res.statusCode().is5xxServerError()){
+            throw new NullPointerException();
+        }
+
+    }
+```
+
+WebClient에 대한 기본 설정은 WebClientConfig에 작성해두고 필요한 곳에서 가져다 사용하도록 구현했습니다.   
+이미지 파일 전송이 필요한 만큼 두개의 설정으로 분리해두었습니다.   
+파일 전송 처리를 위해서 MultipartBodyBuilder를 통해 처리했고, 예외처리에 대해서는 ExchangeService 내에 메소드를  생성해 그 메소드를 호출하여 핸들링 하도록 처리했습니다.   
+리팩토링 이전에는 응답에 대해 retrieve() 로 처리해 각각의 예외처리와 200 응답에 대한 처리를 수행했으나 API 서버에서 반환되는 응답 쿠키의 처리와 예외 핸들링을 직접 제어하기 위해 exchangeToMono()로 수정했습니다.   
+
+react
+```javascript
+//customAxios.js
+export const imageInsertAxios = axios.create({
+  baseURL: `${default_url}${image_default}`,
+  headers: {
+    'Content-Type' : 'multipart/form-data',
+  },
+  withCredentials: true,
+})
+
+//ImageUpdatePage.jsx
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  let formData = setFormData(values, files);
+  deleteImageName.forEach(
+          fileName => formData.append('deleteFiles', fileName)
+  );
+
+  await imageInsertAxios.patch(`${imageNo}`, formData)
+          .then(res => {
+            navigate(`/image/${res.data}`);
+          })
+          .catch(err => {
+            axiosErrorHandling(err);
+          })
+}
+```
+
+React에서는 Spring Application에서 보다 간단하게 처리할 수 있었습니다.   
+Axios를 모듈화 해두었기 때문에 해당 모듈을 그대로 가져와 사용했으며 FormData에 담아 전송하는 것으로 간단하게 처리할 수 있었습니다.   
+react에서도 API 서버 요청에서 발생하는 예외 핸들링을 Application Server 처럼 모듈화 해 관리하도록 했습니다.  
+
+<br />
+
+## 게시글 리스트 조회에서의 동적 쿼리(QueryDSL)
+
+REST-API로 구현하던 당시에는 JPQL만 사용하고 있었습니다.   
+insert, update, delete 요청에 대한 동적 쿼리는 List를 넘겨 in 절로 처리하는 방법으로 처리할 수 있었으나 검색어 여부와 검색 타입에 따른 조건에 대한 처리는 서비스단에서 조건문으로 나눈 뒤 해당 메소드들을 호출하도록 처리했습니다.   
+그렇지만 코드가 너무 길어지고 중복되는 부분이 많이 발생했기 때문에 이 부분을 개선하고자 방법을 찾아보게 되었습니다.   
+그리고 그 결과 QueryDSL을 통한 동적쿼리로 이 부분을 개선할 수 있었습니다.
+
+수정 이전 코드 - HierarchicalBoardServiceImpl, HierarchicalBoardRepository
+```java
+    @Override
+    public Page<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri) {
+        Page<HierarchicalBoardDTO> dto;
+
+        if (cri.getKeyword() == null || cri.getKeyword() == "") { //default List
+            dto = hierarchicalBoardRepository.hierarchicalBoardList(
+                          PageRequest.of(cri.getPageNum() - 1
+                          , cri.getAmount()
+                          , Sort.by("boardGroupNo").descending()
+                                  .and(Sort.by("boardUpperNo").ascending()))
+                    );
+        } else if (cri.getSearchType() == "t") {//title 검색시 사용
+        dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitle(
+                          cri.getKeyword()
+                          , PageRequest.of(cri.getPageNum() - 1
+                          , cri.getAmount()
+                          , Sort.by("boardGroupNo").descending()
+                                  .and(Sort.by("boardUpperNo").ascending()))
+                    );
+        } else if (cri.getSearchType() == "c") {//content 검색시 사용
+        dto = hierarchicalBoardRepository.hierarchicalBoardListSearchContent(
+                          cri.getKeyword()
+                          , PageRequest.of(cri.getPageNum() - 1
+                          , cri.getAmount()
+                          , Sort.by("boardGroupNo").descending()
+                                  .and(Sort.by("boardUpperNo").ascending()))
+                    );
+        } else if (cri.getSearchType() == "u") {// user 검색 시 사용
+        dto = hierarchicalBoardRepository.hierarchicalBoardListSearchUser(
+                          cri.getKeyword()
+                          , PageRequest.of(cri.getPageNum() - 1
+                          , cri.getAmount()
+                          , Sort.by("boardGroupNo").descending()
+                                  .and(Sort.by("boardUpperNo").ascending()))
+                    );
+        } else if (cri.getKeyword() == "tc") {// title and content 검색시 사용
+        dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitleOrContent(
+                          cri.getKeyword()
+                          , PageRequest.of(cri.getPageNum() - 1
+                          , cri.getAmount()
+                          , Sort.by("boardGroupNo").descending()
+                                  .and(Sort.by("boardUpperNo").ascending()))
+                    );
+        } else {
+            return null;
+        }
+
+        return dto;
+    }
+    
+    //repository
+    //HierarchicalBoard default List
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardDTO(" +
+            "b.boardNo" +
+            ", b.boardTitle" +
+            ", b.member.userId" +
+            ", b.boardContent" +
+            ", b.boardDate" +
+            ", b.boardGroupNo" +
+            ", b.boardIndent" +
+            ", b.boardUpperNo) " +
+            "FROM HierarchicalBoard b"
+        , countQuery = "SELECT c.contentCount " +
+            "FROM Count_table c " +
+            "WHERE c.boardName = 'hierarchicalboard'")
+    Page<HierarchicalBoardDTO> hierarchicalBoardList(Pageable pageable);
+
+
+    //HierarchicalBoard searchTitle List
+    @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardDTO(" +
+          "b.boardNo" +
+          ", b.boardTitle" +
+          ", b.member.userId" +
+          ", b.boardContent" +
+          ", b.boardDate" +
+          ", b.boardGroupNo" +
+          ", b.boardIndent" +
+          ", b.boardUpperNo) " +
+          "FROM HierarchicalBoard b " +
+          "WHERE b.boardTitle LIKE :keyword"
+        , countQuery = "SELECT count(b) " +
+          "FROM HierarchicalBoard b " +
+          "WHERE b.boardTitle LIKE :keyword")
+    Page<HierarchicalBoardDTO> hierarchicalBoardListSearchTitle(@Param("keyword") String keyword, Pageable pageable);
+```
+
+여기서 Criteria는 DTO로 사용하는 직접 만든 객체입니다.   
+페이지 번호, 각 게시판의 한 페이지당 출력 데이터 개수, 검색어, 검색 타입을 필드로 갖고 있습니다.
+기존에는 이렇게 모든 조건에 대해 Repository에 JPQL로 직접 작성하고 Service에서도 조건문들 통해 다르게 처리하도록 했습니다.
+이 부분에 대해 QueryDSL을 적용하면서 동적으로 가독성 높게 수정할 수 있었습니다.   
+
+<br />
+
+개선된 코드
+```java
+    //HierarchicalBoardServiceImpl
+    @Override
+    public ResponsePageableListDTO<HierarchicalBoardListDTO> getHierarchicalBoardList(Criteria cri, Principal principal) {
+
+        Pageable pageable = PageRequest.of(cri.getPageNum() - 1
+                                          , cri.getBoardAmount()
+                                          , Sort.by("boardGroupNo").descending()
+                                                    .and(Sort.by("boardUpperNo").ascending()));
+
+        Page<HierarchicalBoardListDTO> listDTO = hierarchicalBoardRepository.findAll(cri, pageable);
+        ResponsePageableListDTO<HierarchicalBoardListDTO> responseDTO = new ResponsePageableListDTO<>(listDTO, principal);
+
+        return responseDTO;
+    }
+
+    //customRepository
+    public interface HierarchicalBoardRepositoryCustom {
+      Page<HierarchicalBoardListDTO> findAll(Criteria cri, Pageable pageable);
+    }
+    
+    //customRepositoryImpl
+    @Repository
+    @RequiredArgsConstructor
+    public class HierarchicalBoardRepositoryCustomImpl implements HierarchicalBoardRepositoryCustom{
+
+      private final JPAQueryFactory jpaQueryFactory;
+
+      @Override
+      public Page<HierarchicalBoardListDTO> findAll(Criteria cri, Pageable pageable) {
+
+        List<HierarchicalBoardListDTO> list = jpaQueryFactory.select(
+                        Projections.fields(
+                                HierarchicalBoardListDTO.class
+                                , hierarchicalBoard.boardNo
+                                , hierarchicalBoard.boardTitle
+                                , hierarchicalBoard.member.userId
+                                , hierarchicalBoard.boardDate
+                                , hierarchicalBoard.boardIndent
+                        )
+                )
+                .from(hierarchicalBoard)
+                .where(
+                        searchTypeEq(cri.getSearchType(), cri.getKeyword())
+                )
+                .orderBy(hierarchicalBoard.boardGroupNo.desc())
+                .orderBy(hierarchicalBoard.boardUpperNo.asc())
+                .offset((cri.getPageNum() - 1) * cri.getBoardAmount())
+                .limit(cri.getBoardAmount())
+                .fetch();
+
+        JPAQuery<Long> count = jpaQueryFactory.select(hierarchicalBoard.countDistinct())
+                .from(hierarchicalBoard)
+                .where(
+                        searchTypeEq(cri.getSearchType(), cri.getKeyword())
+                );
+
+        return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);
+      }
+
+      private BooleanExpression searchTypeEq(String searchType, String keyword) {
+        if(searchType == null)
+          return null;
+        else if(searchType.equals("t"))
+          return hierarchicalBoard.boardTitle.like(keyword);
+        else if(searchType.equals("c"))
+          return hierarchicalBoard.boardContent.like(keyword);
+        else if(searchType.equals("tc"))
+          return hierarchicalBoard.boardTitle.like(keyword).or(hierarchicalBoard.boardContent.like(keyword));
+        else if(searchType.equals("u"))
+          return hierarchicalBoard.member.userId.like(keyword);
+        else
+          return null;
+      }
+    }
+```
+
+검색어와 검색 타입에 대한 동적 처리는 BooleanExpression 타입의 searchTypeEq을 통해 처리할 수 있었습니다.   
+QueryDSL을 사용하면서 정말 좋았던 점이 기본적으로 세팅만 해두고 나면 쿼리 작성에 대해 직관적으로 표현되기 때문에 여러가지로 알아볼 필요 없이 처리가 가능하다는 점이었습니다.   
+또한 JPQL 처럼 count 쿼리를 직접 제어할 수 있다는 점이 좋았습니다.   
+
+현재 데이터베이스에는 테스트를 위해 100만건의 더미데이터를 넣어두었습니다.   
+데이터가 쌓여 갈수록 어느정도의 시간이 소요되는지, 그럼 쿼리를 어떻게 작성하고 개선할 수 있는지 확인하기 위해 넣어두었는데 기존 count(*)로 처리했던 쿼리의 경우 100만건 만으로도 16초가 소요되었습니다.   
+여러 테스트를 통해 count(distinct(PK)) 로 조회하는 것이 전체 조회에서는 0.6초로 개선될 정도로 확연한 차이를 보이는 것을 확인할 수 있었습니다.   
+하지만 LIKE 문을 통해 WHERE문이 존재하는 경우에는 count(*)가 조금 더 빠른 결과를 보여줬고, 검색되는 컬럼에 대해 인덱스를 설정해주는 것으로 처리 시간을 더 단축 할 수 있다는 결과를 확인할 수 있었습니다.   
+그래서 꼭 count 쿼리를 제어했으면 했고, QueryDSL은 제가 기획한 프로젝트의 요구사항을 잘 처리할 수 있는 좋은 방법이었습니다.
+
+<br />
+
+## 느낀점과 고민중인 부분
+REST-API 버전의 프로젝트를 진행하고 마무리할 때 까지는 리스트 형태의 데이터 처리를 반복문으로 처리했습니다.   
+프로젝트를 처음 마무리한 뒤 이후 학습 중에 서버 또는 데이터 베이스의 접근 비용 또는 효율에 대한 글을 보게 되었습니다.   
+미처 생각하지 못한 부분이었는데 여러 번 접근해 처리한다는 것은 그만큼의 서버 트래픽 또는 Thread pool 관리에서 비효율적이라는 생각이 들었습니다.   
+그래서 여러 건의 데이터 처리에 대해 처리할 방법을 알아보게 되었고 동적 쿼리로 개선하게 되었습니다.   
+리스트 형태는 in 절로 간단하게 해결할 수 있었지만 조회 조건에 대한 문제는 그렇게 해결할 수 없었기 때문에 QueryDSL을 사용했습니다.   
+JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로바로 이해하고 쿼리 작성을 쉽게 처리할 수 있었습니다.   
+또한 컴파일 과정에서 실수를 잡아낼 수 있다는 점에서도 유리하다고 느꼈습니다.   
+
+개선하고자 고민하는 부분으로는 Redis의 활용입니다.   
+토큰 관리를 Redis로 처리하고 있는데 다중 로그인을 허용하게 되면서 한 명의 사용자에 대한 토큰 데이터가 다수 존재합니다.   
+고민하고 있는 부분이 이 데이터 관리에 대한 부분인데 같은 사용자의 데이터를 묶어서 관리할 수 있는지, 할 수 있다면 묶는 것이 좋을지 지금처럼 개별적인 데이터로 관리하는 것이 더 좋을지에 대한 부분입니다.   
+추후 Redis를 통한 캐싱 처리도 적용해보고자 하고 있기 때문에 데이터 관리를 어떻게 처리할지 고민하고 있습니다.   
+이 부분에 대해서 Redis를 더 학습해서 개선하고자 계획하고 있습니다.   
+
+
+<br />
+<br />
 
 ---
 
