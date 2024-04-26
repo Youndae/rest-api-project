@@ -5,9 +5,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
 
 @Service
 public class CookieServiceImpl implements CookieService{
@@ -16,8 +19,11 @@ public class CookieServiceImpl implements CookieService{
     public MultiValueMap<String, String> setCookieToMultiValueMap(HttpServletRequest request) {
         MultiValueMap<String, String> mvm = new LinkedMultiValueMap<String, String>();
 
-        Arrays.stream(request.getCookies()).filter(idx -> idx.getName().startsWith("Authorization"))
-                .forEach(cookie -> mvm.add(cookie.getName(), cookie.getValue()));
+        if(request.getCookies() != null){
+            Arrays.stream(request.getCookies())
+                    .filter(idx -> idx.getName().startsWith("Authorization"))
+                    .forEach(cookie -> mvm.add(cookie.getName(), cookie.getValue()));
+        }
 
         return mvm;
     }

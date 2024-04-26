@@ -80,7 +80,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             , HttpServletResponse response
             , FilterChain chain)
             throws IOException, ServletException {
-
         Cookie accessTokenCookie = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
         Cookie refreshTokenCookie = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
         Cookie inoCookie = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);

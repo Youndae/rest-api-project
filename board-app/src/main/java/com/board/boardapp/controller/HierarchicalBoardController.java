@@ -31,6 +31,8 @@ public class HierarchicalBoardController {
                         , Criteria cri
                         , HttpServletRequest request
                         , HttpServletResponse response) {
+
+        System.out.println("boardList");
         HierarchicalBoardListDTO dto = hierarchicalBoardWebClient.getList(cri, request, response);
 
         model.addAttribute("data", dto);
@@ -117,6 +119,7 @@ public class HierarchicalBoardController {
                                                                 .getReplyDetail(request, response, boardNo);
 
         model.addAttribute("data", dto);
+        model.addAttribute("bno", boardNo);
 
         return "th/board/boardReply";
     }

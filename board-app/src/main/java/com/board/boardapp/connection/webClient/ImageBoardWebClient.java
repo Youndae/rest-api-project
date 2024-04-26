@@ -90,9 +90,8 @@ public class ImageBoardWebClient {
          * https://flyburi.com/617
          */
         return imageWebClient.get()
-                            .uri(uriBuilder -> uriBuilder.path(imagePath + "display")
-                                    .queryParam("imageName", imageName)
-                                    .build())
+                            .uri(uriBuilder -> uriBuilder.path(imagePath + "display/{imageName}")
+                                    .build(imageName))
                             .retrieve()
                             .onStatus(
                                     HttpStatus::is4xxClientError, clientResponse ->
