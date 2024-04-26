@@ -1587,3 +1587,16 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >>>       * 새로 생성한 properties 사용하기 위해 PropertiesConfig 클래스 생성해서 Bean 등록.
 >>>     * JwtAuthorization에서 토큰 prefix 확인하는 코드 누락되었어서 추가.
 >>>       * ino가 존재하고 두 토큰이 모두 존재하는 경우에만 prefix를 체크한 뒤에 둘다 정상이라면 토큰 검증을 하도록 수정.
+>
+>
+>> 24/04/26
+>>> * 추가
+>>> * Api-Server, Application-Server
+>>>     * 각 메소드 시간 측정을 위한 AOP 설정.
+>>>     * Dependency와 TimeCheckAOP Component 추가
+>>>     * 측정 결과는 로그로 처리.
+>>>     * 1000ms가 넘는 결과에 대해서는 WARN으로 처리하고 그 외의 결과에 대해서는 info로 처리.
+>>> * 수정
+>>>   * Application-Server 
+>>>     * 요청 이전 쿠키를 MultiValueMap에 담는 과정에서 request.getCookies()가 null인 경우에는 오류가 발생하는 것을 확인.
+>>>     * 해당 부분을 request.getCookies() != null인 경우에만 수행하도록 수정.
