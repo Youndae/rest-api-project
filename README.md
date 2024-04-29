@@ -1600,3 +1600,4 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >>>   * Application-Server 
 >>>     * 요청 이전 쿠키를 MultiValueMap에 담는 과정에서 request.getCookies()가 null인 경우에는 오류가 발생하는 것을 확인.
 >>>     * 해당 부분을 request.getCookies() != null인 경우에만 수행하도록 수정.
+
