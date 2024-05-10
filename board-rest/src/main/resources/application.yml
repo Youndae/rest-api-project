@@ -32,9 +32,11 @@ spring:
     host: localhost
     port: 6379
 
+  profiles:
+    include: oauth
 
 server:
-  port: 9096
+  port: 8080
 
 logging:
   file:
