@@ -3,9 +3,6 @@ package com.example.boardrest.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.example.boardrest.config.jwt.JwtProperties;
-import com.example.boardrest.domain.dto.JwtDTO;
-import com.example.boardrest.domain.dto.MemberDTO;
 import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -13,13 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseCookie;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.servlet.http.Cookie;
-import java.time.Duration;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;

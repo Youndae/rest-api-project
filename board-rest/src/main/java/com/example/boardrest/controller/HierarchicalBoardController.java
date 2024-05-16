@@ -30,6 +30,8 @@ public class HierarchicalBoardController {
                                                                         , @RequestParam(value = "searchType", required = false) String searchType
                                                                         , Principal principal) {
 
+        if(principal != null)
+            log.info("boardList principal : {}", principal.getName());
 
         Criteria cri = Criteria.builder()
                                 .pageNum(pageNum)

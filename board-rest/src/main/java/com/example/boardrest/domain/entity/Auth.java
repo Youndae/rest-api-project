@@ -5,9 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Getter
-@ToString
-@EqualsAndHashCode
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -21,7 +19,13 @@ public class Auth {
     @JoinColumn(name = "userId")
     private Member member;*/
 
-    private String userId;
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private Member member;
 
     private String auth;
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }

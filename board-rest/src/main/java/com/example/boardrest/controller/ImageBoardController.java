@@ -1,7 +1,5 @@
 package com.example.boardrest.controller;
 
-import com.example.boardrest.customException.CustomTokenStealingException;
-import com.example.boardrest.customException.ErrorCode;
 import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
 import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
@@ -9,7 +7,6 @@ import com.example.boardrest.properties.FilePathProperties;
 import com.example.boardrest.service.ImageBoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -102,14 +99,14 @@ public class ImageBoardController {
     @GetMapping("/display/{imageName}")
     public ResponseEntity<byte[]> getFile(@PathVariable String imageName){
 
-        File file = new File(FilePathProperties.FILE_PATH + imageName);
+        File file = new File(FilePathProperties.BOARD_FILE_PATH + imageName);
         ResponseEntity<byte[]> result = null;
 
         try{
             HttpHeaders header = new HttpHeaders();
             header.add("Content-Type", Files.probeContentType(file.toPath()));
 
-            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
+            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), HttpStatus.OK);
         }catch (IOException e){
             e.printStackTrace();
         }

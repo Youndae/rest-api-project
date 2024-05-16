@@ -1,6 +1,8 @@
 package com.example.boardrest.config.jwt;
 
+import com.example.boardrest.config.oAuth.CustomOAuth2User;
 import com.example.boardrest.customException.ErrorCode;
+import com.example.boardrest.domain.dto.OAuth2DTO;
 import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.repository.MemberRepository;
 import com.example.boardrest.security.domain.CustomUser;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
@@ -20,6 +23,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 
 
 @Slf4j
@@ -140,9 +144,26 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         if (username != null) {
             Member memberEntity = memberRepository.findByUserId(username);
-            CustomUser customUser = new CustomUser(memberEntity);
+            String userId;
+            Collection<? extends GrantedAuthority> authorities;
+
+            if(memberEntity.getProvider().equals("local")){
+                CustomUser customUser = new CustomUser(memberEntity);
+                userId = customUser.getMember().getUserId();
+                authorities = customUser.getAuthorities();
+            }else{
+                OAuth2DTO oAuth2DTO = OAuth2DTO.builder()
+                        .userId(memberEntity.getUserId())
+                        .username(memberEntity.getUsername())
+                        .authList(memberEntity.getAuths())
+                        .build();
+                CustomOAuth2User customOAuth2User = new CustomOAuth2User(oAuth2DTO);
+                userId = customOAuth2User.getUserId();
+                authorities = customOAuth2User.getAuthorities();
+            }
+
             Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(customUser, null, customUser.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(userId, null, authorities);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

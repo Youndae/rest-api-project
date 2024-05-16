@@ -27,5 +27,6 @@ public class CustomUser extends User {
                 new SimpleGrantedAuthority(auth.getAuth())).collect(Collectors.toList()));
 
         this.member = member;
+        log.info("CustomUser constructor");
     }
 }

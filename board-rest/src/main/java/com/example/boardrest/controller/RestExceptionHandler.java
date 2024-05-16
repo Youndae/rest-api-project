@@ -59,6 +59,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({AccessDeniedException.class, CustomAccessDeniedException.class})
     public ResponseEntity<ExceptionEntity> accessDeniedExceptionHandler(Exception e) {
 
+        log.info("AccessDenied Handle");
+
         exceptionLog(e);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)

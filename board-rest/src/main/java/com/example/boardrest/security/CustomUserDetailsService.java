@@ -6,6 +6,7 @@ import com.example.boardrest.security.domain.CustomUser;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,8 +25,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = repository.findByUserId(username);
 
-        log.info("userByUsername : " + username);
-
-        return member == null ? null : new CustomUser(member);
+        if(member == null)
+            throw new BadCredentialsException("loadUser fail");
+        else
+            return new CustomUser(member);
     }
 }

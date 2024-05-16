@@ -21,15 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +37,8 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     private final ImageBoardRepository imageBoardRepository;
 
     private final ImageDataRepository imageDataRepository;
+
+    private final ImageFileService imageFileService;
 
     @Override
     public ResponseDetailAndModifyDTO<ImageBoardDetailDTO> getImageBoardDetail(long imageNo, Principal principal) {
@@ -87,11 +85,11 @@ public class ImageBoardServiceImpl implements ImageBoardService{
                                 , Principal principal) {
 
         ImageBoard imageBoard = ImageBoard.builder()
-                                        .member(principalService.checkPrincipal(principal))
-                                        .imageTitle(request.getParameter("imageTitle"))
-                                        .imageContent(request.getParameter("imageContent"))
-                                        .imageDate(Date.valueOf(LocalDate.now()))
-                                        .build();
+                .member(principalService.checkPrincipal(principal))
+                .imageTitle(request.getParameter("imageTitle"))
+                .imageContent(request.getParameter("imageContent"))
+                .imageDate(Date.valueOf(LocalDate.now()))
+                .build();
 
         imageInsert(images,  1, imageBoard);
 
@@ -157,47 +155,30 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     }
 
     // 이미지 파일 저장 및 imageData save 처리
-    void imageInsert(List<MultipartFile> images
+    private void imageInsert(List<MultipartFile> images
                             , int step
                             , ImageBoard imageBoard) {
-        String filePath = FilePathProperties.FILE_PATH;
-
+        String filePath = FilePathProperties.BOARD_FILE_PATH;
+        Map<String, String> map;
         for(MultipartFile image : images){
-            String originalName = image.getOriginalFilename();
-            StringBuffer sb = new StringBuffer();
-            String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss")
-                                        .format(System.currentTimeMillis()))
-                                .append(UUID.randomUUID().toString())
-                                .append(originalName.substring(originalName.lastIndexOf(".")))
-                                .toString();
-            String saveFile = filePath + saveName;
+            map = imageFileService.saveFile(filePath, image);
 
-            try{
-                image.transferTo(new File(saveFile));
-            }catch (Exception e){
-                new IOException();
-            }
-
-            imageBoard.addImageData(
-                                ImageData.builder()
-                                        .imageName(saveName)
-                                        .oldName(originalName)
-                                        .imageStep(step++)
-                                        .build()
-                        );
+            imageBoard.addImageData(ImageData.builder()
+                                    .imageName(map.get("imageName"))
+                                    .oldName(map.get("oldName"))
+                                    .imageStep(step++)
+                                    .build()
+                            );
         }
+
     }
 
     // 이미지 파일 삭제
-    void deleteFilesProc(List<String> deleteFiles) {
-        String filePath = FilePathProperties.FILE_PATH;
+    public void deleteFilesProc(List<String> deleteFiles) {
+        String filePath = FilePathProperties.BOARD_FILE_PATH;
 
-        for(int i = 0; i < deleteFiles.size(); i++){
-            File file = new File(filePath + deleteFiles.get(i));
+        deleteFiles.forEach(v -> imageFileService.deleteFile(filePath, v));
 
-            if(file.exists())
-                file.delete();
-        }
     }
 
     @Override

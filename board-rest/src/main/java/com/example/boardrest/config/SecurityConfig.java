@@ -2,6 +2,8 @@ package com.example.boardrest.config;
 
 
 import com.example.boardrest.config.jwt.JwtAuthorizationFilter;
+import com.example.boardrest.config.oAuth.CustomOAuth2UserService;
+import com.example.boardrest.config.oAuth.CustomOAuthSuccessHandler;
 import com.example.boardrest.repository.MemberRepository;
 import com.example.boardrest.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,10 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+    private final CustomOAuthSuccessHandler customOAuthSuccessHandler;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -48,7 +54,16 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthorizationFilter(memberRepository, jwtTokenProvider), BasicAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/", "/resources/**")
-                .permitAll();
+                .permitAll()
+            .and()
+                .oauth2Login((oauth2) ->
+                        oauth2
+                                .userInfoEndpoint((userInfoEndpointConfig) ->
+                                        userInfoEndpointConfig
+                                                .userService(customOAuth2UserService))
+                                .successHandler(customOAuthSuccessHandler));
+
+
 
         return http.build();
     }
