@@ -15,7 +15,7 @@ public class ImageModifyInfoDTO {
 
     private String imageTitle;
 
-    private String userId;
+    private String nickname;
 
     private Date imageDate;
 

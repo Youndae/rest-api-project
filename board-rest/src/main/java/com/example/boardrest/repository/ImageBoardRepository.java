@@ -10,7 +10,7 @@ public interface ImageBoardRepository extends JpaRepository<ImageBoard, Long>, I
     @Query(value = "SELECT new com.example.boardrest.domain.dto.ImageModifyInfoDTO(" +
             "b.imageNo" +
             ", b.imageTitle" +
-            ", b.member.userId" +
+            ", b.member.nickname" +
             ", b.imageDate" +
             ", b.imageContent) " +
             "FROM ImageBoard b " +

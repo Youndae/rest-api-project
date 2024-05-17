@@ -14,7 +14,7 @@ public interface HierarchicalBoardRepository extends JpaRepository<HierarchicalB
     @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardDetailDTO(" +
             "b.boardNo" +
             ", b.boardTitle" +
-            ", b.member.userId" +
+            ", b.member.nickname" +
             ", b.boardContent" +
             ", b.boardDate) " +
             "FROM HierarchicalBoard b " +

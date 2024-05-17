@@ -1,5 +1,7 @@
 package com.example.boardrest.controller;
 
+import com.example.boardrest.customException.CustomAccessDeniedException;
+import com.example.boardrest.customException.ErrorCode;
 import com.example.boardrest.domain.dto.LoginStateDTO;
 import com.example.boardrest.domain.dto.JoinDTO;
 import com.example.boardrest.domain.dto.ProfileDTO;
@@ -52,9 +54,12 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public int joinProc(@RequestBody JoinDTO dto){
+    public int joinProc(JoinDTO dto
+                        , @RequestParam(value = "profileThumbnail", required = false) MultipartFile profileThumbnail){
 
-        return memberService.memberJoinProc(dto);
+        log.info("join :: dto : {}", dto);
+
+        return memberService.memberJoinProc(dto, profileThumbnail);
     }
 
     @GetMapping("/check-id")
@@ -68,7 +73,7 @@ public class MemberController {
 
     @GetMapping("/check-nickname")
     public int checkNickname(@RequestParam("nickname") String nickname, Principal principal) {
-        Member member = memberRepository.findByNickName(nickname);
+        Member member = memberRepository.findByNickname(nickname);
 
         if(member == null)
             return 0;
@@ -101,6 +106,7 @@ public class MemberController {
     }
 
     @PatchMapping("/profile")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_MANAGER', 'ROLE_ADMIN')")
     public ResponseEntity<Long> modifyProfile(@RequestParam("nickname") String nickname
                                             , @RequestParam(value = "profileThumbnail", required = false) MultipartFile profileThumbnail
                                             , @RequestParam(value = "deleteProfile", required = false) String deleteProfile
@@ -116,6 +122,7 @@ public class MemberController {
     }
 
     @GetMapping("/profile")
+    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_MANAGER', 'ROLE_ADMIN')")
     public ResponseEntity<ProfileResponseDTO> getProfile(Principal principal) {
 
         return new ResponseEntity<>(memberService.getProfile(principal), HttpStatus.OK);

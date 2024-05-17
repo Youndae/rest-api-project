@@ -33,8 +33,8 @@ public class ResponseDetailAndModifyDTO<T> {
     //userStatus
     private UserStatusDTO userStatus;
 
-    public ResponseDetailAndModifyDTO(T responseContent, Principal principal){
+    public ResponseDetailAndModifyDTO(T responseContent, String nickname){
         this.content = responseContent;
-        this.userStatus = new UserStatusDTO(principal);
+        this.userStatus = new UserStatusDTO(nickname);
     }
 }

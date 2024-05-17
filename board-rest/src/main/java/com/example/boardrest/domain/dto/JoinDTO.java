@@ -2,10 +2,12 @@ package com.example.boardrest.domain.dto;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode
 public class JoinDTO {
@@ -16,10 +18,8 @@ public class JoinDTO {
 
     private String userName;
 
-    private String nickName;
+    private String nickname;
 
     private String email;
-
-    private MultipartFile profileThumbnail;
 
 }

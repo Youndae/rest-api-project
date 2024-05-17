@@ -1,11 +1,12 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.Criteria;
-import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
-import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
+import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.domain.entity.HierarchicalBoard;
+import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,10 +16,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
+import java.sql.Date;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +36,70 @@ class HierarchicalBoardServiceImplTest {
     private HierarchicalBoardService service;
 
     @Autowired
+    private PrincipalService principalService;
+
+    @Autowired
     private HierarchicalBoardRepository repository;
+
+    @Test
+    @DisplayName("boardInsert, modify test")
+    @Transactional
+    void insertTest() {
+        Principal principal = new Principal() {
+            @Override
+            public String getName() {
+                return "coco";
+            }
+        };
+        Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
+
+        HierarchicalBoardDTO boardDTO = HierarchicalBoardDTO.builder()
+                                            .boardTitle("test Title1")
+                                            .boardContent("test Content 1")
+                                            .boardGroupNo(0)
+                                            .boardIndent(0)
+                                            .boardUpperNo(null)
+                                            .build();
+
+        HierarchicalBoard board = HierarchicalBoard.builder()
+                                        .boardTitle(boardDTO.getBoardTitle())
+                                        .boardContent(boardDTO.getBoardContent())
+                                        .member(memberEntity)
+                                        .boardDate(Date.valueOf(LocalDate.now()))
+                                        .build();
+
+        long saveBoardNo = repository.save(board).getBoardNo();
+        board.setPatchBoardData(boardDTO);
+        repository.save(board);
+
+        HierarchicalBoard saveBoard = repository.findById(saveBoardNo).orElseThrow(() -> new NullPointerException("nullPointerException"));
+
+        Assertions.assertEquals(saveBoard.getBoardContent(), "test Content 1");
+
+        //patchTest
+        HierarchicalBoardModifyDTO modifyDTO = HierarchicalBoardModifyDTO.builder()
+                .boardNo(saveBoardNo)
+                .boardTitle("test title1")
+                .boardContent("modifyContent1")
+                .build();
+
+        saveBoard.setBoardTitle(modifyDTO.getBoardTitle());
+        saveBoard.setBoardContent(modifyDTO.getBoardContent());
+        repository.save(saveBoard);
+
+        saveBoard = repository.findById(saveBoardNo).orElseThrow(() -> new NullPointerException("nullPointerException"));
+
+        Assertions.assertEquals(saveBoard.getBoardContent(), "modifyContent1");
+
+
+    }
+
+    @Test
+    void detailTest() {
+        HierarchicalBoardDetailDTO dto = repository.findBoardDetailByBoardNo(99988L);
+
+        System.out.println(dto);
+    }
 
     @Test
     void hTest() {

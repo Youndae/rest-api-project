@@ -1,10 +1,16 @@
 package com.example.boardrest.repository;
 
+import com.example.boardrest.domain.dto.Criteria;
+import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
 import com.example.boardrest.domain.entity.HierarchicalBoard;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.Optional;
@@ -29,5 +35,18 @@ class HierarchicalBoardRepositoryTest {
             System.out.println("true");
     }
 
+    @Test
+    @DisplayName("list 조회 테스트")
+    void boardListTest() {
+        Criteria cri = new Criteria();
 
+        Pageable pageable = PageRequest.of(cri.getPageNum() - 1
+                , cri.getBoardAmount()
+                , Sort.by("boardGroupNo").descending()
+                        .and(Sort.by("boardUpperNo").ascending()));
+
+        Page<HierarchicalBoardListDTO> dto = hierarchicalBoardRepository.findAll(cri, pageable);
+
+
+    }
 }

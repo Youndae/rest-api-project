@@ -5,6 +5,7 @@ import com.example.boardrest.domain.entity.Comment;
 import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.BoardCommentDTO;
 import com.example.boardrest.domain.dto.CommentInsertDTO;
+import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +34,10 @@ public class CommentServiceImpl implements CommentService{
     @Transactional(rollbackOn = Exception.class)
     public long commentInsertProc(CommentInsertDTO dto, Principal principal) {
 
+        Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
+
         Comment comment = Comment.builder()
-                                .member(principalService.checkPrincipal(principal))
+                                .member(memberEntity)
                                 .commentContent(dto.getCommentContent())
                                 .commentDate(Date.valueOf(LocalDate.now()))
                                 .build();
@@ -80,7 +83,9 @@ public class CommentServiceImpl implements CommentService{
                         .and(Sort.by("commentUpperNo").ascending()));
 
         Page<BoardCommentDTO> comments = commentRepository.findAll(cri, pageable, boardNo, imageNo);
-        ResponsePageableListDTO<BoardCommentDTO> responseDTO = new ResponsePageableListDTO<>(comments, principal);
+
+        log.info("comments : {}", comments);
+        ResponsePageableListDTO<BoardCommentDTO> responseDTO = new ResponsePageableListDTO<>(comments, principalService.getNicknameToPrincipal(principal));
 
         return responseDTO;
     }

@@ -17,16 +17,14 @@ public class UserStatusDTO {
 
     private String uid;
 
-    public UserStatusDTO(Principal principal) {
+    public UserStatusDTO(String nickname) {
 
-        if(principal == null){
-            System.out.println("principal is null");
+        if(nickname == null){
             this.loggedIn = false;
             this.uid = null;
         }else{
-            System.out.println("userStatus principal is not null");
             this.loggedIn = true;
-            this.uid = principal.getName();
+            this.uid = nickname;
         }
 
     }

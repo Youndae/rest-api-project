@@ -49,13 +49,13 @@ public class ResponsePageableListDTO<T> {
     //userStatus
     private UserStatusDTO userStatus;
 
-    public ResponsePageableListDTO(Page<T> pageableResponse, Principal principal){
+    public ResponsePageableListDTO(Page<T> pageableResponse, String nickname){
         this.content = pageableResponse.getContent();
         this.empty = pageableResponse.isEmpty();
         this.first = pageableResponse.isFirst();
         this.last = pageableResponse.isLast();
         this.number = pageableResponse.getNumber();
         this.totalPages = pageableResponse.getTotalPages();
-        this.userStatus = new UserStatusDTO(principal);
+        this.userStatus = new UserStatusDTO(nickname);
     }
 }

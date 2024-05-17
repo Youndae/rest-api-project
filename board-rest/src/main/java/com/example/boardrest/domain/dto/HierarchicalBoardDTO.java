@@ -17,7 +17,7 @@ public class HierarchicalBoardDTO {
 
     private String boardTitle;
 
-    private String userId;
+    private String nickname;
 
     private String boardContent;
 

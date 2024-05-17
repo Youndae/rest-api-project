@@ -21,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.Cookie;
@@ -49,29 +50,29 @@ public class MemberServiceImpl implements MemberService {
 
     // 사용자 회원가입(체크 후 메소드 호출로 save 처리)
     @Override
-    public int memberJoinProc(JoinDTO dto) {
-        if(dto.getUserId() == null || dto.getUserPw().length() == 0 || dto.getUserName() == null || dto.getNickName() == null)
+    public int memberJoinProc(JoinDTO dto, MultipartFile profileThumbnail) {
+        if(dto.getUserId() == null || dto.getUserPw().length() == 0 || dto.getUserName() == null || dto.getNickname() == null)
             return 0;
         else
-            return joinMember(dto);
+            return joinMember(dto, profileThumbnail);
     }
 
     // 사용자 데이터 save
     @Transactional(rollbackOn = Exception.class)
-    public int joinMember(JoinDTO member){
+    public int joinMember(JoinDTO member, MultipartFile profileThumbnail){
 
         String filepath = FilePathProperties.PROFILE_FILE_PATH;
 
-        String profileThumbnail = member.getProfileThumbnail() == null ?
-                    null : imageFileService.saveFile(filepath, member.getProfileThumbnail()).get("imageName");
+        String profile = profileThumbnail == null ?
+                    null : imageFileService.saveFile(filepath, profileThumbnail).get("imageName");
 
         Member memberEntity = Member.builder()
                             .userId(member.getUserId())
                             .userPw(member.getUserPw())
                             .username(member.getUserName())
                             .email(member.getEmail())
-                            .nickName(member.getNickName())
-                            .profileThumbnail(profileThumbnail)
+                            .nickname(member.getNickname())
+                            .profileThumbnail(profile)
                             .provider(OAuthProvider.LOCAL.getKey())
                             .build();
 
@@ -165,7 +166,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByUserId(principal.getName());
 
         return ProfileResponseDTO.builder()
-                .nickname(member.getNickName())
+                .nickname(member.getNickname())
                 .profileThumbnail(member.getProfileThumbnail())
                 .build();
     }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.example.boardrest.domain.entity.QComment.comment;
+import static com.example.boardrest.domain.entity.QMember.member;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom{
                                     .select(
                                         Projections.fields(BoardCommentDTO.class,
                                                 comment.commentNo
-                                                , comment.member.userId
+                                                , comment.member.nickname
                                                 , comment.commentDate
                                                 , new CaseBuilder()
                                                         .when(comment.commentStatus.gt(0))
@@ -43,6 +44,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom{
                                                 , comment.commentUpperNo
                                         ))
                                     .from(comment)
+                                    .innerJoin(comment.member, member)
                                     .where(
                                             commentBoardEq(boardNo),
                                             commentImageBoardEq(imageNo)

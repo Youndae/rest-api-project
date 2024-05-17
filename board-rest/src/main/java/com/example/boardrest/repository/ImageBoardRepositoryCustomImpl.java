@@ -16,6 +16,7 @@ import java.util.List;
 
 import static com.example.boardrest.domain.entity.QImageBoard.imageBoard;
 import static com.example.boardrest.domain.entity.QImageData.imageData;
+import static com.example.boardrest.domain.entity.QMember.member;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,15 +33,16 @@ public class ImageBoardRepositoryCustomImpl implements ImageBoardRepositoryCusto
                                 ImageBoardDTO.class
                                 , imageBoard.imageNo
                                 , imageBoard.imageTitle
-                                , imageBoard.member.userId
+                                , imageBoard.member.nickname
                                 , imageBoard.imageDate
                                 , imageBoard.imageContent
                                 , imageData.imageName
                                 )
                 )
                 .from(imageBoard)
-                .innerJoin(imageData)
-                .on(imageBoard.imageNo.eq(imageData.imageBoard.imageNo))
+                .innerJoin(imageBoard.imageDataSet, imageData)
+//                .on(imageBoard.imageNo.eq(imageData.imageBoard.imageNo))
+                .innerJoin(imageBoard.member, member)
                 .where(searchTypeEq(cri.getSearchType(), cri.getKeyword()))
                 .groupBy(imageBoard.imageNo)
                 .orderBy(imageBoard.imageNo.desc())

@@ -5,6 +5,7 @@ import com.example.boardrest.domain.dto.ImageDataDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -35,6 +36,6 @@ public interface ImageDataRepository extends JpaRepository<ImageData, String> {
 
     @Modifying
     @Query(value = "DELETE FROM ImageData d WHERE d.imageName in :deleteFileList")
-    void deleteImageDataList(List<String> deleteFileList);
+    void deleteImageDataList(@Param("deleteFileList") List<String> deleteFileList);
 
 }

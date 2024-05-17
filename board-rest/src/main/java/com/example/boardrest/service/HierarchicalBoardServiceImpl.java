@@ -6,6 +6,7 @@ import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
 import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
 import com.example.boardrest.domain.entity.HierarchicalBoard;
+import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,10 +55,12 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
 
 
     public long insertBoardProc(HierarchicalBoardDTO dto, Principal principal) {
+        Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
+
         HierarchicalBoard board = HierarchicalBoard.builder()
                                                     .boardTitle(dto.getBoardTitle())
                                                     .boardContent(dto.getBoardContent())
-                                                    .member(principalService.checkPrincipal(principal))
+                                                    .member(memberEntity)
                                                     .boardDate(Date.valueOf(LocalDate.now()))
                                                     .build();
 
@@ -113,7 +116,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
                                                     .and(Sort.by("boardUpperNo").ascending()));
 
         Page<HierarchicalBoardListDTO> listDTO = hierarchicalBoardRepository.findAll(cri, pageable);
-        ResponsePageableListDTO<HierarchicalBoardListDTO> responseDTO = new ResponsePageableListDTO<>(listDTO, principal);
+        ResponsePageableListDTO<HierarchicalBoardListDTO> responseDTO = new ResponsePageableListDTO<>(listDTO, principalService.getNicknameToPrincipal(principal));
 
         return responseDTO;
     }
@@ -146,7 +149,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
             throw new NullPointerException();
 
         HierarchicalBoardModifyDTO dto = hierarchicalBoardRepository.getModifyData(boardNo);
-        ResponseDetailAndModifyDTO<HierarchicalBoardModifyDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principal);
+        ResponseDetailAndModifyDTO<HierarchicalBoardModifyDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principalService.getNicknameToPrincipal(principal));
 
 
         return responseDTO;
@@ -155,7 +158,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
     @Override
     public ResponseDetailAndModifyDTO<HierarchicalBoardDetailDTO> getBoardDetail(long boardNo, Principal principal) {
         HierarchicalBoardDetailDTO dto = hierarchicalBoardRepository.findBoardDetailByBoardNo(boardNo);
-        ResponseDetailAndModifyDTO<HierarchicalBoardDetailDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principal);
+        ResponseDetailAndModifyDTO<HierarchicalBoardDetailDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principalService.getNicknameToPrincipal(principal));
 
         return responseDTO;
     }
@@ -163,7 +166,7 @@ public class HierarchicalBoardServiceImpl implements HierarchicalBoardService {
     @Override
     public ResponseDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO> getReplyInfo(long boardNo, Principal principal) {
         HierarchicalBoardReplyInfoDTO dto = hierarchicalBoardRepository.findReplyInfoByBoardNo(boardNo);
-        ResponseDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principal);
+        ResponseDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principalService.getNicknameToPrincipal(principal));
 
         return responseDTO;
     }

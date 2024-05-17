@@ -90,7 +90,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .userId(existsData.getUserId())
                     .username(existsData.getUsername())
                     .authList(authList)
-                    .nickname(existsData.getNickName())
+                    .nickname(existsData.getNickname())
                     .build();
         }
 

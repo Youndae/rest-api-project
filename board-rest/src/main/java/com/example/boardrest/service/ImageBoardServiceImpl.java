@@ -7,9 +7,11 @@ import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
 import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.ImageData;
 import com.example.boardrest.domain.dto.*;
+import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.properties.FilePathProperties;
 import com.example.boardrest.repository.ImageBoardRepository;
 import com.example.boardrest.repository.ImageDataRepository;
+import com.example.boardrest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -51,13 +53,13 @@ public class ImageBoardServiceImpl implements ImageBoardService{
         ImageBoardDetailDTO dto = ImageBoardDetailDTO.builder()
                                                 .imageNo(imageBoard.getImageNo())
                                                 .imageTitle(imageBoard.getImageTitle())
-                                                .userId(imageBoard.getMember().getUserId())
+                                                .nickname(imageBoard.getMember().getNickname())
                                                 .imageContent(imageBoard.getImageContent())
                                                 .imageDate(imageBoard.getImageDate())
                                                 .imageData(dataDTO)
                                                 .build();
 
-        ResponseDetailAndModifyDTO<ImageBoardDetailDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principal);
+        ResponseDetailAndModifyDTO<ImageBoardDetailDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principalService.getNicknameToPrincipal(principal));
 
         return responseDTO;
     }
@@ -70,7 +72,7 @@ public class ImageBoardServiceImpl implements ImageBoardService{
         );
 
         Page<ImageBoardDTO> dto = imageBoardRepository.findAll(cri, pageable);
-        ResponsePageableListDTO<ImageBoardDTO> responseDTO = new ResponsePageableListDTO<>(dto, principal);
+        ResponsePageableListDTO<ImageBoardDTO> responseDTO = new ResponsePageableListDTO<>(dto, principalService.getNicknameToPrincipal(principal));
 
         return responseDTO;
     }
@@ -84,8 +86,10 @@ public class ImageBoardServiceImpl implements ImageBoardService{
                                 , HttpServletRequest request
                                 , Principal principal) {
 
+        Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
+
         ImageBoard imageBoard = ImageBoard.builder()
-                .member(principalService.checkPrincipal(principal))
+                .member(memberEntity)
                 .imageTitle(request.getParameter("imageTitle"))
                 .imageContent(request.getParameter("imageContent"))
                 .imageDate(Date.valueOf(LocalDate.now()))
@@ -109,13 +113,15 @@ public class ImageBoardServiceImpl implements ImageBoardService{
                 .findById(imageNo)
                 .orElseThrow(() -> new NullPointerException("NullPointerException"));
 
+        Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
+
         String writer = imageBoard.getMember().getUserId();
 
         if(!writer.equals(principal.getName()))
             throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, "AccessDenied");
 
         imageBoard = ImageBoard.builder()
-                                .member(principalService.checkPrincipal(principal))
+                                .member(memberEntity)
                                 .imageNo(imageNo)
                                 .imageTitle(request.getParameter("imageTitle"))
                                 .imageContent(request.getParameter("imageContent"))
@@ -185,10 +191,12 @@ public class ImageBoardServiceImpl implements ImageBoardService{
     public ResponseDetailAndModifyDTO<ImageModifyInfoDTO> getModifyData(long imageNo, Principal principal) {
         ImageModifyInfoDTO dto = imageBoardRepository.imageDetailDTO(imageNo);
 
-        if(principal == null || !dto.getUserId().equals(principal.getName()))
-            new AccessDeniedException("AccessDenied");
+        PrincipalDTO principalDTO = principalService.checkPrincipal(principal);
 
-        ResponseDetailAndModifyDTO<ImageModifyInfoDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principal);
+        if(!dto.getNickname().equals(principalDTO.getNickname()))
+            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
+
+        ResponseDetailAndModifyDTO<ImageModifyInfoDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principalService.getNicknameToPrincipal(principal));
 
         return responseDTO;
     }

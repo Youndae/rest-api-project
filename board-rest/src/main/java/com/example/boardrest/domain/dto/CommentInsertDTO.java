@@ -6,6 +6,8 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class CommentInsertDTO {
 //
     private long commentNo;

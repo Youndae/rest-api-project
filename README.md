@@ -1626,4 +1626,13 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >>>     * 파일 저장과 삭제에 대한 처리만 분리.
 >>>     * 파일 저장의 경우 key, value 모두 String 타입의 Map으로 반환.
 >>>     * 게시판 파일 저장명(imageName)과 본래 파일명(originalName)을 처리해야 하고 프로필에서는 저장명만 필요한데 하나의 메소드에서 처리하다보니 Map으로 반환하는 것이 가장 효율적이라고 판단해 처리.
->>>     * 
+>>>   * 쿼리 및 DTO 수정
+>>>     * 테이블 구조가 변경되었기 때문에 해당 변경사항에 맞게 native Query 또는 QueryDSL 수정.
+>>>     * 수정 내역에 대해서는 test 코드로 체크 후 react와 연동해 추가 테스트 완료.
+>>>   * Principal 관련 서비스 메소드 추가
+>>>     * principal에 id나 nickname이 들어가지 않고 기존과 동일하게 userId가 들어가도록 유지.
+>>>     * 그러다보니 작성자 검증 시 nickname이 필요하고 이 부분에 대해 인증 객체에 nickname을 넣을까 고민했지만 유지하도록 하고 PrincipalService를 통해 반환받도록 처리
+>>>     * Member Entity는 userId, provider가 NonNull로 설정되어 있기 때문에 해당 값들을 같이 PrincipalDTO에 담아 반환하도록 처리.
+>>>     * PrincipalDTO 내부에서는 toEntity를 통해 Member Entity를 build할 수 있도록 처리
+>>>     * 추가적인 메소드로 PrincipalDTO를 반환받는 것이 아닌 nickname만 반환받을 수 있는 메소드를 생성.
+>>>     * client 또는 Application Server로 전달하는 값 중 userStatus가 존재하는데 이 안에 사용자의 userId를 받고 있었으나 모두 nickname으로 수정했기 때문에 해당 값을 PrincipalService를 통해 nickname을 반환받아 담을 수 있도록 처리.

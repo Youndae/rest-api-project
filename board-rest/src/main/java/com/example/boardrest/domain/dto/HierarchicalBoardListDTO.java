@@ -3,6 +3,7 @@ package com.example.boardrest.domain.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Date;
 
@@ -15,7 +16,7 @@ public class HierarchicalBoardListDTO {
 
     private String boardTitle;
 
-    private String userId;
+    private String nickname;
 
     private Date boardDate;
 

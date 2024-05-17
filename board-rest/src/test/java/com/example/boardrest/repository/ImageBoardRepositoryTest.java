@@ -8,6 +8,7 @@ import com.example.boardrest.service.ImageBoardService;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,6 +39,7 @@ class ImageBoardRepositoryTest {
     private ImageBoardService imageBoardService;
 
     @Test
+    @DisplayName("list test")
     void imageListDTOTest() {
 
         Criteria cri = new Criteria();
@@ -67,7 +69,7 @@ class ImageBoardRepositoryTest {
 
         ImageBoardDetailDTO dto = ImageBoardDetailDTO.builder()
                 .imageNo(imageDTO.getImageNo())
-                .userId(imageDTO.getUserId())
+                .nickname(imageDTO.getNickname())
                 .imageContent(imageDTO.getImageContent())
                 .imageDate(imageDTO.getImageDate())
                 .imageTitle(imageDTO.getImageTitle())

@@ -16,9 +16,9 @@ class MemberRepositoryTest {
     @Test
     @DisplayName("닉네임 중복 여부 체크")
     void nicknameCheck() {
-        Member member = memberRepository.findByNickName("cocomozzi");
+        Member member = memberRepository.findByNickname("cocomozzi");
 
-        Assertions.assertThat(member.getNickName().equals("cocomozzi"));
+        Assertions.assertThat(member.getNickname().equals("cocomozzi"));
 
     }
 }

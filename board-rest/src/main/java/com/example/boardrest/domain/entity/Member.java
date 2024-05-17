@@ -17,8 +17,8 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
     @Column(unique = true)
+    @NonNull
     private String userId;
 
     private String userPw;
@@ -28,7 +28,7 @@ public class Member {
     private String email;
 
     @Column(unique = true)
-    private String nickName;
+    private String nickname;
 
     private String profileThumbnail;
 
@@ -53,14 +53,15 @@ public class Member {
     }
 
 
-    public Member(Long id, @NonNull String userId, String userPw, String username, String email, String nickName, String profileThumbnail, @NonNull String provider) {
+    public Member(Long id, @NonNull String userId, String userPw, String username, String email, String nickname, String profileThumbnail, @NonNull String provider) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         this.id = id;
         this.userId = userId;
         this.userPw = userPw == null ? null : passwordEncoder.encode(userPw);
         this.username = username;
-        this.nickName = nickName;
+        this.email = email;
+        this.nickname = nickname;
         this.profileThumbnail = profileThumbnail;
         this.provider = provider;
     }
@@ -74,7 +75,7 @@ public class Member {
     }
 
     public void setNickName(String nickname) {
-        this.nickName = nickname;
+        this.nickname = nickname;
     }
 
     public void setEmail(String email) {

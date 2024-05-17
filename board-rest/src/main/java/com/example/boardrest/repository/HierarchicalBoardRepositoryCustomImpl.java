@@ -4,6 +4,8 @@ import com.example.boardrest.domain.dto.Criteria;
 import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
 import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
 import com.example.boardrest.domain.entity.HierarchicalBoard;
+import com.example.boardrest.domain.entity.Member;
+import com.example.boardrest.domain.entity.QMember;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.example.boardrest.domain.entity.QHierarchicalBoard.hierarchicalBoard;
+import static com.example.boardrest.domain.entity.QMember.member;
 
 
 @Repository
@@ -33,12 +36,13 @@ public class HierarchicalBoardRepositoryCustomImpl implements HierarchicalBoardR
                                 HierarchicalBoardListDTO.class
                                 , hierarchicalBoard.boardNo
                                 , hierarchicalBoard.boardTitle
-                                , hierarchicalBoard.member.userId
+                                , hierarchicalBoard.member.nickname
                                 , hierarchicalBoard.boardDate
                                 , hierarchicalBoard.boardIndent
                         )
                 )
                 .from(hierarchicalBoard)
+                .innerJoin(hierarchicalBoard.member, member)
                 .where(
                         searchTypeEq(cri.getSearchType(), cri.getKeyword())
                 )
