@@ -42,9 +42,9 @@ public class CustomOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             tokenProvider.issuedToken(userId, inoCookie.getValue(), response);
 
         if(customOAuth2User.getNickname() == null){
-            response.sendRedirect("http://localhost:3000/join/profile");
+            response.sendRedirect("http://localhost:3000/member/profile");
         }else{
-            response.sendRedirect("http://localhost:3000/OAuth");
+            response.sendRedirect("http://localhost:3000/member/oAuth");
         }
 
 

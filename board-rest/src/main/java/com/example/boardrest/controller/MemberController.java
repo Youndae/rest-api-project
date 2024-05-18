@@ -1,34 +1,22 @@
 package com.example.boardrest.controller;
 
-import com.example.boardrest.customException.CustomAccessDeniedException;
-import com.example.boardrest.customException.ErrorCode;
 import com.example.boardrest.domain.dto.LoginStateDTO;
 import com.example.boardrest.domain.dto.JoinDTO;
 import com.example.boardrest.domain.dto.ProfileDTO;
 import com.example.boardrest.domain.dto.ProfileResponseDTO;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.properties.FilePathProperties;
 import com.example.boardrest.repository.MemberRepository;
 import com.example.boardrest.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.security.Principal;
 
 @RestController
@@ -54,12 +42,10 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public int joinProc(JoinDTO dto
+    public int joinProc(@RequestPart JoinDTO joinDTO
                         , @RequestParam(value = "profileThumbnail", required = false) MultipartFile profileThumbnail){
 
-        log.info("join :: dto : {}", dto);
-
-        return memberService.memberJoinProc(dto, profileThumbnail);
+        return memberService.memberJoinProc(joinDTO, profileThumbnail);
     }
 
     @GetMapping("/check-id")

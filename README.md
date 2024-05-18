@@ -1636,3 +1636,12 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >>>     * PrincipalDTO 내부에서는 toEntity를 통해 Member Entity를 build할 수 있도록 처리
 >>>     * 추가적인 메소드로 PrincipalDTO를 반환받는 것이 아닌 nickname만 반환받을 수 있는 메소드를 생성.
 >>>     * client 또는 Application Server로 전달하는 값 중 userStatus가 존재하는데 이 안에 사용자의 userId를 받고 있었으나 모두 nickname으로 수정했기 때문에 해당 값을 PrincipalService를 통해 nickname을 반환받아 담을 수 있도록 처리.
+>
+> 
+>> 24/05/18
+>>> * Application-Server
+>>>   * OAuth2 로그인 추가.
+>>>   * OAuth2 로그인 추가하면서 필요한 최초 로그인 사용자에 대한 닉네임, 프로필 사진 받는 페이지 추가 및 연결.
+>>>   * 정보수정 페이지 추가.
+>>>   * 모든 게시판과 댓글에 대해 아이디가 아닌 닉네임 출력하도록 수정.
+>>>   * 전체 기능에 대한 테스트 완료

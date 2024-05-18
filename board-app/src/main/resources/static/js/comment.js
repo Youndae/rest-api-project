@@ -188,11 +188,11 @@ function commentEachParsing(arr, userStatus){
                                 "<tr>" +
                                     "<td>";
 
-        const commentContent = "삭제된 댓글입니다.";
+        const deleteCommentContent = "삭제된 댓글입니다.";
         let writer = '';
 
-        if(res.commentContent !== commentContent)
-            writer = res.userId;
+        if(res.commentContent !== deleteCommentContent)
+            writer = res.nickname;
 
         let commentIndentClassName = '';
 
@@ -209,11 +209,11 @@ function commentEachParsing(arr, userStatus){
                         "<span class=\"comment_date" + commentIndentClassName + "\">" + formatDate(res.commentDate) + "</span>" +
                         "<p class=\"comment_content" + commentIndentClassName + "\">" + res.commentContent + "</p>";
 
-        if(uid != null && res.commentIndent !== 4 && res.commentContent !== commentContent)
+        if(uid != null && res.commentIndent !== 4 && res.commentContent !== deleteCommentContent)
             commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
                             "onclick=\"cReply(this)\" value=\"" + res.commentNo + "\">답글</button>";
 
-        if(res.userId === uid && res.commentContent !== commentContent)
+        if(res.userId === uid && res.commentContent !== deleteCommentContent)
             commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
                             "onclick=\"cDel(this)\" value=\"" + res.commentNo + "\">삭제</button>";
 

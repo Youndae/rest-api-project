@@ -20,7 +20,7 @@
                 <th:block th:if="${data.userStatus.uid} ne null">
                     <button class="btn btn-outline-info btn-sm" id="reply">답글</button>
                 </th:block>
-                <th:block th:if="${data.userStatus.uid} eq ${data.content.userId}">
+                <th:block th:if="${data.userStatus.uid} eq ${data.content.nickname}">
                     <button class="btn btn-outline-info btn-sm" id="modify">수정</button>
                     <button type="button" class="btn btn-outline-info btn-sm" id="deleteBoard">삭제</button>
                 </th:block>
@@ -31,7 +31,7 @@
             </div>
             <div class="form-group">
                 <label>작성자</label>
-                <p th:text="${data.content.userId}"/>
+                <p th:text="${data.content.nickname}"/>
             </div>
             <div class="form-group">
                 <label>작성일</label>

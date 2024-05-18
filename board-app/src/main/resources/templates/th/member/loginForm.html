@@ -9,6 +9,17 @@
           integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <script type="text/javascript" th:src="@{https://code.jquery.com/jquery-3.3.1.min.js}"></script>
     <script type="text/javascript" th:src="@{/js/member.js}"></script>
+    <style>
+        .oauth-btn {
+            display: none;
+        }
+        .oauth-image{
+            width: 200px;
+        }
+        .oauth2{
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -30,6 +41,26 @@
                 <button class="btn btn-outline-info btn-sm" id="userLogin" type="button">로그인
                 </button>
                 <button class="btn btn-outline-info btn-sm" onclick="location.href='/member/join'">회원가입</button>
+            </div>
+            <div class="oauth2">
+                <div class="oAuth2-google">
+                    <label for="oauth-google">
+                        <img src="/image/web_light_sq_ctn@1x.png" class="oauth-image">
+                    </label>
+                </div>
+                <div class="oAuth2-naver">
+                    <label for="oauth-naver">
+                        <img src="/image/btnG_official.png" class="oauth-image">
+                    </label>
+                </div>
+                <div class="oAuth2-kakao">
+                    <label for="oauth-kakao">
+                        <img src="/image/kakao_login_medium_narrow.png" class="oauth-image">
+                    </label>
+                </div>
+                <button class="oauth-btn" id="oauth-google" onclick="oAuthLogin('google')" style="display: none"/>
+                <button class="oauth-btn" id="oauth-naver" onclick="oAuthLogin('naver')" style="display: none"/>
+                <button class="oauth-btn" id="oauth-kakao" onclick="oAuthLogin('kakao')" style="display: none"/>
             </div>
         </div>
     </div>

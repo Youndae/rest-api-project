@@ -42,7 +42,7 @@ public class ExceptionHandlerAdvice {
     public String customAccessDeniedHandle(Exception e){
         log.info("CustomAccessDeniedException e : " + e.getMessage());
 
-        return "redirect:/member/loginForm";
+        return "redirect:/member/login";
     }
 
 

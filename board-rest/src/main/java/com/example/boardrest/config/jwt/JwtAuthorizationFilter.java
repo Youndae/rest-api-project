@@ -162,12 +162,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 authorities = customOAuth2User.getAuthorities();
             }
 
+            log.info("AuthorizationFilter userId : {}", userId);
+
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(userId, null, authorities);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
+        log.info("chain.doFilter");
         chain.doFilter(request, response);
     }
 

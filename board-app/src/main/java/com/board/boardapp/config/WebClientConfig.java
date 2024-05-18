@@ -12,7 +12,7 @@ public class WebClientConfig {
     public WebClient useWebClient(){
 
         return WebClient.builder()
-                .baseUrl("http://localhost:9096")
+                .baseUrl("http://localhost:8080")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
@@ -23,7 +23,7 @@ public class WebClientConfig {
                         .maxInMemorySize(20 * 1024 * 1024)).build();
 
         return WebClient.builder()
-                .baseUrl("http://localhost:9096")
+                .baseUrl("http://localhost:8080")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .exchangeStrategies(exchangeStrategies)
                 .build();

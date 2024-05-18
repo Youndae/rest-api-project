@@ -69,57 +69,6 @@ public class CommentBoardWebClient {
 
         return dto;
     }
-/*
-    public CommentListDTO getBoardComment(long boardNo
-                                            , Criteria cri
-                                            , HttpServletRequest request
-                                            , HttpServletResponse response) {
-
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
-
-        String responseVal = webClient.get()
-                                    .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-list")
-                                            .queryParam("boardNo", String.valueOf(boardNo))
-                                            .queryParam("pageNum", cri.getPageNum())
-                                            .build())
-                                    .cookies(cookies -> cookies.addAll(cookieMap))
-                                    .exchangeToMono(resp -> {
-                                        exchangeService.checkExchangeResponse(resp, response);
-                                        return resp.bodyToMono(String.class);
-                                    })
-                                    .block();
-
-        CommentListDTO dto = new CommentListDTO();
-        dto = readValueService.setReadValue(dto, responseVal);
-        dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
-
-        return dto;
-    }
-
-    public CommentListDTO getImageComment(long imageNo
-                                            , Criteria cri
-                                            , HttpServletRequest request
-                                            , HttpServletResponse response) {
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
-
-        String responseVal = webClient.get()
-                                    .uri(uriBuilder -> uriBuilder.path(commentPath + "/comment-list")
-                                            .queryParam("imageNo", String.valueOf(imageNo))
-                                            .queryParam("pageNum", cri.getPageNum())
-                                            .build())
-                                    .cookies(cookies -> cookies.addAll(cookieMap))
-                                    .exchangeToMono(resp -> {
-                                        exchangeService.checkExchangeResponse(resp, response);
-                                        return resp.bodyToMono(String.class);
-                                    })
-                                    .block();
-
-        CommentListDTO dto = new CommentListDTO();
-        dto = readValueService.setReadValue(dto, responseVal);
-        dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
-
-        return dto;
-    }*/
 
     public Long commentInsert(Map<String, Object> commentData
                                 , HttpServletRequest request
