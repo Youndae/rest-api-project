@@ -19,6 +19,8 @@ public class ExchangeServiceImpl implements ExchangeService{
     @Override
     public void checkExchangeResponse(ClientResponse res, HttpServletResponse response) {
 
+        System.out.println("checkExchangeResponse status code : " + res.statusCode());
+
         if(res.statusCode().equals(HttpStatus.OK)){
             cookieService.setCookie(res, response);
         }else if(res.statusCode().equals(HttpStatus.FORBIDDEN)){

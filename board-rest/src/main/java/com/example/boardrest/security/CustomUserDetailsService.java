@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = repository.findByUserId(username);
+        Member member = repository.findByLoginUserId(username);
 
         if(member == null)
             throw new BadCredentialsException("loadUser fail");

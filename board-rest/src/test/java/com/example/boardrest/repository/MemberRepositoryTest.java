@@ -1,7 +1,7 @@
 package com.example.boardrest.repository;
 
 import com.example.boardrest.domain.entity.Member;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,22 @@ class MemberRepositoryTest {
     void nicknameCheck() {
         Member member = memberRepository.findByNickname("cocomozzi");
 
-        Assertions.assertThat(member.getNickname().equals("cocomozzi"));
+        Assertions.assertEquals(member.getNickname(), "cocomozzi");
 
+    }
+
+    @Test
+    @DisplayName("로컬 로그인 테스트")
+    void localLoginTest() {
+        String cocoId = "coco";
+        String cocoNickname = "코코";
+        String testerId = "testuser1";
+
+
+        Member cocoData = memberRepository.findByLoginUserId(cocoId);
+        Member testerData = memberRepository.findByLoginUserId(testerId);
+
+        Assertions.assertEquals(cocoData.getNickname(), cocoNickname);
+        Assertions.assertNull(testerData);
     }
 }

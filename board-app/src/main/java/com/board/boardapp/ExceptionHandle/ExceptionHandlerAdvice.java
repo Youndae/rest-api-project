@@ -20,6 +20,15 @@ public class ExceptionHandlerAdvice {
 
     private static final LoginDTO dto = new LoginDTO(new UserStatusDTO(false));
 
+    @ExceptionHandler(CustomBadCredentialsException.class)
+    public ResponseEntity customBadCredentialsHandler(Exception e) {
+
+        log.info("BadCredentialsException");
+
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public String notFoundHandle(NotFoundException e, Model model){
         log.info("NotFountException : " + e);

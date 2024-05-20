@@ -63,12 +63,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             memberRepository.save(member);
 
-            /*authRepository.save(Auth.builder()
-                    .auth(Role.MEMBER.toString())
-                    .member(Member.builder().id(uid).build())
-                    .build()
-            );*/
-
             List<Auth> authList = new ArrayList<>();
             authList.add(Auth.builder().auth(Role.MEMBER.getKey()).build());
 

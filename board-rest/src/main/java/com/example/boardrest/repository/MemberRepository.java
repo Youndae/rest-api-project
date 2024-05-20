@@ -10,4 +10,11 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 
 
     Member findByNickname(String nickname);
+
+
+    @Query(value = "SELECT m " +
+            "FROM Member m " +
+            "WHERE m.userId = ?1 " +
+            "AND m.provider = 'local'")
+    Member findByLoginUserId(String userId);
 }

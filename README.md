@@ -35,6 +35,7 @@
   * Gradle
   * Java 1.8
   * Lombok
+  * OAuth2(google, naver, kakao)
 * API Server
   * SpringSecurity & JWT
   * Spring Data JPA
@@ -69,23 +70,76 @@
   * 게시글 수정 및 삭제
   * 상세 페이지 내 댓글(페이징)
 * 사용자
-  * 로그인
+  * 로그인(local, OAuth2)
   * 회원가입
+  * 정보수정
 
 <br />
 
 ## ERD
-<img src="./README_image/boardProject_REST_ERD.jpg">
+<img src="./README_image/oAuth_erd.jpg">
 
 <br />
 
 ## 기능
 
 ### 목차
+* 로그인
 * 인증 / 인가(JWT 설계와 관리 및 권한 관리)
 * 인증 / 인가(filter와 토큰 검증)
 * API 서버와의 통신
 * 게시글 리스트 조회에서의 동적 쿼리(QueryDSL)
+
+<br />
+
+## 로그인
+
+사용자 로그인으로는 직접적인 회원가입을 통한 local 로그인과 google, naver, kakao를 통한 OAuth2 로그인이 있습니다.   
+BoardProject에서는 로그인을 위한 기능을 제외하고 필요한 기능이 없기 때문에 Spring Security를 통해 처리하도록 하고 Authorization Server에서 전달되는 토큰이나 다른 요청에 대해 직접 처리하지 않았습니다.   
+
+Client에서는 하이퍼링크를 통해 OAuth2 로그인 요청을 보내도록 처리해 API 서버에서 Spring Security를 통해 모든 처리를 담당할 수 있도록 했습니다.   
+처리를 위해 API 서버에서는 각 Authorization Server의 client-id와 client-secret을 application-oauth.yml에 따로 분리해 관리하도록 하고 Spring Security 설정을 통해 EndPoint와 SuccessHandler를 처리했습니다.   
+UserService로는 DefaultOauth2UserService를 상속받는 CustomOAuth2UserService를, Success Handler로는 SimpleUrlAuthenticationSuccessHandler를 상속받는 CustomOAuth2SuccessHandler를 생성해 Security 설정에 추가했습니다.   
+
+<br />
+
+SecurityConfig
+```java
+@Bean
+protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.csrf().disable();
+    
+    http.sessionManagement()
+        ....
+        .and()
+          .oauth2Login((oauth2) -> 
+            oauth2
+              .userInfoEndpoint((userInfoEndpoingConfig) -> 
+                userInfoEndpointConfig
+                    .userService(customOAuth2UserService))
+              .successHandler(customOauthSuccessHandler));
+    
+    return http.build();
+}
+```
+
+CustomOAuth2UserService에서는 Spring Security가 OAuth2 로그인을 처리한 뒤 OAuth2UserRequest에 담아 전달해준 데이터를 registrationId 값에 따라 각 Authorization Server 별로 분리해 처리합니다.   
+이때 각 Authorization Server에 전달하는 scope 설정대로 사용자 이름과 이메일, 회원번호를 전달받아 회원가입을 진행합니다.   
+프로필 이미지는 Authorization Server에서 받아 사용하지 않고 사용자가 직접 등록하도록 처리했습니다.   
+
+데이터베이스에 저장되는 사용자 아이디는 registrationId_회원번호 형식으로 처리하게 되고 비밀번호는 null로 비워두도록 했습니다.   
+비밀번호가 null로 처리되는 만큼 발생하는 문제가 있었는데 로컬 로그인 과정에서 OAuth2 로그인 사용자의 아이디를 알게 되면 로그인이 가능하다는 문제가 있었습니다.   
+단순하게 바라봤을 때는 비밀번호를 하나도 입력하지 않은 경우 로그인 요청이 수행되지 않기 때문에 괜찮아 보일 수도 있지만 충분히 강제로 요청을 보낼 수 있다고 생각했기 때문에 이 문제를 해결하고자 했습니다.   
+해결 방안으로는 사이트에서 회원가입을 하는 사용자는 provider를 local로 갖게 되고 OAuth2 로그인을 하는 사용자들은 각 registrationId를 provider로 저장하게 됩니다.   
+그래서 로컬 로그인 요청시 사용자 정보를 조회할 때 provider가 local이어야 한다는 조건을 추가해 조회하도록 처리해 문제를 간단하게 해결할 수 있었습니다.   
+또 다른 해결방안으로는 OAuth2 사용자의 최초 로그인 시 난수의 비밀번호를 생성해 저장하는 것도 하나의 방법이라고 생각하고 있습니다.   
+
+다른 문제 발생으로는 OAuth2 로그인 요청 이후 페이지 이동이었습니다.   
+처음 적용해서 테스트만 해보는 과정에서는 OAuthSuccessHandler에서 response.sendRedirect()를 통해 메인 페이지로 이동하도록 처리했으나 referer를 통한 이전 페이지로 이동이 불가능 하다는 문제가 있었습니다.   
+이 문제를 해결하기 위해 client에서는 oAuth 요청을 전달하기 전 이전 페이지의 주소를 sessionStorage에 담아둔 뒤 요청을 보내게 됩니다.   
+그리고 API Server에서는 로그인이 성공적으로 마무리 되었다면 특정 페이지로 Redirect를 처리하게 되는데 이 페이지는 비어있는 페이지로 화면에 아무것도 출력되지 않고 스크립트 코드만 존재하여 sessionStorage에 저장해두었던 이전 페이지 값을 꺼내 이전 페이지로 이동할 수 있도록 처리했습니다.   
+다른 방법으로 history.go()를 사용하는 방법도 있었으나 테스트해봤을 때 페이지 이동이라기 보다는 뒤로가기 버튼을 눌렀을 때와 동일한 처리가 되는 것을 보고 sessionStorage를 통한 처리로 결정하게 되었습니다.
+OAuth2 사용자가 최초 로그인 한 경우에는 닉네임을 필수로 작성하도록 작성 페이지로 유도해야 했는데 이것 역시 CustomOAuth2User 객체에서 닉네임을 같이 담고 있도록 해 닉네임이 존재하지 않는다면 최초 정보 등록 페이지로 redirect하도록 처리했습니다. 
 
 <br />
 
@@ -1645,3 +1699,12 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >>>   * 정보수정 페이지 추가.
 >>>   * 모든 게시판과 댓글에 대해 아이디가 아닌 닉네임 출력하도록 수정.
 >>>   * 전체 기능에 대한 테스트 완료
+>
+> 
+>> 24/05/19
+>>> * Application-server, API-Server
+>>>   * 로그인 누락 기능 추가.
+>>>   * 로컬 사용자 로그인의 경우 provider가 local인지를 꼭 체크해야 하는 부분이 누락되어 추가.
+>>>   * WebClient 응답에서도 ExchangeService를 통한 처리에서 직접 처리 코드를 작성하는 것으로 수정.
+>>>   * 잘못된 로그인의 경우 AccessDenidedException을 날리는 것이 아닌 BadCredentialsException을 날리도록 수정.
+>>>   * CustomBadCredentialsException을 추가하고 ExceptionHandler 역시 추가.

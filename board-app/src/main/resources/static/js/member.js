@@ -39,7 +39,7 @@ $(function(){
                 },
                 error: function(request, status, error){
                     console.log("status : "  + request.status);
-                    if(request.status == 900){
+                    if(request.status == 403){
                         $(".login_form_overlap").text("아이디나 비밀번호가 일치하지 않습니다.");
                     }
                 }

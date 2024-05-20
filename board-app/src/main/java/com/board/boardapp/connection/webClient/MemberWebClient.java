@@ -1,5 +1,9 @@
 package com.board.boardapp.connection.webClient;
 
+import com.board.boardapp.ExceptionHandle.CustomAccessDeniedException;
+import com.board.boardapp.ExceptionHandle.CustomBadCredentialsException;
+import com.board.boardapp.ExceptionHandle.CustomTokenStealingException;
+import com.board.boardapp.ExceptionHandle.ErrorCode;
 import com.board.boardapp.config.WebClientConfig;
 import com.board.boardapp.config.properties.PathProperties;
 import com.board.boardapp.dto.*;
@@ -55,7 +59,19 @@ public class MemberWebClient {
                         .cookies(cookies -> cookies.addAll(cookieMap))
                         .bodyValue(member)
                         .exchangeToMono(res -> {
-                            exchangeService.checkExchangeResponse(res, response);
+
+                            if(res.statusCode().equals(HttpStatus.OK)){
+                                cookieService.setCookie(res, response);
+                            }else if(res.statusCode().equals(HttpStatus.FORBIDDEN)){
+                                throw new CustomBadCredentialsException(ErrorCode.BAD_CREDENTIALS, ErrorCode.BAD_CREDENTIALS.getMessage());
+                            }else if(res.rawStatusCode() == 800){
+                                cookieService.setCookie(res, response);
+                                throw new CustomTokenStealingException(ErrorCode.TOKEN_STEALING);
+                            }else if(res.statusCode().is4xxClientError()){
+                                throw new RuntimeException();
+                            }else if(res.statusCode().is5xxServerError()){
+                                throw new NullPointerException();
+                            }
 
                             return res.bodyToMono(Long.class);
                         })

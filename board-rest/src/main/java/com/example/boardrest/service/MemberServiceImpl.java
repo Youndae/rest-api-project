@@ -91,15 +91,10 @@ public class MemberServiceImpl implements MemberService {
     public Long memberLogin(Member member, HttpServletRequest request, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getUserId(), member.getUserPw());
-        log.info("authenticationToken");
         Authentication authentication =
                 authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        log.info("authentication");
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
-        log.info("customUser");
         String uid = customUser.getMember().getUserId();
-
-        log.info("uid : {}", uid);
 
         if(uid != null) {
             Cookie inoCookie = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
