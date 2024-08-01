@@ -23,7 +23,6 @@ public class PrincipalServiceImpl implements PrincipalService{
             Member member = getMemberEntity(principal);
 
             return PrincipalDTO.builder()
-                    .id(member.getId())
                     .userId(member.getUserId())
                     .nickname(member.getNickname())
                     .provider(member.getProvider())

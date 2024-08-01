@@ -10,8 +10,6 @@ import lombok.*;
 @ToString
 public class PrincipalDTO {
 
-    private Long id;
-
     private String userId;
 
     private String nickname;
@@ -21,7 +19,6 @@ public class PrincipalDTO {
     public Member toMemberEntity() {
 
         return Member.builder()
-                .id(this.id)
                 .userId(this.userId)
                 .nickname(this.nickname)
                 .provider(this.provider)

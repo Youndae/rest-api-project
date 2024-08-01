@@ -14,11 +14,6 @@ import java.util.List;
 public class Member {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(unique = true)
-    @NonNull
     private String userId;
 
     private String userPw;
@@ -53,10 +48,9 @@ public class Member {
     }
 
 
-    public Member(Long id, @NonNull String userId, String userPw, String username, String email, String nickname, String profileThumbnail, @NonNull String provider) {
+    public Member(@NonNull String userId, String userPw, String username, String email, String nickname, String profileThumbnail, @NonNull String provider) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-        this.id = id;
         this.userId = userId;
         this.userPw = userPw == null ? null : passwordEncoder.encode(userPw);
         this.username = username;

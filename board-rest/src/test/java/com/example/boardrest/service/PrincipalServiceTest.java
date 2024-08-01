@@ -37,7 +37,6 @@ class PrincipalServiceTest {
         Member member = memberRepository.findByUserId(userId);
 
         PrincipalDTO principalDTO1 = PrincipalDTO.builder()
-                .id(member.getId())
                 .userId(member.getUserId())
                 .provider(member.getProvider())
                 .build();
