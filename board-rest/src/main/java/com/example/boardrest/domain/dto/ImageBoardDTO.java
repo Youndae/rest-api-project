@@ -20,7 +20,5 @@ public class ImageBoardDTO {
 
     private Date imageDate;
 
-    private String imageContent;
-
     private String imageName;
 }

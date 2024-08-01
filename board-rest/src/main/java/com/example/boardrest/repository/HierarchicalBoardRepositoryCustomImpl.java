@@ -48,8 +48,8 @@ public class HierarchicalBoardRepositoryCustomImpl implements HierarchicalBoardR
                 )
                                                 .orderBy(hierarchicalBoard.boardGroupNo.desc())
                                                 .orderBy(hierarchicalBoard.boardUpperNo.asc())
-                                                .offset((cri.getPageNum() - 1) * cri.getBoardAmount())
-                                                .limit(cri.getBoardAmount())
+                                                .offset(pageable.getOffset())
+                                                .limit(pageable.getPageSize())
                                                 .fetch();
 
         JPAQuery<Long> count = jpaQueryFactory.select(hierarchicalBoard.countDistinct())

@@ -23,14 +23,14 @@
 
 ## 구조
 > * board-rest = RestAPI 서버
-> * board-app = Application 서버
-> * boardProject_client_react = Application 서버와 연결되지 않는 또 다른 클라이언트
+> * board-app = FrontEnd Server
+> * boardProject_client_react = FrontEnd Server와 연결되지 않는 React 기반의 Client Side Application
 >   * react github : https://github.com/Youndae/boardProject_client_react
 
 <br />
 
 ## 사용 기술
-* Application Server, API Server 공통
+* FrontEnd Server, API Server 공통
   * SpringBoot 2.7.6
   * Gradle
   * Java 1.8
@@ -40,7 +40,7 @@
   * SpringSecurity & JWT
   * Spring Data JPA
   * QueryDSL
-* Application Server
+* FrontEnd Server
   * JQuery(Ajax)
   * Thymeleaf
   * WebClient
@@ -77,7 +77,7 @@
 <br />
 
 ## ERD
-<img src="./README_image/oAuth_erd.jpg">
+<img src="./README_image/rest-api_ERD.png">
 
 <br />
 
@@ -89,6 +89,7 @@
 * 인증 / 인가(filter와 토큰 검증)
 * API 서버와의 통신
 * 게시글 리스트 조회에서의 동적 쿼리(QueryDSL)
+* 삭제된 댓글의 처리
 
 <br />
 
@@ -287,7 +288,7 @@ JwtTokenProvider
 ```
 
 쿠키 옵션 설정으로는 secure, httpOnly, sameSite 설정을 했습니다.   
-쿠키 생성은 클라이언트 또는 Application 서버에서 직접 제어하지 않도록 하기 위해 응답 헤더로 담아 보내는 방법으로 수정했습니다.   
+쿠키 생성은 클라이언트 또는 FrontEnd Server에서 직접 제어하지 않도록 하기 위해 응답 헤더로 담아 보내는 방법으로 수정했습니다.   
 여러 클라이언트가 존재하는데 각자 제어하도록 처리한다면 추후 수정이 발생할 때 여러 클라이언트를 수정해야 하기 때문에 한 곳에서 처리하는게 좋다고 생각했습니다.   
 
 Redis는 RedisTemplate을 통해 사용했고, 토큰과 쿠키에 대한 secret key나 만료기간, prefix 같은 것은 jwt.properties 파일을 생성하고 그 안에서 관리합니다.
@@ -514,11 +515,11 @@ Filter에서 토큰 검증을 요청했을 때 만료 응답을 받게 된다면
 
 ## API 서버와의 통신
 
-API 서버와의 통신 방법으로 Application Server에서는 WebClient를, react 클라이언트에서는 Axios를 택했습니다.   
+API 서버와의 통신 방법으로 FrontEnd Server에서는 WebClient를, react 클라이언트에서는 Axios를 택했습니다.   
 
 <br />
 
-ApplicationServer / WebClient
+FrontEnd Server / WebClient
 ```java
 @Component
 public class WebClientConfig {
@@ -652,9 +653,9 @@ const handleSubmit = async (e) => {
 }
 ```
 
-React에서는 Spring Application에서 보다 간단하게 처리할 수 있었습니다.   
+React에서는 Spring FrontEnd Server에서 보다 간단하게 처리할 수 있었습니다.   
 Axios를 모듈화 해두었기 때문에 해당 모듈을 그대로 가져와 사용했으며 FormData에 담아 전송하는 것으로 간단하게 처리할 수 있었습니다.   
-react에서도 API 서버 요청에서 발생하는 예외 핸들링을 Application Server 처럼 모듈화 해 관리하도록 했습니다.  
+react에서도 API 서버 요청에서 발생하는 예외 핸들링을 FrontEnd Server 처럼 모듈화 해 관리하도록 했습니다.  
 
 <br />
 
@@ -852,6 +853,70 @@ QueryDSL을 사용하면서 정말 좋았던 점이 기본적으로 세팅만 �
 
 <br />
 
+## 삭제된 댓글의 처리
+
+이전 프로젝트까지는 댓글 삭제 요청이 발생하는 경우 해당 댓글을 삭제하며 하위 계층에 위치하는 댓글들까지 삭제하도록 처리했습니다.   
+하지만 최근 운영되는 페이지들의 경우 요청이 발생한 댓글만 삭제하거나 삭제된 댓글에 대해 '삭제된 댓글입니다' 와 같은 내용만 표시하도록 하는 경우를 많이 볼 수 있습니다.   
+그래서 이번에는 댓글을 삭제하는 것이 아닌 삭제되었다는 문구를 출력하도록 수정했습니다.
+
+이 처리를 위해 Comment 테이블에 상태값을 알 수 있는 컬럼을 추가했습니다.   
+삭제 요청을 받은 Comment 데이터는 delete 요청을 처리하는 것이 아닌 상태값을 변경하도록 처리했습니다.   
+내용에 대한 처리의 경우 조회한 뒤에 서버나 클라이언트에서 상태값에 따라 파싱하는 것이 아닌 조회에서부터 처리될 수 있도록 했습니다.   
+이렇게 처리한 이유는 서버에서 처리하는 경우에는 조회한 모든 데이터를 체크하면서 수정해야 한다는 문제가 있었고, 클라이언트에서는 굳이 전달되지 않아도 되는 삭제된 데이터의 내용을 알게 되기 때문입니다.   
+최대한 클라이언트에게 불필요한 정보를 노출하지 말자는 생각으로 개발하고 있기 때문에 조회 후 파싱하는 것이 아닌 쿼리에서 case when을 통해 조회 단계에서부터 처리할 수 있도록 했습니다.
+
+```java
+@Repository
+@RequiredArgsConstructor
+public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
+    
+    private final JPAQueryFactory jpaQueryFactory;
+    
+    @Override
+    public Page<BoardCommentDTO> findAll(Criteria cri, Pageable pageable, String boardNo, String imageNo) {
+        List<BoardCommentDTO> list = jpaQueryFactory
+                                    .select(
+                                            Projections.fields(
+                                                    BoardCommentDTO.class
+                                                    , comment.commentNo
+                                                    , comment.member.userId
+                                                    , comment.commentDate
+                                                    , new CaseBuilder()
+                                                            .when(comment.commentStatus.gt(0))
+                                                            .then("삭제된 댓글 입니다.")
+                                                            .otherwise(comment.commentContent)
+                                                            .as("commentContent")
+                                                    , comment.commentGroupNo
+                                                    , comment.commentIndent
+                                                    , comment.commentUpperNo
+                                            )
+                                    )
+                                    .from(comment)
+                                    .where(commentBoardEq(boardNo, imageNo))
+                                    .orderBy(comment.commentGroupNo.desc())
+                                    .orderBy(comment.commentUpperNo.asc())
+                                    .offset(pageable.getOffset())
+                                    .limit(pageable.getPageSize())
+                                    .fetch();
+        
+        JPAQuery<Long> count = jpaQueryFactory.select(comment.count())
+                .from(comment)
+                .where(commentBoardEq(boardNo, imageNo));
+        
+        return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);
+    }
+    
+    private BooleanExpression commentBoardEq(String boardNo, String imageNo) {
+        if(boardNo == null)
+            return comment.imageBoard.imageNo.eq(Long.parseLong(imageNo));
+        
+        return comment.hierarchicalBoard.boardNo.eq(Long.parseLong(boardNo));
+    }
+}
+```
+
+<br />
+
 ## 느낀점과 고민중인 부분
 REST-API 버전의 프로젝트를 진행하고 마무리할 때 까지는 리스트 형태의 데이터 처리를 반복문으로 처리했습니다.   
 프로젝트를 처음 마무리한 뒤 이후 학습 중에 서버 또는 데이터 베이스의 접근 비용 또는 효율에 대한 글을 보게 되었습니다.   
@@ -953,24 +1018,24 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> 이 처리를 위해 ImageDetailDTO를 생성.   
 >> detail과 modify는 동일한 데이터를 리턴하고 있으나 프론트에서 요청하는것을 감안해 지금처럼 분리하는것이 나은지
 >> 아니면 동일하게 detail로만 받아서 처리하도록 할것인지 고민.   
->> 이제 전체적인 구현은 끝난것으로 보이고 ApplicationServer 만들어서 테스트 해볼것.
+>> 이제 전체적인 구현은 끝난것으로 보이고 FrontEnd Server 만들어서 테스트 해볼것.
 >
 > 
-> 23/02/10 - Client Server
+> 23/02/10 - FrontEnd Server
 >> WebClient로 api Server로 데이터 요청 처리 구현.
 >
-> 23/02/11 ~ 23/02/28 - Client Server
+> 23/02/11 ~ 23/02/28 - FrontEnd Server
 >> SpringSecurity 단일로 api에서 인증 인가 처리가 이해가 안되는 문제로 SpringSecurity + JWT 로 전환.   
 >> SpringSecurity에서 /login 요청을 가로채 처리하도록 AuthenticationFilter를 구현했으나 
->> Client Server로 토큰을 리턴하도록 하는 방법을 찾지 못해 
+>> FrontEnd Server로 토큰을 리턴하도록 하는 방법을 찾지 못해 
 >> 로그인 요청을 /member/login 으로 받아 member 서비스단에서 직접 처리한 후 토큰 생성하고 토큰을 리턴하도록 구현.      
 >> 그로 인해 AuthenticationFilter가 불필요해져 삭제 예정.   
 >> AccessToken(At)과 RefreshToken(Rt) 두가지 토큰을 생성하고 처리하도록 구현.      
 >> At은 1시간의 만료기간. Rt은 2주의 만료기간을 설정.   
 >> At가 만료되어 Rt를 통해 재발급을 받는 경우 Rt 역시 재발급 받도록 구현.      
->> Rt는 DB에 저장하고 At, Rt 모두 Client Server에 리턴해 Client에서는 쿠키에 두가지 토큰을 보관.   
+>> Rt는 DB에 저장하고 At, Rt 모두 FrontEnd Server에 리턴해 Client에서는 쿠키에 두가지 토큰을 보관.   
 >> localStorage에 보관하지 않은 이유로는 XSS 공격을 방어하기 위해서이며 Cookie에서 발생할 수 있는 문제인 csrf 공격을 막기 위해 
->> Client Server에서 쿠키 생성 시 HttpOnly, Secure, same-site를 설정.   
+>> FrontEnd Server에서 쿠키 생성 시 HttpOnly, Secure, same-site를 설정.   
 >> 또한 인터셉터에서 referer를 체크하도록 해 혹시나 뚫고 들어오더라도 한번 더 체크해 방지할 수 있도록 구현 필요.   
 >> At Cookie의 경우 만료 시간이 1분 작게 설정.   
 >> Api Server에 요청하는 시점이 토큰 만료시점과 겹치는 경우 문제가 발생할 수 있기 때문에 Client에서 사전에 처리할 수 있도록 하기 위함.   
@@ -979,7 +1044,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> same-site 설정과 referer를 뚫고 들어올 수 있다고 판단해 게시글에 스크립트 삽입이 불가하도록 설정해야할 필요성이 있다고 생각함.   
 >> 이건 꼭 학습해서 처리해야 하는 부분.
 >
-> 23/03/01 ~ 23/03/03 - Client Server
+> 23/03/01 ~ 23/03/03 - FrontEnd Server
 >> TokenInterceptor로 referer 체크하도록 일단 추가만 처리.   
 >> interceptor 처리와 여기서 발생하는 Exception 처리는 모든 구현이 끝난 후에 마지막에 구현.   
 >> 초기 기능 구현 당시 At 하나만 갖고 있도록 구현했기 때문에 해당 부분들 Rt를 같이 갖고 있도록 수정.   
@@ -1020,7 +1085,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> 반대로 comment에서는 api서버에서 처리도 덜해서 보내줄 수 있고 어차피 프론트에서는 json으로 받아 출력하도록 할것이기 때문에 
 >> 이때 처리하는 것이 좀 더 빠르게 처리할 수 있겠다 라고 생각했기 때문.
 >
-> 23/03/08 ~ 23/03/15 - Client Server
+> 23/03/08 ~ 23/03/15 - FrontEnd Server
 >> 계층형 게시판 전체 구현 완료.   
 >> 로그인 여부는 lsc라는 무작위 값을 갖고 있는 쿠키를 통해 처리.   
 >> lsc 쿠키는 랜덤값을 갖고 있기 때문에 아무런 의미도 갖지 않는 쿠키이고 RefreshToken을 쿠키에 담을 때 같이 담아주게 된다.   
@@ -1061,7 +1126,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> 각 패키지에서 게시판별 클래스로 분리.
 >
 >
-> 23/03/16 ~ 23/03/17 - Client Server
+> 23/03/16 ~ 23/03/17 - FrontEnd Server
 >> comment 출력 기능 완료.   
 >> ImageBoard는 아직 미구현이라 comment 적용하지 않았으나 comment.html로 분리해서 추가만 해주면 되기 때문에 문제는 발생하지 않을것으로 생각.   
 >> 또한 comment 데이터를 요청하는 형태 역시 동일하기 때문에 큰 문제는 발생하지 않을 것으로 보임.   
@@ -1071,7 +1136,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> 이전 프로젝트들에서 경험한 형태와 다른 형태의 json이었으나 동일하게 처리하려다 보니 발생한 문제.   
 >> 이전에는 딱 하나의 DTO의 리스트만 리턴받았기 때문에 바로 each를 돌려 처리가 가능했지만, 
 >> 이번에는 json 배열이 아닌 하나의 JSON 안에 comment 데이터가 배열로 들어가 있는 상태였기 때문에 바로 each문으로 풀려고 해도 풀리지 않았던 것.   
->> 이 문제는 client server README에 메모로 정리했으며 블로그에도 기록할 예정.
+>> 이 문제는 FrontEnd Server README에 메모로 정리했으며 블로그에도 기록할 예정.
 >>
 >> comment의 페이징 기능까지 처리 완료했으며 남은건 comment reply와 delete 기능.   
 >> 이 두가지 기능 모두 ajax로 비동기처리로 진행 예정.
@@ -1085,7 +1150,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> webClient로 보내줄 때 오류가 발생.
 >> 그래서 조건문에 keyword.equals("") 조건을 추가해 문제 해결.
 > 
-> 23/03/18 ~ 23/03/21 - Client Server, Api Server
+> 23/03/18 ~ 23/03/21 - FrontEnd Server, Api Server
 >> comment insert, Reply Insert, delete, 페이징 구현 완료.   
 >> insert와 Reply Insert는 imageBoard, HierarhicalBoard를 구분하지 않고 두 게시판의 boardNo를 찾아 보내게 된다.      
 >> 그럼 둘중 하나는 값이 없을것이고 받은 데이터를 CommentDTO에 담아 api 서버로 전송한다.   
@@ -1096,12 +1161,12 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> 댓글의 경우 prev, next 테스트를 위해 계층형 게시판 99988번 글에 댓글 데이터 240개를 추가.   
 >> API server에서 commentInsert를 처리하기 위해 CommentInsertDTO를 생성했고 insert, ReplyInsert 모두 이 DTO에 받아서 처리.
 > 
-> 23/03/22 ~ 23/03/23 - Client Server, Api Server
+> 23/03/22 ~ 23/03/23 - FrontEnd Server, Api Server
 >> ImageBoard 작업중.   
 >> ImageBoardList 정상적으로 출력 완료.   
 >> 이미지 파일의 경우 데스크탑 E 드라이브에 저장 후 api 서버에서 byte[]로 리턴해 출력하는 형태로 구현.   
 >> 이미지 파일의 사이즈를 최대 10MB로 잡아두고 만들다보니 WebClient에서 버퍼 사이즈 초과로 오류가 발생.   
->> 그래서 Client server에서 버퍼 사이즈를 늘려서 WebClient를 빌드하는 메소드를 추가 생성. 이미지 리턴은 해당 메소드를 호출해서 WebClient를 생성하도록 함.   
+>> 그래서 FrontEnd Server에서 버퍼 사이즈를 늘려서 WebClient를 빌드하는 메소드를 추가 생성. 이미지 리턴은 해당 메소드를 호출해서 WebClient를 생성하도록 함.   
 >> ImageBoardInsert 처리 완료.   
 >> 기존 사용하던 코드들을 재활용해 처리함.   
 >> 게시글 등록 후에는 ImageBoardDetail 페이지로 연결되도록 구현.   
@@ -1114,7 +1179,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> 또한 ImageBoard에 대한 댓글 데이터는 존재하지 않으므로 해당 데이터 삽입하여 댓글 페이징과 답글 등등 기능 테스트 필요.   
 >> ImageBoardList의 경우 기존에는 무한 스크롤도 넣지 않고 페이징도 넣지 않았는데 이번 프로젝트에서 페이징으로 기능 수정.   
 >
-> 23/03/24 - Client server, Api Server
+> 23/03/24 - FrontEnd Server, Api Server
 >> 어제 발생했던 RefreshToken 이슈 원인 불명.   
 >> 다시 해당 오류를 파악하기 위해 AccessToken을 쿠키에서 제거 후 재발급 요청을 여러번 보냈으나 해당 오류가 발생하지 않음.
 >> 오류가 발생하지 않으니 원인 파악이 불가하여 해결 불가.   
@@ -1122,7 +1187,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> imageBoard Modify, delete까지 마저 구현 완료.
 >>
 >> ExceptionHandler 구현.   
->> Client Server에서는 @ControllerAdvice로 Api Server에서는 @RestControllerAdvice로 구현.
+>> FrontEnd Server에서는 @ControllerAdvice로 Api Server에서는 @RestControllerAdvice로 구현.
 >> Exception 처리에 대해서는 현재 동일하게 /error 페이지를 출력하도록 구현되어 있고 현재 클라이언트 서버는 NotFoundException, NullPointerException, AccessDeniedException만 되어 있고   
 >> api 서버에서는 NullPointerException, FileNotFoundException, IllegalArgumentException, IllegalAccessException만 추가해 놓은 상태.
 >> api 서버에서 발생한 Exception은 상태 코드를 리턴할것이고 클라이언트 서버는 WebClient로 요청 시 retrieve를 활용해 onStatus로 상태코드 값을 받아
@@ -1142,7 +1207,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> csrf 토큰 때문에 사용할까 고민했는데 딱히 사용할것 같지 않아서 삭제.
 >> 이건 고민 좀 더 해보고 추후 리펙토링 단계에서 결정.
 > 
-> 23/03/25 - Client server
+> 23/03/25 - FrontEnd Server
 >> RefererInterceptor 작업중
 >> 계획했던 대로 각 요청들에 대해 세부적으로 url 체크를 하도록 구현.
 >> 코드는 어느정도 작성이 마무리가 되었는데 고민되는 것은 referer가 유효하지 않을때 어떻게 처리할것인가가 고민.
@@ -1151,12 +1216,12 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> 아니면 뭐 다른 방법이 있는 것인지에 대해 결정을 할 필요가 있음.
 >> 
 > 
-> 23/03/27 - Client server, Api Server
+> 23/03/27 - FrontEnd Server, Api Server
 >> api 서버 컨트롤러에서 @PreAuthorize로 접근 권한 설정.   
 >> 회원가입 기능이 구현이 안되어 있어서 회원가입 기능 구현.
 >> refererInterCeptor exclude에 회원가입시 아이디체크와 에러페이지 추가.
 > 
-> 23/03/28 - Client server, Api server
+> 23/03/28 - FrontEnd Server, Api server
 >> 회원가입 후 로그인 과정에서 검증 오류 발생.   
 >> 기존 계정들은 정상적으로 로그인이 되었지만 새로 가입한 계정들이 로그인이 안되는 오류가 발생.   
 >> 테스트를 돌려본 결과 10자가 넘어가면서 특수문자가 들어간 경우 오류가 발생하는 것으로 확인.   
@@ -1185,11 +1250,11 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> 또한 로그인 시 아이디나 비밀번호 오류 발생 시 error 페이지를 출력하는 것이 아닌 loginForm 페이지에서 아이디나 비밀번호가 맞지 않는다는
 >> 메세지를 출력하도록 수정 필요.
 > 
-> 23/03/29 - Client Server, Api Server, test
+> 23/03/29 - FrontEnd Server, Api Server, test
 >> 로그아웃 구현 완료.   
 >> 로그아웃 요청 시 AccessToken과 RefreshToken을 같이 담아 api 서버에 요청.   
 >> api 서버에서는 AccessToken 검증 후 정상이라면 RefreshToken을 검증 하고 그 뒤 DB에 있는 RefreshToken 데이터를 삭제 처리.   
->> api 서버에서 정상적으로 처리 후 응답이 오면 Client 서버에서는 AccessToken, RefreshToken, lsc 이 세가지 쿠키를 삭제.   
+>> api 서버에서 정상적으로 처리 후 응답이 오면 FrontEnd 서버에서는 AccessToken, RefreshToken, lsc 이 세가지 쿠키를 삭제.   
 >> 
 >> 로그인페이지 접근 시 토큰이 존재하는(로그인이 되어있는) 사용자라면 url 입력으로 접근하더라도 로그인 페이지에 접근하지 않고   
 >> /board/boardList 페이지로 redirect 하도록 수정.   
@@ -1203,7 +1268,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> 로그인에서 발생하는 해당 Exception은 별도로 처리해주는게 맞다고 생각했고, 그래서 CustomException으로 상태코드를 리턴하도록 해
 >> text를 출력할 수 있도록 구현.
 > 
-> 23/03/30 - Client server, Api Server, test
+> 23/03/30 - FrontEnd Server, Api Server, test
 >> 아래 테스트항목 체크 중 발생했던 오류 수정 및 체크 완료.
 >>
 >> 테스트 항목 체크 중 발생했던 오류
@@ -1262,13 +1327,13 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >> 각 게시판 게시글 작성 및 삭제 시 사용하던 CountTableService와 CountTableRepository 삭제 후 DB에서 Trigger로 설정 변경.   
 >> 테스트까지 완료.
 > 
-> 23/07/03 - ApiServer, ApplicationServer
+> 23/07/03 - ApiServer, FrontEnd Server
 >> 요청시 토큰 검증부분 수정.   
 >> 기존 AccessToken만 체크하던 것을 RefreshToken 존재여부까지 체크하도록 수정.   
->> ApplicationServer에서는 토큰 체크 시 AccessToken만 존재한다면 null을 리턴해 요청을 차단하고는 있지만   
+>> FrontEnd Server에서는 토큰 체크 시 AccessToken만 존재한다면 null을 리턴해 요청을 차단하고는 있지만   
 >> API Server에서는 AccessToken 하나만 존재하는지를 체크하고 RefreshToken에 대해서는 재발급 요청시에만 검증하고 있었는데   
 >> AccessToken 하나만으로 요청이 들어오는 경우를 감안해 RefreshToken 검증까지는 안하더라도 존재 여부는 확인하도록 수정.      
->> Application Server에서 브라우저 종료 이벤트 구현 중.   
+>> FrontEnd Server에서 브라우저 종료 이벤트 구현 중.   
 >> 브라우저 종료시 DB에 있는 RefreshToken 삭제까지는 무난하게 처리하고 있으나   
 >> 클라이언트의 쿠키 삭제가 종종 삭제되지 않고 남아있는 경우가 발생.   
 >> 될때가 있고 안될때가 있어서 지속적으로 테스트 해보면서 수정 필요.   
@@ -1392,7 +1457,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 > 
 >> 23/11/09
 >>> Redis 적용 중 누락된 부분 수정.
->>> * Application Server에서 Api Server로 요청시 ino cookie 전달 안하는 부분 수정.
+>>> * FrontEnd Server에서 Api Server로 요청시 ino cookie 전달 안하는 부분 수정.
 >>> * TokenProvider 불필요 메소드 삭제 및 코드 정리.
 >>> * Authorization 코드 정리
 >
@@ -1421,7 +1486,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 > 
 >> 24/02/29
 >>> * 리펙토링
->>>   * Client-Server에서 사용자 로그인 여부를 lsc라는 쿠키로 관리했으나 HttpSession을 통해 관리하도록 수정.
+>>>   * FrontEnd-Server에서 사용자 로그인 여부를 lsc라는 쿠키로 관리했으나 HttpSession을 통해 관리하도록 수정.
 >>>     * API-Server로부터 정상적인 로그인 처리라고 응답 받으면 HttpSession에 id라는 이름으로 사용자 아이디를 저장.
 >>>     * 로그아웃시에 세션을 삭제하도록 수정.
 >>>     * 그에 따라 navbar.html에서는 더이상 JS파일을 통해 lsc 쿠키를 활용해 로그인여부를 판단하지 않고 session을 통해 판단하도록 수정.
@@ -1434,7 +1499,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 > 
 >> 24/03/02
 >>> * 리펙토링
->>>   * Client-Server에서 HttpSession을 통한 사용자 상태 관리를 담당하게 되면서 Api-Server로부터 전달받던 사용자 아이디 반환을 수정.
+>>>   * FrontEnd-Server에서 HttpSession을 통한 사용자 상태 관리를 담당하게 되면서 Api-Server로부터 전달받던 사용자 아이디 반환을 수정.
 >>>     * Comment-list 요청시 로그인한 사용자의 아이디를 Api-Server로부터 반환받고 그걸 사용해 버튼 상태 관리를 해왔는데 session.id를 통해 값의 존재 여부에 따라 버튼 출력을 제어하도록 수정.
 >>>     * comment.js에서 comment-table 파싱하는 함수 코드 수정.
 >>>     * commentList가 들어가는 imageBoardDetail, boardDetail 모두 테스트 완료. 
@@ -1486,21 +1551,21 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >>>     * 이전에는 불필요한 데이터를 조회할 필요가 없다는 생각에 필요한 작성자 데이터만 조회하고 JPQL을 통해 UPDATE 요청을 했었던 건데
 >>>     * 검증 데이터 조회는 Service 레이어까지만 전달되고 거기서 벗어나지 않기 때문에 단순 검증이 아니라면 괜찮을 것이라고 생각해 이 방법으로 개선. 
 >>>   * HierarchicalBoard 리스트 조회에 사용되는 DTO 수정
->>>     * HierarchicalBoardDTO를 통해 조회한 데이터를 Client-Server에 전달했었는데 해당 DTO는 Entity와 동일한 구조로 테이블의 모든 데이터를 담고 있어 HierarchicalBoardListDTO로 새로 생성해 처리.
+>>>     * HierarchicalBoardDTO를 통해 조회한 데이터를 FrontEnd-Server에 전달했었는데 해당 DTO는 Entity와 동일한 구조로 테이블의 모든 데이터를 담고 있어 HierarchicalBoardListDTO로 새로 생성해 처리.
 >>>     * 게시글 정보 테이블이다보니 민감한 정보는 없지만 굳이 모든 데이터를 넘겨줄 필요는 없다고 생각해 필요한 데이터만 담아 처리하도록 수정.
->>>   * 파일 사이즈 체크 메소드 Api-Server -> Client-Server로 이동
->>>     * Client-Server가 여러개 존재할 수 있다는 전제하에 진행하고 있는 프로젝트이기 때문에 추후 파일 사이즈 값의 변경에 대해 좀 더 대응하기 쉽도록 Api-Server에서 처리하고 있었으나
->>>     * API-Server에 요청한 뒤 오류가 아닌 파일 사이즈 문제로 다시 재요청이 발생하는 것은 불필요한 요청이지 않나 라는 생각에 Client-Server로 이동.
+>>>   * 파일 사이즈 체크 메소드 Api-Server -> FrontEnd-Server로 이동
+>>>     * FrontEnd-Server가 여러개 존재할 수 있다는 전제하에 진행하고 있는 프로젝트이기 때문에 추후 파일 사이즈 값의 변경에 대해 좀 더 대응하기 쉽도록 Api-Server에서 처리하고 있었으나
+>>>     * API-Server에 요청한 뒤 오류가 아닌 파일 사이즈 문제로 다시 재요청이 발생하는 것은 불필요한 요청이지 않나 라는 생각에 FrontEnd-Server로 이동.
 >>>     * 하지만 아직 고민중이긴 한 사항.
->>>     * 수정 내역대로면 파일 사이즈 허용치가 변경되는 경우 모든 Client-Server에서 사이즈 기준 값을 수정해야 하기 때문에 아직 확신은 없는 상태.
+>>>     * 수정 내역대로면 파일 사이즈 허용치가 변경되는 경우 모든 FrontEnd-Server에서 사이즈 기준 값을 수정해야 하기 때문에 아직 확신은 없는 상태.
 >>>     * 하지만 기획대로 웹, 모바일, 태블릿에서 서비스되는 하나의 커뮤니티 서비스를 제공하고 사용자가 많은 것을 가정한다면 잦은 Api-Server에 대한 요청보다는 그게 낫지 않을까 하는 생각에 수정.
 >
 > 
 >> 24/03/07
 >>> * 리펙토링
->>>   * Client-Server에서 각 게시판 페이징 처리에서 필요한 페이지당 게시글 개수인 amount 값을 제어하지 않도록 제거.
+>>>   * FrontEnd-Server에서 각 게시판 페이징 처리에서 필요한 페이지당 게시글 개수인 amount 값을 제어하지 않도록 제거.
 >>>   * 현재 프로젝트에서 사용자가 출력하고자 하는 게시글의 개수를 제어하도록 하고 있지 않기 때문에 계층형 게시판과 댓글은 페이지당 20개, 이미지 게시판은 15개로 고정되어있는 상태.
->>>   * 하지만 Client-Server에 해당 값이 amount로 제공되고 있고 그럼 사용자가 임의로 수정할 수 있는 문제가 있기 때문에 아예 Client-Server에서는 amount값을 제어하지 못하도록 수정.
+>>>   * 하지만 FrontEnd-Server에 해당 값이 amount로 제공되고 있고 그럼 사용자가 임의로 수정할 수 있는 문제가 있기 때문에 아예 FrontEnd-Server에서는 amount값을 제어하지 못하도록 수정.
 >>>   * Api-Server에서도 수정되는 경우를 방지하기 위해 두 amount 값을 final로 고정.
 >
 > 
@@ -1528,7 +1593,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >>>       * 로그인 과정에서는 더이상 JwtDTO에 데이터를 담아 반환하지 않도록 수정.
 >>>       * 토큰 재발급의 경우 클라이언트 서버에서 재발급 받은 후 바로 요청할 수 있도록 동일한 과정을 거쳐 토큰 재발급과 쿠키 생성을 한 뒤 JwtDTO에 데이터를 담아 반환하도록 수정.
 >>>       * 로그인 실패 시 발생하는 BadCredentialsException이 발생했을 때 반환되는 상태코드를 400에서 403으로 수정.
->>>     * Client-Server
+>>>     * FrontEnd-Server
 >>>       * WebClient에서 ClientResponse와 헤더, 상태값을 받아 처리하기 위해 retrieve()가 아닌 exchangeToMono()로 수정.
 >>>       * WebConfig 클래스 설정에서 allowCredentials, allowedOriginPatterns, allowedHeaders, allowedMethods 설정을 추가.
 >>>       * TokenService에서 더이상 쿠키 생성을 할 필요가 없기 때문에 해당 메소드 제거.
@@ -1549,7 +1614,7 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >>>       * 여러 클라이언트가 확장 되더라도 일정한 틀의 구조로 반환받을 수 있고, 수정이 발생하더라도 좀 더 수월하게 수정할 수 있을 것이라고 기대됨.
 >>>       * 모든 GET 요청에 대해 UserStatusDTO를 반환해 클라이언트에서 사용자의 로그인 여부와 아이디를 알 수 있도록 수정.
 >>>       * 중첩되어 사용되던 DTO를 기능별로 좀 더 분리하고자 추가 생성 및 분리.
->>>     * Client-Server
+>>>     * FrontEnd Server
 >>>       * 토큰 관리를 API 서버로 넘기게 되면서 클라이언트 서버에서는 토큰에 대한 처리를 아예 하지 않도록 수정.
 >>>       * 게시글 작성 페이지 같은 API 서버에 요청할 데이터가 없는 요청에 대해서만 RefreshToken과 ino 쿠키의 존재 여부로 페이지 접근만 제어하도록 수정.
 >>>       * 위와 같은 경우를 제외하고는 클라이언트에서 토큰 여부를 전혀 파악하지 않고 API 서버에서 확인 후 재발급 처리 및 사용자 요청 처리를 하거나 탈취 판단을 하도록 할 계획이기 때문에 모든 WebClient 요청은 exchangeToMono로 처리.
@@ -1595,19 +1660,19 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >>>       * WebSecurityConfigurerAdapter가 deprecated 되면서 애매해진 AuthenticationManager를 그대로 사용하기 위해 해당 코드를 긁어와 Bean으로 만들어 사용했었는데
 >>>       * 해당 Bean을 삭제하고 AuthenticationManagerBuilder로 사용하도록 수정.
 >>>     * 불필요한 로그 및 주석 제거
->>>   * Client-Server
+>>>   * FrontEnd-Server
 >>>     * 기존 브라우저 종료 시 로그아웃 처리를 위해 작성했었던 navbar.js 제거.
 >>>       * 제대로 작동하지 않는 코드이기도 했고 필요가 없어졌기 때문에 제거.
 >>>     * ExchangeService 수정
 >>>       * WebClient 요청에 대한 처리를 하는 ExchangeService에서 존재하지 않는 800번이라는 응답 코드를 처리하기 위해 rawStatusCode()로 처리
 >>>       * 정상 처리 응답과 탈취 응답에 대해서는 쿠키 처리가 필요할 수 있기 때문에 CookieService를 통해 cookie를 처리
 >>>       * 200 응답을 제외한 다른 응답에 대해서는 강제로 예외를 발생시켜 ExceptionHandler로 예외처리를 하도록 처리.
->>>     * 게시글 작성같은 API-Server에 요청해서 받을 데이터가 없는 페이지의 경우 Client-Server에서 토큰 존재 여부를 통해 판단하도록 처리.
->>>       * 게시글 작성 페이지를 제외하고는 Api-Server에 요청해 데이터를 받아야 하는 GET 요청들이기 떄문에 각 게시판의 작성 페이지 접근에 대해서만 Client-Server에서 처리.
+>>>     * 게시글 작성같은 API-Server에 요청해서 받을 데이터가 없는 페이지의 경우 FrontEnd-Server에서 토큰 존재 여부를 통해 판단하도록 처리.
+>>>       * 게시글 작성 페이지를 제외하고는 Api-Server에 요청해 데이터를 받아야 하는 GET 요청들이기 떄문에 각 게시판의 작성 페이지 접근에 대해서만 FrontEnd-Server에서 처리.
 >>>       * 비정상 적인 토큰으로 작성 페이지를 뚫고 접근하더라도 POST 요청을 위해서는 정상적인 토큰이 필요하기 때문에 해당 페이지 접근까지는 문제가 없을것이라는 판단.
 >>>       * AccessToken, RefreshToken, ino 쿠키가 모두 존재해야 접근할 수 있도록 처리.
 >>>     * JwtProperties에 각 쿠키명만 남기고 다 제거.
->>>       * 쿠키명을 제외한 다른 값들은 Client-Server에서 더이상 알고 있어야할 필요가 없기 때문에 제거.
+>>>       * 쿠키명을 제외한 다른 값들은 FrontEnd-Server에서 더이상 알고 있어야할 필요가 없기 때문에 제거.
 >>>   * 테스트
 >>>     * 모든 기능에 대한 테스트 완료.
 >
@@ -1645,13 +1710,13 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >
 >> 24/04/26
 >>> * 추가
->>> * Api-Server, Application-Server
+>>> * Api-Server, FrontEnd-Server
 >>>     * 각 메소드 시간 측정을 위한 AOP 설정.
 >>>     * Dependency와 TimeCheckAOP Component 추가
 >>>     * 측정 결과는 로그로 처리.
 >>>     * 1000ms가 넘는 결과에 대해서는 WARN으로 처리하고 그 외의 결과에 대해서는 info로 처리.
 >>> * 수정
->>>   * Application-Server 
+>>>   * FrontEnd-Server 
 >>>     * 요청 이전 쿠키를 MultiValueMap에 담는 과정에서 request.getCookies()가 null인 경우에는 오류가 발생하는 것을 확인.
 >>>     * 해당 부분을 request.getCookies() != null인 경우에만 수행하도록 수정.
 >
@@ -1689,11 +1754,11 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >>>     * Member Entity는 userId, provider가 NonNull로 설정되어 있기 때문에 해당 값들을 같이 PrincipalDTO에 담아 반환하도록 처리.
 >>>     * PrincipalDTO 내부에서는 toEntity를 통해 Member Entity를 build할 수 있도록 처리
 >>>     * 추가적인 메소드로 PrincipalDTO를 반환받는 것이 아닌 nickname만 반환받을 수 있는 메소드를 생성.
->>>     * client 또는 Application Server로 전달하는 값 중 userStatus가 존재하는데 이 안에 사용자의 userId를 받고 있었으나 모두 nickname으로 수정했기 때문에 해당 값을 PrincipalService를 통해 nickname을 반환받아 담을 수 있도록 처리.
+>>>     * Client Side Application 또는 FrontEnd Server로 전달하는 값 중 userStatus가 존재하는데 이 안에 사용자의 userId를 받고 있었으나 모두 nickname으로 수정했기 때문에 해당 값을 PrincipalService를 통해 nickname을 반환받아 담을 수 있도록 처리.
 >
 > 
 >> 24/05/18
->>> * Application-Server
+>>> * FrontEnd-Server
 >>>   * OAuth2 로그인 추가.
 >>>   * OAuth2 로그인 추가하면서 필요한 최초 로그인 사용자에 대한 닉네임, 프로필 사진 받는 페이지 추가 및 연결.
 >>>   * 정보수정 페이지 추가.
@@ -1702,9 +1767,16 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >
 > 
 >> 24/05/19
->>> * Application-server, API-Server
+>>> * FrontEnd-Server, API-Server
 >>>   * 로그인 누락 기능 추가.
 >>>   * 로컬 사용자 로그인의 경우 provider가 local인지를 꼭 체크해야 하는 부분이 누락되어 추가.
 >>>   * WebClient 응답에서도 ExchangeService를 통한 처리에서 직접 처리 코드를 작성하는 것으로 수정.
 >>>   * 잘못된 로그인의 경우 AccessDenidedException을 날리는 것이 아닌 BadCredentialsException을 날리도록 수정.
 >>>   * CustomBadCredentialsException을 추가하고 ExceptionHandler 역시 추가.
+>
+>
+>> 24/08/01
+>>> * API-Server
+>>>   * QueryDSL 코드 수정.
+>>>   * Comment 리스트 조회에서 imageNo, BoardNo에 대한 조건 검색 처리에서 두개의 메소드로 처리되어 있어서 해당 부분 하나로 통합
+>>>   * ImageBoard findAll 조회에서 imageContent를 같이 조회하고 있어서 해당 부분 수정.

@@ -7,5 +7,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface CommentRepositoryCustom {
 
-    Page<BoardCommentDTO> findAll(Criteria cri, Pageable pageable, String boardNo, String imageNo);
+    Page<BoardCommentDTO> findAll(Pageable pageable, String boardNo, String imageNo);
 }

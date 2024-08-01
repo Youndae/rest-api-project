@@ -35,7 +35,6 @@ public class ImageBoardRepositoryCustomImpl implements ImageBoardRepositoryCusto
                                 , imageBoard.imageTitle
                                 , imageBoard.member.nickname
                                 , imageBoard.imageDate
-                                , imageBoard.imageContent
                                 , imageData.imageName
                                 )
                 )
@@ -46,8 +45,8 @@ public class ImageBoardRepositoryCustomImpl implements ImageBoardRepositoryCusto
                 .where(searchTypeEq(cri.getSearchType(), cri.getKeyword()))
                 .groupBy(imageBoard.imageNo)
                 .orderBy(imageBoard.imageNo.desc())
-                .offset((cri.getPageNum() - 1) * cri.getImageAmount())
-                .limit(cri.getImageAmount())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         JPAQuery<Long> count = jpaQueryFactory.select(imageBoard.countDistinct())

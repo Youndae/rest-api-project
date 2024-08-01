@@ -26,7 +26,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom{
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<BoardCommentDTO> findAll(Criteria cri, Pageable pageable, String boardNo, String imageNo) {
+    public Page<BoardCommentDTO> findAll(Pageable pageable, String boardNo, String imageNo) {
 
         List<BoardCommentDTO> list = jpaQueryFactory
                                     .select(
@@ -45,38 +45,25 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom{
                                         ))
                                     .from(comment)
                                     .innerJoin(comment.member, member)
-                                    .where(
-                                            commentBoardEq(boardNo),
-                                            commentImageBoardEq(imageNo)
-                                    )
+                                    .where(commentBoardEq(boardNo, imageNo))
                                     .orderBy(comment.commentGroupNo.desc())
                                     .orderBy(comment.commentUpperNo.asc())
-                                    .offset((cri.getPageNum() - 1) * cri.getBoardAmount())
-                                    .limit(cri.getBoardAmount())
+                                    .offset(pageable.getOffset())
+                                    .limit(pageable.getPageSize())
                                     .fetch();
 
         JPAQuery<Long> count = jpaQueryFactory.select(comment.count())
                                                 .from(comment)
-                                                .where(
-                                                        commentBoardEq(boardNo),
-                                                        commentImageBoardEq(imageNo)
-                                                );
+                                                .where(commentBoardEq(boardNo, imageNo));
 
         return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);
     }
 
-    private BooleanExpression commentBoardEq(String boardNo) {
+    private BooleanExpression commentBoardEq(String boardNo, String imageNo) {
         if(boardNo == null)
-            return null;
+            return comment.imageBoard.imageNo.eq(Long.parseLong(imageNo));
 
         return comment.hierarchicalBoard.boardNo.eq(Long.parseLong(boardNo));
-    }
-
-    private BooleanExpression commentImageBoardEq(String imageNo) {
-        if(imageNo == null)
-            return null;
-
-        return comment.imageBoard.imageNo.eq(Long.parseLong(imageNo));
     }
 
 }
