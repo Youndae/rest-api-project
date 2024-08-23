@@ -1,10 +1,12 @@
 package com.example.boardrest.domain.entity;
 
-import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
+import com.example.boardrest.domain.dto.hBoard.in.HierarchicalBoardModifyDTO;
+import com.example.boardrest.domain.dto.hBoard.in.HierarchicalBoardReplyDTO;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -27,7 +29,8 @@ public class HierarchicalBoard {
 
     private String boardContent;
 
-    private Date boardDate;
+    @CreationTimestamp
+    private LocalDate boardDate;
 
     private long boardGroupNo;
 
@@ -47,10 +50,15 @@ public class HierarchicalBoard {
         this.boardContent = boardContent;
     }
 
-    public void setPatchBoardData(HierarchicalBoardDTO dto) {
+    public void setPatchDataAfterInsertion(HierarchicalBoardReplyDTO dto) {
         String bno = String.valueOf(this.boardNo);
         this.boardGroupNo = dto.getBoardGroupNo() == 0 ? this.boardNo : dto.getBoardGroupNo();
         this.boardUpperNo = dto.getBoardUpperNo() == null ? bno : dto.getBoardUpperNo() + "," + bno;
         this.boardIndent = dto.getBoardGroupNo() == 0 ? 0 : dto.getBoardIndent() + 1;
+    }
+
+    public void setPatchData(HierarchicalBoardModifyDTO dto) {
+        this.boardTitle = dto.getBoardTitle();
+        this.boardContent = dto.getBoardContent();
     }
 }

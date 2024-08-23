@@ -78,7 +78,8 @@
                         </span>
                     </td>
                     <td th:text="${data.nickname}"/>
-                    <td th:text="${#dates.format(data.boardDate, 'yyyy-MM-dd')}"/>
+                    <td th:text="${data.boardDate}"/>
+<!--                    <td th:text="${#dates.format(data.boardDate, 'yyyy-MM-dd')}"/>-->
                 </tr>
             </th:block>
         </table>

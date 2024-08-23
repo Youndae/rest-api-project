@@ -1,10 +1,8 @@
 package com.example.boardrest.domain.dto.responseDTO;
 
-import com.example.boardrest.domain.dto.UserStatusDTO;
 import lombok.*;
 import org.springframework.data.domain.Page;
 
-import java.security.Principal;
 import java.util.List;
 
 /**

@@ -2,8 +2,8 @@ package com.example.boardrest.config;
 
 
 import com.example.boardrest.config.jwt.JwtAuthorizationFilter;
-import com.example.boardrest.config.oAuth.CustomOAuth2UserService;
-import com.example.boardrest.config.oAuth.CustomOAuthSuccessHandler;
+import com.example.boardrest.auth.oAuth.CustomOAuth2UserService;
+import com.example.boardrest.auth.oAuth.CustomOAuthSuccessHandler;
 import com.example.boardrest.repository.MemberRepository;
 import com.example.boardrest.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -62,8 +62,6 @@ public class SecurityConfig {
                                         userInfoEndpointConfig
                                                 .userService(customOAuth2UserService))
                                 .successHandler(customOAuthSuccessHandler));
-
-
 
         return http.build();
     }

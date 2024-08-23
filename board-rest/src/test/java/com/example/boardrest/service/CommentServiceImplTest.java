@@ -1,13 +1,11 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.BoardCommentDTO;
-import com.example.boardrest.domain.dto.Criteria;
+import com.example.boardrest.domain.dto.paging.Criteria;
 import com.example.boardrest.repository.CommentRepository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 

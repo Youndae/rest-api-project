@@ -1,9 +1,9 @@
 package com.example.boardrest.controller;
 
-import com.example.boardrest.domain.dto.LoginStateDTO;
-import com.example.boardrest.domain.dto.JoinDTO;
-import com.example.boardrest.domain.dto.ProfileDTO;
-import com.example.boardrest.domain.dto.ProfileResponseDTO;
+import com.example.boardrest.domain.dto.member.out.LoginStateDTO;
+import com.example.boardrest.domain.dto.member.in.JoinDTO;
+import com.example.boardrest.domain.dto.member.in.ProfileDTO;
+import com.example.boardrest.domain.dto.member.out.ProfileResponseDTO;
 import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.repository.MemberRepository;
 import com.example.boardrest.service.MemberService;
@@ -30,50 +30,36 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/check-login")
-    public ResponseEntity checkLogin(Principal principal) {
+    public ResponseEntity<LoginStateDTO> checkLogin(Principal principal) {
 
-        LoginStateDTO responseDTO = new LoginStateDTO();
-
-        if(principal != null)
-            responseDTO.setStatusValueForTrue();
+        LoginStateDTO responseDTO = new LoginStateDTO(principal);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(responseDTO);
     }
 
     @PostMapping("/join")
-    public int joinProc(@RequestPart JoinDTO joinDTO
+    public String joinProc(@RequestPart JoinDTO joinDTO
                         , @RequestParam(value = "profileThumbnail", required = false) MultipartFile profileThumbnail){
 
         return memberService.memberJoinProc(joinDTO, profileThumbnail);
     }
 
     @GetMapping("/check-id")
-    public int checkUserId(@RequestParam("userId") String userId){
+    public String checkUserId(@RequestParam("userId") String userId){
 
-        if(memberRepository.findByUserId(userId) != null)
-            return 1;
-        else
-            return 0;
+        return memberService.checkId(userId);
     }
 
     @GetMapping("/check-nickname")
-    public int checkNickname(@RequestParam("nickname") String nickname, Principal principal) {
-        Member member = memberRepository.findByNickname(nickname);
+    public String checkNickname(@RequestParam("nickname") String nickname, Principal principal) {
 
-        if(member == null)
-            return 0;
-        else{
-            if(principal != null && member.getUserId().equals(principal.getName()))
-                return 0;
-
-            return 1;
-        }
-
+        return memberService.checkNickname(nickname, principal);
     }
 
+    //member entity로 받는게 아니라 DTO로 받도록 수정.
     @PostMapping("/login")
-    public ResponseEntity<Long> loginProc(@RequestBody Member member
+    public ResponseEntity<String> loginProc(@RequestBody Member member
                                         , HttpServletRequest request
                                         , HttpServletResponse response) {
 
@@ -82,18 +68,16 @@ public class MemberController {
 
     @PostMapping("/logout")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_MANAGER', 'ROLE_ADMIN')")
-    public int logout(HttpServletRequest request
+    public String logout(HttpServletRequest request
                     , HttpServletResponse response
                     , Principal principal){
-
-        log.info("logout controller");
 
         return memberService.logout(request, response, principal);
     }
 
     @PatchMapping("/profile")
     @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_MANAGER', 'ROLE_ADMIN')")
-    public ResponseEntity<Long> modifyProfile(@RequestParam("nickname") String nickname
+    public ResponseEntity<String> modifyProfile(@RequestParam("nickname") String nickname
                                             , @RequestParam(value = "profileThumbnail", required = false) MultipartFile profileThumbnail
                                             , @RequestParam(value = "deleteProfile", required = false) String deleteProfile
                                             , Principal principal) {

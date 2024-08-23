@@ -1,14 +1,14 @@
 package com.example.boardrest.config.jwt;
 
-import com.example.boardrest.config.oAuth.CustomOAuth2User;
+import com.example.boardrest.auth.oAuth.CustomOAuth2User;
+import com.example.boardrest.auth.user.CustomUserDetails;
 import com.example.boardrest.customException.ErrorCode;
-import com.example.boardrest.domain.dto.OAuth2DTO;
+import com.example.boardrest.auth.oAuth.domain.OAuth2DTO;
 import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.repository.MemberRepository;
-import com.example.boardrest.security.domain.CustomUser;
+import com.example.boardrest.auth.user.CustomUser;
 import com.example.boardrest.service.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -117,7 +117,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                         } else if (verifyRefreshTokenResult.equals(JwtProperties.TOKEN_STEALING_RESULT)
                                 || verifyRefreshTokenResult.equals(JwtProperties.WRONG_TOKEN)) {
                             //일치하지 않는 경우 결과가 탈취로 반환. 탈취 또는 잘못된 토큰 응답이 반환되면 redis 데이터와 쿠키 삭제
-                            deleteTokenAndCookieThrowException(claimByUserIdToAccessToken, inoValue, request, response);
+                            deleteTokenAndCookieThrowException(claimByUserIdToAccessToken, inoValue, response);
                             return;
                         }
                     } else {
@@ -137,7 +137,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 else
                     claimByUserId = jwtTokenProvider.decodeToken(refreshTokenCookie);
 
-                deleteTokenAndCookieThrowException(claimByUserId, inoCookie.getValue(), request, response);
+                deleteTokenAndCookieThrowException(claimByUserId, inoCookie.getValue(), response);
                 return;
             }
         }
@@ -147,22 +147,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String userId;
             Collection<? extends GrantedAuthority> authorities;
 
+            CustomUserDetails userDetails;
+
             if(memberEntity.getProvider().equals("local")){
-                CustomUser customUser = new CustomUser(memberEntity);
-                userId = customUser.getMember().getUserId();
-                authorities = customUser.getAuthorities();
+                userDetails = new CustomUser(memberEntity);
             }else{
-                OAuth2DTO oAuth2DTO = OAuth2DTO.builder()
-                        .userId(memberEntity.getUserId())
-                        .username(memberEntity.getUsername())
-                        .authList(memberEntity.getAuths())
-                        .build();
-                CustomOAuth2User customOAuth2User = new CustomOAuth2User(oAuth2DTO);
-                userId = customOAuth2User.getUserId();
-                authorities = customOAuth2User.getAuthorities();
+                OAuth2DTO oAuth2DTO = memberEntity.toOAuth2DTOUseFilter();
+                userDetails = new CustomOAuth2User(oAuth2DTO);
             }
 
-            log.info("AuthorizationFilter userId : {}", userId);
+            userId = userDetails.getUserId();
+            authorities = userDetails.getAuthorities();
 
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(userId, null, authorities);
@@ -170,7 +165,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
-        log.info("chain.doFilter");
         chain.doFilter(request, response);
     }
 
@@ -180,7 +174,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         response.setCharacterEncoding("utf-8");
     }
 
-    public void deleteTokenAndCookieThrowException(String tokenClaim, String inoValue, HttpServletRequest request, HttpServletResponse response) {
+    public void deleteTokenAndCookieThrowException(String tokenClaim, String inoValue, HttpServletResponse response) {
         jwtTokenProvider.deleteToken(tokenClaim, inoValue, response);
         tokenStealingExceptionResponse(response);
     }

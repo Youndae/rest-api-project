@@ -1,10 +1,13 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.*;
+import com.example.boardrest.domain.dto.hBoard.out.HierarchicalBoardDetailDTO;
+import com.example.boardrest.domain.dto.hBoard.out.HierarchicalBoardListDTO;
+import com.example.boardrest.domain.dto.hBoard.in.HierarchicalBoardModifyDTO;
+import com.example.boardrest.domain.dto.hBoard.in.HierarchicalBoardReplyDTO;
+import com.example.boardrest.domain.dto.paging.Criteria;
 import com.example.boardrest.domain.entity.HierarchicalBoard;
 import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.repository.HierarchicalBoardRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,15 +22,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
-import java.sql.Date;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class HierarchicalBoardServiceImplTest {
@@ -53,20 +48,15 @@ class HierarchicalBoardServiceImplTest {
         };
         Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
 
-        HierarchicalBoardDTO boardDTO = HierarchicalBoardDTO.builder()
+        HierarchicalBoardReplyDTO boardDTO = HierarchicalBoardReplyDTO.builder()
                                             .boardTitle("test Title1")
                                             .boardContent("test Content 1")
-                                            .boardGroupNo(0)
+                                            .boardGroupNo(0L)
                                             .boardIndent(0)
                                             .boardUpperNo(null)
                                             .build();
 
-        HierarchicalBoard board = HierarchicalBoard.builder()
-                                        .boardTitle(boardDTO.getBoardTitle())
-                                        .boardContent(boardDTO.getBoardContent())
-                                        .member(memberEntity)
-                                        .boardDate(Date.valueOf(LocalDate.now()))
-                                        .build();
+        HierarchicalBoard board = boardDTO.toEntity(memberEntity);
 
         long saveBoardNo = repository.save(board).getBoardNo();
         board.setPatchBoardData(boardDTO);

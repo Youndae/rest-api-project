@@ -1,7 +1,12 @@
 package com.board.boardapp.controller;
 
 import com.board.boardapp.connection.webClient.ImageBoardWebClient;
-import com.board.boardapp.dto.*;
+import com.board.boardapp.domain.dto.Criteria;
+import com.board.boardapp.domain.dto.ImageDataDTO;
+import com.board.boardapp.domain.dto.LoginDTO;
+import com.board.boardapp.domain.dto.UserStatusDTO;
+import com.board.boardapp.domain.dto.iBoard.in.ImageBoardInsertDTO;
+import com.board.boardapp.service.CookieService;
 import com.board.boardapp.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,15 +32,19 @@ public class ImageBoardController {
 
     private final TokenService tokenService;
 
+    private final CookieService cookieService;
+
     @GetMapping("/")
     public String getList(Model model
                                 , Criteria cri
                                 , HttpServletRequest request
                                 , HttpServletResponse response) {
 
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
         model.addAttribute(
                 "data"
-                , imageBoardWebClient.getList(cri, request, response)
+                , imageBoardWebClient.getList(cri, cookieMap, response)
         );
 
         return "th/imageBoard/imageBoardList";
@@ -46,9 +56,11 @@ public class ImageBoardController {
                                     , HttpServletRequest request
                                     , HttpServletResponse response) {
 
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
         model.addAttribute(
                 "data"
-                , imageBoardWebClient.getDetail(imageNo, request, response)
+                , imageBoardWebClient.getDetail(imageNo, cookieMap, response)
         );
 
         return "th/imageBoard/imageBoardDetail";
@@ -70,13 +82,14 @@ public class ImageBoardController {
 
     @PostMapping("/")
     @ResponseBody
-    public long insertBoard(@RequestParam("imageTitle") String imageTitle
-                                        , @RequestParam("imageContent") String imageContent
+    public Long insertBoard(@ModelAttribute ImageBoardInsertDTO dto
                                         , @RequestParam("files")List<MultipartFile> images
                                         , HttpServletRequest request
                                         , HttpServletResponse response){
 
-        return imageBoardWebClient.insertBoard(imageTitle, imageContent, images, request, response);
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
+        return imageBoardWebClient.insertBoard(dto, images, cookieMap, response);
     }
 
     @GetMapping("/patch/{imageNo}")
@@ -85,12 +98,14 @@ public class ImageBoardController {
                                     , HttpServletRequest request
                                     , HttpServletResponse response){
 
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
         boolean checkToken = tokenService.checkExistsToken(request);
 
         if(!checkToken)
             return "th/member/loginForm";
 
-        model.addAttribute("data", imageBoardWebClient.getPatchDetail(imageNo, request, response));
+        model.addAttribute("data", imageBoardWebClient.getPatchDetail(imageNo, cookieMap, response));
 
         return "th/imageBoard/imageBoardModify";
     }
@@ -98,30 +113,38 @@ public class ImageBoardController {
     @GetMapping("/patch/image")
     public ResponseEntity<List<ImageDataDTO>> getPatchImage(long imageNo, HttpServletRequest request, HttpServletResponse response) {
 
-        return new ResponseEntity<>(imageBoardWebClient.getPatchImage(imageNo, request, response), HttpStatus.OK);
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
+        return new ResponseEntity<>(imageBoardWebClient.getPatchImage(imageNo, cookieMap, response), HttpStatus.OK);
     }
 
+    /**
+     * DTO로 받도록 처리?
+     */
     @PatchMapping("/{imageNo}")
     @ResponseBody
     public long patchBoard(@PathVariable("imageNo") long imageNo
-                                    , @RequestParam("imageTitle") String imageTitle
-                                    , @RequestParam("imageContent") String imageContent
+                                    , @ModelAttribute ImageBoardInsertDTO dto
                                     , @RequestParam(value = "files", required = false) List<MultipartFile> files
                                     , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
                                     , HttpServletRequest request
                                     , HttpServletResponse response){
 
-        return imageBoardWebClient.patchBoard(imageNo, imageTitle, imageContent, files, deleteFiles, request, response);
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
+        return imageBoardWebClient.patchBoard(imageNo, dto, files, deleteFiles, cookieMap, response);
 
     }
 
     @DeleteMapping("/{imageNo}")
     @ResponseBody
-    public long deleteBoard(@PathVariable long imageNo
+    public String deleteBoard(@PathVariable long imageNo
                                     , HttpServletRequest request
                                     , HttpServletResponse response) {
 
-        return imageBoardWebClient.deleteBoard(imageNo, request, response);
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
+        return imageBoardWebClient.deleteBoard(imageNo, cookieMap, response);
 
     }
 

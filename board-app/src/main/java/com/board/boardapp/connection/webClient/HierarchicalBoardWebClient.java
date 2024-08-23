@@ -4,21 +4,21 @@ import com.board.boardapp.ExceptionHandle.CustomNotFoundException;
 import com.board.boardapp.ExceptionHandle.ErrorCode;
 import com.board.boardapp.config.WebClientConfig;
 import com.board.boardapp.config.properties.PathProperties;
-import com.board.boardapp.dto.*;
-import com.board.boardapp.service.CookieService;
+import com.board.boardapp.domain.dto.*;
+import com.board.boardapp.domain.dto.hBoard.in.HierarchicalBoardInsertDTO;
+import com.board.boardapp.domain.dto.hBoard.in.HierarchicalBoardReplyInsertDTO;
 import com.board.boardapp.service.ExchangeService;
 import com.board.boardapp.service.ObjectReadValueService;
-import javassist.NotFoundException;
+import com.board.boardapp.service.UriComponentsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Service
@@ -30,7 +30,7 @@ public class HierarchicalBoardWebClient {
 
     private final ObjectReadValueService readValueService;
 
-    private final CookieService cookieService;
+    private final UriComponentsService uriComponentsService;
 
     private final ExchangeService exchangeService;
 
@@ -39,23 +39,10 @@ public class HierarchicalBoardWebClient {
     private static final String boardPath_variable = PathProperties.BOARD_PATH_VARIABLE;
 
     //계층형 게시판 list
-    public HierarchicalBoardListDTO getList(Criteria cri, HttpServletRequest request, HttpServletResponse response) {
-        UriComponents ub = UriComponentsBuilder.newInstance()
-                                                .path(boardPath)
-                                                .queryParam("pageNum", cri.getPageNum())
-                                                .build();
+    public PaginationListDTO<HierarchicalBoardDTO> getList(Criteria cri, MultiValueMap<String, String> cookieMap, HttpServletResponse response) {
+        UriComponentsBuilder ub = uriComponentsService.getListUri(boardPath, cri);
 
-        if(cri.getKeyword() != null)
-            ub = UriComponentsBuilder.newInstance()
-                                    .path(boardPath)
-                                    .queryParam("pageNum", cri.getPageNum())
-                                    .queryParam("keyword", cri.getKeyword())
-                                    .queryParam("searchType", cri.getSearchType())
-                                    .build();
-
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
-
-        String result = webClient.get()
+        String responseVal = webClient.get()
                                     .uri(ub.toUriString())
                                     .cookies(cookies -> cookies.addAll(cookieMap))
                                     .exchangeToMono(res -> {
@@ -64,16 +51,20 @@ public class HierarchicalBoardWebClient {
                                     })
                                     .block();
 
-        HierarchicalBoardListDTO dto = new HierarchicalBoardListDTO();
-        dto = readValueService.setReadValue(dto, result);
-        dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
+        log.info("hboard list responseVal : {}", responseVal);
+
+        ParameterizedTypeReference<PaginationListDTO<HierarchicalBoardDTO>> typeReference =
+                new ParameterizedTypeReference<PaginationListDTO<HierarchicalBoardDTO>>() {};
+
+        PaginationListDTO<HierarchicalBoardDTO> dto = readValueService.fromJsonWithPagination(typeReference, responseVal, cri);
+
+        log.info("hboard list dto : {}", dto);
 
         return dto;
     }
 
     //계층형 게시판 상세페이지
-    public BoardDetailAndModifyDTO<HierarchicalBoardDTO> getDetail(long boardNo, HttpServletRequest request, HttpServletResponse response) {
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+    public BoardDetailAndModifyDTO<HierarchicalBoardDTO> getDetail(long boardNo, MultiValueMap<String, String> cookieMap, HttpServletResponse response) {
 
         String responseVal = webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(boardPath_variable).build(boardNo))
@@ -85,20 +76,14 @@ public class HierarchicalBoardWebClient {
                 })
                 .block();
 
-        BoardDetailAndModifyDTO<HierarchicalBoardDTO> dto = new BoardDetailAndModifyDTO<>();
-        dto = readValueService.setReadValue(dto, responseVal);
 
-        return dto;
+        ParameterizedTypeReference<BoardDetailAndModifyDTO<HierarchicalBoardDTO>> typeReference = new ParameterizedTypeReference<BoardDetailAndModifyDTO<HierarchicalBoardDTO>>() {};
+
+        return readValueService.fromJsonWithReference(typeReference, responseVal);
     }
 
     // 계층형 게시판 글 작성
-    public Long postBoard(HttpServletRequest request, HttpServletResponse response) {
-        HierarchicalBoardDTO dto = HierarchicalBoardDTO.builder()
-                                                        .boardTitle(request.getParameter("boardTitle"))
-                                                        .boardContent(request.getParameter("boardContent"))
-                                                        .build();
-
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+    public Long postBoard(HierarchicalBoardInsertDTO dto, MultiValueMap<String, String> cookieMap, HttpServletResponse response) {
 
         return webClient.post()
                         .uri(uriBuilder -> uriBuilder.path(boardPath).build())
@@ -115,9 +100,8 @@ public class HierarchicalBoardWebClient {
 
     // 계층형 게시판 수정 데이터 요청
     public BoardDetailAndModifyDTO<HierarchicalBoardModifyDTO> getPatchDetail(long boardNo
-                                                                            , HttpServletRequest request
+                                                                            , MultiValueMap<String, String> cookieMap
                                                                             , HttpServletResponse response) {
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         String responseVal = webClient.get()
                                         .uri(uriBuilder -> uriBuilder.path(boardPath + "patch-detail/{boardNo}")
@@ -130,28 +114,16 @@ public class HierarchicalBoardWebClient {
                                         })
                                         .block();
 
-        BoardDetailAndModifyDTO<HierarchicalBoardModifyDTO> dto = new BoardDetailAndModifyDTO<>();
-        dto = readValueService.setReadValue(dto, responseVal);
+        ParameterizedTypeReference<BoardDetailAndModifyDTO<HierarchicalBoardModifyDTO>> typeReference =
+                new ParameterizedTypeReference<BoardDetailAndModifyDTO<HierarchicalBoardModifyDTO>>() {};
 
-        return dto;
+        return readValueService.fromJsonWithReference(typeReference, responseVal);
     }
 
     // 계층형 게시판 수정 요청
-    public Long patchBoard(long boardNo, HttpServletRequest request, HttpServletResponse response){
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+    public Long patchBoard(long boardNo, HierarchicalBoardInsertDTO dto, MultiValueMap<String, String> cookieMap, HttpServletResponse response){
 
-        /*HierarchicalBoardModifyDTO dto = HierarchicalBoardModifyDTO.builder()
-                                                    .boardNo(Long.parseLong(request.getParameter("boardNo")))
-                                                    .boardTitle(request.getParameter("boardTitle"))
-                                                    .boardContent(request.getParameter("boardContent"))
-                                                    .build();*/
-
-        HierarchicalBoardModifyDTO dto = HierarchicalBoardModifyDTO.builder()
-                                                .boardTitle(request.getParameter("boardTitle"))
-                                                .boardContent(request.getParameter("boardContent"))
-                                                .build();
-
-        Long responseValue = webClient.patch()
+        Long responseVal = webClient.patch()
                                     .uri(uriBuilder -> uriBuilder.path(boardPath_variable).build(boardNo))
                                     .accept()
                                     .body(Mono.just(dto), HierarchicalBoardModifyDTO.class)
@@ -163,15 +135,14 @@ public class HierarchicalBoardWebClient {
                                     })
                                     .block();
 
-        if(responseValue == 0L)
+        if(responseVal == 0L)
             throw new CustomNotFoundException(ErrorCode.DATA_NOT_FOUND);
         else
-            return responseValue;
+            return responseVal;
     }
 
     // 계층형 게시판 삭제
-    public Long deleteBoard(long boardNo, HttpServletRequest request, HttpServletResponse response){
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+    public String deleteBoard(long boardNo, MultiValueMap<String, String> cookieMap, HttpServletResponse response){
 
         return webClient.delete()
                 .uri(uriBuilder -> uriBuilder.path(boardPath_variable).build(boardNo))
@@ -179,18 +150,17 @@ public class HierarchicalBoardWebClient {
                 .exchangeToMono(res -> {
                     exchangeService.checkExchangeResponse(res, response);
 
-                    return res.bodyToMono(Long.class);
+                    return res.bodyToMono(String.class);
                 })
                 .block();
     }
 
     public BoardDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO> getReplyDetail(
-                                                                HttpServletRequest request
+                                                                MultiValueMap<String, String> cookieMap
                                                                 , HttpServletResponse response
                                                                 , long boardNo){
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
-        String result = webClient.get()
+        String responseVal = webClient.get()
                                     .uri(uriBuilder -> uriBuilder.path(boardPath + "reply/{boardNo}").build(boardNo))
                                     .cookies(cookies -> cookies.addAll(cookieMap))
                                     .exchangeToMono(res -> {
@@ -200,24 +170,13 @@ public class HierarchicalBoardWebClient {
                                     })
                                     .block();
 
-        BoardDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO> dto = new BoardDetailAndModifyDTO<>();
-        dto = readValueService.setReadValue(dto, result);
+        ParameterizedTypeReference<BoardDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO>> typeReference = new ParameterizedTypeReference<BoardDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO>>() {};
 
-        return dto;
+        return readValueService.fromJsonWithReference(typeReference, responseVal);
     }
 
     //계층형 게시판 답글 작성
-    public Long postReply(HttpServletRequest request, HttpServletResponse response){
-        HierarchicalBoardReplyDTO dto = HierarchicalBoardReplyDTO.builder()
-                                            .boardNo(Long.parseLong(request.getParameter("boardNo")))
-                                            .boardTitle(request.getParameter("boardTitle"))
-                                            .boardContent(request.getParameter("boardContent"))
-                                            .boardGroupNo(Long.parseLong(request.getParameter("boardGroupNo")))
-                                            .boardIndent(Integer.parseInt(request.getParameter("boardIndent")))
-                                            .boardUpperNo(request.getParameter("boardUpperNo"))
-                                            .build();
-
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+    public Long postReply(HierarchicalBoardReplyInsertDTO dto, MultiValueMap<String, String> cookieMap, HttpServletResponse response){
 
         return webClient.post()
                         .uri(uriBuilder -> uriBuilder.path(boardPath + "reply").build())

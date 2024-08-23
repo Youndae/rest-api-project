@@ -77,7 +77,7 @@
 <br />
 
 ## ERD
-<img src="./README_image/rest-api_ERD.png">
+<img src="./README_image/rest-api-project_ERD.png">
 
 <br />
 
@@ -111,14 +111,24 @@ protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf().disable();
     
     http.sessionManagement()
-        ....
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
-          .oauth2Login((oauth2) -> 
-            oauth2
-              .userInfoEndpoint((userInfoEndpoingConfig) -> 
-                userInfoEndpointConfig
-                    .userService(customOAuth2UserService))
-              .successHandler(customOauthSuccessHandler));
+            .addFilter(corsFilter)
+            .formLogin().disable()
+            .httpBasic().disable()
+            .logout()
+        .and()
+            .addFilterBefore(new JwtAuthorizationFilter(memberRepository, jwtTokenProvider), BasicAuthenticationFilter.class)
+            .authorizeRequest()
+            .antMatchers("/", "/resources/**")
+            .permitAll()
+        .and()
+            .oauth2Login((oauth2) -> 
+                oauth2
+                .userInfoEndpoint((userInfoEndpoingConfig) -> 
+                    userInfoEndpointConfig
+                        .userService(customOAuth2UserService))
+                .successHandler(customOauthSuccessHandler));
     
     return http.build();
 }
@@ -200,8 +210,8 @@ JwtTokenProvider
         String accessToken = issuedAccessToken(userId, inoValue);
         String refreshToken = issuedRefreshToken(userId, inoValue);
 
-        //쿠키 생성 메소드 호출 (@Param accessToken, refreshToken, inoValue, response)
-        setTokenToCookie(accessToken, refreshToken, response);
+        setCookie(JwtProperties.ACCESS_HEADER_STRING, accessToken, tokenCookieAge, response);
+        setCookie(JwtProperties.REFRESH_HEADER_STRING, refreshToken, tokenCookieAge, response);
     }
 
     //ino까지 모두 생성
@@ -209,23 +219,19 @@ JwtTokenProvider
         String inoValue = issuedIno();
         issuedToken(userId, inoValue, response);
 
-        setInoToCookie(inoValue, response);
+        setCookie(JwtProperties.INO_HEADER_STRING, inoValue, inoCookieAge, response);
     }
 
     public String issuedAccessToken(String userId, String inoValue) {
         String accessToken = createToken(userId, accessSecret, accessTokenExpiration);
-        String key = redisAccessPrefix + inoValue + userId;
-
-        setRedisByToken(key, accessToken);
+        setRedisByToken(redisAccessPrefix, inoValue, userId, accessToken);
 
         return JwtProperties.TOKEN_PREFIX + accessToken;
     }
 
     public String issuedRefreshToken(String userId, String inoValue) {
         String refreshToken = createToken(userId, refreshSecret, refreshTokenExpiration);
-        String key = redisRefreshPrefix + inoValue + userId;
-
-        setRedisByToken(key, refreshToken);
+        setRedisByToken(redisRefreshPrefix, inoValue, userId, refreshToken);
 
         return JwtProperties.TOKEN_PREFIX + refreshToken;
     }
@@ -237,41 +243,26 @@ JwtTokenProvider
     
     public String createToken(String userId, String secret, long expirationTime) {
         return JWT.create()
-        .withSubject("cocoToken")
-        .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
-        .withClaim("userId", userId)
-        .sign(Algorithm.HMAC512(secret));
+                  .withSubject("cocoToken")
+                  .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
+                  .withClaim("userId", userId)
+                  .sign(Algorithm.HMAC512(secret));
     }
 
-    public void setRedisByToken(String key, String value) {
+    public void setRedisByToken(String tokenPrefix, String ino, String claim, String value) {
+        String key = tokenPrefix + ino + claim;
         ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
         stringValueOperations.set(key, value, Duration.ofDays(redisExpirationDay));
     }
 
-    public void setTokenToCookie(String atValue, String rtValue, HttpServletResponse response) {
-
+    public void setCookie(String header, String value, Long expires, HttpServletResponse response) {
         response.addHeader("Set-Cookie"
-                            , createCookie(
-                            JwtProperties.ACCESS_HEADER_STRING
-                            , atValue
-                            , Duration.ofDays(tokenCookieAge)
-                        ));
-
-        response.addHeader("Set-Cookie"
-                            , createCookie(
-                            JwtProperties.REFRESH_HEADER_STRING
-                            , rtValue
-                            , Duration.ofDays(tokenCookieAge)
-                        ));
-    }
-
-    public void setInoToCookie(String ino, HttpServletResponse response) {
-        response.addHeader("Set-Cookie"
-                            , createCookie(
-                            JwtProperties.INO_HEADER_STRING
-                            , ino
-                            , Duration.ofDays(inoCookieAge)
-                        ));
+              , createCookie(
+                    header
+                    , value
+                    , Duration.ofDays(expires)
+              )
+        );
     }
 
     public String createCookie(String name, String value, Duration expires){
@@ -366,12 +357,26 @@ JwtAuthorizationFilter
         }
 
         if (username != null) {
-            Member memberEntity = memberRepository.findByUserId(username);
-            CustomUser customUser = new CustomUser(memberEntity);
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(customUser, null, customUser.getAuthorities());
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+          Member memberEntity = memberRepository.findByUserId(username);
+          String userId;
+          Collection<? extends GrantedAuthority> authorities;
+  
+          CustomUserDetails userDetails;
+  
+          if(memberEntity.getProvider().equals("local")){
+            userDetails = new CustomUser(memberEntity);
+          }else{
+            OAuth2DTO oAuth2DTO = memberEntity.toOAuth2DTOUseFilter();
+            userDetails = new CustomOAuth2User(oAuth2DTO);
+          }
+  
+          userId = userDetails.getUserId();
+          authorities = userDetails.getAuthorities();
+  
+          Authentication authentication =
+                new UsernamePasswordAuthenticationToken(userId, null, authorities);
+  
+          SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         chain.doFilter(request, response);
@@ -414,6 +419,10 @@ Filter에서는 ControllerAdvice Annotation을 통한 Exception Handling이 불�
 요청 후 만료 응답을 받게 되면 재발급 요청을 보내 재발급을 받고 이후 사용자 요청을 다시 전송하는 형태를 주로 보게 되었는데 그럼 AccessToken이 만료되는 1시간 마다 한 번씩 3번의 요청을 보내야 된다는 결과가 나온다고 생각했습니다.   
 그래서 이 요청 횟수를 줄여보고자 한번의 요청으로 토큰을 검증하고 재발급까지 수행할 수 있도록 구현해봤습니다.   
 
+토큰 검증이 정상적으로 처리되어 사용자 아이디 값이 Null이 아닌 경우 인증 객체를 생성하게 됩니다.   
+사용자는 로컬 회원가입으로 가입한 사용자와 OAuth2로 가입한 사용자로 나눠지는데 각자 User, OAuth2User를 재정의 또는 상속 받는 CustomUser를 사용하고 있습니다.   
+서로 다른 CustomUser로 처리해야 하다보니 코드 중복이 발생했었는데 이 문제를 해결하기 위해 CustomUserDetails라는 인터페이스를 생성하고 재정의 하도록 처리해 코드 중복을 줄일 수 있었습니다.
+
 <br />
 
 JwtTokenProvider
@@ -439,8 +448,7 @@ JwtTokenProvider
         else if(accessClaimByUserId.equals(JwtProperties.WRONG_TOKEN))
             return JwtProperties.WRONG_TOKEN;
 
-        String accessTokenKey = redisAccessPrefix + inoValue + accessClaimByUserId;
-        String redisValue = getTokenValueData(accessTokenKey);
+        String redisValue = getTokenValueData(redisAccessPrefix, inoValue, accessClaimByUserId);
 
         if(accessTokenValue.equals(redisValue))
             return accessClaimByUserId;
@@ -465,8 +473,7 @@ JwtTokenProvider
             return JwtProperties.TOKEN_STEALING_RESULT;
         }
 
-        String refreshTokenKey = redisRefreshPrefix + inoValue + refreshClaimByUserId;
-        String redisValue = getTokenValueData(refreshTokenKey);
+        String redisValue = getTokenValueData(redisRefreshPrefix, inoValue, refreshClaimByUserId);
 
         if(refreshTokenValue.equals(redisValue))
             return refreshClaimByUserId;
@@ -476,7 +483,8 @@ JwtTokenProvider
         }
     }
 
-    public String getTokenValueData(String tokenKey) {
+    public String getTokenValueData(String tokenPrefix, String inoValue, String claim) {
+        String tokenKey = tokenPrefix + inoValue + claim;
         long keyExpire = redisTemplate.getExpire(tokenKey);
 
         //Token이 존재하는데 -2라면 Redis 데이터가 만료되어 삭제된 것이기 때문에
@@ -487,17 +495,15 @@ JwtTokenProvider
         return redisTemplate.opsForValue().get(tokenKey);
     }
 
-//token에서 Claim으로 설정된 userId를 꺼내 반환.
+    //token에서 Claim으로 설정된 userId를 꺼내 반환.
     public String getClaimUserIdByToken(String tokenValue, String secret) {
 
         try {
-            String claimByUserId = JWT.require(Algorithm.HMAC512(secret))
-            .build()
-            .verify(tokenValue)
-            .getClaim("userId")
-            .asString();
-    
-            return claimByUserId;
+          return JWT.require(Algorithm.HMAC512(secret))
+                    .build()
+                    .verify(tokenValue)
+                    .getClaim("userId")
+                    .asString();
         }catch(TokenExpiredException e) {
             //토큰 만료 exception
             return JwtProperties.TOKEN_EXPIRATION_RESULT;
@@ -555,9 +561,9 @@ public class ImageBoardWebClient {
 
     private final WebClient imageWebClient = new WebClientConfig().useImageWebClient();
 
-    public Long patchBoard(long imageNo, String imageTitle, String imageContent
-                            , List<MultipartFile> files, List<String> deleteFiles
-                            , HttpServletRequest request, HttpServletResponse response){
+    public Long patchBoard(long imageNo, ImageBoardInsertDTO dto
+                          , List<MultipartFile> files, List<String> deleteFiles
+                          , MultiValueMap<String, String> cookieMap, HttpServletResponse response){
         if(files != null && imageSizeCheck(files) == -2L)
             return -2L;
 
@@ -578,8 +584,6 @@ public class ImageBoardWebClient {
         mbBuilder.part("imageTitle", imageTitle);
         mbBuilder.part("imageContent", imageContent);
 
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
-
         return imageWebClient.patch()
                 .uri(uriBuilder -> uriBuilder.path(imagePath_variable).build(imageNo))
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -595,7 +599,7 @@ public class ImageBoardWebClient {
 }
 
 
-//ExchangeServiceImpl
+    //ExchangeServiceImpl
     @Override
     public void checkExchangeResponse(ClientResponse res, HttpServletResponse response) {
 
@@ -767,17 +771,14 @@ insert, update, delete 요청에 대한 동적 쿼리는 List를 넘겨 in 절�
 ```java
     //HierarchicalBoardServiceImpl
     @Override
-    public ResponsePageableListDTO<HierarchicalBoardListDTO> getHierarchicalBoardList(Criteria cri, Principal principal) {
+    public Page<HierarchicalBoardListDTO> getHierarchicalBoardList(Criteria cri, Principal principal) {
 
         Pageable pageable = PageRequest.of(cri.getPageNum() - 1
                                           , cri.getBoardAmount()
                                           , Sort.by("boardGroupNo").descending()
                                                     .and(Sort.by("boardUpperNo").ascending()));
 
-        Page<HierarchicalBoardListDTO> listDTO = hierarchicalBoardRepository.findAll(cri, pageable);
-        ResponsePageableListDTO<HierarchicalBoardListDTO> responseDTO = new ResponsePageableListDTO<>(listDTO, principal);
-
-        return responseDTO;
+        return hierarchicalBoardRepository.findAll(cri, pageable);
     }
 
     //customRepository
@@ -879,11 +880,11 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
                                             Projections.fields(
                                                     BoardCommentDTO.class
                                                     , comment.commentNo
-                                                    , comment.member.userId
+                                                    , comment.member.nickname
                                                     , comment.commentDate
                                                     , new CaseBuilder()
                                                             .when(comment.commentStatus.gt(0))
-                                                            .then("삭제된 댓글 입니다.")
+                                                            .then("삭제된 댓글입니다.")
                                                             .otherwise(comment.commentContent)
                                                             .as("commentContent")
                                                     , comment.commentGroupNo
@@ -1780,3 +1781,57 @@ JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로�
 >>>   * QueryDSL 코드 수정.
 >>>   * Comment 리스트 조회에서 imageNo, BoardNo에 대한 조건 검색 처리에서 두개의 메소드로 처리되어 있어서 해당 부분 하나로 통합
 >>>   * ImageBoard findAll 조회에서 imageContent를 같이 조회하고 있어서 해당 부분 수정.
+>
+> 
+>> 24/08/23
+>>> * API-Server
+>>>   * 모든 Entity의 Date 필드 LocalDate 타입으로 수정. 또한, @CreationTimeStamp를 통해 객체 생성 시 직접 Date 값을 설정하지 않도록 수정.   
+>>>   * 객체 생성 및 변환에 대한 코드 개선. 서비스 메소드나 컨트롤러 메소드에서 직접 빌더패턴을 사용해 처리하는 방법을 지양하고 각 DTO나 Entity 내부의 to, from 메소드를 통해 처리하도록 개선.   
+>>>   * 각 게시판 및 댓글 리스트 조회 시 요청 파라미터로 받는 Pagination 관련 데이터는 CriteriaRequestMapper라는 클래스를 통해 처리하도록 수정.   
+>>>   * 서비스 레이어에서 반환 타입을 ResponseEntity<?> 타입이 아닌 DTO 타입으로 수정.
+>>>     * 각 요청에 공통적으로 사용되는 DTO 매핑 및 사용자 로그인 정보, ResponseEntity로 감싸주는 처리는 ResponseFactory 라는 클래스를 생성해 처리하도록 수정.
+>>>   * 예외처리 부분 수정.
+>>>     * 대부분이 NullPointerException으로 처리하고 있어서 해당 부분들을 수정.
+>>>   * OAuth2UserService 코드 개선.
+>>>     * 각 Provider에 따른 Response 처리에 대한 중복 코드를 개선.
+>>>     * converter 클래스를 통해 DTO를 처리하도록 개선하면서 중복코드 제거됨.
+>>>   * JwtTokenProvider 코드 개선
+>>>     * 각 토큰 검증 이후 각자의 메소드에서 Redis key 조합 후 조회 메소드를 호출하는 순서였는데 조회 메소드에서 key를 조합하도록 수정.
+>>>     * 토큰을 담을 응답 쿠키 생성 메소드 하나로 통합. 그로 인해 호출시 쿠키에 들어갈 값을 매개변수로 받도록 수정.
+>>>   * 프로필 및 이미지 게시판 요청에서 파일 저장 처리 코드 개선
+>>>     * 기존에도 오류가 발생하면 롤백은 되었지만 이미 저장된 파일에 대한 삭제 처리가 없었기 때문에 해당 부분 추가.
+>>>     * 상위메소드에서 try-catch로 감싸 예외 발생 시 현재까지 처리되어 반환된 값을 토대로 삭제 요청을 보내도록 처리.
+>>>     * 삭제 처리 이후에는 CustomIOException 강제 발생을 통해 오류 코드를 클라이언트로 반환하도록 처리.
+>>>   * domain.dto 패키지 구조 개선.
+>>>     * 컨트롤러처럼 큰 기능별로 1차적으로 나눠 분리하고 그 안에서는 요청을 받는 DTO, 응답을 보내는 DTO, 비즈니스 로직에 사용되는 DTO로 구분해 각각 in, out, business 패키지를 갖도록 수정.
+>>>   * DTO 반환을 제외한 응답 타입이 Long으로 되어있던 것을 String으로 수정.
+>>>     * Result라는 Enum을 통해 응답 값 관리.
+>>>   * JwtAuthorizationFilter 코드 개선.
+>>>     * Authentication 처리 과정 코드 개선.
+>>>     * local은 User를 상속받는 CustomUser, OAuth2는 OAuth2User를 재정의한 CustomOAuth2User를 사용하고 있었고, 각각 나눠져서 사용하다보니 중복 코드가 많았던 상황.   
+>>>       결과적으로 Authentication 객체 생성에 필요한 것은 userId, Authorities 두가지였기 때문에 CustomUserDetails라는 인터페이스를 생성하고 두 Custom 클래스는 CustomUserDetails를 재정의하도록 해 조건문 내에서 CustomUserDetails 타입으로 담도록 수정.   
+>>>     * 그렇게 되면서 조건문에서는 Provider에 따라 CustomUserDetails에 필요 데이터를 담아 나오게 되고 조건문 밖에서 userId와 Authorities를 꺼내 처리할 수 있게 됨.   
+>>> * FrontEnd-Server
+>>>   * API 서버 응답을 매핑하는 ObjectReadValueService 코드 개선
+>>>     * 기존에는 하나의 메소드에서 T dto 로 제네릭을 통한 처리를 하고 있었는데 이 메소드를 좀 더 세분화 해서 나누도록 수정.   
+>>>     * 수정 이유는 Unchecked cast: 'capture<? extends java.lang.Object>' to 'T' 이 오류 때문.
+>>>     * 빨간 밑줄이 생기는 오류는 아니었지만 신경쓰이기도 했고, 확실한 cast 처리를 위해 개선.   
+>>>     * List<T> 타입의 DTO를 처리하는 메소드, ParentDTO<ChildDTO> 구조를 처리하는 메소드, 페이징이 필요한 기능에 대한 처리 메소드로 분리.   
+>>>     * 이때 ParentDTO<ChildDTO> 타입을 처리하는 케이스에서 ParameterizedTypeReference<T> 타입으로 받아 처리할 수 있도록 구현.   
+>>>     * ParameterizedTypeReference 생성에 대해 ObjectReadValueService 내부에서 처리하고자 했으나 제네릭 타입으로 받은 매개변수를 처리하게 되어서 그런지 정상적인 처리가 되지 않는 것을 확인.   
+>>>     * 불가피하게 호출하는 메소드에서 응답받을 DTO를 명시하며 ParameterizedTypeReference를 생성하는 방향으로 처리.   
+>>>     * 페이징 기능이 필요한 DTO에 대한 처리는 ParentDTO<ChildDTO> 구조와 동일하게 매핑되지만 해당 DTO의 PageDTO 필드를 생성해야 한다는 차이가 발생.   
+>>>     * 해당 부분을 호출 서비스에서 처리하게 되면 여러곳으로 처리가 분리되기 때문에 한군데서 처리할 수 있도록 중개 역할을 하는 메소드를 생성해 처리.
+>>>   * Pagination 처리가 되는 기능들의 응답 DTO를 PaginationListDTO<T>로 통합.
+>>>     * 기존에는 각각의 DTO가 존재했으나 너무 분리되어있는 환경이라 해당 부분을 통합.
+>>>   * 각 게시판 리스트 조회시 검색에 유무에 따른 UriComponent 생성 코드 개선.
+>>>     * 검색어가 존재한다면 UriComponent.instance()를 다시 생성하고 있었고 각 게시판 서비스에서 동일한 코드가 작성된다는 문제.
+>>>     * 이 문제를 해결하기 위해 UriComponents가 아닌 UriComponentsBuilder로 처리하게 되면 기존에 생성한 인스턴스에 추가적인 RequestParam 설정을 담을 수 있다는 것을 알게 되어 해당 방법으로 수정.   
+>>>     * 또한, 두 게시판이 동일한 조건문과 동일한 처리를 하고 있기 때문에 이 부분을 분리해 UriComponentsService를 생성해 해당 서비스를 호출해 처리하도록 수정.   
+>>>   * Controller 메소드에서 클라이언트의 요청 데이터에 대해 DTO가 아닌 HttpServletRequest로 받아 처리하던 부분을 모두 수정.
+>>>     * DTO로 받을 수 있도록 수정.   
+>>>     * 다른 프로젝트에서 DTO로 받고 있기 때문에 여기서는 HttpServletRequest로 받을까 고민했지만 DTO 생성을 선택.   
+>>>     * 만약 HttpServletRequest로 받는다면 RequestMapper를 통해 DTO에 매핑하도록 처리해야 하고 그럼 RequestMapper 관리 역시 까다로워지기 때문에 DTO로 바로 매핑할 수 있도록 처리.
+>>>   * 클라이언트 쿠키 값 체크 및 MultiValueMap에 담아주는 처리를 서비스레이어에서 컨트롤러로 이동.
+>>>     * 기존에는 서비스 레이어에서 CookieService를 호출해 처리하고 있었으나 그럼 HttpServletRequest가 서비스 레이어로 넘어가야 하기 때문에 해당 부분을 개선.   
+>>>     * 요청 데이터를 DTO로 매핑하게 되면서 HttpServletRequest가 굳이 서비스 레이어로 들어가야 할 이유도 없어졌고 서비스 레이어로 넘기는 것은 좋지 않은 처리라고 해서 최대한 HttpServletRequest를 넘기지 않는쪽으로 처리.

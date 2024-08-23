@@ -1,9 +1,10 @@
 package com.example.boardrest.domain.entity;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -26,7 +27,8 @@ public class ImageBoard {
     @JoinColumn(name = "userId")
     private Member member;
 
-    private Date imageDate;
+    @CreationTimestamp
+    private LocalDate imageDate;
 
     private String imageContent;
 

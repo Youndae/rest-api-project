@@ -1,6 +1,6 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.PrincipalDTO;
+import com.example.boardrest.domain.dto.auth.PrincipalDTO;
 import com.example.boardrest.domain.entity.Member;
 import com.example.boardrest.repository.MemberRepository;
 import org.junit.jupiter.api.Assertions;
@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.security.Principal;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PrincipalServiceTest {

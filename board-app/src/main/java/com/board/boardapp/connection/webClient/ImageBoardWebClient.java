@@ -2,13 +2,16 @@ package com.board.boardapp.connection.webClient;
 
 import com.board.boardapp.config.WebClientConfig;
 import com.board.boardapp.config.properties.PathProperties;
-import com.board.boardapp.dto.*;
+import com.board.boardapp.domain.dto.*;
+import com.board.boardapp.domain.dto.iBoard.in.ImageBoardInsertDTO;
 import com.board.boardapp.service.CookieService;
 import com.board.boardapp.service.ExchangeService;
 import com.board.boardapp.service.ObjectReadValueService;
+import com.board.boardapp.service.UriComponentsService;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
@@ -17,11 +20,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,30 +42,18 @@ public class ImageBoardWebClient {
 
     private final CookieService cookieService;
 
+    private final UriComponentsService uriComponentsService;
+
     private final ExchangeService exchangeService;
 
     private static final String imagePath = PathProperties.IMAGE_BOARD_PATH;
 
     private static final String imagePath_variable = PathProperties.IMAGE_BOARD_PATH_VARIABLE;
 
-    public ImageBoardListDTO getList(Criteria cri, HttpServletRequest request, HttpServletResponse response) {
+    public PaginationListDTO<ImageBoardDTO> getList(Criteria cri, MultiValueMap<String, String> cookieMap, HttpServletResponse response) {
+        UriComponentsBuilder ub = uriComponentsService.getListUri(imagePath, cri);
 
-        UriComponents ub = UriComponentsBuilder.newInstance()
-                                                .path(imagePath)
-                                                .queryParam("pageNum", cri.getPageNum())
-                                                .build();
-
-        if(cri.getKeyword() != null)
-            ub = UriComponentsBuilder.newInstance()
-                                    .path(imagePath)
-                                    .queryParam("pageNum", cri.getPageNum())
-                                    .queryParam("keyword", cri.getKeyword())
-                                    .queryParam("searchType", cri.getSearchType())
-                                    .build();
-
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
-
-        String result = webClient.get()
+        String responseVal = webClient.get()
                                 .uri(ub.toUriString())
                                 .cookies(cookies -> cookies.addAll(cookieMap))
                                 .exchangeToMono(res -> {
@@ -74,11 +63,10 @@ public class ImageBoardWebClient {
                                 })
                                 .block();
 
-        ImageBoardListDTO dto = new ImageBoardListDTO();
-        dto = readValueService.setReadValue(dto, result);
-        dto.setPageDTO(new PageDTO(cri, dto.getTotalPages()));
+        ParameterizedTypeReference<PaginationListDTO<ImageBoardDTO>> typeReference =
+                new ParameterizedTypeReference<PaginationListDTO<ImageBoardDTO>>() {};
 
-        return dto;
+        return readValueService.fromJsonWithPagination(typeReference, responseVal, cri);
     }
 
     public byte[] getImageDisplay(String imageName){
@@ -110,10 +98,8 @@ public class ImageBoardWebClient {
     }
 
     public BoardDetailAndModifyDTO<ImageBoardDetailDTO> getDetail(long imageNo
-                                                , HttpServletRequest request
+                                                , MultiValueMap<String, String> cookieMap
                                                 , HttpServletResponse response) {
-
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         String responseVal = webClient.get()
                                     .uri(uriBuilder -> uriBuilder.path(imagePath_variable).build(imageNo))
@@ -125,16 +111,15 @@ public class ImageBoardWebClient {
                                     })
                                     .block();
 
-        BoardDetailAndModifyDTO<ImageBoardDetailDTO> dto = new BoardDetailAndModifyDTO<>();
-        dto = readValueService.setReadValue(dto, responseVal);
+        ParameterizedTypeReference<BoardDetailAndModifyDTO<ImageBoardDetailDTO>> typeReference =
+                new ParameterizedTypeReference<BoardDetailAndModifyDTO<ImageBoardDetailDTO>>() {};
 
-        return dto;
+        return readValueService.fromJsonWithReference(typeReference, responseVal);
     }
 
-    public Long insertBoard(String imageTitle
-                                , String imageContent
+    public Long insertBoard(ImageBoardInsertDTO dto
                                 , List<MultipartFile> files
-                                , HttpServletRequest request
+                                , MultiValueMap<String, String> cookieMap
                                 , HttpServletResponse response){
 
         if(imageSizeCheck(files) == -2L)
@@ -146,10 +131,8 @@ public class ImageBoardWebClient {
             mbBuilder.part("files", file.getResource());
         });
 
-        mbBuilder.part("imageTitle", imageTitle);
-        mbBuilder.part("imageContent", imageContent);
-
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+        mbBuilder.part("imageTitle", dto.getImageTitle());
+        mbBuilder.part("imageContent", dto.getImageContent());
 
         return imageWebClient.post()
                             .uri(uriBuilder -> uriBuilder.path(imagePath).build())
@@ -177,11 +160,10 @@ public class ImageBoardWebClient {
     }
 
     public BoardDetailAndModifyDTO<ImageBoardDTO> getPatchDetail(long imageNo
-                                        , HttpServletRequest request
+                                        , MultiValueMap<String, String> cookieMap
                                         , HttpServletResponse response){
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
-        String result = webClient.get()
+        String responseVal = webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(imagePath + "/patch-detail/{imageNo}").build(imageNo))
                 .cookies(cookies -> cookies.addAll(cookieMap))
                 .exchangeToMono(res -> {
@@ -191,16 +173,15 @@ public class ImageBoardWebClient {
                 })
                 .block();
 
-        BoardDetailAndModifyDTO<ImageBoardDTO> dto = new BoardDetailAndModifyDTO<>();
-        dto = readValueService.setReadValue(dto, result);
+        ParameterizedTypeReference<BoardDetailAndModifyDTO<ImageBoardDTO>> typeReference =
+                new ParameterizedTypeReference<BoardDetailAndModifyDTO<ImageBoardDTO>>() {};
 
-        return dto;
+        return readValueService.fromJsonWithReference(typeReference, responseVal);
     }
 
     public List<ImageDataDTO> getPatchImage(long imageNo
-                                                    , HttpServletRequest request
+                                                    , MultiValueMap<String, String> cookieMap
                                                     , HttpServletResponse response) {
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         String responseVal = webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(imagePath + "/patch-detail/image/{imageNo}").build(imageNo))
@@ -213,14 +194,13 @@ public class ImageBoardWebClient {
                 .block();
 
        List<ImageDataDTO> dto = new ArrayList<>();
-       dto = readValueService.setReadValue(dto, responseVal);
 
-       return dto;
+       return readValueService.fromJsonToList(dto, responseVal);
     }
 
-    public Long patchBoard(long imageNo, String imageTitle, String imageContent
+    public Long patchBoard(long imageNo, ImageBoardInsertDTO dto
                                     , List<MultipartFile> files, List<String> deleteFiles
-                                    , HttpServletRequest request, HttpServletResponse response){
+                                    , MultiValueMap<String, String> cookieMap, HttpServletResponse response){
         if(files != null && imageSizeCheck(files) == -2L)
             return -2L;
 
@@ -238,10 +218,8 @@ public class ImageBoardWebClient {
                     mbBuilder.part("deleteFiles", file);
                 });
 
-        mbBuilder.part("imageTitle", imageTitle);
-        mbBuilder.part("imageContent", imageContent);
-
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+        mbBuilder.part("imageTitle", dto.getImageTitle());
+        mbBuilder.part("imageContent", dto.getImageContent());
 
         return imageWebClient.patch()
                             .uri(uriBuilder -> uriBuilder.path(imagePath_variable).build(imageNo))
@@ -256,8 +234,7 @@ public class ImageBoardWebClient {
                             .block();
     }
 
-    public Long deleteBoard(long imageNo, HttpServletRequest request, HttpServletResponse response) {
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+    public String deleteBoard(long imageNo, MultiValueMap<String, String> cookieMap, HttpServletResponse response) {
 
         return webClient.delete()
                 .uri(uriBuilder -> uriBuilder.path(imagePath_variable).build(imageNo))
@@ -265,7 +242,7 @@ public class ImageBoardWebClient {
                 .exchangeToMono(res -> {
                     exchangeService.checkExchangeResponse(res, response);
 
-                    return res.bodyToMono(Long.class);
+                    return res.bodyToMono(String.class);
                 })
                 .block();
     }

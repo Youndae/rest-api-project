@@ -1,11 +1,11 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
 import com.example.boardrest.domain.entity.Comment;
-import com.example.boardrest.domain.dto.Criteria;
-import com.example.boardrest.domain.dto.BoardCommentDTO;
-import com.example.boardrest.domain.dto.CommentInsertDTO;
+import com.example.boardrest.domain.dto.paging.Criteria;
+import com.example.boardrest.domain.dto.comment.out.BoardCommentDTO;
+import com.example.boardrest.domain.dto.comment.in.CommentInsertDTO;
 import com.example.boardrest.domain.entity.Member;
+import com.example.boardrest.domain.enumuration.Result;
 import com.example.boardrest.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
-import java.sql.Date;
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -29,30 +27,36 @@ public class CommentServiceImpl implements CommentService{
 
     private final CommentRepository commentRepository;
 
+    // 댓글 List
+    @Override
+    public Page<BoardCommentDTO> commentList(String boardNo, String imageNo, Criteria cri) {
+        Pageable pageable = PageRequest.of(cri.getPageNum() - 1
+                , cri.getBoardAmount()
+                , Sort.by("commentGroupNo").descending()
+                        .and(Sort.by("commentUpperNo").ascending()));
+
+        return commentRepository.findAll(pageable, boardNo, imageNo);
+    }
+
     // 댓글 insert
     @Override
-    @Transactional(rollbackOn = Exception.class)
-    public long commentInsertProc(CommentInsertDTO dto, Principal principal) {
+    @Transactional(rollbackFor = Exception.class)
+    public String commentInsertProc(CommentInsertDTO dto, Principal principal) {
 
         Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
-
-        Comment comment = Comment.builder()
-                                .member(memberEntity)
-                                .commentContent(dto.getCommentContent())
-                                .commentDate(Date.valueOf(LocalDate.now()))
-                                .build();
+        Comment comment = dto.toEntity(memberEntity);
 
         commentRepository.save(comment);
         comment.setCommentPatchData(dto);
         commentRepository.save(comment);
 
-        return 1;
+        return Result.SUCCESS.getResultMessage();
     }
 
     // 댓글 delete
     @Override
-    @Transactional(rollbackOn = Exception.class)
-    public int commentDelete(long commentNo, Principal principal) {
+    @Transactional(rollbackFor = Exception.class)
+    public String commentDelete(long commentNo, Principal principal) {
 
         /**
          * DB에 저장된 데이터의 사용자 아이디를 가져와
@@ -60,33 +64,16 @@ public class CommentServiceImpl implements CommentService{
          */
 
         Comment comment = commentRepository
-                .findById(commentNo)
-                .orElseThrow(() -> new NullPointerException("NullPointerException"));
+                            .findById(commentNo)
+                            .orElseThrow(() ->
+                                    new IllegalArgumentException("invalid commentNo : " + commentNo)
+                            );
 
-        String writer = comment.getMember().getUserId();
+        principalService.validateUser(comment, principal);
+        comment.setCommentStatus(1);
+        commentRepository.save(comment);
 
-        if(writer.equals(principal.getName())){
-            comment.setCommentStatus(1);
-            commentRepository.save(comment);
-            return 1;
-        }else{
-            return -1;
-        }
-    }
-
-    // 댓글 List
-    @Override
-    public ResponsePageableListDTO<BoardCommentDTO> commentList(String boardNo, String imageNo, Criteria cri, Principal principal) {
-        Pageable pageable = PageRequest.of(cri.getPageNum() - 1
-                , cri.getBoardAmount()
-                , Sort.by("commentGroupNo").descending()
-                        .and(Sort.by("commentUpperNo").ascending()));
-
-        Page<BoardCommentDTO> comments = commentRepository.findAll(pageable, boardNo, imageNo);
-
-        ResponsePageableListDTO<BoardCommentDTO> responseDTO = new ResponsePageableListDTO<>(comments, principalService.getNicknameToPrincipal(principal));
-
-        return responseDTO;
+        return Result.SUCCESS.getResultMessage();
     }
 }
 

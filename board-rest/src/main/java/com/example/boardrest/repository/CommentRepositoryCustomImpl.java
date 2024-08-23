@@ -1,8 +1,6 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.dto.BoardCommentDTO;
-import com.example.boardrest.domain.dto.Criteria;
-import com.example.boardrest.domain.entity.Comment;
+import com.example.boardrest.domain.dto.comment.out.BoardCommentDTO;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;

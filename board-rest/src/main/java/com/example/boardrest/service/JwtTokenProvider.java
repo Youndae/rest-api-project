@@ -87,8 +87,7 @@ public class JwtTokenProvider {
         else if(accessClaimByUserId.equals(JwtProperties.WRONG_TOKEN))
             return JwtProperties.WRONG_TOKEN;
 
-        String accessTokenKey = redisAccessPrefix + inoValue + accessClaimByUserId;
-        String redisValue = getTokenValueData(accessTokenKey);
+        String redisValue = getTokenValueData(redisAccessPrefix, inoValue, accessClaimByUserId);
 
         if(accessTokenValue.equals(redisValue))
             return accessClaimByUserId;
@@ -113,8 +112,7 @@ public class JwtTokenProvider {
              return JwtProperties.TOKEN_STEALING_RESULT;
          }
 
-         String refreshTokenKey = redisRefreshPrefix + inoValue + refreshClaimByUserId;
-         String redisValue = getTokenValueData(refreshTokenKey);
+         String redisValue = getTokenValueData(redisRefreshPrefix, inoValue, refreshClaimByUserId);
 
          if(refreshTokenValue.equals(redisValue))
              return refreshClaimByUserId;
@@ -124,7 +122,8 @@ public class JwtTokenProvider {
          }
     }
 
-    public String getTokenValueData(String tokenKey) {
+    public String getTokenValueData(String tokenPrefix, String inoValue, String claim) {
+        String tokenKey = tokenPrefix + inoValue + claim;
         long keyExpire = redisTemplate.getExpire(tokenKey);
 
         //Token이 존재하는데 -2라면 Redis 데이터가 만료되어 삭제된 것이기 때문에
@@ -139,13 +138,11 @@ public class JwtTokenProvider {
     public String getClaimUserIdByToken(String tokenValue, String secret) {
 
         try {
-            String claimByUserId = JWT.require(Algorithm.HMAC512(secret))
-                    .build()
-                    .verify(tokenValue)
-                    .getClaim("userId")
-                    .asString();
-
-            return claimByUserId;
+            return JWT.require(Algorithm.HMAC512(secret))
+                        .build()
+                        .verify(tokenValue)
+                        .getClaim("userId")
+                        .asString();
         }catch(TokenExpiredException e) {
             //토큰 만료 exception
             return JwtProperties.TOKEN_EXPIRATION_RESULT;
@@ -160,8 +157,8 @@ public class JwtTokenProvider {
         String accessToken = issuedAccessToken(userId, inoValue);
         String refreshToken = issuedRefreshToken(userId, inoValue);
 
-        //쿠키 생성 메소드 호출 (@Param accessToken, refreshToken, inoValue, response)
-        setTokenToCookie(accessToken, refreshToken, response);
+        setCookie(JwtProperties.ACCESS_HEADER_STRING, accessToken, tokenCookieAge, response);
+        setCookie(JwtProperties.REFRESH_HEADER_STRING, refreshToken, tokenCookieAge, response);
     }
 
     //ino까지 모두 생성
@@ -169,25 +166,19 @@ public class JwtTokenProvider {
         String inoValue = issuedIno();
         issuedToken(userId, inoValue, response);
 
-        //쿠키 생성 메소드 호출 (@Param accessToken, refreshToken, inoValue, response)
-//        setTokenToCookie(accessToken, refreshToken, response);
-        setInoToCookie(inoValue, response);
+        setCookie(JwtProperties.INO_HEADER_STRING, inoValue, inoCookieAge, response);
     }
 
     public String issuedAccessToken(String userId, String inoValue) {
         String accessToken = createToken(userId, accessSecret, accessTokenExpiration);
-        String key = redisAccessPrefix + inoValue + userId;
-
-        setRedisByToken(key, accessToken);
+        setRedisByToken(redisAccessPrefix, inoValue, userId, accessToken);
 
         return JwtProperties.TOKEN_PREFIX + accessToken;
     }
 
     public String issuedRefreshToken(String userId, String inoValue) {
         String refreshToken = createToken(userId, refreshSecret, refreshTokenExpiration);
-        String key = redisRefreshPrefix + inoValue + userId;
-
-        setRedisByToken(key, refreshToken);
+        setRedisByToken(redisRefreshPrefix, inoValue, userId, refreshToken);
 
         return JwtProperties.TOKEN_PREFIX + refreshToken;
     }
@@ -205,35 +196,20 @@ public class JwtTokenProvider {
                 .sign(Algorithm.HMAC512(secret));
     }
 
-    public void setRedisByToken(String key, String value) {
+    public void setRedisByToken(String tokenPrefix, String ino, String claim, String value) {
+        String key = tokenPrefix + ino + claim;
         ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
         stringValueOperations.set(key, value, Duration.ofDays(redisExpirationDay));
     }
 
-    public void setTokenToCookie(String atValue, String rtValue, HttpServletResponse response) {
-
+    public void setCookie(String header, String value, Long expires, HttpServletResponse response) {
         response.addHeader("Set-Cookie"
                 , createCookie(
-                        JwtProperties.ACCESS_HEADER_STRING
-                        , atValue
-                        , Duration.ofDays(tokenCookieAge)
-                ));
-
-        response.addHeader("Set-Cookie"
-                , createCookie(
-                        JwtProperties.REFRESH_HEADER_STRING
-                        , rtValue
-                        , Duration.ofDays(tokenCookieAge)
-                ));
-    }
-
-    public void setInoToCookie(String ino, HttpServletResponse response) {
-        response.addHeader("Set-Cookie"
-                , createCookie(
-                        JwtProperties.INO_HEADER_STRING
-                        , ino
-                        , Duration.ofDays(inoCookieAge)
-                ));
+                        header
+                        , value
+                        , Duration.ofDays(expires)
+                )
+        );
     }
 
     public String createCookie(String name, String value, Duration expires){

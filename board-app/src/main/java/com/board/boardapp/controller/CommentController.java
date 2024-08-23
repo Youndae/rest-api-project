@@ -1,12 +1,17 @@
 package com.board.boardapp.controller;
 
 import com.board.boardapp.connection.webClient.CommentBoardWebClient;
-import com.board.boardapp.dto.CommentListDTO;
-import com.board.boardapp.dto.Criteria;
+import com.board.boardapp.domain.dto.CommentDTO;
+import com.board.boardapp.domain.dto.Criteria;
+import com.board.boardapp.domain.dto.PaginationListDTO;
+import com.board.boardapp.domain.dto.comment.in.CommentInsertDTO;
+import com.board.boardapp.domain.dto.comment.in.CommentReplyInsertDTO;
+import com.board.boardapp.service.CookieService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,67 +26,49 @@ public class CommentController {
 
     private final CommentBoardWebClient commentBoardWebClient;
 
+    private final CookieService cookieService;
+
     @GetMapping("/{board}/{boardNo}/{pageNum}")
-    public ResponseEntity<CommentListDTO> getList(@PathVariable("board") String board
+    public ResponseEntity<PaginationListDTO<CommentDTO>> getList(@PathVariable("board") String board
                                                 , @PathVariable("boardNo") long boardNo
                                                 , @PathVariable("pageNum") int pageNum
                                                 , HttpServletRequest request
                                                 , HttpServletResponse response) {
-        Criteria cri = new Criteria();
-        cri.setPageNum(pageNum);
+        Criteria cri = new Criteria(pageNum);
 
-        CommentListDTO dto = commentBoardWebClient.getList(board, boardNo, cri, request, response);
-
-        return new ResponseEntity<>(dto, HttpStatus.OK);
-    }
-/*
-    @GetMapping("/boardComment/{boardNo}/{pageNum}")
-    public ResponseEntity<CommentListDTO> boardComment(@PathVariable("boardNo") long boardNo
-                                                        , @PathVariable("pageNum") int pageNum
-                                                        , HttpServletRequest request
-                                                        , HttpServletResponse response) {
-        Criteria cri = new Criteria();
-        cri.setPageNum(pageNum);
-
-        CommentListDTO dto = commentBoardWebClient.getBoardComment(boardNo, cri, request, response);
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+        PaginationListDTO<CommentDTO> dto = commentBoardWebClient.getList(board, boardNo, cri, cookieMap, response);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
-
-    @GetMapping("/imageComment/{imageNo}/{pageNum}")
-    public ResponseEntity<CommentListDTO> imageComment(@PathVariable("imageNo") long imageNo
-                                                        , @PathVariable("pageNum") int pageNum
-                                                        , HttpServletRequest request
-                                                        , HttpServletResponse response) {
-        Criteria cri = new Criteria();
-        cri.setPageNum(pageNum);
-
-        CommentListDTO dto = commentBoardWebClient.getImageComment(imageNo, cri, request, response);
-
-        return new ResponseEntity<>(dto, HttpStatus.OK);
-    }*/
 
     @PostMapping("/")
-    public long commentInsert(@RequestBody Map<String, Object> commentData
-                                , HttpServletRequest request
-                                , HttpServletResponse response){
+    public String commentInsert(@RequestBody CommentInsertDTO dto
+            , HttpServletRequest request
+            , HttpServletResponse response){
 
-        return commentBoardWebClient.commentInsert(commentData, request, response);
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
+        return commentBoardWebClient.commentInsert(dto, cookieMap, response);
     }
 
     @PostMapping("/reply")
-    public long commentReplyInsert(@RequestBody Map<String, Object> commentData
-                                    , HttpServletRequest request
-                                    , HttpServletResponse response){
+    public String commentReplyInsert(@RequestBody CommentReplyInsertDTO dto
+            , HttpServletRequest request
+            , HttpServletResponse response){
 
-        return commentBoardWebClient.commentReplyInsert(commentData, request, response);
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
+        return commentBoardWebClient.commentReplyInsert(dto, cookieMap, response);
     }
 
     @DeleteMapping("/{commentNo}")
-    public Long commentDelete(@PathVariable long commentNo
+    public String commentDelete(@PathVariable long commentNo
                                 , HttpServletRequest request
                                 , HttpServletResponse response){
 
-        return commentBoardWebClient.commentDelete(commentNo, request, response);
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+
+        return commentBoardWebClient.commentDelete(commentNo, cookieMap, response);
     }
 }

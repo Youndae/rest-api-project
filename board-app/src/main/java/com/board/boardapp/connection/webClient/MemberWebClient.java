@@ -1,12 +1,13 @@
 package com.board.boardapp.connection.webClient;
 
-import com.board.boardapp.ExceptionHandle.CustomAccessDeniedException;
 import com.board.boardapp.ExceptionHandle.CustomBadCredentialsException;
 import com.board.boardapp.ExceptionHandle.CustomTokenStealingException;
 import com.board.boardapp.ExceptionHandle.ErrorCode;
 import com.board.boardapp.config.WebClientConfig;
 import com.board.boardapp.config.properties.PathProperties;
-import com.board.boardapp.dto.*;
+import com.board.boardapp.domain.dto.JoinDTO;
+import com.board.boardapp.domain.dto.Member;
+import com.board.boardapp.domain.dto.ProfileDTO;
 import com.board.boardapp.service.CookieService;
 import com.board.boardapp.service.ExchangeService;
 import javassist.NotFoundException;
@@ -22,7 +23,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -44,15 +44,13 @@ public class MemberWebClient {
 
     private final ImageBoardWebClient imageBoardWebClient;
 
-    public Long loginProc(Map<String, String> loginData
-                        , HttpServletRequest request
+    public String loginProc(Map<String, String> loginData
+                        , MultiValueMap<String, String> cookieMap
                         , HttpServletResponse response) {
         Member member = Member.builder()
                 .userId(loginData.get("userId"))
                 .userPw(loginData.get("userPw"))
                 .build();
-
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
         return webClient.post()
                         .uri(uriBuilder -> uriBuilder.path(memberPath + "login").build())
@@ -73,13 +71,13 @@ public class MemberWebClient {
                                 throw new NullPointerException();
                             }
 
-                            return res.bodyToMono(Long.class);
+                            return res.bodyToMono(String.class);
                         })
                         .block();
 
     }
 
-    public Long checkUserId(String userId){
+    public String checkUserId(String userId){
 
         return webClient.get()
                         .uri(uriBuilder -> uriBuilder.path(memberPath + "check-id")
@@ -98,26 +96,19 @@ public class MemberWebClient {
                                                 new NullPointerException()
                                         )
                         )
-                        .bodyToMono(Long.class)
+                        .bodyToMono(String.class)
                         .block();
     }
 
-    public Long joinProc(JoinDTO dto, MultipartFile profileThumbnail){
-        log.info("joinProc");
-
+    public String joinProc(JoinDTO dto, MultipartFile profileThumbnail){
         MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
         mbBuilder.part("joinDTO", dto);
 
-
         if(profileThumbnail != null){
-            log.info("profile is not empty");
-            List<MultipartFile> profileThumbnailList = new ArrayList<>();
-            profileThumbnailList.add(profileThumbnail);
-            if(imageBoardWebClient.imageSizeCheck(profileThumbnailList) == -2) {
-                log.info("sizecheck Fail");
-                return -1L;
-            }
-            log.info("sizeCheckSuccess");
+            String sizeCheckResult = profileThumbnailCheck(profileThumbnail);
+
+            if(sizeCheckResult.equals("SIZE"))
+                return sizeCheckResult;
 
             mbBuilder.part("profileThumbnail", profileThumbnail.getResource());
         }
@@ -141,33 +132,11 @@ public class MemberWebClient {
                                         new NullPointerException()
                                 )
                 )
-                .bodyToMono(Long.class)
+                .bodyToMono(String.class)
                 .block();
-
-
-        /*return joinWebClient.post()
-                        .uri(uriBuilder -> uriBuilder.path(memberPath + "join").build())
-                        .accept()
-                        .body(Mono.just(dto), JoinDTO.class)
-                        .retrieve()
-                        .onStatus(
-                                HttpStatus::is4xxClientError, clientResponse ->
-                                        Mono.error(
-                                                new NotFoundException("not found")
-                                        )
-                        )
-                        .onStatus(
-                                HttpStatus::is5xxServerError, clientResponse ->
-                                        Mono.error(
-                                                new NullPointerException()
-                                        )
-                        )
-                        .bodyToMono(Long.class)
-                        .block();*/
     }
 
-    public Long logout(HttpServletRequest request, HttpServletResponse response){
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+    public String logout(MultiValueMap<String, String> cookieMap, HttpServletResponse response){
 
         return webClient.post()
                         .uri(uriBuilder -> uriBuilder.path(memberPath + "logout").build())
@@ -176,14 +145,12 @@ public class MemberWebClient {
                         .exchangeToMono(res -> {
                             exchangeService.checkExchangeResponse(res, response);
 
-                            return res.bodyToMono(Long.class);
+                            return res.bodyToMono(String.class);
                         })
                         .block();
     }
 
-    public Long checkNickname(String nickname, HttpServletRequest request) {
-
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+    public String checkNickname(String nickname, MultiValueMap<String, String> cookieMap) {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(memberPath + "check-nickname")
@@ -203,14 +170,13 @@ public class MemberWebClient {
                                         new NullPointerException()
                                 )
                 )
-                .bodyToMono(Long.class)
+                .bodyToMono(String.class)
                 .block();
     }
 
-    public ProfileDTO getProfile(HttpServletRequest request, HttpServletResponse response) {
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+    public ProfileDTO getProfile(MultiValueMap<String, String> cookieMap, HttpServletResponse response) {
 
-        return webClient.get()
+        ProfileDTO dto = webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(memberPath + "profile").build())
                 .cookies(cookies -> cookies.addAll(cookieMap))
                 .exchangeToMono(res -> {
@@ -219,16 +185,29 @@ public class MemberWebClient {
                     return res.bodyToMono(ProfileDTO.class);
                 })
                 .block();
+
+        dto.setStatusAndBtn();
+
+        return dto;
     }
 
-    public Long patchProfile(String nickname, MultipartFile profileThumbnail, String deleteProfileThumbnail, HttpServletRequest request, HttpServletResponse response) {
-        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+    public String patchProfile(String nickname
+                            , MultipartFile profileThumbnail
+                            , String deleteProfileThumbnail
+                            , MultiValueMap<String, String> cookieMap
+                            , HttpServletResponse response) {
 
         MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
         mbBuilder.part("nickname", nickname);
 
-        if(profileThumbnail != null)
+        if(profileThumbnail != null){
+            String sizeCheckResult = profileThumbnailCheck(profileThumbnail);
+
+            if(sizeCheckResult.equals("SIZE"))
+                return sizeCheckResult;
+
             mbBuilder.part("profileThumbnail", profileThumbnail.getResource());
+        }
 
         if(deleteProfileThumbnail != null)
             mbBuilder.part("deleteProfile", deleteProfileThumbnail);
@@ -241,8 +220,20 @@ public class MemberWebClient {
                 .exchangeToMono(res -> {
                     exchangeService.checkExchangeResponse(res, response);
 
-                    return res.bodyToMono(Long.class);
+                    return res.bodyToMono(String.class);
                 })
                 .block();
+    }
+
+    public String profileThumbnailCheck(MultipartFile profileThumbnail) {
+
+        List<MultipartFile> profileThumbnailList = new ArrayList<>();
+        profileThumbnailList.add(profileThumbnail);
+        if(imageBoardWebClient.imageSizeCheck(profileThumbnailList) == -2) {
+            log.info("sizeCheck Fail");
+            return "SIZE";
+        }
+
+        return "OK";
     }
 }

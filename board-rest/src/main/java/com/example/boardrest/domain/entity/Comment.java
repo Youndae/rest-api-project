@@ -1,11 +1,12 @@
 package com.example.boardrest.domain.entity;
 
-import com.example.boardrest.domain.dto.CommentInsertDTO;
+import com.example.boardrest.domain.dto.comment.in.CommentInsertDTO;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -25,7 +26,8 @@ public class Comment {
     @JoinColumn(name = "userId")
     private Member member;
 
-    private Date commentDate;
+    @CreationTimestamp
+    private LocalDate commentDate;
 
     private String commentContent;
 
@@ -49,27 +51,6 @@ public class Comment {
         this.commentStatus = commentStatus;
     }
 
-    /*public void setCommentGroupNo(long commentGroupNo) {
-        this.commentGroupNo = commentGroupNo == 0 ? this.commentNo : commentGroupNo;
-    }
-
-    public void setCommentIndent(int commentIndent) {
-        this.commentIndent = commentIndent;
-    }
-
-    public void setCommentUpperNo(String commentUpperNo) {
-        String cno = String.valueOf(this.commentNo);
-        this.commentUpperNo = commentUpperNo == null ? cno : commentUpperNo + "," + cno;
-    }
-
-    public void setImageBoard(ImageBoard imageBoard) {
-        this.imageBoard = imageBoard;
-    }
-
-    public void setHierarchicalBoard(HierarchicalBoard hierarchicalBoard){
-        this.hierarchicalBoard = hierarchicalBoard;
-    }*/
-
     public void setCommentPatchData(CommentInsertDTO dto) {
         String cno = String.valueOf(this.commentNo);
         HierarchicalBoard hBoard = new HierarchicalBoard();
@@ -85,8 +66,8 @@ public class Comment {
         else
             iBoard = null;
 
-        this.commentGroupNo = dto.getCommentGroupNo() == 0 ? this.commentNo : dto.getCommentGroupNo();
-        this.commentIndent = dto.getCommentGroupNo() == 0 ? 0 : dto.getCommentIndent() + 1;
+        this.commentGroupNo = dto.getCommentGroupNo() == null ? this.commentNo : dto.getCommentGroupNo();
+        this.commentIndent = dto.getCommentGroupNo() == null ? 0 : dto.getCommentIndent() + 1;
         this.commentUpperNo = dto.getCommentUpperNo() == null ? cno : dto.getCommentUpperNo() + "," + cno;
         this.hierarchicalBoard = hBoard;
         this.imageBoard = iBoard;

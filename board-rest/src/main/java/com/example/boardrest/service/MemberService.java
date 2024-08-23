@@ -1,8 +1,8 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.JoinDTO;
-import com.example.boardrest.domain.dto.ProfileDTO;
-import com.example.boardrest.domain.dto.ProfileResponseDTO;
+import com.example.boardrest.domain.dto.member.in.JoinDTO;
+import com.example.boardrest.domain.dto.member.in.ProfileDTO;
+import com.example.boardrest.domain.dto.member.out.ProfileResponseDTO;
 import com.example.boardrest.domain.entity.Member;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,13 +12,17 @@ import java.security.Principal;
 
 public interface MemberService {
 
-    int memberJoinProc(JoinDTO dto, MultipartFile profileThumbnail);
+    String memberJoinProc(JoinDTO dto, MultipartFile profileThumbnail);
 
-    Long memberLogin(Member member, HttpServletRequest request, HttpServletResponse response);
+    String checkId(String userId);
 
-    int logout(HttpServletRequest request, HttpServletResponse response, Principal principal);
+    String checkNickname(String nickname, Principal principal);
 
-    Long modifyProfile(ProfileDTO profileDTO, Principal principal);
+    String memberLogin(Member member, HttpServletRequest request, HttpServletResponse response);
+
+    String logout(HttpServletRequest request, HttpServletResponse response, Principal principal);
+
+    String modifyProfile(ProfileDTO profileDTO, Principal principal);
 
     ProfileResponseDTO getProfile(Principal principal);
 

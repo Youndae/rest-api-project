@@ -1,9 +1,8 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.dto.Criteria;
-import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
+import com.example.boardrest.domain.dto.paging.Criteria;
+import com.example.boardrest.domain.dto.hBoard.out.HierarchicalBoardListDTO;
 import com.example.boardrest.domain.entity.HierarchicalBoard;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

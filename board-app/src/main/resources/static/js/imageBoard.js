@@ -17,7 +17,7 @@ $(function(){
             url: '/imageBoard/' + imageNo,
             method: 'delete',
             success: function(result){
-                if(result == 1){
+                if(result === "SUCCESS"){
                     location.href='/imageBoard/';
                 }else{
                     alert("삭제 실패");

@@ -28,8 +28,8 @@ $(document).on('click', '#commentInsert', function(){
     const content = $("#commentContent").val();
 
     let commentData = {
-        boardNo : boardNo,
-        imageNo : imageNo,
+        boardNo : boardNo ? Number(boardNo) : null,
+        imageNo : imageNo ? Number(imageNo) : null,
         commentContent : content
     };
 
@@ -37,15 +37,14 @@ $(document).on('click', '#commentInsert', function(){
         alert("댓글을 입력해주세요");
         $("#commentContent").focus();
     }else{
-        commentData = JSON.stringify(commentData);
 
         $.ajax({
             url: '/comment/',
             method: 'post',
-            data: commentData,
+            data: JSON.stringify(commentData),
             contentType: 'application/json; charset=UTF-8',
             success: function(result){
-                if(result != -1)
+                if(result === "SUCCESS")
                     location.reload();
             },
             error: function(request, status, error){
@@ -67,27 +66,26 @@ $(document).on('click', '#commentReplyInsert', function(){
     const imageNo = $("#imageNo").val();
 
     let commentData = {
-        commentGroupNo : groupNo,
-        commentIndent : indent,
-        commentUpperNo : upperNo,
+        boardNo : boardNo ? Number(boardNo) : null,
+        imageNo : imageNo ? Number(imageNo) : null,
         commentContent : content,
-        boardNo : boardNo,
-        imageNo : imageNo
+        commentGroupNo : Number(groupNo),
+        commentIndent : Number(indent),
+        commentUpperNo : upperNo,
     };
 
     if(content == ""){
         alert("댓글을 입력해주세요");
         $("#commentReplyContent").focus();
     }else{
-        commentData = JSON.stringify(commentData);
 
         $.ajax({
             url: '/comment/reply',
             method: 'post',
-            data: commentData,
+            data: JSON.stringify(commentData),
             contentType: 'application/json; charset=UTF-8',
             success: function(result){
-                if(result != -1)
+                if(result === "SUCCESS")
                     location.reload();
             },
             error: function(request, status, error){
@@ -180,6 +178,8 @@ function commentEachParsing(arr, userStatus){
     let commentStr = "";
     const uid = userStatus.uid;
 
+
+
     comment_area.empty();
 
     $(arr).each(function(i, res){
@@ -190,6 +190,10 @@ function commentEachParsing(arr, userStatus){
 
         const deleteCommentContent = "삭제된 댓글입니다.";
         let writer = '';
+
+        console.log('uid : ', uid);
+        console.log('writer : ', res.nickname);
+
 
         if(res.commentContent !== deleteCommentContent)
             writer = res.nickname;
@@ -213,7 +217,7 @@ function commentEachParsing(arr, userStatus){
             commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
                             "onclick=\"cReply(this)\" value=\"" + res.commentNo + "\">답글</button>";
 
-        if(res.userId === uid && res.commentContent !== deleteCommentContent)
+        if(writer === uid && res.commentContent !== deleteCommentContent)
             commentStr += "<button class=\"btn btn-outline-info btn-sm\" type=\"button\" " +
                             "onclick=\"cDel(this)\" value=\"" + res.commentNo + "\">삭제</button>";
 
@@ -286,7 +290,7 @@ function cDel(obj){
         url: '/comment/' + commentNo,
         method: 'delete',
         success: function(result){
-            if(result != -1)
+            if(result === "SUCCESS")
                 location.reload();
         },
         error: function(request, status, error){

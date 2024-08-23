@@ -1,11 +1,8 @@
 package com.example.boardrest.domain.dto.responseDTO;
 
-import com.example.boardrest.domain.dto.UserStatusDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import java.security.Principal;
 
 /**
  *

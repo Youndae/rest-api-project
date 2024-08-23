@@ -1,13 +1,11 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.dto.Criteria;
-import com.example.boardrest.domain.dto.HierarchicalBoardDTO;
-import com.example.boardrest.domain.dto.HierarchicalBoardListDTO;
-import com.example.boardrest.domain.entity.HierarchicalBoard;
-import com.example.boardrest.domain.entity.Member;
+import com.example.boardrest.domain.dto.paging.Criteria;
+import com.example.boardrest.domain.dto.hBoard.out.HierarchicalBoardListDTO;
 import com.example.boardrest.domain.entity.QMember;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

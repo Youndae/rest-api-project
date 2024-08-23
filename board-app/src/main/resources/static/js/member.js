@@ -33,7 +33,7 @@ $(function(){
                 contentType: 'application/json; charset=UTF-8',
                 success: function(result){
                     console.log("result : " + result);
-                    if(result == 1){
+                    if(result == "SUCCESS"){
                         location.href='/board/';
                     }
                 },
@@ -83,12 +83,12 @@ $(function(){
                 method: 'get',
                 data: nickname,
                 success: function(data) {
-                    if(data === 1){
+                    if(data === "FAIL"){
                         overlap.text('이미 사용중인 닉네임입니다.')
                         nicknameStat.val('dupl');
                         nickname.focus();
                         overlap.css("color", "red");
-                    }else if(data === 0) {
+                    }else if(data === "SUCCESS") {
                         nicknameStat.val('check');
                         overlap.text('사용 가능한 닉네임입니다.');
                     }else {
@@ -184,13 +184,11 @@ $(function(){
                 method: 'get',
                 data: userId,
                 success: function(data){
-
-                    console.log("return data : " + data);
-                    if(data == 1){
+                    if(data === "DUPLICATED"){
                         $("#overlap").text("사용중인 아이디입니다.");
                         $("#check").val("dupl");
                         $("#overlap").css("color", "red");
-                    }else if(data == 0){
+                    }else if(data === "AVAILABLE"){
                         $("#check").val("check");
                         $("#overlap").text("사용 가능한 아이디입니다.");
                         checkId = $("#userId").val();
@@ -270,8 +268,6 @@ $(function(){
             const email = userEmail;
             const profile = profileFile;
 
-            console.log('join :: profile : ', profile);
-
             let formData = new FormData();
             formData.append('userId', userId);
             formData.append('userPw', userPw);
@@ -290,12 +286,12 @@ $(function(){
                 method: 'post',
                 data: formData,
                 success: function(data){
-                    if(data == 0){
+                    if(data === "FAIL"){
                         alert("가입 실패\n 다시 시도해주세요");
-                    }else if(data == 1){
+                    }else if(data === "SUCCESS"){
                         alert("가입 되었습니다.")
                         location.href='/member/login';
-                    }else if(data === -1) {
+                    }else if(data === "SIZE") {
                         alert('프로필 이미지 사이즈는 10MB를 넘길 수 없습니다.')
                     }
                     else{
@@ -329,7 +325,7 @@ $(function(){
             success: function(data){
                 if(data === 0){
                     alert("요청 실패\n 다시 시도해주세요");
-                }else if(data === 1){
+                }else if(data === "SUCCESS"){
                     alert(btnText + " 되었습니다.")
                     if(btnText === '등록'){
                         const prev = window.sessionStorage.getItem('prev');
@@ -343,7 +339,7 @@ $(function(){
                         }
                         location.href = redirectUrl;
                     }
-                }else if(data === -1) {
+                }else if(data === "SIZE") {
                     alert('프로필 이미지 사이즈는 10MB를 넘길 수 없습니다.')
                 }
                 else{

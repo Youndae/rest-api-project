@@ -3,17 +3,15 @@ package com.example.boardrest.service;
 import com.example.boardrest.config.jwt.JwtProperties;
 import com.example.boardrest.customException.CustomAccessDeniedException;
 import com.example.boardrest.customException.ErrorCode;
-import com.example.boardrest.domain.dto.JoinDTO;
-import com.example.boardrest.domain.dto.ProfileDTO;
-import com.example.boardrest.domain.dto.ProfileResponseDTO;
-import com.example.boardrest.domain.entity.Auth;
+import com.example.boardrest.domain.dto.member.in.JoinDTO;
+import com.example.boardrest.domain.dto.member.in.ProfileDTO;
+import com.example.boardrest.domain.dto.member.out.ProfileResponseDTO;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.domain.enumuration.OAuthProvider;
-import com.example.boardrest.domain.enumuration.Role;
+import com.example.boardrest.domain.enumuration.Result;
 import com.example.boardrest.properties.FilePathProperties;
 import com.example.boardrest.repository.AuthRepository;
 import com.example.boardrest.repository.MemberRepository;
-import com.example.boardrest.security.domain.CustomUser;
+import com.example.boardrest.auth.user.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,10 +26,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import java.nio.file.AccessDeniedException;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -42,53 +37,78 @@ public class MemberServiceImpl implements MemberService {
 
     private final JwtTokenProvider tokenProvider;
 
-    private final AuthRepository authRepository;
-
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     private final ImageFileService imageFileService;
 
     // 사용자 회원가입(체크 후 메소드 호출로 save 처리)
     @Override
-    public int memberJoinProc(JoinDTO dto, MultipartFile profileThumbnail) {
+    public String memberJoinProc(JoinDTO dto, MultipartFile profileThumbnail) {
         if(dto.getUserId() == null || dto.getUserPw().length() == 0 || dto.getUserName() == null || dto.getNickname() == null)
-            return 0;
+            return Result.FAIL.getResultMessage();
         else
             return joinMember(dto, profileThumbnail);
     }
 
-    // 사용자 데이터 save
-    @Transactional(rollbackOn = Exception.class)
-    public int joinMember(JoinDTO member, MultipartFile profileThumbnail){
+    @Override
+    public String checkId(String userId) {
+        Member member = memberRepository.findByUserId(userId);
 
-        String filepath = FilePathProperties.PROFILE_FILE_PATH;
-
-        String profile = profileThumbnail == null ?
-                    null : imageFileService.saveFile(filepath, profileThumbnail).get("imageName");
-
-        Member memberEntity = Member.builder()
-                            .userId(member.getUserId())
-                            .userPw(member.getUserPw())
-                            .username(member.getUserName())
-                            .email(member.getEmail())
-                            .nickname(member.getNickname())
-                            .profileThumbnail(profile)
-                            .provider(OAuthProvider.LOCAL.getKey())
-                            .build();
-
-        memberEntity.addAuth(
-                Auth.builder()
-                        .auth(Role.MEMBER.getKey())
-                        .build()
-        );
-
-        memberRepository.save(memberEntity);
-
-        return 1;
+        return member == null ? Result.AVAILABLE.getResultMessage() : Result.DUPLICATED.getResultMessage();
     }
 
     @Override
-    public Long memberLogin(Member member, HttpServletRequest request, HttpServletResponse response) {
+    public String checkNickname(String nickname, Principal principal) {
+        Member member = memberRepository.findByNickname(nickname);
+
+        String result;
+
+        if(member == null)
+            result = Result.AVAILABLE.getResultMessage();
+        else {
+            if(principal != null && member.getUserId().equals(principal.getName()))
+                result = Result.AVAILABLE.getResultMessage();
+
+            result = Result.DUPLICATED.getResultMessage();
+        }
+
+        return result;
+    }
+
+    // 사용자 데이터 save
+    @Transactional(rollbackOn = Exception.class)
+    public String joinMember(JoinDTO member, MultipartFile profileThumbnail){
+
+        String filepath = FilePathProperties.PROFILE_FILE_PATH;
+        String imageName = null;
+
+        try {
+            String profile = null;
+
+            if(profileThumbnail != null){
+                profile = imageFileService.saveFile(filepath, profileThumbnail).get("imageName");
+                imageName = profile;
+            }
+
+            Member memberEntity = member.toEntity(profile);
+
+            memberEntity.addAuth();
+
+            memberRepository.save(memberEntity);
+        }catch (Exception e) {
+            if(imageName != null)
+                imageFileService.deleteFile(filepath, imageName);
+
+            throw new IllegalArgumentException("Modify profile error");
+        }
+
+
+
+        return Result.SUCCESS.getResultMessage();
+    }
+
+    @Override
+    public String memberLogin(Member member, HttpServletRequest request, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getUserId(), member.getUserPw());
         Authentication authentication =
@@ -104,14 +124,14 @@ public class MemberServiceImpl implements MemberService {
             else
                 tokenProvider.issuedToken(uid, inoCookie.getValue(), response);
 
-            return 1L;
+            return Result.SUCCESS.getResultMessage();
         }
 
         throw new BadCredentialsException("login Fail");
     }
 
     @Override
-    public int logout(HttpServletRequest request, HttpServletResponse response, Principal principal) {
+    public String logout(HttpServletRequest request, HttpServletResponse response, Principal principal) {
 
         try{
             String inoValue = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING).getValue();
@@ -119,16 +139,16 @@ public class MemberServiceImpl implements MemberService {
 
             tokenProvider.deleteToken(userId, inoValue, response);
 
-            return 1;
+            return Result.SUCCESS.getResultMessage();
         }catch (Exception e){
             log.info("logout Exception : {}", e.getMessage());
-            return 0;
+            return Result.FAIL.getResultMessage();
         }
 
     }
 
     @Override
-    public Long modifyProfile(ProfileDTO profileDTO, Principal principal) {
+    public String modifyProfile(ProfileDTO profileDTO, Principal principal) {
 
         if(principal == null)
             throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
@@ -136,23 +156,32 @@ public class MemberServiceImpl implements MemberService {
         String filepath = FilePathProperties.PROFILE_FILE_PATH;
 
         Member member = memberRepository.findByUserId(principal.getName());
-        String profileThumbnail = profileDTO.getProfileThumbnail() == null ?
-                                    null : imageFileService.saveFile(filepath, profileDTO.getProfileThumbnail()).get("imageName");
-
-        if(profileDTO.getProfileThumbnail() == null && profileDTO.getDeleteProfile() == null) {
-            profileThumbnail = member.getProfileThumbnail();
-        }else {
-            if (profileDTO.getDeleteProfile() != null) {
-                imageFileService.deleteFile(filepath, profileDTO.getDeleteProfile());
+        String imageName = null;
+        try {
+            String profileThumbnail = null;
+            if(profileDTO.getProfileThumbnail() != null) {
+                profileThumbnail = imageFileService.saveFile(filepath, profileDTO.getProfileThumbnail()).get("imageName");
+                imageName = profileThumbnail;
             }
+
+            if(profileDTO.getProfileThumbnail() == null && profileDTO.getDeleteProfile() == null)
+                profileThumbnail = member.getProfileThumbnail();
+            else
+                if (profileDTO.getDeleteProfile() != null)
+                    imageFileService.deleteFile(filepath, profileDTO.getDeleteProfile());
+
+            member.setNickName(profileDTO.getNickname());
+            member.setProfileThumbnail(profileThumbnail);
+
+            memberRepository.save(member);
+        }catch (Exception e) {
+            if(imageName != null)
+                imageFileService.deleteFile(filepath, imageName);
+
+            throw new IllegalArgumentException("Modify profile error");
         }
 
-        member.setNickName(profileDTO.getNickname());
-        member.setProfileThumbnail(profileThumbnail);
-
-        memberRepository.save(member);
-
-        return 1L;
+        return Result.SUCCESS.getResultMessage();
     }
 
     @Override

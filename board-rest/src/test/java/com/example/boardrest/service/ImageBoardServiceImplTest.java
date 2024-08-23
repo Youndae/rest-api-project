@@ -1,7 +1,7 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.Criteria;
-import com.example.boardrest.domain.dto.ImageBoardDTO;
+import com.example.boardrest.domain.dto.paging.Criteria;
+import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDTO;
 import com.example.boardrest.repository.ImageBoardRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,8 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ImageBoardServiceImplTest {

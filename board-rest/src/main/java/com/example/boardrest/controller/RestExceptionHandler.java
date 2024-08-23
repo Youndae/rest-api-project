@@ -1,10 +1,7 @@
 package com.example.boardrest.controller;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.example.boardrest.customException.CustomAccessDeniedException;
-import com.example.boardrest.customException.CustomTokenStealingException;
-import com.example.boardrest.customException.ErrorCode;
-import com.example.boardrest.customException.ExceptionEntity;
+import com.example.boardrest.customException.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +12,16 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.io.FileNotFoundException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.NoSuchFileException;
 
 @RestControllerAdvice
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity tokenExpiredException(Exception e) {
-        System.out.println("handling token expiredException");
+    public ResponseEntity<?> tokenExpiredException(Exception e) {
+
+        exceptionLog(e);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(
@@ -37,8 +36,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ExceptionEntity> tokenStealingExceptionHandler(Exception e){
         exceptionLog(e);
 
-        //response 를 통한 모든 쿠키 삭제.
-
         return ResponseEntity.status(800)
                 .body(
                         ExceptionEntity.builder()
@@ -49,7 +46,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity nullPointerExceptionHandler(Exception e){
+    public ResponseEntity<?> nullPointerExceptionHandler(Exception e){
 
         exceptionLog(e);
 
@@ -58,8 +55,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({AccessDeniedException.class, CustomAccessDeniedException.class})
     public ResponseEntity<ExceptionEntity> accessDeniedExceptionHandler(Exception e) {
-
-        log.info("AccessDenied Handle");
 
         exceptionLog(e);
 
@@ -73,26 +68,38 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity fileNotFoundExceptionHandler(Exception e){
+    public ResponseEntity<?> fileNotFoundExceptionHandler(Exception e){
 
+        exceptionLog(e);
+
+        return ResponseEntity.status(HttpStatus.valueOf(400)).build();
+    }
+
+    @ExceptionHandler(NoSuchFileException.class)
+    public ResponseEntity<?> noSuchFileExceptionHandler(Exception e) {
         exceptionLog(e);
 
         return ResponseEntity.status(HttpStatus.valueOf(400)).build();
     }
 
     @ExceptionHandler({IllegalArgumentException.class, IllegalAccessException.class})
-    public ResponseEntity illegalExceptionHandler(Exception e){
+    public ResponseEntity<?> illegalExceptionHandler(Exception e){
 
         exceptionLog(e);
 
         return ResponseEntity.status(HttpStatus.valueOf(400)).build();
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity badCredentialsExceptionHandler(Exception e){
+    @ExceptionHandler(CustomIOException.class)
+    public ResponseEntity<?> customIOException(Exception e) {
         exceptionLog(e);
 
-        System.out.println("BadCredentialsException");
+        return ResponseEntity.status(HttpStatus.valueOf(400)).build();
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> badCredentialsExceptionHandler(Exception e){
+        exceptionLog(e);
 
         return ResponseEntity.status(HttpStatus.valueOf(403)).build();
     }

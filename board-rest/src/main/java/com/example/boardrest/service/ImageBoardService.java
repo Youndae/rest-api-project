@@ -1,36 +1,39 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.*;
-import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
-import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDetailDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageDataDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageModifyInfoDTO;
+import com.example.boardrest.domain.dto.iBoard.in.ImageBoardRequestDTO;
+import com.example.boardrest.domain.dto.paging.Criteria;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 
 public interface ImageBoardService {
 
-    ResponsePageableListDTO<ImageBoardDTO> getImageBoardList(Criteria cri, Principal principal);
+    Page<ImageBoardDTO> getImageBoardList(Criteria cri);
+
+    ImageBoardDetailDTO getImageBoardDetail(long imageNo);
 
     long imageInsertCheck(List<MultipartFile> images
-                            , String imageTitle
-                            , String imageContent
-                            , HttpServletRequest request
+                            , ImageBoardRequestDTO dto
                             , Principal principal);
 
     long imagePatchCheck(List<MultipartFile> images
                         , List<String> deleteFiles
                         , long imageNo
-                        , HttpServletRequest request
+                        , ImageBoardRequestDTO dto
                         , Principal principal);
 
-    long deleteImageBoard(long imageNo, Principal principal);
+    String deleteImageBoard(long imageNo, Principal principal);
 
-    ResponseDetailAndModifyDTO<ImageBoardDetailDTO> getImageBoardDetail(long imageNo, Principal principal);
-
-    ResponseDetailAndModifyDTO<ImageModifyInfoDTO> getModifyData(long imageNo, Principal principal);
+    ImageModifyInfoDTO getModifyData(long imageNo, Principal principal);
 
     List<ImageDataDTO> getModifyImageAttach(long imageNo);
+
+    ResponseEntity<byte[]> getFile(String imageName);
 }

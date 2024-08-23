@@ -1,7 +1,7 @@
 package com.board.boardapp.ExceptionHandle;
 
-import com.board.boardapp.dto.LoginDTO;
-import com.board.boardapp.dto.UserStatusDTO;
+import com.board.boardapp.domain.dto.LoginDTO;
+import com.board.boardapp.domain.dto.UserStatusDTO;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;

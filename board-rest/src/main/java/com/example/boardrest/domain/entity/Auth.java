@@ -15,10 +15,6 @@ public class Auth {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long authNo;
 
-    /*@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
-    private Member member;*/
-
     @ManyToOne
     @JoinColumn(name = "userId")
     private Member member;

@@ -33,7 +33,7 @@ $(document).ready(function(){
             url: '/board/' + boardNo,
             method: 'delete',
             success: function(data){
-                if(data == 1)
+                if(data === "SUCCESS")
                     location.href='/board/';
                 else
                     location.href='/error/error';

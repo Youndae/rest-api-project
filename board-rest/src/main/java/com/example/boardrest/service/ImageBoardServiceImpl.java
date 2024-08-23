@@ -1,32 +1,39 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.customException.CustomAccessDeniedException;
+import com.example.boardrest.customException.CustomIOException;
 import com.example.boardrest.customException.ErrorCode;
-import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
-import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDetailDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageDataDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageModifyInfoDTO;
+import com.example.boardrest.domain.dto.iBoard.in.ImageBoardRequestDTO;
+import com.example.boardrest.domain.dto.paging.Criteria;
 import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.ImageData;
-import com.example.boardrest.domain.dto.*;
 import com.example.boardrest.domain.entity.Member;
+import com.example.boardrest.domain.enumuration.Result;
 import com.example.boardrest.properties.FilePathProperties;
 import com.example.boardrest.repository.ImageBoardRepository;
 import com.example.boardrest.repository.ImageDataRepository;
-import com.example.boardrest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import java.nio.file.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.security.Principal;
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -42,58 +49,43 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
     private final ImageFileService imageFileService;
 
-    @Override
-    public ResponseDetailAndModifyDTO<ImageBoardDetailDTO> getImageBoardDetail(long imageNo, Principal principal) {
-        ImageBoard imageBoard = imageBoardRepository
-                                    .findById(imageNo)
-                                    .orElseThrow(() -> new NullPointerException("nullPointerException"));
-
-        List<ImageDataDTO> dataDTO = imageDataRepository.getImageData(imageNo);
-
-        ImageBoardDetailDTO dto = ImageBoardDetailDTO.builder()
-                                                .imageNo(imageBoard.getImageNo())
-                                                .imageTitle(imageBoard.getImageTitle())
-                                                .nickname(imageBoard.getMember().getNickname())
-                                                .imageContent(imageBoard.getImageContent())
-                                                .imageDate(imageBoard.getImageDate())
-                                                .imageData(dataDTO)
-                                                .build();
-
-        ResponseDetailAndModifyDTO<ImageBoardDetailDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principalService.getNicknameToPrincipal(principal));
-
-        return responseDTO;
-    }
 
     @Override
-    public ResponsePageableListDTO<ImageBoardDTO> getImageBoardList(Criteria cri, Principal principal) {
+    public Page<ImageBoardDTO> getImageBoardList(Criteria cri) {
         Pageable pageable = PageRequest.of(cri.getPageNum() - 1
-            , cri.getImageAmount()
+                , cri.getImageAmount()
                 , Sort.by("imageNo").descending()
         );
 
-        Page<ImageBoardDTO> dto = imageBoardRepository.findAll(cri, pageable);
-        ResponsePageableListDTO<ImageBoardDTO> responseDTO = new ResponsePageableListDTO<>(dto, principalService.getNicknameToPrincipal(principal));
+        return imageBoardRepository.findAll(cri, pageable);
+    }
 
-        return responseDTO;
+    /**
+     *
+     * ImageBoardDetailDTO 의 객체 생성을 메소드에서 담당하면 SRP 위배다.
+     *
+     */
+    @Override
+    public ImageBoardDetailDTO getImageBoardDetail(long imageNo) {
+        ImageBoard imageBoard = imageBoardRepository
+                                    .findById(imageNo)
+                                    .orElseThrow(() -> new IllegalArgumentException("invalid detail imageNo : " + imageNo));
+
+        List<ImageDataDTO> dataDTO = imageDataRepository.getImageData(imageNo);
+
+        return ImageBoardDetailDTO.fromEntity(imageBoard, dataDTO);
     }
 
     // 이미지 게시판 insert
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public long imageInsertCheck(List<MultipartFile> images
-                                , String imageTitle
-                                , String imageContent
-                                , HttpServletRequest request
+                                , ImageBoardRequestDTO dto
                                 , Principal principal) {
 
         Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
 
-        ImageBoard imageBoard = ImageBoard.builder()
-                .member(memberEntity)
-                .imageTitle(request.getParameter("imageTitle"))
-                .imageContent(request.getParameter("imageContent"))
-                .imageDate(Date.valueOf(LocalDate.now()))
-                .build();
+        ImageBoard imageBoard = dto.toInsertEntity(memberEntity);
 
         imageInsert(images,  1, imageBoard);
 
@@ -102,62 +94,50 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
     // 이미지 게시판 patch
     @Override
-    @Transactional(rollbackOn = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public long imagePatchCheck(List<MultipartFile> images
                                 , List<String> deleteFiles
                                 , long imageNo
-                                , HttpServletRequest request
+                                , ImageBoardRequestDTO dto
                                 , Principal principal) {
 
         ImageBoard imageBoard = imageBoardRepository
                 .findById(imageNo)
-                .orElseThrow(() -> new NullPointerException("NullPointerException"));
+                .orElseThrow(() -> new IllegalArgumentException("invalid patch imageNo : " + imageNo));
 
         Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
 
-        String writer = imageBoard.getMember().getUserId();
+        principalService.validateUser(imageBoard, principal);
 
-        if(!writer.equals(principal.getName()))
-            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, "AccessDenied");
-
-        imageBoard = ImageBoard.builder()
-                                .member(memberEntity)
-                                .imageNo(imageNo)
-                                .imageTitle(request.getParameter("imageTitle"))
-                                .imageContent(request.getParameter("imageContent"))
-                                .imageDate(imageBoard.getImageDate())
-                                .build();
-
-        if(deleteFiles != null) {
-            deleteFilesProc(deleteFiles);
-            imageDataRepository.deleteImageDataList(deleteFiles);
-        }
+        imageBoard = dto.toPatchEntity(memberEntity, imageBoard);
 
         if(images != null)
             imageInsert(images, imageDataRepository.countImageStep(imageNo) + 1, imageBoard);
+
+        if(deleteFiles != null) {
+            imageFileService.deleteImageBoardFile(deleteFiles);
+            imageDataRepository.deleteImageDataList(deleteFiles);
+        }
 
         return imageBoardRepository.save(imageBoard).getImageNo();
     }
 
     // 이미지 게시판 delete
     @Override
-    @Transactional(rollbackOn = Exception.class)
-    public long deleteImageBoard(long imageNo, Principal principal) {
-        String writer = imageBoardRepository
-                                .findById(imageNo)
-                                .orElseThrow(() -> new NullPointerException("NullPointerException"))
-                                .getMember()
-                                .getUserId();
+    @Transactional(rollbackFor = Exception.class)
+    public String deleteImageBoard(long imageNo, Principal principal) {
+        ImageBoard imageBoard = imageBoardRepository
+                .findById(imageNo)
+                .orElseThrow(() -> new IllegalArgumentException("invalid deleteImageNo : " + imageNo));
 
-        if(!writer.equals(principal.getName()))
-            new AccessDeniedException("AccessDenied");
+        principalService.validateUser(imageBoard, principal);
 
         List<String> deleteFiles = imageDataRepository.getDeleteImageDataList(imageNo);
-        deleteFilesProc(deleteFiles);
+        imageFileService.deleteImageBoardFile(deleteFiles);
         imageDataRepository.deleteImageDataList(deleteFiles);
         imageBoardRepository.deleteById(imageNo);
 
-        return 1;
+        return Result.SUCCESS.getResultMessage();
     }
 
     // 이미지 파일 저장 및 imageData save 처리
@@ -166,44 +146,58 @@ public class ImageBoardServiceImpl implements ImageBoardService{
                             , ImageBoard imageBoard) {
         String filePath = FilePathProperties.BOARD_FILE_PATH;
         Map<String, String> map;
-        for(MultipartFile image : images){
-            map = imageFileService.saveFile(filePath, image);
 
-            imageBoard.addImageData(ImageData.builder()
-                                    .imageName(map.get("imageName"))
-                                    .oldName(map.get("oldName"))
-                                    .imageStep(step++)
-                                    .build()
-                            );
+        for(MultipartFile image : images){
+            try {
+                map = imageFileService.saveFile(filePath, image);
+                imageBoard.addImageData(ImageData.builder()
+                        .imageName(map.get("imageName"))
+                        .oldName(map.get("oldName"))
+                        .imageStep(step++)
+                        .build()
+                );
+            } catch (Exception e) {
+                log.error("File Transfer Error. Rollback save file");
+
+                imageBoard.getImageDataSet()
+                        .forEach(v ->
+                                imageFileService.deleteFile(filePath, v.getImageName())
+                        );
+
+                throw new CustomIOException(ErrorCode.IO_EXCEPTION, "File Transfer IOException");
+            }
         }
 
     }
 
-    // 이미지 파일 삭제
-    public void deleteFilesProc(List<String> deleteFiles) {
-        String filePath = FilePathProperties.BOARD_FILE_PATH;
-
-        deleteFiles.forEach(v -> imageFileService.deleteFile(filePath, v));
-
-    }
-
     @Override
-    public ResponseDetailAndModifyDTO<ImageModifyInfoDTO> getModifyData(long imageNo, Principal principal) {
-        ImageModifyInfoDTO dto = imageBoardRepository.imageDetailDTO(imageNo);
+    public ImageModifyInfoDTO getModifyData(long imageNo, Principal principal) {
+        ImageBoard imageBoard = imageBoardRepository.findById(imageNo).orElseThrow(() -> new IllegalArgumentException("invalid modifyData imageNo : " + imageNo));
+        principalService.validateUser(imageBoard, principal);
 
-        PrincipalDTO principalDTO = principalService.checkPrincipal(principal);
-
-        if(!dto.getNickname().equals(principalDTO.getNickname()))
-            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
-
-        ResponseDetailAndModifyDTO<ImageModifyInfoDTO> responseDTO = new ResponseDetailAndModifyDTO<>(dto, principalService.getNicknameToPrincipal(principal));
-
-        return responseDTO;
+        return imageBoardRepository.findPatchDetail(imageNo);
     }
 
     @Override
     public List<ImageDataDTO> getModifyImageAttach(long imageNo) {
 
         return imageDataRepository.getImageData(imageNo);
+    }
+
+    @Override
+    public ResponseEntity<byte[]> getFile(String imageName) {
+        File file = new File(FilePathProperties.BOARD_FILE_PATH + imageName);
+        ResponseEntity<byte[]> result = null;
+
+        try{
+            HttpHeaders header = new HttpHeaders();
+            header.add("Content-Type", Files.probeContentType(file.toPath()));
+
+            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), HttpStatus.OK);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }

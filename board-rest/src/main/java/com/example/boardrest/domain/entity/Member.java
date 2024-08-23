@@ -1,5 +1,7 @@
 package com.example.boardrest.domain.entity;
 
+import com.example.boardrest.auth.oAuth.domain.OAuth2DTO;
+import com.example.boardrest.domain.enumuration.Role;
 import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -42,7 +44,10 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private final List<Auth> auths = new ArrayList<>();
 
-    public void addAuth(Auth auth) {
+    public void addAuth() {
+        Auth auth = Auth.builder()
+                        .auth(Role.MEMBER.getKey())
+                        .build();
         auths.add(auth);
         auth.setMember(this);
     }
@@ -78,5 +83,13 @@ public class Member {
 
     public void setProfileThumbnail(String profileThumbnail) {
         this.profileThumbnail = profileThumbnail;
+    }
+
+    public OAuth2DTO toOAuth2DTOUseFilter() {
+        return OAuth2DTO.builder()
+                .userId(this.userId)
+                .username(this.username)
+                .authList(this.auths)
+                .build();
     }
 }

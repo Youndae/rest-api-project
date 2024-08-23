@@ -1,7 +1,10 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.dto.*;
-import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDetailDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageDataDTO;
+import com.example.boardrest.domain.dto.iBoard.out.ImageModifyInfoDTO;
+import com.example.boardrest.domain.dto.paging.Criteria;
 import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.ImageData;
 import com.example.boardrest.service.ImageBoardService;
@@ -21,7 +24,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
@@ -57,26 +59,6 @@ class ImageBoardRepositoryTest {
         List<ImageData> dataList = imageDataRepository.findAllByImageBoard_ImageNoOrderByImageStepAsc(56L);
 
         System.out.println(dataList);
-    }
-
-    @Test
-    public void imageDataTest(){
-        long imageNo = 10;
-
-        ImageModifyInfoDTO imageDTO = repository.imageDetailDTO(imageNo);
-
-        List<ImageDataDTO> imageDataList = imageDataRepository.getImageData(imageNo);
-
-        ImageBoardDetailDTO dto = ImageBoardDetailDTO.builder()
-                .imageNo(imageDTO.getImageNo())
-                .nickname(imageDTO.getNickname())
-                .imageContent(imageDTO.getImageContent())
-                .imageDate(imageDTO.getImageDate())
-                .imageTitle(imageDTO.getImageTitle())
-                .imageData(imageDataList)
-                .build();
-
-        System.out.println(dto);
     }
 
 

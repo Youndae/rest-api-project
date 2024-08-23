@@ -1,8 +1,8 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.dto.BoardCommentDTO;
-import com.example.boardrest.domain.dto.CommentInsertDTO;
-import com.example.boardrest.domain.dto.Criteria;
+import com.example.boardrest.domain.dto.comment.out.BoardCommentDTO;
+import com.example.boardrest.domain.dto.comment.in.CommentInsertDTO;
+import com.example.boardrest.domain.dto.paging.Criteria;
 import com.example.boardrest.domain.entity.Comment;
 import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.Member;
@@ -18,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;

@@ -4,12 +4,16 @@ import com.board.boardapp.ExceptionHandle.CustomAccessDeniedException;
 import com.board.boardapp.ExceptionHandle.CustomNotFoundException;
 import com.board.boardapp.ExceptionHandle.ErrorCode;
 import com.board.boardapp.connection.webClient.HierarchicalBoardWebClient;
-import com.board.boardapp.dto.*;
+import com.board.boardapp.domain.dto.*;
+import com.board.boardapp.domain.dto.hBoard.in.HierarchicalBoardInsertDTO;
+import com.board.boardapp.domain.dto.hBoard.in.HierarchicalBoardReplyInsertDTO;
+import com.board.boardapp.service.CookieService;
 import com.board.boardapp.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,14 +30,16 @@ public class HierarchicalBoardController {
 
     private final TokenService tokenService;
 
+    private final CookieService cookieService;
+
     @GetMapping("/")
     public String getList(Model model
                         , Criteria cri
                         , HttpServletRequest request
                         , HttpServletResponse response) {
 
-        System.out.println("boardList");
-        HierarchicalBoardListDTO dto = hierarchicalBoardWebClient.getList(cri, request, response);
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+        PaginationListDTO<HierarchicalBoardDTO> dto = hierarchicalBoardWebClient.getList(cri, cookieMap, response);
 
         model.addAttribute("data", dto);
 
@@ -45,8 +51,9 @@ public class HierarchicalBoardController {
                             , @PathVariable long boardNo
                             , HttpServletRequest request
                             , HttpServletResponse response) {
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
         BoardDetailAndModifyDTO<HierarchicalBoardDTO> dto = hierarchicalBoardWebClient
-                                                                .getDetail(boardNo, request, response);
+                                                                .getDetail(boardNo, cookieMap, response);
 
         model.addAttribute("data", dto);
 
@@ -55,32 +62,36 @@ public class HierarchicalBoardController {
 
     @PatchMapping("/{boardNo}")
     public String patchBoard(@PathVariable long boardNo
+                             , HierarchicalBoardInsertDTO dto
                             , HttpServletRequest request
                             , HttpServletResponse response){
 
-        long responseVal = hierarchicalBoardWebClient.patchBoard(boardNo, request, response);
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+        long responseVal = hierarchicalBoardWebClient.patchBoard(boardNo, dto, cookieMap, response);
 
         return "redirect:/board/" + responseVal;
     }
 
     @DeleteMapping("/{boardNo}")
     @ResponseBody
-    public Long deleteBoard(@PathVariable long boardNo
-            , HttpServletRequest request
-            , HttpServletResponse response){
+    public String deleteBoard(@PathVariable long boardNo
+                            , HttpServletRequest request
+                            , HttpServletResponse response){
 
-        System.out.println("deleteNo : " + boardNo);
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
 
-        return hierarchicalBoardWebClient.deleteBoard(boardNo, request, response);
+        return hierarchicalBoardWebClient.deleteBoard(boardNo, cookieMap, response);
     }
 
     @GetMapping("/patch/{boardNo}")
     public String getPatchDetail(Model model
-                                            , @PathVariable long boardNo
-                                            , HttpServletRequest request
-                                            , HttpServletResponse response) {
+                                , @PathVariable long boardNo
+                                , HttpServletRequest request
+                                , HttpServletResponse response) {
+
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
         BoardDetailAndModifyDTO<HierarchicalBoardModifyDTO> dto = hierarchicalBoardWebClient
-                                                                    .getPatchDetail(boardNo, request, response);
+                                                                    .getPatchDetail(boardNo, cookieMap, response);
 
         if(dto == null)
             throw new CustomNotFoundException(ErrorCode.DATA_NOT_FOUND);
@@ -104,8 +115,12 @@ public class HierarchicalBoardController {
     }
 
     @PostMapping("/")
-    public String insertBoard(HttpServletRequest request, HttpServletResponse response){
-        long responseVal = hierarchicalBoardWebClient.postBoard(request, response);
+    public String insertBoard(@ModelAttribute HierarchicalBoardInsertDTO dto
+                                ,HttpServletRequest request
+                                , HttpServletResponse response){
+
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+        long responseVal = hierarchicalBoardWebClient.postBoard(dto, cookieMap, response);
 
         return "redirect:/board/" + responseVal;
     }
@@ -115,8 +130,9 @@ public class HierarchicalBoardController {
                                         , @PathVariable long boardNo
                                         , HttpServletRequest request
                                         , HttpServletResponse response){
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
         BoardDetailAndModifyDTO<HierarchicalBoardReplyInfoDTO> dto = hierarchicalBoardWebClient
-                                                                .getReplyDetail(request, response, boardNo);
+                                                                .getReplyDetail(cookieMap, response, boardNo);
 
         model.addAttribute("data", dto);
         model.addAttribute("bno", boardNo);
@@ -125,8 +141,12 @@ public class HierarchicalBoardController {
     }
 
     @PostMapping("/reply")
-    public String replyInsertBoard(HttpServletRequest request, HttpServletResponse response){
-        long responseVal = hierarchicalBoardWebClient.postReply(request, response);
+    public String replyInsertBoard(@ModelAttribute HierarchicalBoardReplyInsertDTO dto
+                                    , HttpServletRequest request
+                                    , HttpServletResponse response){
+
+        MultiValueMap<String, String> cookieMap = cookieService.setCookieToMultiValueMap(request);
+        long responseVal = hierarchicalBoardWebClient.postReply(dto, cookieMap, response);
 
         return "redirect:/board/" + responseVal;
     }
