@@ -1,8 +1,8 @@
 package com.board.boardapp.service;
 
-import com.board.boardapp.ExceptionHandle.CustomAccessDeniedException;
-import com.board.boardapp.ExceptionHandle.CustomTokenStealingException;
-import com.board.boardapp.ExceptionHandle.ErrorCode;
+import com.board.boardapp.exception.CustomAccessDeniedException;
+import com.board.boardapp.exception.CustomTokenStealingException;
+import com.board.boardapp.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

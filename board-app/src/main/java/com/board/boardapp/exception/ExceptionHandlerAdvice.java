@@ -1,4 +1,4 @@
-package com.board.boardapp.ExceptionHandle;
+package com.board.boardapp.exception;
 
 import com.board.boardapp.domain.dto.LoginDTO;
 import com.board.boardapp.domain.dto.UserStatusDTO;

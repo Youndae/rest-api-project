@@ -1,7 +1,7 @@
 package com.board.boardapp.connection.webClient;
 
-import com.board.boardapp.ExceptionHandle.CustomNotFoundException;
-import com.board.boardapp.ExceptionHandle.ErrorCode;
+import com.board.boardapp.exception.CustomNotFoundException;
+import com.board.boardapp.exception.ErrorCode;
 import com.board.boardapp.config.WebClientConfig;
 import com.board.boardapp.config.properties.PathProperties;
 import com.board.boardapp.domain.dto.*;

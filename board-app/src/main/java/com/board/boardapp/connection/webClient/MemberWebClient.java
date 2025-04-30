@@ -1,8 +1,8 @@
 package com.board.boardapp.connection.webClient;
 
-import com.board.boardapp.ExceptionHandle.CustomBadCredentialsException;
-import com.board.boardapp.ExceptionHandle.CustomTokenStealingException;
-import com.board.boardapp.ExceptionHandle.ErrorCode;
+import com.board.boardapp.exception.CustomBadCredentialsException;
+import com.board.boardapp.exception.CustomTokenStealingException;
+import com.board.boardapp.exception.ErrorCode;
 import com.board.boardapp.config.WebClientConfig;
 import com.board.boardapp.config.properties.PathProperties;
 import com.board.boardapp.domain.dto.JoinDTO;

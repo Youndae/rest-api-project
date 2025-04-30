@@ -1,296 +1,134 @@
 # REST API 프로젝트
 
----
+# 프로젝트 요약
+> 계층형을 표현하는 텍스트 기반의 게시판과 텍스트와 이미지 업로드가 가능한 게시판으로 구성된 CRUD 중심의 프로젝트입니다.   
+> 다양한 기능 구현보다 기본에 충실한 프로젝트입니다.
+> 기본적인 개념에 대한 프로젝트인만큼 새로운 기술이나 언어, 환경에 대한 기본 CRUD 테스트에 주로 사용하고 있어 다양한 버전이 존재합니다.   
+> 해당 프로젝트는 REST-API 버전으로 Spring Boot, JPA, MySQL 기반의 REST-API 서버와 Spring Boot, Thymeleaf 기반의 Frontend Server, React 기반의 Client side Application으로 구성되어 있습니다.   
+> 이 프로젝트에는 Frontend Server와 REST-API 서버만 있으며, Client Side Application은 다른 Repository에 있습니다.   
+> Frontend Server와 Client Side Application은 동일한 Frontend를 구현하고 있으며 환경만 다른 두가지의 Frontend입니다.   
+> 각 Frontend 끼리 통신하지 않으며 최초 Frontend Server로 프로젝트를 진행한 이후 React 기반의 Frontend를 구현해보고자 진행해 두가지의 Frontend를 갖게 되었습니다.   
+> BoardProject의 다른 버전으로는 JSP, Servlet & JSP, Kotlin 버전이 있습니다.   
+> 버전이 다르더라도 기능에는 차이가 거의 없으며 각 환경에 대한 구조의 차이 정도만 있습니다.
 
-# 목적
-* BoardProject_JPA를 활용해 기능 추가보다는 REST-API를 만드는 것에 집중   
-* API 서버와의 통신과 여러 클라이언트에 대응할 수 있도록 설계하고 개선하는 것에 대한 목표. 
-* 동일한 서비스를 여러 클라이언트를 통해 제공할 수 있어야 한다는 전제하에 설계.
-* 가장 기본적인 CRUD에 대한 기능을 포함하고 있는 프로젝트로 새로 학습한 내용이나 테스트에 활용하는 프로젝트.
-* 가장 많이 활용하는 프로젝트인 만큼 여러 버전이 존재.
-  * Spring, JSP, Oracle, MyBatis 기반 초기 버전
-    * github : https://github.com/Youndae/BoardProject
-  * Java Servlet & JSP, MySQL 기반의 버전
-    * github : https://github.com/Youndae/BoardProject_servlet_jsp
-  * Spring Boot, Spring Data JPA, MySQL 기반으로 REST-API 프로젝트의 기반이 된 버전.
-    * 인증 / 인가 처리를 SpringSecurity로 처리하지 않았다는 점과 서버의 분리를 제외하고는 API 서버와 동일한 처리.
+### React Cliend Side Application GitHub
+- https://github.com/Youndae/boardProject_client_react
 
-<br />
+### 타 버전 GitHub
 
-# 프로젝트 정보
+- JSP, Oracle 기본 버전
+  - https://github.com/Youndae/BoardProject
+- Servlet & JSP
+  - https://github.com/Youndae/BoardProject_servlet_jsp
+- Kotlin
+  - https://github.com/Youndae/boardProject_kt
 
-<br />
 
-## 구조
-> * board-rest = RestAPI 서버
-> * board-app = FrontEnd Server
-> * boardProject_client_react = FrontEnd Server와 연결되지 않는 React 기반의 Client Side Application
->   * react github : https://github.com/Youndae/boardProject_client_react
+<br/>
 
-<br />
+# 목차
 
-## 사용 기술
-* FrontEnd Server, API Server 공통
-  * SpringBoot 2.7.6
-  * Gradle
-  * Java 1.8
-  * Lombok
-  * OAuth2(google, naver, kakao)
-* API Server
-  * SpringSecurity & JWT
-  * Spring Data JPA
-  * QueryDSL
-* FrontEnd Server
-  * JQuery(Ajax)
-  * Thymeleaf
-  * WebClient
-* React
-  * Axios
-  * Redux
-  * dayjs
-* Front End 공통
-  * BootStrap
-* DataBase
-  * MySQL
-  * Redis
+1. [프로젝트 구조](#프로젝트-구조)
+2. [개발 환경](#개발-환경)
+3. [ERD](#ERD)
+4. [페이지별 기능 상세](#페이지별-기능-상세)
+5. [기능 및 개선 내역](#기능-및-개선-내역)
 
-<br />
+<br/>
 
-## 기능
-* 이미지 게시판
-  * 페이징
-  * 검색(제목, 내용, 작성자, 제목+내용)
-  * 게시글 등록(텍스트 + 이미지)
-  * 게시글 수정 및 삭제
-  * 상세 페이지 내 댓글(페이징)
-* 계층형 게시판
-  * 페이징
-  * 검색(제목, 내용, 작성자, 제목+내용)
-  * 게시글 등록(텍스트)
-  * 게시글 수정 및 삭제
-  * 상세 페이지 내 댓글(페이징)
-* 사용자
-  * 로그인(local, OAuth2)
-  * 회원가입
-  * 정보수정
+# 프로젝트 구조
+<img src="./README_image/project_structure.jpg">
 
-<br />
+Spring Boot 기반의 Frontend 서버는 WebClient를 통해 API 서버와 통신하게 되며, Thymeleaf Template을 통해 view를 처리합니다.   
+API 서버는 Spring의 기본적인 Layered Architecture 구조로 설계되어 있으며, React 기반의 Client Side Application은 Component 재사용을 위해 목록과 같은 중복되는 Component를 분리했습니다.   
 
-## ERD
+<br/>
+
+# 개발 환경
+
+|Category| Tech Stack|
+|---|---|
+|API Server| - Spring Boot 2.7.6 <br/> - JDK 8 <br/> - Gradle <br/> - OAuth2 <br/> - SpringSecurity <br/> - JWT <br/> - Spring Data JPA <br/> - QueryDSL
+|Frontend Server| - Spring Boot 2.7.6 <br/> - JDK 8 <br/> - Gradle <br/> - WebClient <br/> - Thymeleaf <br/> - JQuery <br/> - Ajax <br/> - BootStrap|
+|Client Side Application| - React <br/> - Redux <br/> - Axios <br/> - dayjs <br/> - BootStrap|
+|Database| - MySQL <br/> - Redis|
+
+<br/>
+
+# ERD
 <img src="./README_image/rest-api-project_ERD.png">
 
-<br />
+<br/>
 
-## 기능
+# 페이지별 기능 상세
 
-### 목차
-* 로그인
-* 인증 / 인가(JWT 설계와 관리 및 권한 관리)
-* 인증 / 인가(filter와 토큰 검증)
-* API 서버와의 통신
-* 게시글 리스트 조회에서의 동적 쿼리(QueryDSL)
-* 삭제된 댓글의 처리
+<details>
+    <summary><strong>계층형 게시판</strong></summary>
 
-<br />
+- 계층형 목록
+- 검색 ( 제목, 내용, 작성자, 제목 + 내용 기반 )
+- Pagination
+- 게시글 작성
+- 게시글 상세 정보
+  - 작성자인 경우 수정, 삭제( 삭제하는 경우 하위 계층 게시글 삭제 )
+  - 답글 작성
+  - 댓글 작성 ( 대댓글 작성 가능 )
+</details>
 
-## 로그인
+<br/>
 
-사용자 로그인으로는 직접적인 회원가입을 통한 local 로그인과 google, naver, kakao를 통한 OAuth2 로그인이 있습니다.   
-BoardProject에서는 로그인을 위한 기능을 제외하고 필요한 기능이 없기 때문에 Spring Security를 통해 처리하도록 하고 Authorization Server에서 전달되는 토큰이나 다른 요청에 대해 직접 처리하지 않았습니다.   
+<details>
+    <summary><strong>이미지 게시판</strong></summary>
 
-Client에서는 하이퍼링크를 통해 OAuth2 로그인 요청을 보내도록 처리해 API 서버에서 Spring Security를 통해 모든 처리를 담당할 수 있도록 했습니다.   
-처리를 위해 API 서버에서는 각 Authorization Server의 client-id와 client-secret을 application-oauth.yml에 따로 분리해 관리하도록 하고 Spring Security 설정을 통해 EndPoint와 SuccessHandler를 처리했습니다.   
-UserService로는 DefaultOauth2UserService를 상속받는 CustomOAuth2UserService를, Success Handler로는 SimpleUrlAuthenticationSuccessHandler를 상속받는 CustomOAuth2SuccessHandler를 생성해 Security 설정에 추가했습니다.   
+- 목록
+- 게시글 작성
+  - 텍스트 및 이미지 업로드 ( 최대 5장 제한 )
+- 검색 ( 제목, 내용, 작성자, 제목 + 내용 기반 )
+- Pagination
+- 게시글 상세 정보
+  - 작성자인 경우 수정, 삭제
+  - 댓글 작성 ( 대댓글 작성 가능 )
+</details>
 
-<br />
+<br/>
 
-SecurityConfig
-```java
-@Bean
-protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf().disable();
-    
-    http.sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-            .addFilter(corsFilter)
-            .formLogin().disable()
-            .httpBasic().disable()
-            .logout()
-        .and()
-            .addFilterBefore(new JwtAuthorizationFilter(memberRepository, jwtTokenProvider), BasicAuthenticationFilter.class)
-            .authorizeRequest()
-            .antMatchers("/", "/resources/**")
-            .permitAll()
-        .and()
-            .oauth2Login((oauth2) -> 
-                oauth2
-                .userInfoEndpoint((userInfoEndpoingConfig) -> 
-                    userInfoEndpointConfig
-                        .userService(customOAuth2UserService))
-                .successHandler(customOauthSuccessHandler));
-    
-    return http.build();
-}
-```
+<details>
+    <summary><strong>로그인</strong></summary>
 
-CustomOAuth2UserService에서는 Spring Security가 OAuth2 로그인을 처리한 뒤 OAuth2UserRequest에 담아 전달해준 데이터를 registrationId 값에 따라 각 Authorization Server 별로 분리해 처리합니다.   
-이때 각 Authorization Server에 전달하는 scope 설정대로 사용자 이름과 이메일, 회원번호를 전달받아 회원가입을 진행합니다.   
-프로필 이미지는 Authorization Server에서 받아 사용하지 않고 사용자가 직접 등록하도록 처리했습니다.   
-
-데이터베이스에 저장되는 사용자 아이디는 registrationId_회원번호 형식으로 처리하게 되고 비밀번호는 null로 비워두도록 했습니다.   
-비밀번호가 null로 처리되는 만큼 발생하는 문제가 있었는데 로컬 로그인 과정에서 OAuth2 로그인 사용자의 아이디를 알게 되면 로그인이 가능하다는 문제가 있었습니다.   
-단순하게 바라봤을 때는 비밀번호를 하나도 입력하지 않은 경우 로그인 요청이 수행되지 않기 때문에 괜찮아 보일 수도 있지만 충분히 강제로 요청을 보낼 수 있다고 생각했기 때문에 이 문제를 해결하고자 했습니다.   
-해결 방안으로는 사이트에서 회원가입을 하는 사용자는 provider를 local로 갖게 되고 OAuth2 로그인을 하는 사용자들은 각 registrationId를 provider로 저장하게 됩니다.   
-그래서 로컬 로그인 요청시 사용자 정보를 조회할 때 provider가 local이어야 한다는 조건을 추가해 조회하도록 처리해 문제를 간단하게 해결할 수 있었습니다.   
-또 다른 해결방안으로는 OAuth2 사용자의 최초 로그인 시 난수의 비밀번호를 생성해 저장하는 것도 하나의 방법이라고 생각하고 있습니다.   
-
-다른 문제 발생으로는 OAuth2 로그인 요청 이후 페이지 이동이었습니다.   
-처음 적용해서 테스트만 해보는 과정에서는 OAuthSuccessHandler에서 response.sendRedirect()를 통해 메인 페이지로 이동하도록 처리했으나 referer를 통한 이전 페이지로 이동이 불가능 하다는 문제가 있었습니다.   
-이 문제를 해결하기 위해 client에서는 oAuth 요청을 전달하기 전 이전 페이지의 주소를 sessionStorage에 담아둔 뒤 요청을 보내게 됩니다.   
-그리고 API Server에서는 로그인이 성공적으로 마무리 되었다면 특정 페이지로 Redirect를 처리하게 되는데 이 페이지는 비어있는 페이지로 화면에 아무것도 출력되지 않고 스크립트 코드만 존재하여 sessionStorage에 저장해두었던 이전 페이지 값을 꺼내 이전 페이지로 이동할 수 있도록 처리했습니다.   
-다른 방법으로 history.go()를 사용하는 방법도 있었으나 테스트해봤을 때 페이지 이동이라기 보다는 뒤로가기 버튼을 눌렀을 때와 동일한 처리가 되는 것을 보고 sessionStorage를 통한 처리로 결정하게 되었습니다.
-OAuth2 사용자가 최초 로그인 한 경우에는 닉네임을 필수로 작성하도록 작성 페이지로 유도해야 했는데 이것 역시 CustomOAuth2User 객체에서 닉네임을 같이 담고 있도록 해 닉네임이 존재하지 않는다면 최초 정보 등록 페이지로 redirect하도록 처리했습니다. 
+- 로그인 ( Local, OAUth2)
+- 회원 가입
+- 정보 수정
+</details>
 
 <br />
 
-## 인증 / 인가(JWT 설계와 관리 및 권한 관리)   
+# 기능 및 개선 내역
 
-인증 / 인가에 대한 처리는 JWT와 Spring Security를 통해 처리합니다.   
-API 서버에 요청이 들어오면 Spring Security 설정에 따라 JwtAuthorizationFilter에 먼저 접근하게 되며 토큰 검증 후 정상적인 사용자라면 권한 관리를 위하 SecurityContextHolder에 인증 객체를 담습니다.   
+* <strong>API Server</strong>
+  1. [인증 인가 처리](#인증-인가-처리)
+  2. [동적 쿼리 처리를 위한 QueryDSL 도입](#동적-쿼리-처리를-위한-QueryDSL-도입)
+  3. [삭제된 댓글의 처리](#삭제된-댓글의-처리)
+  
+<br/>
 
-하나의 서비스를 여러 클라이언트로 제공한다는 기획에 맞게 다중 디바이스에서의 로그인을 허용합니다.   
-이때 토큰의 관리와 탈취에 대응하기 위해 식별자 개념의 ino라는 난수의 값을 만들어 클라이언트에게 같이 전달합니다.   
-ino는 로그인 시 최초 생성되고 탈취로 판단되는 경우나 로그아웃을 하는 경우에만 삭제되도록 처리했습니다.   
-ino는 로그인 시 토큰과 같이 응답 쿠키로 전달되며 클라이언트에서는 ino와 토큰 모두 쿠키에 저장합니다.   
+* <strong>Frontend Server</strong>
+  1. [WebClient를 통한 API 서버와의 통신](#WebClient를-통한-API-서버와의-통신)
 
-토큰은 AccessToken과 RefreshToken 두개로 나눠 생성하고 관리하며 AccessToken은 1시간, RefreshToken은 2주의 만료기간을 갖습니다.   
-두 토큰은 모두 사용자 아이디를 Claim으로 갖고 서로 다른 Secret key를 사용합니다.   
-각 토큰은 RDB에는 저장하지 않고 Redis에 저장해 관리하게 됩니다.   
-토큰 만료시간과는 상관없이 Redis에 저장되는 기간은 1달이며, 쿠키의 만료 기간 역시 1달로 설정했습니다.   
-토큰의 만료시간과 다르게 긴 기간의 데이터 만료기간을 설정한 이유로는 탈취에 대응하기 위함이었습니다.   
-사용자가 접속하지 않는 동안 탈취된 토큰으로 재발급을 받아 사용하는 경우를 고려해 추후 사용자가 페이지에 접근했을 때 값을 비교해 탈취를 판단할 수 있습니다.   
+* <strong>Client Side Application</strong>
+  1. [이미지 출력 처리](#이미지-출력-처리)
 
-Redis의 키값으로는 토큰에 따라 at 또는 rt로 시작하며 이후 ino + 사용자 아이디 구조로 담아 사용자가 이후 접속했을 때 쿠키에 저장된 토큰 값과 Redis에 저장된 자신의 토큰값을 비교하는 것으로 탈취에 대응할 수 있습니다.   
+### 인증 인가 처리
 
-<br />
+<br/>
 
-JwtTokenProvider
-```java
-    @Value("#{jwt['token.access.secret']}")
-    private String accessSecret;
+인증 / 인가 처리는 JWT와 Spring Security로 처리했습니다.   
+JWT 구조는 AccessToken과 RefreshToken으로 설계했으며, 다중 디바이스 로그인을 위한 ino 값을 추가했습니다.   
+ino의 경우 난수 구조로만 생성되는 값으로 디바이스 식별값 목적으로 사용됩니다.   
 
-    @Value("#{jwt['token.access.expiration']}")
-    private Long accessTokenExpiration;
+각 토큰은 Redis에 저장되며 각 토큰의 약어인 at, rt를 시작으로 ino + 사용자 아이디 구조의 Key 값을 갖습니다.   
+클라이언트에서는 모든 토큰을 Cookie에 저장해서 관리하게 되며 SameSite Strict, HttpOnly, Secure 설정을 갖고 있습니다.
+재발급 방식으로는 Refresh Token Rotation 방식을 사용했습니다.
 
-    @Value("#{jwt['token.refresh.secret']}")
-    private String refreshSecret;
-
-    @Value("#{jwt['token.refresh.expiration']}")
-    private Long refreshTokenExpiration;
-
-    @Value("#{jwt['redis.expirationDay']}")
-    private Long redisExpirationDay;
-
-    @Value("#{jwt['redis.accessPrefix']}")
-    private String redisAccessPrefix;
-
-    @Value("#{jwt['redis.refreshPrefix']}")
-    private String redisRefreshPrefix;
-
-    @Value("#{jwt['cookie.tokenAgeDay']}")
-    private Long tokenCookieAge;
-
-    @Value("#{jwt['cookie.inoAgeDay']}")
-    private Long inoCookieAge;
-
-    private final StringRedisTemplate redisTemplate;
-
-    public void issuedToken(String userId, String inoValue, HttpServletResponse response) {
-        String accessToken = issuedAccessToken(userId, inoValue);
-        String refreshToken = issuedRefreshToken(userId, inoValue);
-
-        setCookie(JwtProperties.ACCESS_HEADER_STRING, accessToken, tokenCookieAge, response);
-        setCookie(JwtProperties.REFRESH_HEADER_STRING, refreshToken, tokenCookieAge, response);
-    }
-
-    //ino까지 모두 생성
-    public void issuedAllToken(String userId, HttpServletResponse response) {
-        String inoValue = issuedIno();
-        issuedToken(userId, inoValue, response);
-
-        setCookie(JwtProperties.INO_HEADER_STRING, inoValue, inoCookieAge, response);
-    }
-
-    public String issuedAccessToken(String userId, String inoValue) {
-        String accessToken = createToken(userId, accessSecret, accessTokenExpiration);
-        setRedisByToken(redisAccessPrefix, inoValue, userId, accessToken);
-
-        return JwtProperties.TOKEN_PREFIX + accessToken;
-    }
-
-    public String issuedRefreshToken(String userId, String inoValue) {
-        String refreshToken = createToken(userId, refreshSecret, refreshTokenExpiration);
-        setRedisByToken(redisRefreshPrefix, inoValue, userId, refreshToken);
-
-        return JwtProperties.TOKEN_PREFIX + refreshToken;
-    }
-
-    public String issuedIno(){
-
-        return UUID.randomUUID().toString().replace("-", "");
-    }
-    
-    public String createToken(String userId, String secret, long expirationTime) {
-        return JWT.create()
-                  .withSubject("cocoToken")
-                  .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
-                  .withClaim("userId", userId)
-                  .sign(Algorithm.HMAC512(secret));
-    }
-
-    public void setRedisByToken(String tokenPrefix, String ino, String claim, String value) {
-        String key = tokenPrefix + ino + claim;
-        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-        stringValueOperations.set(key, value, Duration.ofDays(redisExpirationDay));
-    }
-
-    public void setCookie(String header, String value, Long expires, HttpServletResponse response) {
-        response.addHeader("Set-Cookie"
-              , createCookie(
-                    header
-                    , value
-                    , Duration.ofDays(expires)
-              )
-        );
-    }
-
-    public String createCookie(String name, String value, Duration expires){
-        return ResponseCookie
-                .from(name, value)
-                .path("/")
-                .maxAge(expires)
-                .secure(true)
-                .httpOnly(true)
-                .sameSite("Strict")
-                .build()
-                .toString();
-    }
-```
-
-쿠키 옵션 설정으로는 secure, httpOnly, sameSite 설정을 했습니다.   
-쿠키 생성은 클라이언트 또는 FrontEnd Server에서 직접 제어하지 않도록 하기 위해 응답 헤더로 담아 보내는 방법으로 수정했습니다.   
-여러 클라이언트가 존재하는데 각자 제어하도록 처리한다면 추후 수정이 발생할 때 여러 클라이언트를 수정해야 하기 때문에 한 곳에서 처리하는게 좋다고 생각했습니다.   
-
-Redis는 RedisTemplate을 통해 사용했고, 토큰과 쿠키에 대한 secret key나 만료기간, prefix 같은 것은 jwt.properties 파일을 생성하고 그 안에서 관리합니다.
-
-<br />
-
-## 인증 / 인가(filter와 토큰 검증)
-
-<br />
-
-JwtAuthorizationFilter
 ```java
     @Override
     protected void doFilterInternal(HttpServletRequest request
@@ -402,130 +240,123 @@ JwtAuthorizationFilter
     }
 ```
 
-JwtAuthorizationFilter는 Security 설정에 따라 API 서버에 요청이 발생하면 요청을 가로채 토큰 검증을 먼저 수행합니다.   
+SecurityFilterChain의 beforeFilter에 JwtAuthorizationFilter를 지정함에 따라 요청이 발생하면 토큰 검증을 우선 수행하게 됩니다.
 Redis key 값으로 ino를 활용하는 만큼 ino의 유무를 먼저 판단하게 됩니다.   
-ino가 존재하지 않는다면 Redis 데이터를 체크할 수 없기 때문에 토큰 검증이나 인증 객체 생성을 하지 않고 이후 처리를 진행합니다.   
+ino가 존재하지 않는다면 Redis 데이터를 체크할 수 없기 때문에 토큰 검증이나 인증 객체 생성을 하지 않고 이후 처리를 진행합니다.
 
-ino가 존재한다면 여러가지 조건이 발생하게 됩니다.   
-두 토큰이 모두 존재하는 경우, 둘다 없는 경우, 둘중 하나만 있는 경우를 가정할 수 있었습니다.   
-두 토큰이 모두 존재한다면 토큰 검증을 수행하게 되고, 토큰 검증 과정에서 잘못된 토큰 혹은 Redis 데이터와 달라 탈취로 판단되는 경우가 발생한다면 예외처리를 하게 됩니다.   
-또한, 두 토큰의 만료기간은 동일하기 때문에 하나의 토큰만 존재하는 것도 정상적인 요청이 아니라고 볼 수 있기 때문에 하나만 존재하는 경우에도 탈취라고 판단하도록 했습니다.   
-이 경우 사용자 요청을 수행하지 않고 바로 오류 응답을 보내도록 했습니다.   
-Filter에서는 ControllerAdvice Annotation을 통한 Exception Handling이 불가했기 때문에 응답 코드를 설정하고 doFilterInternal 내부에서는 return을 찍어 이후 처리를 진행하지 않고 클라이언트에 응답하도록 처리했습니다.   
-예외 핸들링으로는 상황에 따라 Redis 데이터를 삭제하게 되며, 모든 쿠키를 삭제하도록 응답 쿠키에 담아 반환하게 됩니다.   
+ino가 존재한다면 토큰 검증을 수행하게 되는데 이때, 둘 중 하나만 존재하는 경우는 검증을 수행하지 않고 탈취라고 바로 판단합니다.   
+Cookie에 모든 토큰을 저장하는 만큼 누락되지 않는다는 것을 보장할 수 있다고 생각했기에 하나만 존재하는 경우는 탈취로 판단하도록 설계했습니다.   
+탈취로 판단되는 경우 응답 쿠키를 만료된 쿠키로 담고 Redis 데이터를 삭제하도록 한 뒤 바로 클라이언트에게 응답하게 됩니다.
 
-토큰이 만료된 경우에는 클라이언트로 만료 응답을 보내는 것이 아닌 체크 후 재발급을 바로 수행한 뒤 사용자 요청까지 처리하도록 구현했습니다.   
-이 부분에 대해서 고민이 많았는데 대부분의 경우 여러번의 요청을 통해 처리하는 것을 확인할 수 있었습니다.   
-요청 후 만료 응답을 받게 되면 재발급 요청을 보내 재발급을 받고 이후 사용자 요청을 다시 전송하는 형태를 주로 보게 되었는데 그럼 AccessToken이 만료되는 1시간 마다 한 번씩 3번의 요청을 보내야 된다는 결과가 나온다고 생각했습니다.   
-그래서 이 요청 횟수를 줄여보고자 한번의 요청으로 토큰을 검증하고 재발급까지 수행할 수 있도록 구현해봤습니다.   
+토큰이 만료된 경우에는 Man's Shop 프로젝트와 다른 방식으로 처리하게 됩니다.   
+BoardProject에서는 토큰이 만료된 경우 클라이언트에게 만료응답을 보내지 않고 정상적인 토큰인지 두가지 토큰을 모두 검증 한 뒤 바로 재발급을 수행하도록 처리했습니다.   
+만료 응답을 보내게 되는 경우 최초 요청, 재발급 요청, 재요청 이렇게 3번의 요청이 발생하게 되는데 이것을 한번의 요청으로 줄여보고자 시도해본 방법입니다.   
 
-토큰 검증이 정상적으로 처리되어 사용자 아이디 값이 Null이 아닌 경우 인증 객체를 생성하게 됩니다.   
-사용자는 로컬 회원가입으로 가입한 사용자와 OAuth2로 가입한 사용자로 나눠지는데 각자 User, OAuth2User를 재정의 또는 상속 받는 CustomUser를 사용하고 있습니다.   
-서로 다른 CustomUser로 처리해야 하다보니 코드 중복이 발생했었는데 이 문제를 해결하기 위해 CustomUserDetails라는 인터페이스를 생성하고 재정의 하도록 처리해 코드 중복을 줄일 수 있었습니다.
+토큰 검증이 정상적으로 마무리 되었다면 인증 객체 생성 후 SecurityContextHolder에 담아 Spring Security를 통한 권한 관리를 수행할 수 있도록 했습니다.
 
-<br />
+<br/>
 
-JwtTokenProvider
+### 동적 쿼리 처리를 위한 QueryDSL 도입
+
+<br/>
+
+처음 REST-API 프로젝트를 진행할 당시에는 QueryDSL을 사용하지 않았습니다.   
+오로지 JPQL을 사용한 방법으로만 진행했었는데 동적 처리를 수행하기 위해 비슷한 메소드가 계속 작성되어야 한다는 점이 아쉬웠습니다.   
+
 ```java
-    public String decodeToken(Cookie tokenCookie) {
-        String tokenValue = tokenCookie.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
-
-        return JWT.decode(tokenValue)
-                .getClaim("userId")
-                .asString();
-    }
-
-    public String verifyAccessToken(Cookie accessToken, String inoValue) {
-        String accessTokenValue = accessToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
-        String accessClaimByUserId = getClaimUserIdByToken(accessTokenValue, accessSecret);
-
-        //잘못된 토큰인 경우 null이 반환될 것이고,
-        //만료된 토큰이라면 Exception이 발생해 예외처리로 인해 TOKEN_EXPIRATION_RESULT가 반환된다.
-        if (accessClaimByUserId == null)
-            return null;
-        else if(accessClaimByUserId.equals(JwtProperties.TOKEN_EXPIRATION_RESULT))
-            return JwtProperties.TOKEN_EXPIRATION_RESULT;
-        else if(accessClaimByUserId.equals(JwtProperties.WRONG_TOKEN))
-            return JwtProperties.WRONG_TOKEN;
-
-        String redisValue = getTokenValueData(redisAccessPrefix, inoValue, accessClaimByUserId);
-
-        if(accessTokenValue.equals(redisValue))
-            return accessClaimByUserId;
-        else {
-            deleteTokenData(accessClaimByUserId, inoValue);
-            return JwtProperties.TOKEN_STEALING_RESULT;
-        }
-    }
-
-    public String verifyRefreshToken(Cookie refreshToken, String inoValue, String accessTokenClaim) {
-        String refreshTokenValue = refreshToken.getValue().replace(JwtProperties.TOKEN_PREFIX, "");
-        String refreshClaimByUserId = getClaimUserIdByToken(refreshTokenValue, refreshSecret);
-
-        if(refreshClaimByUserId == null)
-            return null;
-        else if(refreshClaimByUserId.equals(JwtProperties.TOKEN_EXPIRATION_RESULT))
-            return JwtProperties.TOKEN_EXPIRATION_RESULT;
-        else if(refreshClaimByUserId.equals(JwtProperties.WRONG_TOKEN))
-            return JwtProperties.WRONG_TOKEN;
-        else if(!refreshClaimByUserId.equals(accessTokenClaim)) {
-            deleteTokenData(refreshClaimByUserId, inoValue);
-            return JwtProperties.TOKEN_STEALING_RESULT;
-        }
-
-        String redisValue = getTokenValueData(redisRefreshPrefix, inoValue, refreshClaimByUserId);
-
-        if(refreshTokenValue.equals(redisValue))
-            return refreshClaimByUserId;
-        else {
-            deleteTokenData(refreshClaimByUserId, inoValue);
-            return JwtProperties.TOKEN_STEALING_RESULT;
-        }
-    }
-
-    public String getTokenValueData(String tokenPrefix, String inoValue, String claim) {
-        String tokenKey = tokenPrefix + inoValue + claim;
-        long keyExpire = redisTemplate.getExpire(tokenKey);
-
-        //Token이 존재하는데 -2라면 Redis 데이터가 만료되어 삭제된 것이기 때문에
-        //null을 반환한다.
-        if(keyExpire == -2)
-            return null;
-
-        return redisTemplate.opsForValue().get(tokenKey);
-    }
-
-    //token에서 Claim으로 설정된 userId를 꺼내 반환.
-    public String getClaimUserIdByToken(String tokenValue, String secret) {
-
-        try {
-          return JWT.require(Algorithm.HMAC512(secret))
-                    .build()
-                    .verify(tokenValue)
-                    .getClaim("userId")
-                    .asString();
-        }catch(TokenExpiredException e) {
-            //토큰 만료 exception
-            return JwtProperties.TOKEN_EXPIRATION_RESULT;
-        }catch (JWTDecodeException e) {
-            //비정상 토큰. 검증할 수 없는 토큰.
-            return JwtProperties.WRONG_TOKEN;
-        }
-    }
+if(cri.getKeyword() == null) {
+    resultDTO = hierarchicalBoardRepository.hierarchicalBoardList(
+            //...
+    );
+}else if (cri.getSearchType == "t") {
+    resultDTO = hierarchicalBoardRepository.hierarchicalBoardListSearchTitle(
+            //...
+     );    
+}
 ```
 
-Filter에서 토큰 검증을 요청했을 때 만료 응답을 받게 된다면 토큰을 복호화 해 Claim 값을 받아와 사용자 아이디를 반환받고 ino와 사용자 아이디를 통해 Redis 데이터와 비교하게 됩니다.   
-만료되었지만 정상적인 토큰이라면 Redis 데이터와 일치할 것이기 때문에 그런 경우 재발급을 수행하고 다른 경우 탈취로 판단해 예외처리를 수행하도록 했습니다.   
+이런 형태로 Repository 호출 이전 조건문을 통해 확인하고 그에 맞는 Repository 메소드를 호출해야 했기에 코드가 길어지고 중복 코드도 많이 발생한다는 문제가 있었습니다.
 
-<br />
+이 문제를 해결하기 위해 JPA에서 동적 처리를 할 수 있는 방법에 대해 알아보게 되었고, EntityManager와 NativeQuery를 사용하는 방법, Specification을 사용하는 방법, QueryDSL을 사용하는 방법이 있다는 것을 알 수 있었습니다.   
+이 중 QueryDSL을 선택하게 되었는데, Native Query의 경우 문자열 기반으로 작성하다보니 가독성 저하와 오타로 인한 오류가 해당 메소드 호출 시점에 파악할 수 있다는 점이 아쉬웠습니다.   
+Specification은 동적 처리만을 위해 사용하기에는 복잡하게 처리된다는 단점이 있었으며 그에 반해 QueryDSL은 직관적인 사용법, 오타나 잘못된 요청에 대해 런타임 시점에 파악이 가능하다는 점이 유리하다고 생각해 선택하게 되었습니다.   
 
-## API 서버와의 통신
+```java
+private BooleanExpression searchTypeEq(String searchType, String keyword) {
+  if(searchType == null)
+    return null;
+  else if(searchType.equals("t"))
+    return hierarchicalBoard.boardTitle.like(keyword);
+  else if(searchType.equals("c"))
+    return hierarchicalBoard.boardContent.like(keyword);
+  else if(searchType.equals("tc"))
+    return hierarchicalBoard.boardTitle.like(keyword).or(hierarchicalBoard.boardContent.like(keyword));
+  else if(searchType.equals("u"))
+    return hierarchicalBoard.member.userId.like(keyword);
+  else
+    return null;
+}
+```
 
-API 서버와의 통신 방법으로 FrontEnd Server에서는 WebClient를, react 클라이언트에서는 Axios를 택했습니다.   
+BooleanExpression 타입의 메소드를 분리하는 것으로 동적 처리가 가능했고, 직관적인 QueryDSL의 표현방법으로 인해 높은 가독성 확보와 쉬운 이해도가 장점이었습니다.   
+이 프로젝트 마무리 이후 Man's Shop 프로젝트까지 QueryDSL을 계속해서 사용하고 있는데, 복잡한 쿼리의 경우 QueryDSL에 제한이 있다는 점은 아쉬운 부분이긴 하지만, 객체 중심적으로 보다 직관적으로 처리할 수 있다는 점은 QueryDSL 사용 결정에 큰 이점이 될 것이라는 생각이 들었습니다. 
 
-<br />
+<br/>
 
-FrontEnd Server / WebClient
+### 삭제된 댓글의 처리
+
+<br/>
+
+BoardProject에서의 댓글은 계층형 구조로 처리됩니다.   
+이전 버전까지의 프로젝트들은 계층형 구조에서 삭제가 발생하는 경우 하위 계층까지 모두 삭제하는 방법을 사용해왔습니다.   
+그러나, 이번에는 삭제 요청이 발생하더라도 해당 데이터만 삭제하는 방법을 사용해 보고자 했습니다.   
+
+Naver 페이지에서 쉽게 볼 수 있듯이 삭제된 댓글이 출력은 되지만 '삭제된 댓글입니다'와 같은 문구가 출력됩니다.   
+이번 REST-API 버전에서는 이 방법으로 처리해보고자 했습니다.   
+
+```java
+List<BoardCommentDTO> list = jpaQueryFactory
+                                    .select(
+                                            Projections.fields(
+                                                    BoardCommentDTO.class
+                                                    , comment.commentNo
+                                                    , comment.member.nickname
+                                                    , comment.commentDate
+                                                    , new CaseBuilder()
+                                                            .when(comment.commentStatus.gt(0))
+                                                            .then("삭제된 댓글입니다.")
+                                                            .otherwise(comment.commentContent)
+                                                            .as("commentContent")
+                                                    , comment.commentGroupNo
+                                                    , comment.commentIndent
+                                                    , comment.commentUpperNo
+                                            )
+                                    )
+                                    .from(comment)
+                                    .where(commentBoardEq(boardNo, imageNo))
+                                    .orderBy(comment.commentGroupNo.desc())
+                                    .orderBy(comment.commentUpperNo.asc())
+                                    .offset(pageable.getOffset())
+                                    .limit(pageable.getPageSize())
+                                    .fetch();
+```
+
+이 처리를 위해 Comment 테이블에 상태값을 알 수 있는 commentStatus라는 컬럼을 추가했습니다.   
+이 상태값을 통해 삭제 요청이 발생했을 때 해당 컬럼 값을 수정하도록 했고, 조회 시점에는 CASE WHEN을 사용해 조회에서부터 '삭제된 댓글입니다.' 라는 값을 content로 가져오도록 처리했습니다.   
+JOIN 없이 comment 테이블만 조회하는 요청이기도 하고 CASE WHEN을 사용하지 않는다면 코드레벨에서 다시 전체 목록을 돌면서 확인해야 한다는 단점이 있다고 생각해 조회 시점에서 처리될 수 있도록 했습니다.
+
+<br/>
+
+### WebClient를 통한 API 서버와의 통신
+
+<br/>
+
+React 기반의 Client Side Application에서는 Axios를 통해 API 서버와 통신하지만, Spring Boot 기반의 Frontend Server에서는 API 서버와 WebClient를 통해 통신합니다.   
+최근에는 RestClient라는 선택지도 있지만, 진행 당시 RestTemplate과 WebClient만 알고 있었고 둘 중 WebClient를 사용하게 되었습니다.   
+당시 RestTemplate의 Deprecated 이슈도 있었고, 스프링에서 WebClient를 권하고 있었기에 WebClient로 선택했습니다.   
+
+WebClientConfig 클래스에 WebClient 기본 설정을 해두고 필요한 곳에서 가져다 사용하는 구조로 설계했습니다.
+
 ```java
 @Component
 public class WebClientConfig {
@@ -550,392 +381,116 @@ public class WebClientConfig {
     }
 }
 
-
 //ImageBoardWebClient
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ImageBoardWebClient {
 
-    private final WebClient webClient = new WebClientConfig().useWebClient();
+  private final WebClient webClient = new WebClientConfig().useWebClient();
 
-    private final WebClient imageWebClient = new WebClientConfig().useImageWebClient();
+  private final WebClient imageWebClient = new WebClientConfig().useImageWebClient();
 
-    public Long patchBoard(long imageNo, ImageBoardInsertDTO dto
-                          , List<MultipartFile> files, List<String> deleteFiles
-                          , MultiValueMap<String, String> cookieMap, HttpServletResponse response){
-        if(files != null && imageSizeCheck(files) == -2L)
-            return -2L;
+  public Long patchBoard(long imageNo, ImageBoardInsertDTO dto
+          , List<MultipartFile> files, List<String> deleteFiles
+          , MultiValueMap<String, String> cookieMap, HttpServletResponse response){
+    if(files != null && imageSizeCheck(files) == -2L)
+      return -2L;
 
-        MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
+    MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
 
-        Optional.ofNullable(files)
-                .orElseGet(Collections::emptyList)
-                .forEach(file -> {
-                    mbBuilder.part("files", file.getResource());
-                });
+    Optional.ofNullable(files)
+            .orElseGet(Collections::emptyList)
+            .forEach(file -> {
+              mbBuilder.part("files", file.getResource());
+            });
 
-        Optional.ofNullable(deleteFiles)
-                .orElseGet(Collections::emptyList)
-                .forEach(file -> {
-                    mbBuilder.part("deleteFiles", file);
-                });
+    Optional.ofNullable(deleteFiles)
+            .orElseGet(Collections::emptyList)
+            .forEach(file -> {
+              mbBuilder.part("deleteFiles", file);
+            });
 
-        mbBuilder.part("imageTitle", imageTitle);
-        mbBuilder.part("imageContent", imageContent);
+    mbBuilder.part("imageTitle", imageTitle);
+    mbBuilder.part("imageContent", imageContent);
 
-        return imageWebClient.patch()
-                .uri(uriBuilder -> uriBuilder.path(imagePath_variable).build(imageNo))
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(mbBuilder.build()))
-                .cookies(cookies -> cookies.addAll(cookieMap))
-                .exchangeToMono(res -> {
-                    exchangeService.checkExchangeResponse(res, response);
+    return imageWebClient.patch()
+            .uri(uriBuilder -> uriBuilder.path(imagePath_variable).build(imageNo))
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .body(BodyInserters.fromMultipartData(mbBuilder.build()))
+            .cookies(cookies -> cookies.addAll(cookieMap))
+            .exchangeToMono(res -> {
+              exchangeService.checkExchangeResponse(res, response);
 
-                    return res.bodyToMono(Long.class);
-                })
-                .block();
-    }
+              return res.bodyToMono(Long.class);
+            })
+            .block();
+  }
 }
-
-
-    //ExchangeServiceImpl
-    @Override
-    public void checkExchangeResponse(ClientResponse res, HttpServletResponse response) {
-
-        if(res.statusCode().equals(HttpStatus.OK)){
-            cookieService.setCookie(res, response);
-        }else if(res.statusCode().equals(HttpStatus.FORBIDDEN)){
-            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, "AccessDenied");
-        }else if(res.rawStatusCode() == 800){
-            //토큰 탈취
-            cookieService.setCookie(res, response);
-            throw new CustomTokenStealingException(ErrorCode.TOKEN_STEALING);
-        }else if(res.statusCode().is4xxClientError()){
-            throw new RuntimeException();
-        }else if(res.statusCode().is5xxServerError()){
-            throw new NullPointerException();
-        }
-
-    }
 ```
 
-WebClient에 대한 기본 설정은 WebClientConfig에 작성해두고 필요한 곳에서 가져다 사용하도록 구현했습니다.   
-이미지 파일 전송이 필요한 만큼 두개의 설정으로 분리해두었습니다.   
-파일 전송 처리를 위해서 MultipartBodyBuilder를 통해 처리했고, 예외처리에 대해서는 ExchangeService 내에 메소드를  생성해 그 메소드를 호출하여 핸들링 하도록 처리했습니다.   
-리팩토링 이전에는 응답에 대해 retrieve() 로 처리해 각각의 예외처리와 200 응답에 대한 처리를 수행했으나 API 서버에서 반환되는 응답 쿠키의 처리와 예외 핸들링을 직접 제어하기 위해 exchangeToMono()로 수정했습니다.   
+이미지 파일 전송이 필요한 WebClient 설정도 필요했기 때문에 기본 설정인 WebClient와 exchangeStrategies 옵션이 추가된 이미지 전송에 사용될 WebClient를 정의해두었습니다.   
+이미지 파일을 같이 보내는 경우 MultipartBodyBuilder를 사용해서 게시글 데이터와 같이 담아 보낼 수 있도록 처리했습니다.   
 
-<br />
+```java
+//ExchangeServiceImpl
+@Override
+public void checkExchangeResponse(ClientResponse res, HttpServletResponse response) {
+      if(res.statusCode().equals(HttpStatus.OK)){
+          cookieService.setCookie(res, response);
+      }else if(res.statusCode().equals(HttpStatus.FORBIDDEN)){
+          throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, "AccessDenied");
+      }else if(res.rawStatusCode() == 800){
+          //토큰 탈취
+          cookieService.setCookie(res, response);
+          throw new CustomTokenStealingException(ErrorCode.TOKEN_STEALING);
+      }else if(res.statusCode().is4xxClientError()){
+          throw new RuntimeException();
+      }else if(res.statusCode().is5xxServerError()){
+          throw new NullPointerException();
+      }
+}
+```
 
-React
+예외처리는 매 요청마다 직접 작성하기보다 ExchangeService 라는 서비스를 만들어 그 서비스 메소드를 통해 핸들링할 수 있도록 처리했습니다.
+그 안에서 응답값에 맞는 Exception을 강제로 발생시키도록 처리하고 이 예외들을 @ControllerAdvice가 선언된 ExceptionHandlerAdvice 클래스를 통해 전역 관리하도록 설계했습니다.
+
+<br/>
+
+### 이미지 출력 처리
+
+<br/>
+
+이 프로젝트를 진행하며 처음으로 React를 사용했기에 이미지 출력에 대해 시행착오가 많았습니다.   
+Thymeleaf, JSP에서는 img 태그의 src에 요청 경로와 이미지명만 담아두면 해결됐던 반면, React에서는 base64 형태의 URL로 나오는 것을 확인할 수 있었습니다.   
+그래서 몇몇 사이트를 방문하면서 확인해보니 이렇게 처리되는 곳이 전혀 없다는 것을 알 수 있었고 문제점이라고 생각해 이것을 해결하고자 했습니다.   
+
+문제 해결 방안은 window.URL.createObjectURL()을 사용하는 방법이었습니다.   
+
 ```javascript
-//customAxios.js
-export const imageInsertAxios = axios.create({
-  baseURL: `${default_url}${image_default}`,
-  headers: {
-    'Content-Type' : 'multipart/form-data',
-  },
-  withCredentials: true,
-})
-
-//ImageUpdatePage.jsx
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  let formData = setFormData(values, files);
-  deleteImageName.forEach(
-          fileName => formData.append('deleteFiles', fileName)
-  );
-
-  await imageInsertAxios.patch(`${imageNo}`, formData)
-          .then(res => {
-            navigate(`/image/${res.data}`);
-          })
-          .catch(err => {
-            axiosErrorHandling(err);
-          })
-}
+const getImageDisplayData = async (imageName) => {
+        await imageDisplayAxios.get(`display/${imageName}`)
+            .then(res => {
+                const url = window
+                    .URL
+                    .createObjectURL(
+                        new Blob([res.data], { type: res.headers['content-type']})
+                    );
+                setImageSrc(url);
+            })
+            .catch(err => {
+                axiosErrorHandling(err);
+            })
+};
 ```
 
-React에서는 Spring FrontEnd Server에서 보다 간단하게 처리할 수 있었습니다.   
-Axios를 모듈화 해두었기 때문에 해당 모듈을 그대로 가져와 사용했으며 FormData에 담아 전송하는 것으로 간단하게 처리할 수 있었습니다.   
-react에서도 API 서버 요청에서 발생하는 예외 핸들링을 FrontEnd Server 처럼 모듈화 해 관리하도록 했습니다.  
+이런식으로 요청 파일 요청 결과를 window.URL.createObjectURL을 통해 Blob으로 담아 처리한다면 원하던 구조처럼 blob:http://localhost~~ 구조로 처리하는 것이 가능했습니다.   
+이 문제 해결에 대한 여러 시도와 정리는 아래 링크의 블로그에 정리해두었습니다.
 
-<br />
+<a href="https://myyoun.tistory.com/227">React 이미지 처리 정리</a>
 
-## 게시글 리스트 조회에서의 동적 쿼리(QueryDSL)
+<br/>
 
-REST-API로 구현하던 당시에는 JPQL만 사용하고 있었습니다.   
-insert, update, delete 요청에 대한 동적 쿼리는 List를 넘겨 in 절로 처리하는 방법으로 처리할 수 있었으나 검색어 여부와 검색 타입에 따른 조건에 대한 처리는 서비스단에서 조건문으로 나눈 뒤 해당 메소드들을 호출하도록 처리했습니다.   
-그렇지만 코드가 너무 길어지고 중복되는 부분이 많이 발생했기 때문에 이 부분을 개선하고자 방법을 찾아보게 되었습니다.   
-그리고 그 결과 QueryDSL을 통한 동적쿼리로 이 부분을 개선할 수 있었습니다.
-
-<br />
-
-수정 이전 코드 - HierarchicalBoardServiceImpl, HierarchicalBoardRepository
-```java
-    @Override
-    public Page<HierarchicalBoardDTO> getHierarchicalBoardList(Criteria cri) {
-        Page<HierarchicalBoardDTO> dto;
-
-        if (cri.getKeyword() == null || cri.getKeyword() == "") { //default List
-            dto = hierarchicalBoardRepository.hierarchicalBoardList(
-                          PageRequest.of(cri.getPageNum() - 1
-                          , cri.getAmount()
-                          , Sort.by("boardGroupNo").descending()
-                                  .and(Sort.by("boardUpperNo").ascending()))
-                    );
-        } else if (cri.getSearchType() == "t") {//title 검색시 사용
-        dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitle(
-                          cri.getKeyword()
-                          , PageRequest.of(cri.getPageNum() - 1
-                          , cri.getAmount()
-                          , Sort.by("boardGroupNo").descending()
-                                  .and(Sort.by("boardUpperNo").ascending()))
-                    );
-        } else if (cri.getSearchType() == "c") {//content 검색시 사용
-        dto = hierarchicalBoardRepository.hierarchicalBoardListSearchContent(
-                          cri.getKeyword()
-                          , PageRequest.of(cri.getPageNum() - 1
-                          , cri.getAmount()
-                          , Sort.by("boardGroupNo").descending()
-                                  .and(Sort.by("boardUpperNo").ascending()))
-                    );
-        } else if (cri.getSearchType() == "u") {// user 검색 시 사용
-        dto = hierarchicalBoardRepository.hierarchicalBoardListSearchUser(
-                          cri.getKeyword()
-                          , PageRequest.of(cri.getPageNum() - 1
-                          , cri.getAmount()
-                          , Sort.by("boardGroupNo").descending()
-                                  .and(Sort.by("boardUpperNo").ascending()))
-                    );
-        } else if (cri.getKeyword() == "tc") {// title and content 검색시 사용
-        dto = hierarchicalBoardRepository.hierarchicalBoardListSearchTitleOrContent(
-                          cri.getKeyword()
-                          , PageRequest.of(cri.getPageNum() - 1
-                          , cri.getAmount()
-                          , Sort.by("boardGroupNo").descending()
-                                  .and(Sort.by("boardUpperNo").ascending()))
-                    );
-        } else {
-            return null;
-        }
-
-        return dto;
-    }
-    
-    //repository
-    //HierarchicalBoard default List
-    @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardDTO(" +
-            "b.boardNo" +
-            ", b.boardTitle" +
-            ", b.member.userId" +
-            ", b.boardContent" +
-            ", b.boardDate" +
-            ", b.boardGroupNo" +
-            ", b.boardIndent" +
-            ", b.boardUpperNo) " +
-            "FROM HierarchicalBoard b"
-        , countQuery = "SELECT c.contentCount " +
-            "FROM Count_table c " +
-            "WHERE c.boardName = 'hierarchicalboard'")
-    Page<HierarchicalBoardDTO> hierarchicalBoardList(Pageable pageable);
-
-
-    //HierarchicalBoard searchTitle List
-    @Query(value = "SELECT new com.example.boardrest.domain.dto.HierarchicalBoardDTO(" +
-          "b.boardNo" +
-          ", b.boardTitle" +
-          ", b.member.userId" +
-          ", b.boardContent" +
-          ", b.boardDate" +
-          ", b.boardGroupNo" +
-          ", b.boardIndent" +
-          ", b.boardUpperNo) " +
-          "FROM HierarchicalBoard b " +
-          "WHERE b.boardTitle LIKE :keyword"
-        , countQuery = "SELECT count(b) " +
-          "FROM HierarchicalBoard b " +
-          "WHERE b.boardTitle LIKE :keyword")
-    Page<HierarchicalBoardDTO> hierarchicalBoardListSearchTitle(@Param("keyword") String keyword, Pageable pageable);
-```
-
-여기서 Criteria는 DTO로 사용하는 직접 만든 객체입니다.   
-페이지 번호, 각 게시판의 한 페이지당 출력 데이터 개수, 검색어, 검색 타입을 필드로 갖고 있습니다.
-기존에는 이렇게 모든 조건에 대해 Repository에 JPQL로 직접 작성하고 Service에서도 조건문들 통해 다르게 처리하도록 했습니다.
-이 부분에 대해 QueryDSL을 적용하면서 동적으로 가독성 높게 수정할 수 있었습니다.   
-
-<br />
-
-개선된 코드
-```java
-    //HierarchicalBoardServiceImpl
-    @Override
-    public Page<HierarchicalBoardListDTO> getHierarchicalBoardList(Criteria cri, Principal principal) {
-
-        Pageable pageable = PageRequest.of(cri.getPageNum() - 1
-                                          , cri.getBoardAmount()
-                                          , Sort.by("boardGroupNo").descending()
-                                                    .and(Sort.by("boardUpperNo").ascending()));
-
-        return hierarchicalBoardRepository.findAll(cri, pageable);
-    }
-
-    //customRepository
-    public interface HierarchicalBoardRepositoryCustom {
-      Page<HierarchicalBoardListDTO> findAll(Criteria cri, Pageable pageable);
-    }
-    
-    //customRepositoryImpl
-    @Repository
-    @RequiredArgsConstructor
-    public class HierarchicalBoardRepositoryCustomImpl implements HierarchicalBoardRepositoryCustom{
-
-      private final JPAQueryFactory jpaQueryFactory;
-
-      @Override
-      public Page<HierarchicalBoardListDTO> findAll(Criteria cri, Pageable pageable) {
-
-        List<HierarchicalBoardListDTO> list = jpaQueryFactory.select(
-                        Projections.fields(
-                                HierarchicalBoardListDTO.class
-                                , hierarchicalBoard.boardNo
-                                , hierarchicalBoard.boardTitle
-                                , hierarchicalBoard.member.userId
-                                , hierarchicalBoard.boardDate
-                                , hierarchicalBoard.boardIndent
-                        )
-                )
-                .from(hierarchicalBoard)
-                .where(
-                        searchTypeEq(cri.getSearchType(), cri.getKeyword())
-                )
-                .orderBy(hierarchicalBoard.boardGroupNo.desc())
-                .orderBy(hierarchicalBoard.boardUpperNo.asc())
-                .offset((cri.getPageNum() - 1) * cri.getBoardAmount())
-                .limit(cri.getBoardAmount())
-                .fetch();
-
-        JPAQuery<Long> count = jpaQueryFactory.select(hierarchicalBoard.countDistinct())
-                .from(hierarchicalBoard)
-                .where(
-                        searchTypeEq(cri.getSearchType(), cri.getKeyword())
-                );
-
-        return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);
-      }
-
-      private BooleanExpression searchTypeEq(String searchType, String keyword) {
-        if(searchType == null)
-          return null;
-        else if(searchType.equals("t"))
-          return hierarchicalBoard.boardTitle.like(keyword);
-        else if(searchType.equals("c"))
-          return hierarchicalBoard.boardContent.like(keyword);
-        else if(searchType.equals("tc"))
-          return hierarchicalBoard.boardTitle.like(keyword).or(hierarchicalBoard.boardContent.like(keyword));
-        else if(searchType.equals("u"))
-          return hierarchicalBoard.member.userId.like(keyword);
-        else
-          return null;
-      }
-    }
-```
-
-검색어와 검색 타입에 대한 동적 처리는 BooleanExpression 타입의 searchTypeEq을 통해 처리할 수 있었습니다.   
-QueryDSL을 사용하면서 정말 좋았던 점이 기본적으로 세팅만 해두고 나면 쿼리 작성에 대해 직관적으로 표현되기 때문에 여러가지로 알아볼 필요 없이 처리가 가능하다는 점이었습니다.   
-또한 JPQL 처럼 count 쿼리를 직접 제어할 수 있다는 점이 좋았습니다.   
-
-현재 데이터베이스에는 테스트를 위해 100만건의 더미데이터를 넣어두었습니다.   
-데이터가 쌓여 갈수록 어느정도의 시간이 소요되는지, 그럼 쿼리를 어떻게 작성하고 개선할 수 있는지 확인하기 위해 넣어두었는데 기존 count(*)로 처리했던 쿼리의 경우 100만건 만으로도 16초가 소요되었습니다.   
-여러 테스트를 통해 count(distinct(PK)) 로 조회하는 것이 전체 조회에서는 0.6초로 개선될 정도로 확연한 차이를 보이는 것을 확인할 수 있었습니다.   
-하지만 LIKE 문을 통해 WHERE문이 존재하는 경우에는 count(*)가 조금 더 빠른 결과를 보여줬고, 검색되는 컬럼에 대해 인덱스를 설정해주는 것으로 처리 시간을 더 단축 할 수 있다는 결과를 확인할 수 있었습니다.   
-그래서 꼭 count 쿼리를 제어했으면 했고, QueryDSL은 제가 기획한 프로젝트의 요구사항을 잘 처리할 수 있는 좋은 방법이었습니다.
-
-<br />
-
-## 삭제된 댓글의 처리
-
-이전 프로젝트까지는 댓글 삭제 요청이 발생하는 경우 해당 댓글을 삭제하며 하위 계층에 위치하는 댓글들까지 삭제하도록 처리했습니다.   
-하지만 최근 운영되는 페이지들의 경우 요청이 발생한 댓글만 삭제하거나 삭제된 댓글에 대해 '삭제된 댓글입니다' 와 같은 내용만 표시하도록 하는 경우를 많이 볼 수 있습니다.   
-그래서 이번에는 댓글을 삭제하는 것이 아닌 삭제되었다는 문구를 출력하도록 수정했습니다.
-
-이 처리를 위해 Comment 테이블에 상태값을 알 수 있는 컬럼을 추가했습니다.   
-삭제 요청을 받은 Comment 데이터는 delete 요청을 처리하는 것이 아닌 상태값을 변경하도록 처리했습니다.   
-내용에 대한 처리의 경우 조회한 뒤에 서버나 클라이언트에서 상태값에 따라 파싱하는 것이 아닌 조회에서부터 처리될 수 있도록 했습니다.   
-이렇게 처리한 이유는 서버에서 처리하는 경우에는 조회한 모든 데이터를 체크하면서 수정해야 한다는 문제가 있었고, 클라이언트에서는 굳이 전달되지 않아도 되는 삭제된 데이터의 내용을 알게 되기 때문입니다.   
-최대한 클라이언트에게 불필요한 정보를 노출하지 말자는 생각으로 개발하고 있기 때문에 조회 후 파싱하는 것이 아닌 쿼리에서 case when을 통해 조회 단계에서부터 처리할 수 있도록 했습니다.
-
-```java
-@Repository
-@RequiredArgsConstructor
-public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
-    
-    private final JPAQueryFactory jpaQueryFactory;
-    
-    @Override
-    public Page<BoardCommentDTO> findAll(Criteria cri, Pageable pageable, String boardNo, String imageNo) {
-        List<BoardCommentDTO> list = jpaQueryFactory
-                                    .select(
-                                            Projections.fields(
-                                                    BoardCommentDTO.class
-                                                    , comment.commentNo
-                                                    , comment.member.nickname
-                                                    , comment.commentDate
-                                                    , new CaseBuilder()
-                                                            .when(comment.commentStatus.gt(0))
-                                                            .then("삭제된 댓글입니다.")
-                                                            .otherwise(comment.commentContent)
-                                                            .as("commentContent")
-                                                    , comment.commentGroupNo
-                                                    , comment.commentIndent
-                                                    , comment.commentUpperNo
-                                            )
-                                    )
-                                    .from(comment)
-                                    .where(commentBoardEq(boardNo, imageNo))
-                                    .orderBy(comment.commentGroupNo.desc())
-                                    .orderBy(comment.commentUpperNo.asc())
-                                    .offset(pageable.getOffset())
-                                    .limit(pageable.getPageSize())
-                                    .fetch();
-        
-        JPAQuery<Long> count = jpaQueryFactory.select(comment.count())
-                .from(comment)
-                .where(commentBoardEq(boardNo, imageNo));
-        
-        return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);
-    }
-    
-    private BooleanExpression commentBoardEq(String boardNo, String imageNo) {
-        if(boardNo == null)
-            return comment.imageBoard.imageNo.eq(Long.parseLong(imageNo));
-        
-        return comment.hierarchicalBoard.boardNo.eq(Long.parseLong(boardNo));
-    }
-}
-```
-
-<br />
-
-## 느낀점과 고민중인 부분
-REST-API 버전의 프로젝트를 진행하고 마무리할 때 까지는 리스트 형태의 데이터 처리를 반복문으로 처리했습니다.   
-프로젝트를 처음 마무리한 뒤 이후 학습 중에 서버 또는 데이터 베이스의 접근 비용 또는 효율에 대한 글을 보게 되었습니다.   
-미처 생각하지 못한 부분이었는데 여러 번 접근해 처리한다는 것은 그만큼의 서버 트래픽 또는 Thread pool 관리에서 비효율적이라는 생각이 들었습니다.   
-그래서 여러 건의 데이터 처리에 대해 처리할 방법을 알아보게 되었고 동적 쿼리로 개선하게 되었습니다.   
-리스트 형태는 in 절로 간단하게 해결할 수 있었지만 조회 조건에 대한 문제는 그렇게 해결할 수 없었기 때문에 QueryDSL을 사용했습니다.   
-JPQL로만 처리했었는데 QueryDSL을 써보니 가독성이 좋아 바로바로 이해하고 쿼리 작성을 쉽게 처리할 수 있었습니다.   
-또한 컴파일 과정에서 실수를 잡아낼 수 있다는 점에서도 유리하다고 느꼈습니다.   
-
-개선하고자 고민하는 부분으로는 Redis의 활용입니다.   
-토큰 관리를 Redis로 처리하고 있는데 다중 로그인을 허용하게 되면서 한 명의 사용자에 대한 토큰 데이터가 다수 존재합니다.   
-고민하고 있는 부분이 이 데이터 관리에 대한 부분인데 같은 사용자의 데이터를 묶어서 관리할 수 있는지, 할 수 있다면 묶는 것이 좋을지 지금처럼 개별적인 데이터로 관리하는 것이 더 좋을지에 대한 부분입니다.   
-추후 Redis를 통한 캐싱 처리도 적용해보고자 하고 있기 때문에 데이터 관리를 어떻게 처리할지 고민하고 있습니다.   
-이 부분에 대해서 Redis를 더 학습해서 개선하고자 계획하고 있습니다.   
-
-
-<br />
-<br />
 
 ---
 

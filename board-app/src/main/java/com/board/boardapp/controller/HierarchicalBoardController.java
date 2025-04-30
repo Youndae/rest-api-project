@@ -1,8 +1,8 @@
 package com.board.boardapp.controller;
 
-import com.board.boardapp.ExceptionHandle.CustomAccessDeniedException;
-import com.board.boardapp.ExceptionHandle.CustomNotFoundException;
-import com.board.boardapp.ExceptionHandle.ErrorCode;
+import com.board.boardapp.exception.CustomAccessDeniedException;
+import com.board.boardapp.exception.CustomNotFoundException;
+import com.board.boardapp.exception.ErrorCode;
 import com.board.boardapp.connection.webClient.HierarchicalBoardWebClient;
 import com.board.boardapp.domain.dto.*;
 import com.board.boardapp.domain.dto.hBoard.in.HierarchicalBoardInsertDTO;

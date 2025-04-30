@@ -1,11 +1,11 @@
-package com.board.boardapp.ExceptionHandle;
+package com.board.boardapp.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CustomAccessDeniedException extends RuntimeException{
+public class CustomBadCredentialsException extends RuntimeException{
 
     ErrorCode errorCode;
 
