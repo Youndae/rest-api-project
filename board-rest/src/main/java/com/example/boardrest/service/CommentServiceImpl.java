@@ -1,12 +1,19 @@
 package com.example.boardrest.service;
 
+import com.example.boardrest.customException.CustomNotFoundException;
+import com.example.boardrest.customException.ErrorCode;
+import com.example.boardrest.domain.dto.common.business.PageCondition;
+import com.example.boardrest.domain.dto.response.PageResponse;
+import com.example.boardrest.domain.entity.Board;
 import com.example.boardrest.domain.entity.Comment;
-import com.example.boardrest.domain.dto.paging.Criteria;
-import com.example.boardrest.domain.dto.comment.out.BoardCommentDTO;
-import com.example.boardrest.domain.dto.comment.in.CommentInsertDTO;
+import com.example.boardrest.domain.dto.comment.out.BoardCommentResponse;
+import com.example.boardrest.domain.dto.comment.in.CommentRequest;
+import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.domain.enumuration.Result;
+import com.example.boardrest.domain.enumuration.ListAmount;
+import com.example.boardrest.repository.BoardRepository;
 import com.example.boardrest.repository.CommentRepository;
+import com.example.boardrest.repository.ImageBoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,7 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
-import java.security.Principal;
 
 @Service
 @RequiredArgsConstructor
@@ -27,53 +33,98 @@ public class CommentServiceImpl implements CommentService{
 
     private final CommentRepository commentRepository;
 
-    // 댓글 List
-    @Override
-    public Page<BoardCommentDTO> commentList(String boardNo, String imageNo, Criteria cri) {
-        Pageable pageable = PageRequest.of(cri.getPageNum() - 1
-                , cri.getBoardAmount()
-                , Sort.by("commentGroupNo").descending()
-                        .and(Sort.by("commentUpperNo").ascending()));
+    private final BoardRepository boardRepository;
 
-        return commentRepository.findAll(pageable, boardNo, imageNo);
+    private final ImageBoardRepository imageBoardRepository;
+
+    @Override
+    public PageResponse<BoardCommentResponse> getBoardCommentList(long id, int page) {
+        Pageable pageable = getCommentPageable(page);
+        Page<BoardCommentResponse> content = commentRepository.findAllCommentByBoardId(id, pageable);
+
+        return PageResponse.of(content);
+    }
+    @Override
+    public PageResponse<BoardCommentResponse> getImageBoardCommentList(long id, int page) {
+        Pageable pageable = getCommentPageable(page);
+        Page<BoardCommentResponse> content = commentRepository.findAllCommentByImageBoardId(id, pageable);
+
+        return PageResponse.of(content);
     }
 
-    // 댓글 insert
+    private Pageable getCommentPageable(int page) {
+        PageCondition condition = PageCondition.of(page, ListAmount.COMMENT);
+
+        return PageRequest.of(condition.getPage() - 1,
+                condition.getAmount(),
+                Sort.by("commentGroupNo").descending()
+                        .and(Sort.by("commentUpperNo").ascending()));
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String commentInsertProc(CommentInsertDTO dto, Principal principal) {
+    public void insertBoardComment(long targetBoardId, CommentRequest request, String userId) {
+        Member memberEntity = principalService.getMemberByUserId(userId);
+        Board targetBoard = boardRepository.findById(targetBoardId)
+                .orElseThrow(() -> new CustomNotFoundException(ErrorCode.BAD_REQUEST, "Insert comment target board is null"));
 
-        Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
-        Comment comment = dto.toEntity(memberEntity);
+        Comment comment = request.toEntity(memberEntity, targetBoard);
+        saveComment(comment);
+    }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void insertImageBoardComment(long targetBoardId, CommentRequest request, String userId) {
+        Member memberEntity = principalService.getMemberByUserId(userId);
+        ImageBoard targetBoard = imageBoardRepository.findById(targetBoardId)
+                .orElseThrow(() -> new CustomNotFoundException(ErrorCode.BAD_REQUEST, "Insert comment target board is null"));
+
+        Comment comment = request.toEntity(memberEntity, targetBoard);
+        saveComment(comment);
+    }
+
+    private void saveComment(Comment comment) {
         commentRepository.save(comment);
-        comment.setCommentPatchData(dto);
-        commentRepository.save(comment);
-
-        return Result.SUCCESS.getResultMessage();
+        comment.initializeRootPath();
     }
 
     // 댓글 delete
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String commentDelete(long commentNo, Principal principal) {
-
-        /**
-         * DB에 저장된 데이터의 사용자 아이디를 가져와
-         * 현재 로그인한 사용자의 아이디와 비교를 해 동일할 경우만 삭제 처리.
-         */
-
+    public void deleteComment(long id, String userId) {
         Comment comment = commentRepository
-                            .findById(commentNo)
+                            .findById(id)
                             .orElseThrow(() ->
-                                    new IllegalArgumentException("invalid commentNo : " + commentNo)
+                                    new CustomNotFoundException(ErrorCode.BAD_REQUEST, "Delete target comment is null : " + id)
                             );
 
-        principalService.validateUser(comment, principal);
-        comment.setCommentStatus(1);
-        commentRepository.save(comment);
+        principalService.validateUser(comment.getMember().getUserId(), userId);
+        commentRepository.delete(comment);
+    }
 
-        return Result.SUCCESS.getResultMessage();
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void insertReplyComment(long targetCommentId, CommentRequest request, String userId) {
+        Comment targetComment = commentRepository.findNotDeleteCommentById(targetCommentId);
+
+        if(targetComment == null) {
+            log.warn("CommentService.insertReplyComment :: target comment is null. targetId={}, userId={}", targetCommentId, userId);
+            throw new CustomNotFoundException(ErrorCode.BAD_REQUEST, ErrorCode.BAD_REQUEST.getMessage());
+        }
+
+        Member memberEntity = principalService.getMemberByUserId(userId);
+
+        Comment comment = Comment.builder()
+                .member(memberEntity)
+                .board(targetComment.getBoard())
+                .imageBoard(targetComment.getImageBoard())
+                .content(request.getContent())
+                .groupNo(targetComment.getGroupNo())
+                .indent(targetComment.getIndent() + 1)
+                .build();
+
+        commentRepository.save(comment);
+        comment.initializeReplyPath(targetComment.getUpperNo());
     }
 }
 

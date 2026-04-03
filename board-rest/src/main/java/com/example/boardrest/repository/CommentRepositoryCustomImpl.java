@@ -1,9 +1,9 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.dto.comment.out.BoardCommentDTO;
+import com.example.boardrest.domain.dto.comment.out.BoardCommentResponse;
+import com.example.boardrest.domain.entity.Comment;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -24,44 +24,54 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom{
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<BoardCommentDTO> findAll(Pageable pageable, String boardNo, String imageNo) {
+    public Page<BoardCommentResponse> findAllCommentByBoardId(long id, Pageable pageable) {
+        BooleanExpression boardCondition = comment.board.id.eq(id);
 
-        List<BoardCommentDTO> list = jpaQueryFactory
-                                    .select(
-                                        Projections.fields(BoardCommentDTO.class,
-                                                comment.commentNo
-                                                , comment.member.nickname
-                                                , comment.commentDate
-                                                , new CaseBuilder()
-                                                        .when(comment.commentStatus.gt(0))
-                                                        .then("삭제된 댓글입니다.")
-                                                        .otherwise(comment.commentContent)
-                                                        .as("commentContent")
-                                                , comment.commentGroupNo
-                                                , comment.commentIndent
-                                                , comment.commentUpperNo
-                                        ))
-                                    .from(comment)
-                                    .innerJoin(comment.member, member)
-                                    .where(commentBoardEq(boardNo, imageNo))
-                                    .orderBy(comment.commentGroupNo.desc())
-                                    .orderBy(comment.commentUpperNo.asc())
-                                    .offset(pageable.getOffset())
-                                    .limit(pageable.getPageSize())
-                                    .fetch();
+        return findAllCommentList(pageable, boardCondition);
+    }
+
+    @Override
+    public Page<BoardCommentResponse> findAllCommentByImageBoardId(long id, Pageable pageable) {
+        BooleanExpression boardCondition = comment.imageBoard.id.eq(id);
+
+        return findAllCommentList(pageable, boardCondition);
+    }
+
+    private Page<BoardCommentResponse> findAllCommentList(Pageable pageable, BooleanExpression condition) {
+
+        List<BoardCommentResponse> list = jpaQueryFactory
+                .select(
+                        Projections.constructor(
+                                BoardCommentResponse.class,
+                                comment.id,
+                                comment.member.nickname,
+                                comment.member.userId,
+                                comment.createdAt,
+                                comment.content,
+                                comment.indent,
+                                comment.deletedAt
+                        ))
+                .from(comment)
+                .innerJoin(comment.member, member)
+                .where(condition)
+                .orderBy(comment.groupNo.desc())
+                .orderBy(comment.upperNo.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
         JPAQuery<Long> count = jpaQueryFactory.select(comment.count())
-                                                .from(comment)
-                                                .where(commentBoardEq(boardNo, imageNo));
+                .from(comment)
+                .where(condition);
 
         return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);
     }
 
-    private BooleanExpression commentBoardEq(String boardNo, String imageNo) {
-        if(boardNo == null)
-            return comment.imageBoard.imageNo.eq(Long.parseLong(imageNo));
-
-        return comment.hierarchicalBoard.boardNo.eq(Long.parseLong(boardNo));
+    @Override
+    public Comment findNotDeleteCommentById(long targetId) {
+        return jpaQueryFactory
+                .selectFrom(comment)
+                .where(comment.id.eq(targetId).and(comment.deletedAt.isNull()))
+                .fetchOne();
     }
-
 }

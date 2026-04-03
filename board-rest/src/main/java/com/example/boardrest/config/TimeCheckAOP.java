@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TimeCheckAOP {
 
-    @Around("execution(* com.example.boardrest..*(..))")
+
+    @Around("execution(* com.example..*(*))")
     public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
 

@@ -1,10 +1,11 @@
 package com.example.boardrest.repository;
 
-import com.example.boardrest.domain.dto.paging.Criteria;
-import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDTO;
+import com.example.boardrest.domain.dto.common.business.PageCondition;
+import com.example.boardrest.domain.dto.imageBoard.business.ImageBoardDetail;
+import com.example.boardrest.domain.dto.imageBoard.business.ImageBoardPatchDetail;
+import com.example.boardrest.domain.dto.imageBoard.out.ImageBoardListResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -26,33 +27,30 @@ public class ImageBoardRepositoryCustomImpl implements ImageBoardRepositoryCusto
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<ImageBoardDTO> findAll(Criteria cri, Pageable pageable) {
+    public Page<ImageBoardListResponse> findAllListByPageable(PageCondition condition, Pageable pageable) {
 
-        List<ImageBoardDTO> list = jpaQueryFactory
+        List<ImageBoardListResponse> list = jpaQueryFactory
                 .select(
-                        Projections.fields(
-                                ImageBoardDTO.class
-                                , imageBoard.imageNo
-                                , imageBoard.imageTitle
-                                , imageBoard.member.nickname
-                                , imageBoard.imageDate
-                                , imageData.imageName
-                                )
+                        Projections.constructor(
+                                ImageBoardListResponse.class,
+                                imageBoard.id,
+                                imageBoard.title,
+                                imageData.imageName.min()
+                        )
                 )
                 .from(imageBoard)
-                .innerJoin(imageBoard.imageDataSet, imageData)
-//                .on(imageBoard.imageNo.eq(imageData.imageBoard.imageNo))
-                .innerJoin(imageBoard.member, member)
-                .where(searchTypeEq(cri.getSearchType(), cri.getKeyword()))
-                .groupBy(imageBoard.imageNo)
-                .orderBy(imageBoard.imageNo.desc())
+                .innerJoin(imageData)
+                .on(imageBoard.id.eq(imageData.imageBoard.id))
+                .where(searchTypeEq(condition.getSearchType(), condition.getKeyword()))
+                .groupBy(imageBoard.id)
+                .orderBy(imageBoard.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         JPAQuery<Long> count = jpaQueryFactory.select(imageBoard.countDistinct())
                                             .from(imageBoard)
-                                            .where(searchTypeEq(cri.getSearchType(), cri.getKeyword()));
+                                            .where(searchTypeEq(condition.getSearchType(), condition.getKeyword()));
 
         return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);
     }
@@ -61,14 +59,48 @@ public class ImageBoardRepositoryCustomImpl implements ImageBoardRepositoryCusto
         if(searchType == null)
             return null;
         else if(searchType.equals("t"))
-            return imageBoard.imageTitle.like(keyword);
+            return imageBoard.title.like(keyword);
         else if(searchType.equals("c"))
-            return imageBoard.imageContent.like(keyword);
+            return imageBoard.content.like(keyword);
         else if(searchType.equals("tc"))
-            return imageBoard.imageTitle.like(keyword).or(imageBoard.imageContent.like(keyword));
+            return imageBoard.title.like(keyword).or(imageBoard.content.like(keyword));
         else if(searchType.equals("u"))
             return imageBoard.member.userId.like(keyword);
         else
             return null;
+    }
+
+    @Override
+    public ImageBoardDetail findDetailById(long id) {
+        return jpaQueryFactory
+                .select(
+                        Projections.constructor(
+                                ImageBoardDetail.class,
+                                imageBoard.title,
+                                imageBoard.content,
+                                imageBoard.member.nickname.as("writer"),
+                                imageBoard.member.userId.as("writerId"),
+                                imageBoard.createdAt
+                        )
+                )
+                .from(imageBoard)
+                .innerJoin(imageBoard.member, member)
+                .fetchOne();
+    }
+
+    @Override
+    public ImageBoardPatchDetail findPatchDetailById(long id) {
+        return jpaQueryFactory
+                .select(
+                        Projections.constructor(
+                                ImageBoardPatchDetail.class,
+                                imageBoard.member.userId.as("writer"),
+                                imageBoard.title,
+                                imageBoard.content
+                        )
+                )
+                .from(imageBoard)
+                .innerJoin(imageBoard.member, member)
+                .fetchOne();
     }
 }

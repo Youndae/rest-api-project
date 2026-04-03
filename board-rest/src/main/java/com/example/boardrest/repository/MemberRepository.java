@@ -4,8 +4,11 @@ import com.example.boardrest.domain.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface MemberRepository extends JpaRepository<Member, String> {
+public interface MemberRepository extends JpaRepository<Member, String>, MemberRepositoryCustom {
 
+    @Query(value = "SELECT m " +
+            "FROM Member m " +
+            "WHERE m.userId = ?1")
     Member findByUserId(String userId);
 
 

@@ -23,7 +23,7 @@ public class CustomUser extends User implements CustomUserDetails {
     public CustomUser(Member member){
         super(
                 member.getUserId()
-                , member.getUserPw()
+                , member.getPassword()
                 , member.getAuths()
                         .stream()
                         .map(auth ->
@@ -38,5 +38,10 @@ public class CustomUser extends User implements CustomUserDetails {
     @Override
     public String getUserId() {
         return member.getUserId();
+    }
+
+    @Override
+    public Collection<GrantedAuthority> getAuthorities() {
+        return super.getAuthorities();
     }
 }

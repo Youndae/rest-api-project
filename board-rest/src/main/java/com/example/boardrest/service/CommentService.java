@@ -1,18 +1,21 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.comment.out.BoardCommentDTO;
-import com.example.boardrest.domain.dto.paging.Criteria;
-import com.example.boardrest.domain.dto.comment.in.CommentInsertDTO;
-import org.springframework.data.domain.Page;
+import com.example.boardrest.domain.dto.comment.out.BoardCommentResponse;
+import com.example.boardrest.domain.dto.comment.in.CommentRequest;
+import com.example.boardrest.domain.dto.response.PageResponse;
 
 import java.security.Principal;
 
 public interface CommentService {
+    PageResponse<BoardCommentResponse> getBoardCommentList(long id, int page);
 
+    PageResponse<BoardCommentResponse> getImageBoardCommentList(long id, int page);
 
-    Page<BoardCommentDTO> commentList(String boardNo, String imageNo, Criteria cri);
+    void insertBoardComment(long targetBoardId, CommentRequest request, String userId);
 
-    String commentInsertProc(CommentInsertDTO dto, Principal principal);
+    void insertImageBoardComment(long targetBoardId, CommentRequest request, String userId);
 
-    String commentDelete(long commentNo, Principal principal);
+    void deleteComment(long id, String userId);
+
+    void insertReplyComment(long targetCommentId, CommentRequest request, String userId);
 }

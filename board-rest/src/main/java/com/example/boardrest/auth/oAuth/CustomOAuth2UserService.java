@@ -30,11 +30,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if(existsData == null) {
             Member member = OAuth2ResponseEntityConverter.toEntity(oAuth2Response, userId);
             member.addAuth();
-            member.setUsername(oAuth2Response.getName());
+            member.updateUsername(oAuth2Response.getName());
             existsData = member;
         }else{
-            existsData.setEmail(oAuth2Response.getEmail());
-            existsData.setUsername(oAuth2Response.getName());
+            existsData.updateEmail(oAuth2Response.getEmail());
+            existsData.updateUsername(oAuth2Response.getName());
         }
 
         memberRepository.save(existsData);

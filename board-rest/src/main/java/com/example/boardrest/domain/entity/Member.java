@@ -1,6 +1,7 @@
 package com.example.boardrest.domain.entity;
 
 import com.example.boardrest.auth.oAuth.domain.OAuth2DTO;
+import com.example.boardrest.domain.dto.member.in.OAuthJoinRequest;
 import com.example.boardrest.domain.enumuration.Role;
 import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,34 +14,39 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Builder
+@AllArgsConstructor
+@Table(name = "member")
 public class Member {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(
+            name = "user_id",
+            length = 100,
+            unique = true,
+            nullable = false
+    )
     private String userId;
 
-    private String userPw;
+    private String password;
 
+    @Column(name = "user_name", nullable = false, length = 50)
     private String username;
 
+    @Column(nullable = false, length = 100)
     private String email;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 50)
     private String nickname;
 
-    private String profileThumbnail;
+    private String profile;
 
-    @NonNull
+    @Column(nullable = false)
     private String provider;
 
-//    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-
-
-    /*@OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-    private final Set<ImageBoard> imageBoards = new HashSet<>();
-
-    @OneToMany(mappedBy = "member")
-    private final Set<Comment> comments = new HashSet<>();*/
-
+    @Builder.Default
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private final List<Auth> auths = new ArrayList<>();
 
@@ -52,38 +58,32 @@ public class Member {
         auth.setMember(this);
     }
 
-
-    public Member(@NonNull String userId, String userPw, String username, String email, String nickname, String profileThumbnail, @NonNull String provider) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-        this.userId = userId;
-        this.userPw = userPw == null ? null : passwordEncoder.encode(userPw);
-        this.username = username;
-        this.email = email;
-        this.nickname = nickname;
-        this.profileThumbnail = profileThumbnail;
-        this.provider = provider;
+    public void updatePassword(String rawPassword, BCryptPasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(rawPassword);
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void updateProfile(String profile) {
+        this.profile = profile;
     }
 
-    public void setUsername(String username) {
+    public void updateUsername(String username) {
         this.username = username;
     }
 
-    public void setNickName(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public void setEmail(String email) {
+    public void updateEmail(String email) {
         this.email = email;
     }
 
-    public void setProfileThumbnail(String profileThumbnail) {
-        this.profileThumbnail = profileThumbnail;
+    public void updateProfileData(String profile, String nickname, String email) {
+        updateNickname(nickname);
+        updateProfile(profile);
+        updateEmail(email);
     }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
 
     public OAuth2DTO toOAuth2DTOUseFilter() {
         return OAuth2DTO.builder()

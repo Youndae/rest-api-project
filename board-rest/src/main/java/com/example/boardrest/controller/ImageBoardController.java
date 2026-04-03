@@ -1,19 +1,14 @@
 package com.example.boardrest.controller;
 
-import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDTO;
-import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDetailDTO;
-import com.example.boardrest.domain.dto.iBoard.out.ImageDataDTO;
-import com.example.boardrest.domain.dto.iBoard.out.ImageModifyInfoDTO;
-import com.example.boardrest.domain.dto.iBoard.in.ImageBoardRequestDTO;
-import com.example.boardrest.domain.dto.paging.Criteria;
-import com.example.boardrest.domain.dto.responseDTO.ResponseDetailAndModifyDTO;
-import com.example.boardrest.domain.dto.responseDTO.ResponsePageableListDTO;
-import com.example.boardrest.domain.factory.ResponseFactory;
-import com.example.boardrest.domain.mapper.CriteriaRequestMapper;
+import com.example.boardrest.domain.dto.common.in.ListRequest;
+import com.example.boardrest.domain.dto.imageBoard.out.*;
+import com.example.boardrest.domain.dto.imageBoard.in.ImageBoardRequest;
+import com.example.boardrest.domain.dto.response.ApiResponse;
+import com.example.boardrest.domain.dto.response.PageResponse;
 import com.example.boardrest.service.ImageBoardService;
+import com.example.boardrest.service.ImageFileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,87 +16,95 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/image-board")
+@RequestMapping("/api/image-board")
 @Slf4j
 public class ImageBoardController {
 
     private final ImageBoardService imageBoardService;
 
-    private final ResponseFactory responseFactory;
+    private final ImageFileService imageFileService;
 
-    @GetMapping("/")
-    public ResponseEntity<ResponsePageableListDTO<ImageBoardDTO>> getList(@RequestParam(value = "pageNum") int pageNum
-                                                            , @RequestParam(value = "keyword", required = false) String keyword
-                                                            , @RequestParam(value = "searchType", required = false) String searchType
-                                                            , Principal principal){
+    @GetMapping("")
+    public ResponseEntity<ApiResponse<PageResponse<ImageBoardListResponse>>> getList(ListRequest request){
 
-        Criteria cri = CriteriaRequestMapper.fromBoardRequest(pageNum, keyword, searchType);
-        Page<ImageBoardDTO> dto = imageBoardService.getImageBoardList(cri);
+        request.validate();
+        PageResponse<ImageBoardListResponse> dto = imageBoardService.getImageBoardList(request);
 
-        return responseFactory.createListResponse(dto, principal);
+        return ResponseEntity.ok(ApiResponse.success(dto));
     }
 
-    @GetMapping("/{imageNo}")
-    public ResponseEntity<ResponseDetailAndModifyDTO<ImageBoardDetailDTO>> getDetail(@PathVariable long imageNo, Principal principal){
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ImageBoardDetailResponse>> getDetail(@PathVariable(name = "id") @Min(value = 1) long id){
 
-        ImageBoardDetailDTO dto = imageBoardService.getImageBoardDetail(imageNo);
-        return responseFactory.createDetailResponse(dto, principal);
-    }
+        ImageBoardDetailResponse dto = imageBoardService.getImageBoardDetail(id);
 
-    // 등록된 boardNo return
-    @PostMapping(value = "/", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public Long insertBoard(@RequestParam List<MultipartFile> files
-                            , @ModelAttribute ImageBoardRequestDTO dto
-                            , Principal principal) {
-
-        return imageBoardService.imageInsertCheck(files, dto, principal);
+        return ResponseEntity.ok(ApiResponse.success(dto));
     }
 
 
-    @GetMapping("/patch-detail/{imageNo}")
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public ResponseEntity<ResponseDetailAndModifyDTO<ImageModifyInfoDTO>> getPatchDetail(@PathVariable long imageNo, Principal principal) {
+    @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Long>> insertBoard(@RequestParam List<MultipartFile> files,
+                                                        @ModelAttribute @Valid ImageBoardRequest dto,
+                                                        Principal principal
+    ) {
 
-        ImageModifyInfoDTO dto = imageBoardService.getModifyData(imageNo, principal);
+        Long result = imageBoardService.imageBoardInsert(files, dto, principal.getName());
 
-        return responseFactory.createDetailResponse(dto, principal);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.created(result));
     }
 
-    @GetMapping("/patch-detail/image/{imageNo}")
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public ResponseEntity<List<ImageDataDTO>> getPatchImageData(@PathVariable long imageNo){
 
-        return new ResponseEntity<>(imageBoardService.getModifyImageAttach(imageNo), HttpStatus.OK);
+    @GetMapping("/patch/detail/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<ImageBoardPatchDetailResponse>> getPatchDetail(
+                            @PathVariable(name = "id") @Min(value = 1) long id,
+                            Principal principal
+    ) {
+
+        ImageBoardPatchDetailResponse dto = imageBoardService.getPatchData(id, principal.getName());
+
+        return ResponseEntity.ok(ApiResponse.success(dto));
     }
 
-    @PatchMapping("/{imageNo}")
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public long patchBoard(@PathVariable long imageNo
-                            , @RequestParam(value = "files", required = false) List<MultipartFile> files
-                            , @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles
-                            , @ModelAttribute ImageBoardRequestDTO dto
-                            , Principal principal){
+    @PatchMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Long>> patchBoard(
+                            @PathVariable(name = "id") @Min(value = 1) long id,
+                            @RequestParam(value = "files", required = false) List<MultipartFile> files,
+                            @RequestParam(value = "deleteFiles", required = false) List<String> deleteFiles,
+                            @ModelAttribute @Valid ImageBoardRequest request,
+                            Principal principal
+    ){
 
+        Long result = imageBoardService.imageBoardPatch(files, deleteFiles, id, request, principal.getName());
 
-        return imageBoardService.imagePatchCheck(files, deleteFiles, imageNo, dto, principal);
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    @DeleteMapping("/{imageNo}")
-    @PreAuthorize("hasAnyRole('ROLE_MEMBER', 'ROLE_ADMIN')")
-    public String imageBoardDelete(@PathVariable long imageNo, Principal principal){
+    @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> imageBoardDelete(
+                            @PathVariable(name = "id") @Min(value = 1) long id,
+                            Principal principal
+    ){
 
-        return imageBoardService.deleteImageBoard(imageNo, principal);
+        imageBoardService.deleteImageBoard(id, principal.getName());
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/display/{imageName}")
-    public ResponseEntity<byte[]> getFile(@PathVariable String imageName){
+    public ResponseEntity<byte[]> getFile(@PathVariable(name = "imageName") String imageName){
 
-        return imageBoardService.getFile(imageName);
+        return imageFileService.getBoardImageDisplay(imageName);
     }
 }

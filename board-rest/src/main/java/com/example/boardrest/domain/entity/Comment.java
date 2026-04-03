@@ -1,12 +1,12 @@
 package com.example.boardrest.domain.entity;
 
-import com.example.boardrest.domain.dto.comment.in.CommentInsertDTO;
+import com.example.boardrest.domain.dto.comment.in.CommentRequest;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -15,61 +15,59 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@DynamicUpdate
+@SQLDelete(sql = "UPDATE comment SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Table(name = "comment")
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long commentNo;
+    private long id;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private Member member;
 
-    @CreationTimestamp
-    private LocalDate commentDate;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
 
-    private String commentContent;
+    @Column(name = "group_no")
+    private long groupNo;
 
-    private long commentGroupNo;
+    private int indent;
 
-    private int commentIndent;
-
-    private String commentUpperNo;
+    @Column(name = "upper_no")
+    private String upperNo;
 
     @ManyToOne
-    @JoinColumn(name = "imageNo")
+    @JoinColumn(name = "image_board_id")
     private ImageBoard imageBoard;
 
     @ManyToOne
-    @JoinColumn(name = "boardNo")
-    private HierarchicalBoard hierarchicalBoard;
+    @JoinColumn(name = "board_id")
+    private Board board;
 
-    private int commentStatus;
+    @CreationTimestamp
+    @Column(
+            name = "created_at",
+            nullable = false,
+            columnDefinition = "DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3)"
+    )
+    private LocalDateTime createdAt;
 
-    public void setCommentStatus(int commentStatus) {
-        this.commentStatus = commentStatus;
+    @Column(name = "deleted_at", columnDefinition = "DATETIME(3)")
+    private LocalDateTime deletedAt;
+
+    public void initializeRootPath(){
+        this.groupNo = this.id;
+        updateUpperNo(String.valueOf(this.id));
     }
 
-    public void setCommentPatchData(CommentInsertDTO dto) {
-        String cno = String.valueOf(this.commentNo);
-        HierarchicalBoard hBoard = new HierarchicalBoard();
-        ImageBoard iBoard = new ImageBoard();
+    public void initializeReplyPath(String targetUpperNo) {
+        String saveValue = String.join(",", targetUpperNo, String.valueOf(this.id));
+        updateUpperNo(saveValue);
+    }
 
-        if(dto.getBoardNo() != null)
-            hBoard.setBoardNo(dto.getBoardNo());
-        else
-            hBoard = null;
-
-        if(dto.getImageNo() != null)
-            iBoard.setImageNo(dto.getImageNo());
-        else
-            iBoard = null;
-
-        this.commentGroupNo = dto.getCommentGroupNo() == null ? this.commentNo : dto.getCommentGroupNo();
-        this.commentIndent = dto.getCommentGroupNo() == null ? 0 : dto.getCommentIndent() + 1;
-        this.commentUpperNo = dto.getCommentUpperNo() == null ? cno : dto.getCommentUpperNo() + "," + cno;
-        this.hierarchicalBoard = hBoard;
-        this.imageBoard = iBoard;
+    private void updateUpperNo(String upperNo) {
+        this.upperNo = upperNo;
     }
 }

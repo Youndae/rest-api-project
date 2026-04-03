@@ -1,12 +1,9 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDTO;
-import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDetailDTO;
-import com.example.boardrest.domain.dto.iBoard.out.ImageDataDTO;
-import com.example.boardrest.domain.dto.iBoard.out.ImageModifyInfoDTO;
-import com.example.boardrest.domain.dto.iBoard.in.ImageBoardRequestDTO;
-import com.example.boardrest.domain.dto.paging.Criteria;
-import org.springframework.data.domain.Page;
+import com.example.boardrest.domain.dto.common.in.ListRequest;
+import com.example.boardrest.domain.dto.imageBoard.out.*;
+import com.example.boardrest.domain.dto.imageBoard.in.ImageBoardRequest;
+import com.example.boardrest.domain.dto.response.PageResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,25 +12,19 @@ import java.util.List;
 
 public interface ImageBoardService {
 
-    Page<ImageBoardDTO> getImageBoardList(Criteria cri);
+    PageResponse<ImageBoardListResponse> getImageBoardList(ListRequest request);
 
-    ImageBoardDetailDTO getImageBoardDetail(long imageNo);
+    ImageBoardDetailResponse getImageBoardDetail(long imageNo);
 
-    long imageInsertCheck(List<MultipartFile> images
-                            , ImageBoardRequestDTO dto
-                            , Principal principal);
+    long imageBoardInsert(List<MultipartFile> images, ImageBoardRequest dto, String userId);
 
-    long imagePatchCheck(List<MultipartFile> images
-                        , List<String> deleteFiles
-                        , long imageNo
-                        , ImageBoardRequestDTO dto
-                        , Principal principal);
+    ImageBoardPatchDetailResponse getPatchData(long id, String userId);
 
-    String deleteImageBoard(long imageNo, Principal principal);
+    long imageBoardPatch(List<MultipartFile> images,
+                        List<String> deleteFiles,
+                        long id,
+                        ImageBoardRequest dto,
+                        String userId);
 
-    ImageModifyInfoDTO getModifyData(long imageNo, Principal principal);
-
-    List<ImageDataDTO> getModifyImageAttach(long imageNo);
-
-    ResponseEntity<byte[]> getFile(String imageName);
+    void deleteImageBoard(long id, String userId);
 }

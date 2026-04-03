@@ -1,31 +1,23 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.config.jwt.JwtProperties;
 import com.example.boardrest.customException.CustomAccessDeniedException;
+import com.example.boardrest.customException.CustomAuthenticationException;
 import com.example.boardrest.customException.ErrorCode;
-import com.example.boardrest.domain.dto.member.in.JoinDTO;
-import com.example.boardrest.domain.dto.member.in.ProfileDTO;
-import com.example.boardrest.domain.dto.member.out.ProfileResponseDTO;
+import com.example.boardrest.domain.dto.member.in.JoinRequest;
+import com.example.boardrest.domain.dto.member.in.OAuthJoinRequest;
+import com.example.boardrest.domain.dto.member.in.UpdateProfileRequest;
+import com.example.boardrest.domain.dto.member.out.ProfileResponse;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.domain.enumuration.Result;
-import com.example.boardrest.properties.FilePathProperties;
-import com.example.boardrest.repository.AuthRepository;
+import com.example.boardrest.domain.enumuration.MemberCheckResult;
+import com.example.boardrest.mapper.MemberMapper;
 import com.example.boardrest.repository.MemberRepository;
-import com.example.boardrest.auth.user.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.WebUtils;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.security.Principal;
 
 @Service
@@ -35,82 +27,19 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
 
-    private final JwtTokenProvider tokenProvider;
-
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
     private final ImageFileService imageFileService;
 
-    // 사용자 회원가입(체크 후 메소드 호출로 save 처리)
-    @Override
-    public String memberJoinProc(JoinDTO dto, MultipartFile profileThumbnail) {
-        if(dto.getUserId() == null || dto.getUserPw().length() == 0 || dto.getUserName() == null || dto.getNickname() == null)
-            return Result.FAIL.getResultMessage();
-        else
-            return joinMember(dto, profileThumbnail);
-    }
+    private final MemberMapper memberMapper;
 
-    @Override
-    public String checkId(String userId) {
-        Member member = memberRepository.findByUserId(userId);
+    private final BCryptPasswordEncoder passwordEncoder;
 
-        return member == null ? Result.AVAILABLE.getResultMessage() : Result.DUPLICATED.getResultMessage();
-    }
+    @Value("#{filePath['file.profile.path']}")
+    private String profilePath;
 
-    @Override
-    public String checkNickname(String nickname, Principal principal) {
-        Member member = memberRepository.findByNickname(nickname);
-
-        String result;
-
-        if(member == null)
-            result = Result.AVAILABLE.getResultMessage();
-        else {
-            if(principal != null && member.getUserId().equals(principal.getName()))
-                result = Result.AVAILABLE.getResultMessage();
-
-            result = Result.DUPLICATED.getResultMessage();
-        }
-
-        return result;
-    }
-
-    // 사용자 데이터 save
-    @Transactional(rollbackOn = Exception.class)
-    public String joinMember(JoinDTO member, MultipartFile profileThumbnail){
-
-        String filepath = FilePathProperties.PROFILE_FILE_PATH;
-        String imageName = null;
-
-        try {
-            String profile = null;
-
-            if(profileThumbnail != null){
-                profile = imageFileService.saveFile(filepath, profileThumbnail).get("imageName");
-                imageName = profile;
-            }
-
-            Member memberEntity = member.toEntity(profile);
-
-            memberEntity.addAuth();
-
-            memberRepository.save(memberEntity);
-        }catch (Exception e) {
-            if(imageName != null)
-                imageFileService.deleteFile(filepath, imageName);
-
-            throw new IllegalArgumentException("Modify profile error");
-        }
-
-
-
-        return Result.SUCCESS.getResultMessage();
-    }
-
-    @Override
-    public String memberLogin(Member member, HttpServletRequest request, HttpServletResponse response) {
+    /*@Override
+    public String memberLogin(LoginRequest member, HttpServletRequest request, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(member.getUserId(), member.getUserPw());
+                new UsernamePasswordAuthenticationToken(member.getUserId(), member.getPassword());
         Authentication authentication =
                 authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
@@ -128,9 +57,9 @@ public class MemberServiceImpl implements MemberService {
         }
 
         throw new BadCredentialsException("login Fail");
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String logout(HttpServletRequest request, HttpServletResponse response, Principal principal) {
 
         try{
@@ -145,53 +74,133 @@ public class MemberServiceImpl implements MemberService {
             return Result.FAIL.getResultMessage();
         }
 
+    }*/
+
+    // 사용자 회원가입(체크 후 메소드 호출로 save 처리)
+    @Override
+    @Transactional
+    public String register(JoinRequest joinRequest) {
+        Member member = memberMapper.toFullEntity(joinRequest, passwordEncoder);
+        String imageName = null;
+
+        try {
+            String profile = null;
+
+            if(joinRequest.hasProfile()){
+                profile = imageFileService.profileImageSave(joinRequest.getProfile());
+                imageName = profile;
+            }
+
+            member.updateProfile(profile);
+            memberRepository.save(member);
+
+            memberRepository.flush();
+
+            return "success";
+        }catch(Exception e) {
+            if(imageName != null)
+                imageFileService.deleteFile(profilePath, imageName);
+
+            throw new IllegalArgumentException("register Error: ", e);
+        }
     }
 
     @Override
-    public String modifyProfile(ProfileDTO profileDTO, Principal principal) {
+    @Transactional(rollbackFor = Exception.class)
+    public void oAuthJoin(OAuthJoinRequest request, String userId) {
+        Member member = memberRepository.findOAuthUserByUserId(userId);
+
+        if(member == null) {
+            log.warn("MemberService.oAuthJoin :: join oauth member is null. userId={}", userId);
+            throw new CustomAccessDeniedException(ErrorCode.FORBIDDEN, ErrorCode.FORBIDDEN.getMessage());
+        }
+
+        member.updateNickname(request.getNickname());
+        String imageName = null;
+
+        try {
+            String profile = null;
+
+            if(request.hasProfile()){
+                profile = imageFileService.profileImageSave(request.getProfile());
+                imageName = profile;
+            }
+
+            member.updateProfile(profile);
+        }catch(Exception e) {
+            if(imageName != null)
+                imageFileService.deleteFile(profilePath, imageName);
+
+            throw new IllegalArgumentException("register Error: ", e);
+        }
+    }
+
+    @Override
+    public MemberCheckResult checkId(String userId) {
+        Member member = memberRepository.findByUserId(userId);
+
+        return member == null ? MemberCheckResult.VALID : MemberCheckResult.DUPLICATED;
+    }
+
+    @Override
+    public MemberCheckResult checkNickname(String nickname, Principal principal) {
+        Member member = memberRepository.findByNickname(nickname);
+
+        MemberCheckResult result;
+
+        if(member == null)
+            result = MemberCheckResult.VALID;
+        else {
+            if(principal != null && member.getUserId().equals(principal.getName()))
+                result = MemberCheckResult.VALID;
+
+            result = MemberCheckResult.DUPLICATED;
+        }
+
+        return result;
+    }
+
+    @Override
+    public void updateProfile(UpdateProfileRequest updateProfileRequest, Principal principal) {
 
         if(principal == null)
-            throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, ErrorCode.ACCESS_DENIED.getMessage());
-
-        String filepath = FilePathProperties.PROFILE_FILE_PATH;
+            throw new CustomAccessDeniedException(ErrorCode.FORBIDDEN, ErrorCode.FORBIDDEN.getMessage());
 
         Member member = memberRepository.findByUserId(principal.getName());
         String imageName = null;
         try {
             String profileThumbnail = null;
-            if(profileDTO.getProfileThumbnail() != null) {
-                profileThumbnail = imageFileService.saveFile(filepath, profileDTO.getProfileThumbnail()).get("imageName");
+            if(updateProfileRequest.hasProfile()) {
+                profileThumbnail = imageFileService.profileImageSave(updateProfileRequest.getProfile());
                 imageName = profileThumbnail;
             }
 
-            if(profileDTO.getProfileThumbnail() == null && profileDTO.getDeleteProfile() == null)
-                profileThumbnail = member.getProfileThumbnail();
+            if(!updateProfileRequest.hasProfile() && !updateProfileRequest.hasDeleteProfile())
+                profileThumbnail = member.getProfile();
             else
-                if (profileDTO.getDeleteProfile() != null)
-                    imageFileService.deleteFile(filepath, profileDTO.getDeleteProfile());
+                if (updateProfileRequest.hasDeleteProfile())
+                    imageFileService.deleteFile(profilePath, updateProfileRequest.getDeleteProfile());
 
-            member.setNickName(profileDTO.getNickname());
-            member.setProfileThumbnail(profileThumbnail);
+            member.updateProfileData(profileThumbnail, updateProfileRequest.getNickname(), updateProfileRequest.getEmail());
 
             memberRepository.save(member);
         }catch (Exception e) {
             if(imageName != null)
-                imageFileService.deleteFile(filepath, imageName);
+                imageFileService.deleteFile(profilePath, imageName);
 
             throw new IllegalArgumentException("Modify profile error");
         }
-
-        return Result.SUCCESS.getResultMessage();
     }
 
     @Override
-    public ProfileResponseDTO getProfile(Principal principal) {
+    public ProfileResponse getProfile(Principal principal) {
+        ProfileResponse result = memberRepository.getMemberProfileDataByUserId(principal.getName());
 
-        Member member = memberRepository.findByUserId(principal.getName());
+        if(result == null){
+            log.error("getProfile member is null. userId: {}", principal.getName());
+            throw new CustomAuthenticationException(ErrorCode.UNAUTHORIZED, ErrorCode.UNAUTHORIZED.getMessage());
+        }
 
-        return ProfileResponseDTO.builder()
-                .nickname(member.getNickname())
-                .profileThumbnail(member.getProfileThumbnail())
-                .build();
+        return result;
     }
 }

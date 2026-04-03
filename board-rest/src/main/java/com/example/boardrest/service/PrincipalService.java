@@ -1,14 +1,10 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.auth.PrincipalDTO;
-
-import java.security.Principal;
+import com.example.boardrest.domain.entity.Member;
 
 public interface PrincipalService {
 
-    PrincipalDTO checkPrincipal(Principal principal);
+    void validateUser(String writer, String userId);
 
-    String getNicknameToPrincipal(Principal principal);
-
-    void validateUser(Object entity, Principal principal);
+    Member getMemberByUserId(String userId);
 }

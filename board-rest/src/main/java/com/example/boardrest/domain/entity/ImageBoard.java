@@ -1,10 +1,12 @@
 package com.example.boardrest.domain.entity;
 
+import com.example.boardrest.domain.dto.imageBoard.in.ImageBoardRequest;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -14,46 +16,47 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "image_board")
 public class ImageBoard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long imageNo;
+    private Long id;
 
-    @NonNull
-    private String imageTitle;
+    @Column(nullable = false)
+    private String title;
+
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private Member member;
 
     @CreationTimestamp
-    private LocalDate imageDate;
-
-    private String imageContent;
-
-    @OneToMany(mappedBy = "imageBoard", cascade = CascadeType.ALL)
-    private final Set<ImageData> imageDataSet = new HashSet<>();
-
-    public void setImageNo(long imageNo) {
-        this.imageNo = imageNo;
-    }
-
-    public void addImageData(ImageData imageData){
-        imageDataSet.add(imageData);
-        imageData.setImageBoard(this);
-    }
+    @Column(
+            name = "created_at",
+            nullable = false,
+            columnDefinition = "DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3)"
+    )
+    private LocalDateTime createdAt;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImageBoard that = (ImageBoard) o;
-        return Objects.equals(imageNo, that.imageNo);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(imageNo);
+        return Objects.hash(id);
+    }
+
+
+    public void patchImageBoard(ImageBoardRequest dto) {
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
     }
 }

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum OAuthProvider {
 
-    LOCAL("local"),
+    LOCAL("lcoal"),
     GOOGLE("google"),
     NAVER("naver"),
     KAKAO("kakao");

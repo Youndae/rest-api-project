@@ -9,14 +9,15 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "auth")
 public class Auth {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long authNo;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private Member member;
 
     private String auth;

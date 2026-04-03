@@ -1,29 +1,29 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.dto.member.in.JoinDTO;
-import com.example.boardrest.domain.dto.member.in.ProfileDTO;
-import com.example.boardrest.domain.dto.member.out.ProfileResponseDTO;
-import com.example.boardrest.domain.entity.Member;
-import org.springframework.web.multipart.MultipartFile;
+import com.example.boardrest.domain.dto.member.in.JoinRequest;
+import com.example.boardrest.domain.dto.member.in.OAuthJoinRequest;
+import com.example.boardrest.domain.dto.member.in.UpdateProfileRequest;
+import com.example.boardrest.domain.dto.member.out.ProfileResponse;
+import com.example.boardrest.domain.enumuration.MemberCheckResult;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 
 public interface MemberService {
 
-    String memberJoinProc(JoinDTO dto, MultipartFile profileThumbnail);
+//    String memberLogin(LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response);
 
-    String checkId(String userId);
+    String register(JoinRequest joinRequest);
 
-    String checkNickname(String nickname, Principal principal);
+    void oAuthJoin(OAuthJoinRequest request, String userId);
 
-    String memberLogin(Member member, HttpServletRequest request, HttpServletResponse response);
+    MemberCheckResult checkId(String userId);
 
-    String logout(HttpServletRequest request, HttpServletResponse response, Principal principal);
+    MemberCheckResult checkNickname(String nickname, Principal principal);
 
-    String modifyProfile(ProfileDTO profileDTO, Principal principal);
+//    String logout(HttpServletRequest request, HttpServletResponse response, Principal principal);
 
-    ProfileResponseDTO getProfile(Principal principal);
+    void updateProfile(UpdateProfileRequest updateProfileRequest, Principal principal);
+
+    ProfileResponse getProfile(Principal principal);
 
 }

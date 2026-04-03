@@ -18,7 +18,10 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-application-oauth.yml
+secret.yml
+dev-filepath.properties
+**/logback-spring/
+**/logs
 .idea
 *.iws
 *.iml
@@ -38,6 +41,8 @@ out/
 .vscode/
 
 !/logback-spring/
-/src/main/generated/
+**/src/main/generated/
 *.log
 *.log.gz
+*.log.*
+!/logs

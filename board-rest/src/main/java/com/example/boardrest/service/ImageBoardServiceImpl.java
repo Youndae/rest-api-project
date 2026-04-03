@@ -1,22 +1,25 @@
 package com.example.boardrest.service;
 
 import com.example.boardrest.customException.CustomIOException;
+import com.example.boardrest.customException.CustomNotFoundException;
 import com.example.boardrest.customException.ErrorCode;
-import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDTO;
-import com.example.boardrest.domain.dto.iBoard.out.ImageBoardDetailDTO;
-import com.example.boardrest.domain.dto.iBoard.out.ImageDataDTO;
-import com.example.boardrest.domain.dto.iBoard.out.ImageModifyInfoDTO;
-import com.example.boardrest.domain.dto.iBoard.in.ImageBoardRequestDTO;
-import com.example.boardrest.domain.dto.paging.Criteria;
+import com.example.boardrest.domain.dto.common.business.PageCondition;
+import com.example.boardrest.domain.dto.common.in.ListRequest;
+import com.example.boardrest.domain.dto.imageBoard.business.ImageBoardDetail;
+import com.example.boardrest.domain.dto.imageBoard.business.ImageBoardPatchDetail;
+import com.example.boardrest.domain.dto.imageBoard.out.*;
+import com.example.boardrest.domain.dto.imageBoard.in.ImageBoardRequest;
+import com.example.boardrest.domain.dto.response.PageResponse;
 import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.ImageData;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.domain.enumuration.Result;
-import com.example.boardrest.properties.FilePathProperties;
+import com.example.boardrest.domain.enumuration.ListAmount;
+import com.example.boardrest.domain.enumuration.SaveImageKey;
 import com.example.boardrest.repository.ImageBoardRepository;
 import com.example.boardrest.repository.ImageDataRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.security.Principal;
 import java.util.*;
 
 @Service
@@ -51,153 +53,136 @@ public class ImageBoardServiceImpl implements ImageBoardService{
 
 
     @Override
-    public Page<ImageBoardDTO> getImageBoardList(Criteria cri) {
-        Pageable pageable = PageRequest.of(cri.getPageNum() - 1
-                , cri.getImageAmount()
-                , Sort.by("imageNo").descending()
+    public PageResponse<ImageBoardListResponse> getImageBoardList(ListRequest request) {
+        PageCondition condition = PageCondition.of(request, ListAmount.IMAGE_BOARD);
+        Pageable pageable = PageRequest.of(condition.getPage() - 1,
+                condition.getAmount(),
+                Sort.by("imageNo").descending()
         );
 
-        return imageBoardRepository.findAll(cri, pageable);
+        Page<ImageBoardListResponse> content = imageBoardRepository.findAllListByPageable(condition, pageable);
+
+        return PageResponse.of(content);
     }
 
-    /**
-     *
-     * ImageBoardDetailDTO 의 객체 생성을 메소드에서 담당하면 SRP 위배다.
-     *
-     */
     @Override
-    public ImageBoardDetailDTO getImageBoardDetail(long imageNo) {
-        ImageBoard imageBoard = imageBoardRepository
-                                    .findById(imageNo)
-                                    .orElseThrow(() -> new IllegalArgumentException("invalid detail imageNo : " + imageNo));
+    public ImageBoardDetailResponse getImageBoardDetail(long id) {
+        ImageBoardDetail imageBoard = imageBoardRepository.findDetailById(id);
 
-        List<ImageDataDTO> dataDTO = imageDataRepository.getImageData(imageNo);
+        if(imageBoard == null){
+            log.warn("ImageBoardService.getImageBoardDetail :: imageBoard is null. id={}", id);
+            throw new CustomNotFoundException(ErrorCode.BAD_REQUEST, ErrorCode.BAD_REQUEST.getMessage());
+        }
 
-        return ImageBoardDetailDTO.fromEntity(imageBoard, dataDTO);
+        List<String> dataDTO = imageDataRepository.getImageDataNameList(id);
+
+        return ImageBoardDetailResponse.of(imageBoard, dataDTO);
     }
 
     // 이미지 게시판 insert
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public long imageInsertCheck(List<MultipartFile> images
-                                , ImageBoardRequestDTO dto
-                                , Principal principal) {
+    public long imageBoardInsert(List<MultipartFile> images,
+                                ImageBoardRequest dto,
+                                String userId) {
 
-        Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
+        Member memberEntity = principalService.getMemberByUserId(userId);
 
         ImageBoard imageBoard = dto.toInsertEntity(memberEntity);
+        List<ImageData> imageDataList = imageInsert(images,  1);
 
-        imageInsert(images,  1, imageBoard);
+        imageBoardRepository.save(imageBoard);
+        imageDataList.forEach(v -> v.setImageBoard(imageBoard));
+        imageDataRepository.saveAll(imageDataList);
 
-        return imageBoardRepository.save(imageBoard).getImageNo();
+        return imageBoard.getId();
+    }
+
+    @Override
+    public ImageBoardPatchDetailResponse getPatchData(long id, String userId) {
+        ImageBoardPatchDetail imageBoard = imageBoardRepository.findPatchDetailById(id);
+        principalService.validateUser(imageBoard.getWriter(), userId);
+        List<ImageDataResponse> imageDataList = imageDataRepository.getImageDataList(id);
+
+        return ImageBoardPatchDetailResponse.builder()
+                .title(imageBoard.getTitle())
+                .content(imageBoard.getContent())
+                .imageList(imageDataList)
+                .build();
     }
 
     // 이미지 게시판 patch
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public long imagePatchCheck(List<MultipartFile> images
-                                , List<String> deleteFiles
-                                , long imageNo
-                                , ImageBoardRequestDTO dto
-                                , Principal principal) {
-
+    public long imageBoardPatch(List<MultipartFile> images,
+                                List<String> deleteFiles,
+                                long id,
+                                ImageBoardRequest request,
+                                String userId) {
         ImageBoard imageBoard = imageBoardRepository
-                .findById(imageNo)
-                .orElseThrow(() -> new IllegalArgumentException("invalid patch imageNo : " + imageNo));
+                .findById(id)
+                .orElseThrow(() -> new CustomNotFoundException(ErrorCode.BAD_REQUEST, "invalid patch imageNo : " + id));
 
-        Member memberEntity = principalService.checkPrincipal(principal).toMemberEntity();
+        principalService.validateUser(imageBoard.getMember().getUserId(), userId);
 
-        principalService.validateUser(imageBoard, principal);
+        imageBoard.patchImageBoard(request);
 
-        imageBoard = dto.toPatchEntity(memberEntity, imageBoard);
-
-        if(images != null)
-            imageInsert(images, imageDataRepository.countImageStep(imageNo) + 1, imageBoard);
+        if(images != null){
+            List<ImageData> saveImageData = imageInsert(images, imageDataRepository.countImageStep(id) + 1);
+            saveImageData.forEach(v -> v.setImageBoard(imageBoard));
+            imageDataRepository.saveAll(saveImageData);
+        }
 
         if(deleteFiles != null) {
             imageFileService.deleteImageBoardFile(deleteFiles);
             imageDataRepository.deleteImageDataList(deleteFiles);
         }
 
-        return imageBoardRepository.save(imageBoard).getImageNo();
+        return id;
     }
 
     // 이미지 게시판 delete
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String deleteImageBoard(long imageNo, Principal principal) {
+    public void deleteImageBoard(long id, String userId) {
         ImageBoard imageBoard = imageBoardRepository
-                .findById(imageNo)
-                .orElseThrow(() -> new IllegalArgumentException("invalid deleteImageNo : " + imageNo));
+                .findById(id)
+                .orElseThrow(() -> new CustomNotFoundException(ErrorCode.BAD_REQUEST, "invalid deleteImageNo : " + id));
 
-        principalService.validateUser(imageBoard, principal);
+        principalService.validateUser(imageBoard.getMember().getUserId(), userId);
 
-        List<String> deleteFiles = imageDataRepository.getDeleteImageDataList(imageNo);
+        List<String> deleteFiles = imageDataRepository.getImageDataNameList(id);
         imageFileService.deleteImageBoardFile(deleteFiles);
-        imageDataRepository.deleteImageDataList(deleteFiles);
-        imageBoardRepository.deleteById(imageNo);
-
-        return Result.SUCCESS.getResultMessage();
+        imageDataRepository.deleteImageDataListByImageId(id);
+        imageBoardRepository.deleteById(id);
     }
 
     // 이미지 파일 저장 및 imageData save 처리
-    private void imageInsert(List<MultipartFile> images
-                            , int step
-                            , ImageBoard imageBoard) {
-        String filePath = FilePathProperties.BOARD_FILE_PATH;
-        Map<String, String> map;
+    private List<ImageData> imageInsert(List<MultipartFile> images, int step) {
+        List<ImageData> saveImageData = new ArrayList<>();
 
         for(MultipartFile image : images){
             try {
-                map = imageFileService.saveFile(filePath, image);
-                imageBoard.addImageData(ImageData.builder()
-                        .imageName(map.get("imageName"))
-                        .oldName(map.get("oldName"))
+                Map<SaveImageKey, String> map = imageFileService.boardImageSave(image);
+                saveImageData.add(ImageData.builder()
+                        .imageName(map.get(SaveImageKey.SAVE_NAME))
+                        .originName(map.get(SaveImageKey.ORIGIN_NAME))
                         .imageStep(step++)
                         .build()
                 );
             } catch (Exception e) {
                 log.error("File Transfer Error. Rollback save file");
 
-                imageBoard.getImageDataSet()
-                        .forEach(v ->
-                                imageFileService.deleteFile(filePath, v.getImageName())
+                saveImageData.forEach(v ->
+                                imageFileService.cleanupImageBoardFiles(v.getImageName())
                         );
 
-                throw new CustomIOException(ErrorCode.IO_EXCEPTION, "File Transfer IOException");
+                log.error("ImageBoardService.imageInsert :: Failed transfer file");
+
+                throw new CustomIOException(ErrorCode.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR.getMessage());
             }
         }
 
-    }
-
-    @Override
-    public ImageModifyInfoDTO getModifyData(long imageNo, Principal principal) {
-        ImageBoard imageBoard = imageBoardRepository.findById(imageNo).orElseThrow(() -> new IllegalArgumentException("invalid modifyData imageNo : " + imageNo));
-        principalService.validateUser(imageBoard, principal);
-
-        return imageBoardRepository.findPatchDetail(imageNo);
-    }
-
-    @Override
-    public List<ImageDataDTO> getModifyImageAttach(long imageNo) {
-
-        return imageDataRepository.getImageData(imageNo);
-    }
-
-    @Override
-    public ResponseEntity<byte[]> getFile(String imageName) {
-        File file = new File(FilePathProperties.BOARD_FILE_PATH + imageName);
-        ResponseEntity<byte[]> result = null;
-
-        try{
-            HttpHeaders header = new HttpHeaders();
-            header.add("Content-Type", Files.probeContentType(file.toPath()));
-
-            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), HttpStatus.OK);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
-        return result;
+        return saveImageData;
     }
 }

@@ -9,10 +9,6 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 public class CorsConfig {
 
-    /*
-        CorsFilter는 apache.catalina.filters가 아니라
-        springframework.web.filter로 import해야 한다.
-     */
     @Bean
     public CorsFilter corsFilter(){
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -23,6 +19,7 @@ public class CorsConfig {
         config.addAllowedOriginPattern("*");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.addExposedHeader("Authorization");
 
 
         source.registerCorsConfiguration("/**", config);
