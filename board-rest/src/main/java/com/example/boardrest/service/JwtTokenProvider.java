@@ -12,7 +12,6 @@ import com.example.boardrest.properties.TokenRedisProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
@@ -106,7 +105,7 @@ public class JwtTokenProvider {
     }
 
     public String getTokenValueData(String tokenPrefix, String inoValue, String claim) {
-        String tokenKey = tokenPrefix + inoValue + claim;
+        String tokenKey = createRedisKey(tokenPrefix, inoValue, claim);
         long keyExpire = redisTemplate.getExpire(tokenKey);
 
         //Token이 존재하는데 -2라면 Redis 데이터가 만료되어 삭제된 것이기 때문에
@@ -121,11 +120,13 @@ public class JwtTokenProvider {
     public String getClaimUserIdByToken(String tokenValue, String secret) {
 
         try {
-            return JWT.require(Algorithm.HMAC512(secret))
-                        .build()
-                        .verify(tokenValue)
-                        .getClaim("userId")
-                        .asString();
+            String claim = JWT.require(Algorithm.HMAC512(secret))
+                            .build()
+                            .verify(tokenValue)
+                            .getClaim("userId")
+                            .asString();
+
+            return claim == null ? TokenValidationResult.WRONG_TOKEN.getResult() : claim;
         }catch(TokenExpiredException e) {
             //토큰 만료 exception
             return TokenValidationResult.TOKEN_EXPIRATION.getResult();
@@ -154,7 +155,7 @@ public class JwtTokenProvider {
         setCookie(cookieProperties.getIno().getHeader(), inoValue, Duration.ofDays(cookieProperties.getIno().getAge()), response);
     }
 
-    public String issuedAccessToken(String userId, String inoValue) {
+    private String issuedAccessToken(String userId, String inoValue) {
         String accessToken = createToken(userId, jwtSecretProperties.getAccess(), tokenProperties.getAccess().getExpiration());
         Duration accessExpiration = getAccessTokenRedisAndCookieDuration();
         setRedisByToken(tokenRedisProperties.getAccess().getPrefix(), inoValue, userId, accessToken, accessExpiration);
@@ -162,7 +163,7 @@ public class JwtTokenProvider {
         return tokenProperties.getPrefix() + accessToken;
     }
 
-    public String issuedRefreshToken(String userId, String inoValue) {
+    private String issuedRefreshToken(String userId, String inoValue) {
         String refreshToken = createToken(userId, jwtSecretProperties.getRefresh(), tokenProperties.getRefresh().getExpiration());
         Duration refreshExpiration = getRefreshTokenRedisAndCookieDuration();
         setRedisByToken(tokenRedisProperties.getRefresh().getPrefix(), inoValue, userId, refreshToken, refreshExpiration);
@@ -175,7 +176,7 @@ public class JwtTokenProvider {
     }
 
     private Duration getRefreshTokenRedisAndCookieDuration() {
-        return Duration.ofHours(tokenRedisProperties.getRefresh().getExpiration());
+        return Duration.ofDays(tokenRedisProperties.getRefresh().getExpiration());
     }
 
     public String issuedIno(){
@@ -191,13 +192,12 @@ public class JwtTokenProvider {
                 .sign(Algorithm.HMAC512(secret));
     }
 
-    public void setRedisByToken(String tokenPrefix, String ino, String claim, String value, Duration expiration) {
-        String key = tokenPrefix + ino + claim;
-        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-        stringValueOperations.set(key, value, expiration);
+    private void setRedisByToken(String tokenPrefix, String ino, String claim, String value, Duration expiration) {
+        String key = createRedisKey(tokenPrefix, ino, claim);
+        redisTemplate.opsForValue().set(key, value, expiration);
     }
 
-    public void setCookie(String header, String value, Duration expires, HttpServletResponse response) {
+    private void setCookie(String header, String value, Duration expires, HttpServletResponse response) {
 
         response.addHeader("Set-Cookie",
                 createCookie(
@@ -208,7 +208,7 @@ public class JwtTokenProvider {
         );
     }
 
-    public String createCookie(String name, String value, Duration expires){
+    private String createCookie(String name, String value, Duration expires){
         return ResponseCookie
                 .from(name, value)
                 .path("/")
@@ -226,25 +226,30 @@ public class JwtTokenProvider {
     }
 
     public void deleteTokenData(String userId, String inoValue) {
-        String accessTokenKey =  tokenRedisProperties.getAccess().getPrefix() + inoValue + userId;
-        String refreshTokenKey = tokenRedisProperties.getRefresh().getPrefix() + inoValue + userId;
+        List<String> keys = new ArrayList<>();
 
-        redisTemplate.delete(accessTokenKey);
-        redisTemplate.delete(refreshTokenKey);
+        keys.add(createRedisKey(tokenRedisProperties.getAccess().getPrefix(), inoValue, userId));
+        keys.add(createRedisKey(tokenRedisProperties.getRefresh().getPrefix(), inoValue, userId));
+
+        redisTemplate.delete(keys);
     }
 
     public void deleteTokenCookie(HttpServletResponse response) {
-        String[] cookie_arr = {
+        String[] cookieNames = {
                 tokenProperties.getAccess().getHeader(),
                 tokenProperties.getRefresh().getHeader(),
                 cookieProperties.getIno().getHeader()
         };
 
-        Arrays.stream(cookie_arr).forEach(name -> {
+        Arrays.stream(cookieNames).forEach(name -> {
             Cookie cookie = new Cookie(name, null);
             cookie.setMaxAge(0);
             cookie.setPath("/");
             response.addCookie(cookie);
         });
+    }
+
+    private String createRedisKey(String prefix, String ino, String userId) {
+        return prefix + ino + userId;
     }
 }

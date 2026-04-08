@@ -26,7 +26,6 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
                 .code(ErrorCode.UNAUTHORIZED.getHttpStatus().value())
                 .message(ResponseStatus.FAIL.getMessage())
-                .errorCode(ErrorCode.UNAUTHORIZED)
                 .build();
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

@@ -46,3 +46,4 @@ out/
 *.log.gz
 *.log.*
 !/logs
+!/META-INF

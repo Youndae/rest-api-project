@@ -177,8 +177,7 @@ public class MemberServiceImpl implements MemberService {
 
             if(!updateProfileRequest.hasProfile() && !updateProfileRequest.hasDeleteProfile())
                 profileThumbnail = member.getProfile();
-            else
-                if (updateProfileRequest.hasDeleteProfile())
+            else if (updateProfileRequest.hasDeleteProfile())
                     imageFileService.deleteFile(profilePath, updateProfileRequest.getDeleteProfile());
 
             member.updateProfileData(profileThumbnail, updateProfileRequest.getNickname(), updateProfileRequest.getEmail());

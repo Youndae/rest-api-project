@@ -103,7 +103,7 @@ public class ImageBoardController {
     }
 
     @GetMapping("/display/{imageName}")
-    public ResponseEntity<byte[]> getFile(@PathVariable(name = "imageName") String imageName){
+    public ResponseEntity<byte[]> getFile(@PathVariable(name = "imageName") String imageName) {
 
         return imageFileService.getBoardImageDisplay(imageName);
     }

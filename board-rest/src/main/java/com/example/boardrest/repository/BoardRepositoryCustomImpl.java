@@ -69,7 +69,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         else if(searchType.equals("tc"))
             return board.title.like(keyword).or(board.content.like(keyword));
         else if(searchType.equals("u"))
-            return board.member.userId.like(keyword);
+            return board.member.nickname.like(keyword);
         else
             return null;
     }

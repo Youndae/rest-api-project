@@ -15,7 +15,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -54,7 +56,7 @@ public class CustomOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         String targetUrl = (customOAuth2User.getNickname() == null)
                 ? "/join/profile?redirect=" + URLEncoder.encode(redirectUrl, "UTF-8")
-                : redirectUrl;
+                : URLDecoder.decode(redirectUrl, StandardCharsets.UTF_8.toString());
 
         getRedirectStrategy().sendRedirect(request, response, "http://localhost:3000" + targetUrl);
     }

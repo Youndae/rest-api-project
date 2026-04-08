@@ -14,16 +14,21 @@ public class PageCondition {
 
     public PageCondition(Integer page, String keyword, String searchType, int amount) {
         this.page = page == null ? 1 : page;
-        this.keyword = keyword == null ? null : "%" + keyword + "%";
+        this.keyword = getKeyword(keyword);
         this.searchType = searchType;
         this.amount = amount;
         this.offset = (long) (this.page - 1) * amount;
     }
 
+    private static String getKeyword(String keyword) {
+        return keyword == null ? null : "%" + keyword + "%";
+    }
+
     public static PageCondition of(ListRequest request, ListAmount amount){
+
         return new PageCondition(
                 request.getPage(),
-                request.getKeyword(),
+                getKeyword(request.getKeyword()),
                 request.getSearchType(),
                 amount.getAmount()
         );

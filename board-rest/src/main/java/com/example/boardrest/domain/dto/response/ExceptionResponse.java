@@ -19,10 +19,6 @@ public class ExceptionResponse <T> {
     private int code;
     private String message;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private ErrorCode errorCode;
-
-
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<T> errors;
 
