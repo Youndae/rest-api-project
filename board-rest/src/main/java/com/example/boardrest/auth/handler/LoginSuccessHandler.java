@@ -2,7 +2,7 @@ package com.example.boardrest.auth.handler;
 
 import com.example.boardrest.domain.dto.member.out.MemberStatusResponse;
 import com.example.boardrest.domain.dto.response.ApiResponse;
-import com.example.boardrest.domain.enumuration.ResponseStatus;
+import com.example.boardrest.domain.enums.ResponseStatus;
 import com.example.boardrest.properties.CookieProperties;
 import com.example.boardrest.service.AuthContextService;
 import com.example.boardrest.service.JwtTokenProvider;

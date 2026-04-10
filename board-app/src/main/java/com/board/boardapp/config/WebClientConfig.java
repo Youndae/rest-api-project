@@ -20,7 +20,7 @@ public class WebClientConfig {
     public WebClient useImageWebClient(){
         ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
                 .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-                        .maxInMemorySize(20 * 1024 * 1024)).build();
+                        .maxInMemorySize(10 * 1024 * 1024)).build();
 
         return WebClient.builder()
                 .baseUrl("http://localhost:8080")

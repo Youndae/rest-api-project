@@ -1,4 +1,4 @@
-package com.example.boardrest.auth.response;
+package com.example.boardrest.auth.oAuth.response;
 
 public interface OAuth2Response {
 

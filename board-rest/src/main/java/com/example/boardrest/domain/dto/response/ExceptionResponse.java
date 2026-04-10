@@ -1,7 +1,7 @@
 package com.example.boardrest.domain.dto.response;
 
 import com.example.boardrest.customException.ErrorCode;
-import com.example.boardrest.domain.enumuration.ResponseStatus;
+import com.example.boardrest.domain.enums.ResponseStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

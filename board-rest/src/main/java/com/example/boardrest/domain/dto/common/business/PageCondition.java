@@ -1,7 +1,7 @@
 package com.example.boardrest.domain.dto.common.business;
 
 import com.example.boardrest.domain.dto.common.in.ListRequest;
-import com.example.boardrest.domain.enumuration.ListAmount;
+import com.example.boardrest.domain.enums.ListAmount;
 import lombok.Getter;
 
 @Getter

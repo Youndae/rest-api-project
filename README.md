@@ -1,79 +1,127 @@
-# REST API 프로젝트
+# BoardProject REST API
 
-# 프로젝트 요약
-> 계층형을 표현하는 텍스트 기반의 게시판과 텍스트와 이미지 업로드가 가능한 게시판으로 구성된 CRUD 중심의 프로젝트입니다.   
-> 다양한 기능 구현보다 기본에 충실한 프로젝트입니다.
-> 기본적인 개념에 대한 프로젝트인만큼 새로운 기술이나 언어, 환경에 대한 기본 CRUD 테스트에 주로 사용하고 있어 다양한 버전이 존재합니다.   
-> 해당 프로젝트는 REST-API 버전으로 Spring Boot, JPA, MySQL 기반의 REST-API 서버와 Spring Boot, Thymeleaf 기반의 SSR Frontend, React 기반의 SPA Frontend으로 구성되어 있습니다.   
-> 이 프로젝트에는 SSR Frontend와 REST-API 서버만 있으며, SPA Frontend은 다른 Repository에 있습니다.   
-> SSR Frontend와 SPA Frontend는 동일한 Frontend를 구현하고 있으며 환경만 다른 두가지의 Frontend입니다.   
-> 각 Frontend 끼리 통신하지 않으며 최초 SSR Frontend로 프로젝트를 진행한 이후 React 기반의 Frontend를 구현해보고자 진행해 두가지의 Frontend를 갖게 되었습니다.   
-> BoardProject의 다른 버전으로는 JSP, Servlet & JSP, Kotlin 버전이 있습니다.   
-> 버전이 다르더라도 기능에는 차이가 거의 없으며 각 환경에 대한 구조의 차이 정도만 있습니다.
+<br/>
+<br/>
 
-### React SPA Frontend GitHub
-- https://github.com/Youndae/boardProject_client_react
+## 프로젝트 개요
 
-### 타 버전 GitHub
-
-- JSP, Oracle 기본 버전
-  - https://github.com/Youndae/BoardProject
-- Servlet & JSP
-  - https://github.com/Youndae/BoardProject_servlet_jsp
-- Kotlin
-  - https://github.com/Youndae/boardProject_kt
-
+### 프로젝트 목적
+- 프론트엔드와 백엔드가 분리된 환경으로의 서비스 구축
+- API 서버와 프론트를 담당하는 View-Centric 서버로 나눠 WebClient 구축 경험 및 데이터 직렬화, 예외 처리 과정 경험 확보
 
 <br/>
 
-# 목차
+### 프로젝트 요약
+이 프로젝트는 소규모 커뮤니티 서비스를 직접 기획, 설계하여 새로운 기술 스택을 도입할 때 기준점으로 활용하는 테스트베드입니다.
 
-1. [프로젝트 구조](#프로젝트-구조)
-2. [개발 환경](#개발-환경)
-3. [ERD](#ERD)
-4. [페이지별 기능 상세](#페이지별-기능-상세)
-5. [기능 및 개선 내역](#기능-및-개선-내역)
+CRUD, 파일 시스템 관리, 계층형 쿼리 등 백엔드의 핵심 기능을 구현하며 각 환경의 특성을 분석하고 있습니다.   
+현재는 React 기반의 공통 프론트엔드를 고정하고, 백엔드를 다양한 언어와 프레임워크로 재구현하며 아키텍처의 유연성을 검증하고 있습니다.
+
+
+#### 프로젝트 버전
+1. Spring MVC & JSP, Oracle (<a href="https://github.com/Youndae/BoardProject">Git Repo Link</a>)
+  - 초기 설계 및 파일 관리 비즈니스 로직 확립한 최초 버전입니다.
+  - 당시 가장 익숙했던 Spring MVC, JSP 환경을 사용하고 새롭게 Oracle을 사용해보며 MySQL과의 문법 및 동작 차이를 학습했습니다.
+  - 설계 당시 주요 과제였던 효율적인 파일 관리 문제를 성공적으로 해결해 구현했습니다.
+2. Servlet & JSP, JDBCTemplate, MySQL (<a href="https://github.com/Youndae/BoardProject_servlet_jsp">Git Repo Link</a>)
+  - 프레임워크의 추상화 계층을 제외한 Legacy 환경에서 요청 처리 흐름을 Low-level부터 파악했습니다.
+  - JPA나 MyBatis 없이 JDBCTemplate을 직접 제어하며 영속성 계층의 동작 원리와 프레임워크가 제공하는 편의성의 실체를 체감했습니다.
+3. REST API & React
+  1. 공통 프론트엔드 (<a href="https://github.com/Youndae/boardProject_client_react">Git Repo Link</a>)
+    - React(JSX)를 이용한 최초의 SPA 환경 구축 프로젝트입니다.
+    - Axios 기반 통신 구조를 설계하고 컴포넌트 단위로 책임을 분리하여 유지보수성을 높였습니다.
+    - 분리된 구조를 활용해 다양한 백엔드 스택의 REST API를 테스트하는 범용 프론트엔드로 활용중입니다.
+  2. Spring Boot, JPA, MySQL 버전
+    - API 서버(board-rest)와 Client 서버(board-app)를 각각 독립적으로 구축했습니다.
+    - board-rest(API Server)
+      - 서비스의 핵심 비즈니스 로직 및 인증 / 인가를 전담하는 API 서버입니다.
+      - JPA를 사용했으며, 데이터를 제공합니다.
+    - board-app(View-Centric Server)
+      - 자체 DB 없이 WebClient를 사용하여 board-rest와 통신하는 독립 실행 서버입니다.
+      - 사용자로부터 받은 인증 정보와 요청을 API 서버로 전달하는 역할을 수행하며, Thymeleaf를 통해 사용자에게 view를 제공합니다.
+      - 백엔드와 프론트엔드를 분리해 WebClient로 통신하는 환경 구축을 목적으로 설계하였으며, 서버간 통신 시 발생하는 데이터 직렬화 및 예외 처리 과정을 학습했습니다.
+      - React 프론트엔드 구축 이후 리팩토링을 중단한 상태입니다.
+  3. Kotlin, Spring Boot 버전 (<a href="https://github.com/Youndae/boardProject_kt">Git Repo Link</a>)
+    - Java와 Kotlin의 차이점을 분석하고, data class를 활용한 불변 객체 통제 기법을 학습했습니다.
+    - Clean Architecture를 적용하여 도메인 중심 설계를 지향하며, 엄격한 계층 분리가 가져오는 생산성 저하와 같은 실질적인 단점을 분석하고 해결책을 고민했습니다.
+  4. Express 버전 - <a href="https://github.com/Youndae/boardproject_ex">Git Repo Link</a>
+    - Spring 환경을 벗어나 Middleware 기반 아키텍처의 빠른 응답 처리와 서비스 레이어의 부담 완화 라는 장점을 확인했습니다.
+    - 프레임워크 차원의 트랜잭션 관리 부재로 인해 통합 테스트 시 발생하는 데이터 정합성 관리의 복잡성을 체감했으며, 이를 보완하기 위한 테스트 환경 설계 역량을 키웠습니다.
+  5. Nest 버전 - <a href="https://github.com/Youndae/boardproject_nest">Git Repo Link</a>
+    - Module 구조를 통한 체계적인 의존성 관리 방식을 학습했습니다.
+    - 의존성 증가에 따라 모듈이 무거워질 수 있다는 단점을 파악하고, 효율적인 모듈 바운더리 설정이 NestJS 설계의 핵심임을 이해했습니다.
+    - TypeScript의 엄격한 타입을 통해 Runtime 이전 단계에서의 안정성 확보를 경험했습니다.
 
 <br/>
 
-# 프로젝트 구조
-<img src="./README_image/project_structure.jpg">
-
-Spring Boot 기반의 SSR Frontend는 WebClient를 통해 API 서버와 통신하게 되며, Thymeleaf Template을 통해 view를 처리합니다.   
-API 서버는 Spring의 기본적인 Layered Architecture 구조로 설계되어 있습니다.
-React 기반의 SPA Frontend는 Axios를 사용해 통신하며 Component 재사용을 위해 목록과 같은 중복되는 Component를 분리해 설계했습니다.   
+## 목차
+<strong>1. [개발 환경](#개발-환경)</strong>   
+<strong>2. [프로젝트 구조 및 설계 원칙](#프로젝트-구조-및-설계-원칙)</strong>   
+<strong>3. [ERD](#ERD)</strong>   
+<strong>4. [기능 목록](#기능-목록)</strong>   
+<string>5. [핵심 기능 및 문제 해결](#핵심-기능-및-문제-해결)</strong>  
 
 <br/>
+<br/>
 
-# 개발 환경
-
-|Category| Tech Stack|
+## 개발 환경
+|category| Tech Stack|
 |---|---|
-|API Server| - Spring Boot 2.7.6 <br/> - JDK 8 <br/> - Gradle <br/> - OAuth2 <br/> - SpringSecurity <br/> - JWT <br/> - Spring Data JPA <br/> - QueryDSL
-|SSR Frontend| - Spring Boot 2.7.6 <br/> - JDK 8 <br/> - Gradle <br/> - WebClient <br/> - Thymeleaf <br/> - JQuery <br/> - Ajax <br/> - BootStrap|
-|SPA Frontend| - React <br/> - Redux <br/> - Axios <br/> - dayjs <br/> - BootStrap|
-|Database| - MySQL <br/> - Redis|
+|Backend| - Kotlin 1.9.21 <br/> - Spring Boot 3.2.1 <br/> - Spring Data JPA <br/> - QueryDSL <br/> - mapstruct |
+|Security| - SpringSecurity <br/> - OAuth2 <br/> - JWT|
+|Frontend| - React(CRA) <br/> - Redux Toolkit <br/> - Styled Components <br/> - Axios <br/> - React Cookie      |
+|View-Centric Server| - web flux) <br/> - Thymeleaf) <br/> - JQuery|
+|Database| - MySQL <br/> - Redis                                                                                |
+|Libraries| - kap <br/> - Kotlin Logging <br/> - Spring Validation <br/> - Thumbnailator|
 
 <br/>
 
-# ERD
-<img src="./README_image/rest-api-project_ERD.png">
+## 프로젝트 구조 및 설계 원칙
+
+1. **공통**   
+board-rest와 board-app 모두 Layered Architecture로 설계했으며 service의 경우 interface - impl 구조를 채택했습니다.
+
+2. **board-rest**   
+레이어별 패키지 분리를 원칙으로 설계했습니다.   
+각 패키지 하위로 도메인들의 클래스들이 위치하며, domain/dto 하위의 경우 내부에서 도메인별로 다시 분리하도록 설계했습니다.   
+또한, request, response, business로 추가 분리해 목적에 맞는 DTO별로 분리하는 구조입니다.   
+
+3. **board-app**
+board-app의 경우 자체 DB 없이 board-rest에게 요청 전달, 응답 파싱 후 Thymeleaf로 view를 제공하는 역할이기 때문에 단순한 구조로 설계했습니다.   
+domain 패키지에서는 요청, 응답 DTO만 존재하며, service는 쿠키 처리, ObjectMapper를 통한 직렬화 등 API 서버 요청 전후 과정의 비즈니스 로직을 처리합니다.   
+API 서버와의 통신을 담당하는 패키지로는 connection 패키지이며, 내부에서는 비즈니스 로직을 최소화하고 요청과 응답 파싱의 책임에 집중했습니다.
+resources 하위로는 static, templates 패키지를 사용하는 기본적인 Thymeleaf SSR 구조로 설계했습니다.   
+templates/th 하위로는 도메인별로 html 파일을 분리했습니다.
+
+<img src="./README_image/boardProject_rest_structure.jpg">
+
 
 <br/>
 
-# 페이지별 기능 상세
+## ERD
+
+<img src="./README_image/boardProject_erd.png">
+
+<br/>
+
+## 기능 목록
 
 <details>
     <summary><strong>계층형 게시판</strong></summary>
 
-- 계층형 목록
-- 검색 ( 제목, 내용, 작성자, 제목 + 내용 기반 )
-- Pagination
-- 게시글 작성
-- 게시글 상세 정보
-  - 작성자인 경우 수정, 삭제( 삭제하는 경우 하위 계층 게시글 삭제 )
-  - 답글 작성
-  - 댓글 작성 ( 대댓글 작성 가능 )
+* 게시글 목록
+    * 게시글 검색( 제목, 작성자, 제목 + 내용 )
+    * 페이지네이션
+    * 계층형 구조
+* 게시글 상세
+    * 작성자의 게시글 수정, 삭제, 답글 작성
+    * 로그인한 사용자의 답글 작성, 댓글 작성
+    * 로그인한 사용자의 대댓글 작성
+    * 댓글 작성자의 댓글 삭제
+    * 댓글 페이지네이션
+* 게시글 작성
+* 게시글 수정
+* 답글 작성
 </details>
 
 <br/>
@@ -81,1313 +129,366 @@ React 기반의 SPA Frontend는 Axios를 사용해 통신하며 Component 재사
 <details>
     <summary><strong>이미지 게시판</strong></summary>
 
-- 목록
-- 게시글 작성
-  - 텍스트 및 이미지 업로드 ( 최대 5장 제한 )
-- 검색 ( 제목, 내용, 작성자, 제목 + 내용 기반 )
-- Pagination
-- 게시글 상세 정보
-  - 작성자인 경우 수정, 삭제
-  - 댓글 작성 ( 대댓글 작성 가능 )
+* 게시글 목록
+    * 게시글 검색 ( 제목, 작성자, 제목 + 내용 )
+    * 페이지네이션
+* 게시글 상세
+    * 작성자의 게시글 수정, 삭제, 답글 작성
+    * 로그인한 사용자의 답글 작성, 댓글 작성
+    * 로그인한 사용자의 대댓글 작성
+    * 댓글 작성자의 댓글 삭제
+    * 댓글 페이지네이션
+* 게시글 작성
+    * 이미지 파일 업로드(최소 1장 필수. 최대 5장)
+    * 텍스트 내용 작성
+* 게시글 수정
+    * 기존 이미지 파일 삭제
+    * 추가 이미지 업로드(기존 파일 포함 최대 5장)
 </details>
 
 <br/>
+<br/>
+
+## 핵심 기능 및 문제 해결
+
+<br/>
+
+### 목차
+1. **[WebClient](#WebClient)**
+2. **[로그인](#로그인)**
+3. **[이미지-리사이징](#이미지-리사이징)**
+
+<br/>
+<br/>
+
+### WebClient
+
+board-app은 Spring boot 환경의 View-Centric 서버이기 때문에 API 서버와 통신하기 위해 WebClient를 사용했습니다.   
+최초 설계 당시에는 RestTemplate이라는 선택지도 있었지만, 당시 RestTemplate이 Deprecated 될것이라는 소문도 있었고 Spring에서 공식적으로 WebClient를 권장했기에 WebClient를 채택했습니다.   
+
+기능 자체의 비즈니스 로직은 board-rest에 책임이 있었기 때문에 board-app에서 처리할 비즈니스 로직은 Cookie 생성 및 값 추출, API 서버와 주고 받는 데이터의 직렬화, 역직렬화 등과 같은 로직만 필요했습니다.
+이 단계에서 설계에 대해 고민이 많았는데 인프라 계층과 비즈니스 계층의 관심사 분리를 명확히 하는 것이 추후 확장성이나 유지보수 측면에서 유리할 것이라고 생각해 connection 패키지에서 WebClient 요청을 처리, Service에서는 비즈니스 로직만 처리하는 구조를 채택했습니다.   
+
+WebClient 설정은 2가지 설정이 필요했습니다.   
+이미지 파일을 포함하고 있는 설정과, 그렇지 않은 설정입니다.   
 
 <details>
-    <summary><strong>로그인</strong></summary>
-
-- 로그인 ( Local, OAUth2)
-- 회원 가입
-- 정보 수정
-</details>
-
-<br />
-
-# 기능 및 개선 내역
-
-* <strong>API Server</strong>
-  1. [인증 인가 처리](#인증-인가-처리)
-  2. [동적 쿼리 처리를 위한 QueryDSL 도입](#동적-쿼리-처리를-위한-QueryDSL-도입)
-  3. [삭제된 댓글의 처리](#삭제된-댓글의-처리)
-  
-<br/>
-
-* <strong>SSR Frontend</strong>
-  1. [WebClient를 통한 API 서버와의 통신](#WebClient를-통한-API-서버와의-통신)
-
-* <strong>SPA Frontend</strong>
-  1. [이미지 출력 처리](#이미지-출력-처리)
-
-### 인증 인가 처리
-
-<br/>
-
-인증 / 인가 처리는 JWT와 Spring Security로 처리했습니다.   
-JWT 구조는 AccessToken과 RefreshToken으로 설계했으며, 다중 디바이스 로그인을 위한 ino 값을 추가했습니다.   
-ino의 경우 난수 구조로만 생성되는 값으로 디바이스 식별값 목적으로 사용됩니다.   
-
-각 토큰은 Redis에 저장되며 각 토큰의 약어인 at, rt를 시작으로 ino + 사용자 아이디 구조의 Key 값을 갖습니다.   
-클라이언트에서는 모든 토큰을 Cookie에 저장해서 관리하게 되며 SameSite Strict, HttpOnly, Secure 설정을 갖고 있습니다.
-재발급 방식으로는 Refresh Token Rotation 방식을 사용했습니다.
-
-```java
-    @Override
-    protected void doFilterInternal(HttpServletRequest request
-            , HttpServletResponse response
-            , FilterChain chain)
-            throws IOException, ServletException {
-
-        Cookie accessTokenCookie = WebUtils.getCookie(request, JwtProperties.ACCESS_HEADER_STRING);
-        Cookie refreshTokenCookie = WebUtils.getCookie(request, JwtProperties.REFRESH_HEADER_STRING);
-        Cookie inoCookie = WebUtils.getCookie(request, JwtProperties.INO_HEADER_STRING);
-        //인증객체 생성시 필요한 사용자 아이디
-        String username = null;
-
-        if (inoCookie != null) {
-            if (accessTokenCookie != null && refreshTokenCookie != null) { //모든 토큰이 존재
-                if(!accessTokenCookie.getValue().startsWith(JwtProperties.TOKEN_PREFIX)
-                        || !refreshTokenCookie.getValue().startsWith(JwtProperties.TOKEN_PREFIX)){
-                    chain.doFilter(request, response);
-                    return;
-                }else {
-                    String inoValue = inoCookie.getValue();
-                    String claimByUserIdToAccessToken = jwtTokenProvider.verifyAccessToken(accessTokenCookie, inoValue);
-
-                    //토큰 검증 과정에서 탈취 또는 잘못된 토큰이라는 응답이 반환되는 경우 클라이언트 쿠키가 삭제되도록 response에 담아 반환
-                    if (claimByUserIdToAccessToken.equals(JwtProperties.TOKEN_STEALING_RESULT)
-                            || claimByUserIdToAccessToken.equals(JwtProperties.WRONG_TOKEN)) {
-                        deleteTokenCookieThrowException(response);
-                        return;
-                    } else if (claimByUserIdToAccessToken.equals(JwtProperties.TOKEN_EXPIRATION_RESULT)) { //AccessToken 만료 응답
-                        claimByUserIdToAccessToken = jwtTokenProvider.decodeToken(accessTokenCookie);//accessToken 복호화
-                        String verifyRefreshTokenResult = jwtTokenProvider.verifyRefreshToken(
-                                                                refreshTokenCookie, inoValue, claimByUserIdToAccessToken
-                                                            );//refreshToken 검증
-                        // 복호화한 AccessToken과 refreshToken Claim이 일치한다면 재발급 수행
-                        if (verifyRefreshTokenResult.equals(claimByUserIdToAccessToken)) {
-                            jwtTokenProvider.issuedToken(claimByUserIdToAccessToken, inoValue, response);
-                            username = claimByUserIdToAccessToken;//이후 인증객체 처리를 위해 사용자 아이디를 username 변수에 담아준다.
-                        } else if (verifyRefreshTokenResult.equals(JwtProperties.TOKEN_STEALING_RESULT)
-                                || verifyRefreshTokenResult.equals(JwtProperties.WRONG_TOKEN)) {
-                            //일치하지 않는 경우 결과가 탈취로 반환. 탈취 또는 잘못된 토큰 응답이 반환되면 redis 데이터와 쿠키 삭제
-                            deleteTokenAndCookieThrowException(claimByUserIdToAccessToken, inoValue, request, response);
-                            return;
-                        }
-                    } else {
-                        //AccessToken 검증 정상 응답
-                        username = claimByUserIdToAccessToken;
-                    }
-                }
-            } else if (accessTokenCookie == null && refreshTokenCookie == null) {
-                chain.doFilter(request, response);
-                return;
-            } else {
-                //토큰 두개중 하나만 존재하기 때문에 탈취로 판단.
-                //두개 중 존재하는 토큰을 복호화하고 그 Claim 값을 통해 redis 데이터 삭제 및 쿠키 삭제
-                String claimByUserId;
-                if (accessTokenCookie != null)
-                    claimByUserId = jwtTokenProvider.decodeToken(accessTokenCookie);
-                else
-                    claimByUserId = jwtTokenProvider.decodeToken(refreshTokenCookie);
-
-                deleteTokenAndCookieThrowException(claimByUserId, inoCookie.getValue(), request, response);
-                return;
-            }
-        }
-
-        if (username != null) {
-          Member memberEntity = memberRepository.findByUserId(username);
-          String userId;
-          Collection<? extends GrantedAuthority> authorities;
-  
-          CustomUserDetails userDetails;
-  
-          if(memberEntity.getProvider().equals("local")){
-            userDetails = new CustomUser(memberEntity);
-          }else{
-            OAuth2DTO oAuth2DTO = memberEntity.toOAuth2DTOUseFilter();
-            userDetails = new CustomOAuth2User(oAuth2DTO);
-          }
-  
-          userId = userDetails.getUserId();
-          authorities = userDetails.getAuthorities();
-  
-          Authentication authentication =
-                new UsernamePasswordAuthenticationToken(userId, null, authorities);
-  
-          SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-
-        chain.doFilter(request, response);
-    }
-
-    public void tokenStealingExceptionResponse(HttpServletResponse response) {
-        response.setStatus(ErrorCode.TOKEN_STEALING.getHttpStatus());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("utf-8");
-    }
-
-    public void deleteTokenAndCookieThrowException(String tokenClaim
-                                                    , String inoValue
-                                                    , HttpServletRequest request
-                                                    , HttpServletResponse response) {
-        jwtTokenProvider.deleteToken(tokenClaim, inoValue, response);
-        tokenStealingExceptionResponse(response);
-    }
-
-    public void deleteTokenCookieThrowException(HttpServletResponse response) {
-        jwtTokenProvider.deleteTokenCookie(response);
-        tokenStealingExceptionResponse(response);
-    }
-```
-
-SecurityFilterChain의 beforeFilter에 JwtAuthorizationFilter를 지정함에 따라 요청이 발생하면 토큰 검증을 우선 수행하게 됩니다.
-Redis key 값으로 ino를 활용하는 만큼 ino의 유무를 먼저 판단하게 됩니다.   
-ino가 존재하지 않는다면 Redis 데이터를 체크할 수 없기 때문에 토큰 검증이나 인증 객체 생성을 하지 않고 이후 처리를 진행합니다.
-
-ino가 존재한다면 토큰 검증을 수행하게 되는데 이때, 둘 중 하나만 존재하는 경우는 검증을 수행하지 않고 탈취라고 바로 판단합니다.   
-Cookie에 모든 토큰을 저장하는 만큼 누락되지 않는다는 것을 보장할 수 있다고 생각했기에 하나만 존재하는 경우는 탈취로 판단하도록 설계했습니다.   
-탈취로 판단되는 경우 응답 쿠키를 만료된 쿠키로 담고 Redis 데이터를 삭제하도록 한 뒤 바로 클라이언트에게 응답하게 됩니다.
-
-토큰이 만료된 경우에는 Man's Shop 프로젝트와 다른 방식으로 처리하게 됩니다.   
-BoardProject에서는 토큰이 만료된 경우 클라이언트에게 만료응답을 보내지 않고 정상적인 토큰인지 두가지 토큰을 모두 검증 한 뒤 바로 재발급을 수행하도록 처리했습니다.   
-만료 응답을 보내게 되는 경우 최초 요청, 재발급 요청, 재요청 이렇게 3번의 요청이 발생하게 되는데 이것을 한번의 요청으로 줄여보고자 시도해본 방법입니다.   
-
-토큰 검증이 정상적으로 마무리 되었다면 인증 객체 생성 후 SecurityContextHolder에 담아 Spring Security를 통한 권한 관리를 수행할 수 있도록 했습니다.
-
-<br/>
-
-### 동적 쿼리 처리를 위한 QueryDSL 도입
-
-<br/>
-
-처음 REST-API 프로젝트를 진행할 당시에는 QueryDSL을 사용하지 않았습니다.   
-오로지 JPQL을 사용한 방법으로만 진행했었는데 동적 처리를 수행하기 위해 비슷한 메소드가 계속 작성되어야 한다는 점이 아쉬웠습니다.   
-
-```java
-if(cri.getKeyword() == null) {
-    resultDTO = hierarchicalBoardRepository.hierarchicalBoardList(
-            //...
-    );
-}else if (cri.getSearchType == "t") {
-    resultDTO = hierarchicalBoardRepository.hierarchicalBoardListSearchTitle(
-            //...
-     );    
-}
-```
-
-이런 형태로 Repository 호출 이전 조건문을 통해 확인하고 그에 맞는 Repository 메소드를 호출해야 했기에 코드가 길어지고 중복 코드도 많이 발생한다는 문제가 있었습니다.
-
-이 문제를 해결하기 위해 JPA에서 동적 처리를 할 수 있는 방법에 대해 알아보게 되었고, EntityManager와 NativeQuery를 사용하는 방법, Specification을 사용하는 방법, QueryDSL을 사용하는 방법이 있다는 것을 알 수 있었습니다.   
-이 중 QueryDSL을 선택하게 되었는데, Native Query의 경우 문자열 기반으로 작성하다보니 가독성 저하와 오타로 인한 오류가 해당 메소드 호출 시점에 파악할 수 있다는 점이 아쉬웠습니다.   
-Specification은 동적 처리만을 위해 사용하기에는 복잡하게 처리된다는 단점이 있었으며 그에 반해 QueryDSL은 직관적인 사용법, 오타나 잘못된 요청에 대해 런타임 시점에 파악이 가능하다는 점이 유리하다고 생각해 선택하게 되었습니다.   
-
-```java
-private BooleanExpression searchTypeEq(String searchType, String keyword) {
-  if(searchType == null)
-    return null;
-  else if(searchType.equals("t"))
-    return hierarchicalBoard.boardTitle.like(keyword);
-  else if(searchType.equals("c"))
-    return hierarchicalBoard.boardContent.like(keyword);
-  else if(searchType.equals("tc"))
-    return hierarchicalBoard.boardTitle.like(keyword).or(hierarchicalBoard.boardContent.like(keyword));
-  else if(searchType.equals("u"))
-    return hierarchicalBoard.member.userId.like(keyword);
-  else
-    return null;
-}
-```
-
-BooleanExpression 타입의 메소드를 분리하는 것으로 동적 처리가 가능했고, 직관적인 QueryDSL의 표현방법으로 인해 높은 가독성 확보와 쉬운 이해도가 장점이었습니다.   
-이 프로젝트 마무리 이후 Man's Shop 프로젝트까지 QueryDSL을 계속해서 사용하고 있는데, 복잡한 쿼리의 경우 QueryDSL에 제한이 있다는 점은 아쉬운 부분이긴 하지만, 객체 중심적으로 보다 직관적으로 처리할 수 있다는 점은 QueryDSL 사용 결정에 큰 이점이 될 것이라는 생각이 들었습니다. 
-
-<br/>
-
-### 삭제된 댓글의 처리
-
-<br/>
-
-BoardProject에서의 댓글은 계층형 구조로 처리됩니다.   
-이전 버전까지의 프로젝트들은 계층형 구조에서 삭제가 발생하는 경우 하위 계층까지 모두 삭제하는 방법을 사용해왔습니다.   
-그러나, 이번에는 삭제 요청이 발생하더라도 해당 데이터만 삭제하는 방법을 사용해 보고자 했습니다.   
-
-Naver 페이지에서 쉽게 볼 수 있듯이 삭제된 댓글이 출력은 되지만 '삭제된 댓글입니다'와 같은 문구가 출력됩니다.   
-이번 REST-API 버전에서는 이 방법으로 처리해보고자 했습니다.   
-
-```java
-List<BoardCommentDTO> list = jpaQueryFactory
-                                    .select(
-                                            Projections.fields(
-                                                    BoardCommentDTO.class
-                                                    , comment.commentNo
-                                                    , comment.member.nickname
-                                                    , comment.commentDate
-                                                    , new CaseBuilder()
-                                                            .when(comment.commentStatus.gt(0))
-                                                            .then("삭제된 댓글입니다.")
-                                                            .otherwise(comment.commentContent)
-                                                            .as("commentContent")
-                                                    , comment.commentGroupNo
-                                                    , comment.commentIndent
-                                                    , comment.commentUpperNo
-                                            )
-                                    )
-                                    .from(comment)
-                                    .where(commentBoardEq(boardNo, imageNo))
-                                    .orderBy(comment.commentGroupNo.desc())
-                                    .orderBy(comment.commentUpperNo.asc())
-                                    .offset(pageable.getOffset())
-                                    .limit(pageable.getPageSize())
-                                    .fetch();
-```
-
-이 처리를 위해 Comment 테이블에 상태값을 알 수 있는 commentStatus라는 컬럼을 추가했습니다.   
-이 상태값을 통해 삭제 요청이 발생했을 때 해당 컬럼 값을 수정하도록 했고, 조회 시점에는 CASE WHEN을 사용해 조회에서부터 '삭제된 댓글입니다.' 라는 값을 content로 가져오도록 처리했습니다.   
-JOIN 없이 comment 테이블만 조회하는 요청이기도 하고 CASE WHEN을 사용하지 않는다면 코드레벨에서 다시 전체 목록을 돌면서 확인해야 한다는 단점이 있다고 생각해 조회 시점에서 처리될 수 있도록 했습니다.
-
-<br/>
-
-### WebClient를 통한 API 서버와의 통신
-
-<br/>
-
-React 기반의 SPA Frontend에서는 Axios를 통해 API 서버와 통신하지만, Spring Boot 기반의 SSR Frontend에서는 API 서버와 WebClient를 통해 통신합니다.   
-최근에는 RestClient라는 선택지도 있지만, 진행 당시 RestTemplate과 WebClient만 알고 있었고 둘 중 WebClient를 사용하게 되었습니다.   
-당시 RestTemplate의 Deprecated 이슈도 있었고, 스프링에서 WebClient를 권하고 있었기에 WebClient로 선택했습니다.   
-
-WebClientConfig 클래스에 WebClient 기본 설정을 해두고 필요한 곳에서 가져다 사용하는 구조로 설계했습니다.
+    <summary><strong>✔️ WebClientConfig 코드</strong></summary>
 
 ```java
 @Component
 public class WebClientConfig {
-    public WebClient useWebClient(){
-
+    public WebClient useWebClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:9096")
+                .baseUrl("http:/localhost:8080")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
-
-    public WebClient useImageWebClient(){
+    
+    public WebClient useImageWebClient() {
         ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
                 .codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-                        .maxInMemorySize(20 * 1024 * 1024)).build();
-
+                        .maxInMemorySize(10 * 1024 * 1024)).build();
+        
         return WebClient.builder()
-                .baseUrl("http://localhost:9096")
+                .baseUrl("http://localhost:8080")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .exchangeStrategies(exchangeStrategies)
                 .build();
     }
 }
-
-//ImageBoardWebClient
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class ImageBoardWebClient {
-
-  private final WebClient webClient = new WebClientConfig().useWebClient();
-
-  private final WebClient imageWebClient = new WebClientConfig().useImageWebClient();
-
-  public Long patchBoard(long imageNo, ImageBoardInsertDTO dto
-          , List<MultipartFile> files, List<String> deleteFiles
-          , MultiValueMap<String, String> cookieMap, HttpServletResponse response){
-    if(files != null && imageSizeCheck(files) == -2L)
-      return -2L;
-
-    MultipartBodyBuilder mbBuilder = new MultipartBodyBuilder();
-
-    Optional.ofNullable(files)
-            .orElseGet(Collections::emptyList)
-            .forEach(file -> {
-              mbBuilder.part("files", file.getResource());
-            });
-
-    Optional.ofNullable(deleteFiles)
-            .orElseGet(Collections::emptyList)
-            .forEach(file -> {
-              mbBuilder.part("deleteFiles", file);
-            });
-
-    mbBuilder.part("imageTitle", imageTitle);
-    mbBuilder.part("imageContent", imageContent);
-
-    return imageWebClient.patch()
-            .uri(uriBuilder -> uriBuilder.path(imagePath_variable).build(imageNo))
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .body(BodyInserters.fromMultipartData(mbBuilder.build()))
-            .cookies(cookies -> cookies.addAll(cookieMap))
-            .exchangeToMono(res -> {
-              exchangeService.checkExchangeResponse(res, response);
-
-              return res.bodyToMono(Long.class);
-            })
-            .block();
-  }
-}
 ```
 
-이미지 파일 전송이 필요한 WebClient 설정도 필요했기 때문에 기본 설정인 WebClient와 exchangeStrategies 옵션이 추가된 이미지 전송에 사용될 WebClient를 정의해두었습니다.   
-이미지 파일을 같이 보내는 경우 MultipartBodyBuilder를 사용해서 게시글 데이터와 같이 담아 보낼 수 있도록 처리했습니다.   
+</details>
+
+이미지 파일을 같이 보내는 기능이 많지 않지만, 그럼에도 이후 확장성과 설정에 대한 응집도를 고려해 WebClientConfig를 통해 사용하도록 설계했습니다.   
+WebClient는 기본적으로 InMemory Buffer 크기를 256KB로 제한하기 때문에 파일 전송 시 발생할 수 있는 DataBufferLimitException을 방지하고,   
+백엔드 허용치와 동일한 10MB에 맞춘 메모리 할당을 위해 maxInMemorySize를 설정했습니다.   
+이 설정으로 인해 정상적인 파일 전송과 백엔드까지 불필요한 요청이 도달하기 전, View-Centric 서버에서 1차적으로 차단하여 불필요한 네트워크 비용과 서버 리소스 낭비를 방지했습니다.
+
+<details>
+    <summary><strong>✔️ WebClient 활용 코드</strong></summary>
 
 ```java
-//ExchangeServiceImpl
-@Override
-public void checkExchangeResponse(ClientResponse res, HttpServletResponse response) {
-      if(res.statusCode().equals(HttpStatus.OK)){
-          cookieService.setCookie(res, response);
-      }else if(res.statusCode().equals(HttpStatus.FORBIDDEN)){
-          throw new CustomAccessDeniedException(ErrorCode.ACCESS_DENIED, "AccessDenied");
-      }else if(res.rawStatusCode() == 800){
-          //토큰 탈취
-          cookieService.setCookie(res, response);
-          throw new CustomTokenStealingException(ErrorCode.TOKEN_STEALING);
-      }else if(res.statusCode().is4xxClientError()){
-          throw new RuntimeException();
-      }else if(res.statusCode().is5xxServerError()){
-          throw new NullPointerException();
-      }
+public PaginationListDTO<HierarchicalBoardDTO> getList(
+        Criteria cri,
+        MultiValueMap<String, String> cookieMap,
+        HttpServletResponse response
+) {
+    UriComponentsBuilder ub = uriComponentsService.getListUri(boardPath, cri);
+    
+    String responseVal = webClient.get()
+            .uri(ub.toUriString())
+            .cookies(cookies -> cookies.addAll(cookieMap))
+            .exchangeToMono(res -> {
+                exchangeService.checkExchangeResponse(res, response);
+                return res.bodyToMono(String.class);
+            })
+            .block();
+    
+    ParameterizedTypeReference<PaginationListDTO<HierarchicalBoardDTO>> typeReference =
+            new ParameterizedTypeReference<PaginationListDTO<HierarchicalBoardDTO>>() {};
+    
+    PaginationListDTO<HierarchicalBoardDTO> dto = readValueService.fromJsonWithPagination(typeReference, responseVal, cri);
+    
+    return dto;
 }
 ```
 
-예외처리는 매 요청마다 직접 작성하기보다 ExchangeService 라는 서비스를 만들어 그 서비스 메소드를 통해 핸들링할 수 있도록 처리했습니다.
-그 안에서 응답값에 맞는 Exception을 강제로 발생시키도록 처리하고 이 예외들을 @ControllerAdvice가 선언된 ExceptionHandlerAdvice 클래스를 통해 전역 관리하도록 설계했습니다.
+</details>
+
+기능 특성상 응답의 정합성을 보장해야 할 필요가 있었기 때문에 WebClient를 사용함에 있어서 blocking 방식을 채택했습니다.   
+MSA 환경에서 Reactive Programming을 위해 WebClient를 적극적으로 사용하고 있는것으로 알고 있는데,   
+이후 MSA 환경 구축 과정에서 적극적으로 Non-Blocking을 사용해보고자 계획하고 있습니다.
 
 <br/>
-
-### 이미지 출력 처리
-
 <br/>
 
-이 프로젝트를 진행하며 처음으로 React를 사용했기에 이미지 출력에 대해 시행착오가 많았습니다.   
-Thymeleaf, JSP에서는 img 태그의 src에 요청 경로와 이미지명만 담아두면 해결됐던 반면, React에서는 base64 형태의 URL로 나오는 것을 확인할 수 있었습니다.   
-그래서 몇몇 사이트를 방문하면서 확인해보니 이렇게 처리되는 곳이 전혀 없다는 것을 알 수 있었고 문제점이라고 생각해 이것을 해결하고자 했습니다.   
+### 로그인
 
-문제 해결 방안은 window.URL.createObjectURL()을 사용하는 방법이었습니다.   
+로그인은 아이디와 비밀번호를 직접 입력하는 로컬 로그인과 Google, Kakao, Naver를 통한 OAuth 로그인이 있습니다.   
+모든 인증 성공 시 JWT를 발급합니다.
 
-```javascript
-const getImageDisplayData = async (imageName) => {
-        await imageDisplayAxios.get(`display/${imageName}`)
-            .then(res => {
-                const url = window
-                    .URL
-                    .createObjectURL(
-                        new Blob([res.data], { type: res.headers['content-type']})
-                    );
-                setImageSrc(url);
-            })
-            .catch(err => {
-                axiosErrorHandling(err);
-            })
-};
+1. 토큰 관리 방식
+- 토큰 종류
+    - JWT는 AccessToken과 RefreshToken로 설계했으며 RTR 방식을 채택했습니다
+    - 추가로 ino라는 UUID기반 난수값을 발급하며, 이는 디바이스별 다중 로그인을 허용하기 위한 식별자 역할을 수행합니다.
+- 토큰 관리
+    - 클라이언트에서 모든 토큰, ino는 쿠키로 관리합니다.
+    - 백엔드에서는 RDB가 아닌 Redis에서 토큰을 관리하며 AccessToken, RefreshToken만 저장해 관리합니다.
+    - Redis Key 구조는 token별 prefix + ino + userId 구조로 설계했습니다.
+    - 재발급은 401 TOKEN_EXPIRE를 반환하는것이 아닌 바로 RefreshToken을 검증하고 정상적이라면 즉시 재발급을 수행, 사용자의 요청까지 모두 처리한 뒤 응답 쿠키로 같이 전달하는 방식을 채택했습니다.
+
+2. 로컬 로그인 처리
+- Spring Security의 기본 로그인이나 별도의 EndPoint를 Controller에 직접 작성해 처리하는 방식 대신 LoginFilter를 작성해 해당 필터에서 처리합니다.
+
+3. OAuth2 로그인
+- 응답 추상화
+    - 각 Provider 마다 다른 사용자 정보 규격을 OAuth2Response 인터페이스로 추상화하여 확장성을 확보했습니다.
+- Redirect 흐름 개선
+    - 기존 프론트엔드에서 화면이 비어있는 컴포넌트인 OAuth.jsx와 SessionStorage를 사용하여 이전 경로로 연결될 수 있도록 처리했습니다. 하지만 이 방식은 인증 완료 후 불필요한 라우팅이 한번 더 발생하는 구조였습니다.
+    - 문제 해결을 위해 로그인 요청 시점에 이전 경로를 redirect_to 쿠키에 저장하고 백엔드는 SuccessHandler에서 이를 읽어 Redirect 할 수 있도록 개선했습니다. 이를 통해 프론트엔드에서 불필요한 로직과 라우팅을 제거하고 흐름을 단순화 할 수 있었습니다.
+
+<details>
+    <summary><strong>✔️ OAuthResponse 코드</strong></summary>
+
+```java
+public interface OAuth2Response {
+    String getProvider();
+    String getProviderId();
+    String getEmail();
+    String getName();
+}
+
+
+public class GoogleResponse implements OAuth2Response {
+    
+    private final Map<String, Object> attribute;
+    
+    public GoogleResponse(Map<String, Object> attribute) {
+        this.attribute = attribute;
+    }
+
+    @Override
+    public String getProvider() {
+        return OAuthProvider.GOOGLE.getKey();
+    }
+
+    @Override
+    public String getProviderId() {
+        return attribute.get("sub").toString();
+    }
+
+    @Override
+    public String getEmail() {
+        return attribute.get("email").toString();
+    }
+
+    @Override
+    public String getName() {
+        return attribute.get("name").toString();
+    }
+}
 ```
 
-이런식으로 요청 파일 요청 결과를 window.URL.createObjectURL을 통해 Blob으로 담아 처리한다면 원하던 구조처럼 blob:http://localhost~~ 구조로 처리하는 것이 가능했습니다.   
-이 문제 해결에 대한 여러 시도와 정리는 아래 링크의 블로그에 정리해두었습니다.
+</details>
 
-<a href="https://myyoun.tistory.com/227">React 이미지 처리 정리</a>
+<details>
+    <summary><strong>✔️ OAuthSuccessHandler 코드</strong></summary>
+
+```java
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class CustomOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    private final JwtTokenProvider tokenProvider;
+
+    private final CookieProperties cookieProperties;
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+        String userId = customOAuth2User.getUserId();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority auth = iterator.next();
+        String role = auth.getAuthority();
+
+        Cookie redirectCookie = WebUtils.getCookie(request, "redirect_to");
+        String redirectUrl = (redirectCookie != null) ? redirectCookie.getValue() : "/";
+        Cookie inoCookie = WebUtils.getCookie(request, cookieProperties.getIno().getHeader());
+
+        if(redirectCookie != null) {
+            redirectCookie.setPath("/");
+            redirectCookie.setMaxAge(0);
+            response.addCookie(redirectCookie);
+        }
+
+        if(inoCookie == null)
+            tokenProvider.issuedAllToken(userId, response);
+        else
+            tokenProvider.issuedToken(userId, inoCookie.getValue(), response);
+
+        String targetUrl = (customOAuth2User.getNickname() == null)
+                ? "/join/profile?redirect=" + URLEncoder.encode(redirectUrl, "UTF-8")
+                : URLDecoder.decode(redirectUrl, StandardCharsets.UTF_8.toString());
+
+        getRedirectStrategy().sendRedirect(request, response, "http://localhost:3000" + targetUrl);
+    }
+}
+```
+
+</details>
 
 <br/>
+<br/>
 
+### 이미지 리사이징
 
----
+이미지 파일의 경우 리사이징 기능을 도입했습니다.   
+Thumbnailator 라이브러리를 사용했으며, 300, 600 사이즈로의 리사이징을 수행하도록 설계했습니다.   
 
-<br />
+Profile 이미지와 이미지 게시판 이미지로 나눠서 처리하게 되며, Profile 이미지는 300 사이즈로 리사이징 이후 원본이 아닌 리사이징된 이미지 파일만 저장합니다.   
+profile의 경우 화면에서 크게 보여야 할 이유가 없기 때문에 작은 사이즈만 보관하면 될 것이라고 판단했습니다.   
 
-# History
-> 22/12/29 - Api Server
->> 전체적인 기능 코드 작성.   
->> 현재 누락 코드는 각 Entity Service에서 getList 코드들.   
->> 기존 프로젝트를 그대로 사용하는것이기 때문에 딱히 문제는 없을것이라고 가정하고   
->> 기존 프로젝트와 다른 getList 기능들 먼저 구현해서 테스트 필요.   
->> getList 테스트가 완료되면 전체적인 기능 테스트 필요.
->
-> #
-> 23/01/04 - Api Server
->> 계층형 게시판 List 리턴 처리 완료.   
->> 데이터는 DTO로 매핑해 받고 이를 리턴하는 형태로.   
->> 문제점으로는 Paging에 대한 데이터를 어떻게 처리할것인가가 문제.   
->> DTO에 PageDTO를 추가해봤지만 그렇게 되면 쿼리 실행시에 SyntaxError가 발생.   
->> 생각난 방법 중 하나는 리스트 페이지 접근시에 여기에서는 게시판 데이터만 가져가고
->> PageController를 만들어서 거기서 한번 더 처리하는 형태가 생각나긴 했으나
->> 그럼 count 쿼리가 두번 발생한다는 점에서 성능 저하가 우려.   
->> 기존 코드 그대로 사용하면 그것도 어차피 count 쿼리를 두번 사용하긴 하는데   
->> 아무래도 count 쿼리가 지금 많이 느리게 동작하는 상황이므로 중간에 지연이 많이 발생할것으로 보임.   
->> 1차적으로 paging 데이터를 어떻게 넘길것인가를 처리하고
->> count 쿼리에 대한 점을 좀 더 수정해야할 필요가 있음.   
->> 남은 이미지 게시판과 댓글 역시 DTO로 매핑해 처리하도록 수정필요.
->> 일단은 계층형 게시판 먼저 문제 해결할것.
->
-> #
-> 23/01/05 - Api Server
->> 계층형 게시판 List 리턴 처리 문제 해결.
->> HierarchicalBoardListDTO를 하나 더 만들어서 그 안에서 HierarchicalBoardDTO와 PageDTO를 필드로 갖도록 해 처리.   
->> HierarchicalBoardDTO 내에서 처리를 하고자 하면 이 DTO 자체가 List화 되기 때문에 PageDTO를 담아줄 방법이 없었음.   
->> 그것을 해결하기 위해 MultiValueMap으로 변환해 거기에 PageDTO 데이터를 추가하는 방법을 생각했지만 뜻대로 되지 않았고   
->> 구글 검색 결과 보통 요청을 받을 때 MultiValueMap으로 받지 리턴을 MultiValueMap으로 하지는 않는것 같다고 판단해 해결 방법이 아니라고 생각.   
->> 다음으로 생각한 방법이 PageDTO에 HierarchicalBoardDTO를 List로 만들어두고 생성자를 통해 가져온 데이터를 추가하는 방법.   
->> 이 방법은 정상적으로 데이터를 넘겨주기는 했으나 PageDTO 데이터가 쭉~ 나오고 그다음 DTO List 데이터가 나와 데이터가 정리가 전혀 되지 않은 느낌이었고   
->> 이걸 처리하고자 한다면 하긴 하겠지만 문제는 PageDTO는 댓글에서 역시 사용해야 하는 페이징 기능이고 추후 이미지 게시판에 페이징을 적용하게 된다면
->> 그 모든 엔티티들을 다 PageDTO에 받아서 처리하도록 하기에는 무리가 있다고 판단.   
->> 다른 방법으로 HierarchicalBoardDTO에 데이터를 매핑하는것이 아닌 HierarchicalBoard Entity에 받아온 다음 DTO에서는 이 엔티티를 List로 받아오고
->> PageDTO를 갖고 있도록 하는 방법.   
->> 이 방법의 문제점으로는 stackOverFlow가 발생한다는 문제.   
->> '양방향이 꼭 필요한 경우가 아니라면 oneToMany는 지양하는것이 좋다' 라는 의견에 Member Entity에서 각 게시판과 댓글 entity의 OneToMany를 모두 끊었으나
->> Auth Entity와는 양방향이 필요하다고 판단했기에 이걸 끊어낼 수 없었는데 여기서 StackOverFlow가 발생해서 해결이 안되는 상황.
->> @ToString.Exclude로 해결하고자 했으나 그것 역시 안되었고 이건 JPA 연관관계에 대한 지식 부족 문제라고 생각함.   
->> 추후 이 방법에 대해서는 추가적인 학습이 필요. 그리고 또 한가지 문제점으로 불필요하게 사용자 아이디를 제외한 나머지 정보까지 다 가져왔기 때문에 패스.   
->> 마지막 방법이 HierarchicalboardListDTO.   
->> 너무 많은 DTO를 만들어서 처리하는것이 아닌가 싶긴 했지만 어차피 게시판 상세 페이지 정보를 위해서는 페이징 기능이 필요없는 HierarchicalBoardDTO와 분리하는것도
->> 괜찮은 방법이라고 생각했기 때문에 이 방법으로 해결.
->> #
->> 추가로 count 쿼리에 대한 문제도 해결.   
->> 여기저기 찾아본 것으로는 페이징을 위해 전체 데이터 개수를 조회할 때 대략적인 개수만 가져와서 처리하는 방법과
->> 데이터의 총 개수를 담고 있는 테이블을 별도로 생성해 처리하는 방법 두가지가 보편적인 해결 방안으로 언급되었다.   
->> index를 생성해 처리하는것도 얘기가 많이 나왔지만 테이블 전체를 조회하다보니 이것도 의미가 없었고 대략적인 개수를 가져와 처리한다는 것은
->> google 검색의 기능을 예로 들어서 설명해주신 것을 봤지만 자세한 설명도 아니었고 '아 이런 형태구나' 이정도만 이해가 갈 뿐 어떻게 구현해야 할지
->> 감이 잡히지 않아 패스. 그래서 count_table이라는 테이블을 생성 후 그 안에서 boardName을 PK로 전체 데이터 개수가 필요한 hierarchicalBoard 테이블과
->> imageBoard 테이블만 넣어 전체 개수를 처리.   
->> 그리고 trigger를 설정해 insert, delete 시에 개수가 조절되도록 수정.   
->> 이걸 Entity로 굳이 만들어야 할까 싶었지만 JPA에서 table과 Entity의 구조는 맞춰야 하는것 아닌가 해서 생성.
->> #
->> comment 수정중
->
-> #
-> 23/01/06 - Api Server
->> Comment 수정.   
->> Page<>로 페이징 관련 데이터를 넘길 수 있다는 것을 확인. 그래서 리턴을 List 로 하는것이 아닌 Page로 리턴하도록 수정.   
->> DTO에 매핑할 때 null값이 존재하면 오류가 발생하면서 매핑이 안되는 부분때문에 각 게시판별 DTO를 생성하고
->> 이 DTO들을 Page 타입으로 담고 있는 CommentListDTO를 만들어 해당하지 않는 게시판의 DTO는 null값으로 만들어 리턴하도록 구현.   
->> 그리고 HierarchicalBoard 역시 ListDTO를 삭제하고 DTO하나만 Page 타입으로 리턴하도록 해 처리.   
->> 프론트에서는 totalElements와 totalPages가 같이 리턴되니까 이걸 받아서 데이터 하단에 페이지 이동 처리만 하도록 하면 되니 PageDTO는 삭제.
->> #
->> url은 rest에 맞게 전체적으로 수정이 필요.   
->> imageBoard에 대한 처리 필요.
->
-> #
-> 23/01/10 - Api Server
->> ImageBoard 처리 수정.   
->> image-board-list는 정상적으로 리턴하는것을 확인.   
->> image-detail과 image-modify는 따로 분리해서 처리하고는 있으나 동일한 repository 메소드를 가져와 사용중.   
->> 이 처리를 위해 ImageDetailDTO를 생성.   
->> detail과 modify는 동일한 데이터를 리턴하고 있으나 프론트에서 요청하는것을 감안해 지금처럼 분리하는것이 나은지
->> 아니면 동일하게 detail로만 받아서 처리하도록 할것인지 고민.   
->> 이제 전체적인 구현은 끝난것으로 보이고 SSR Frontend 만들어서 테스트 해볼것.
->
-> 
-> 23/02/10 - SSR Frontend
->> WebClient로 api Server로 데이터 요청 처리 구현.
->
-> 23/02/11 ~ 23/02/28 - SSR Frontend
->> SpringSecurity 단일로 api에서 인증 인가 처리가 이해가 안되는 문제로 SpringSecurity + JWT 로 전환.   
->> SpringSecurity에서 /login 요청을 가로채 처리하도록 AuthenticationFilter를 구현했으나 
->> SSR Frontend로 토큰을 리턴하도록 하는 방법을 찾지 못해 
->> 로그인 요청을 /member/login 으로 받아 member 서비스단에서 직접 처리한 후 토큰 생성하고 토큰을 리턴하도록 구현.      
->> 그로 인해 AuthenticationFilter가 불필요해져 삭제 예정.   
->> AccessToken(At)과 RefreshToken(Rt) 두가지 토큰을 생성하고 처리하도록 구현.      
->> At은 1시간의 만료기간. Rt은 2주의 만료기간을 설정.   
->> At가 만료되어 Rt를 통해 재발급을 받는 경우 Rt 역시 재발급 받도록 구현.      
->> Rt는 DB에 저장하고 At, Rt 모두 SSR Frontend에 리턴해 Client에서는 쿠키에 두가지 토큰을 보관.   
->> localStorage에 보관하지 않은 이유로는 XSS 공격을 방어하기 위해서이며 Cookie에서 발생할 수 있는 문제인 csrf 공격을 막기 위해 
->> SSR Frontend에서 쿠키 생성 시 HttpOnly, Secure, same-site를 설정.   
->> 또한 인터셉터에서 referer를 체크하도록 해 혹시나 뚫고 들어오더라도 한번 더 체크해 방지할 수 있도록 구현 필요.   
->> At Cookie의 경우 만료 시간이 1분 작게 설정.   
->> Api Server에 요청하는 시점이 토큰 만료시점과 겹치는 경우 문제가 발생할 수 있기 때문에 Client에서 사전에 처리할 수 있도록 하기 위함.   
->> 아직 부족해서 처리하지 못한점이 XSS 방지.   
->> XSS의 경우 HttpOnly로 다 막을수는 있다고 하지만 마냥 안심할 수 없는 부분이 만약 내 도메인 내의 게시글에 스크립트를 삽입하는 경우 
->> same-site 설정과 referer를 뚫고 들어올 수 있다고 판단해 게시글에 스크립트 삽입이 불가하도록 설정해야할 필요성이 있다고 생각함.   
->> 이건 꼭 학습해서 처리해야 하는 부분.
->
-> 23/03/01 ~ 23/03/03 - SSR FrontEnd
->> TokenInterceptor로 referer 체크하도록 일단 추가만 처리.   
->> interceptor 처리와 여기서 발생하는 Exception 처리는 모든 구현이 끝난 후에 마지막에 구현.   
->> 초기 기능 구현 당시 At 하나만 갖고 있도록 구현했기 때문에 해당 부분들 Rt를 같이 갖고 있도록 수정.   
->> At가 만료된 경우 Rt를 Api Server에 보내 재발급 받은 후 데이터 요청을 하도록 수정.
->
-> 23/03/06 ~ 23/03/07
->> api 서버의 AuthorizationFilter에서 TokenProvider에 접근하지 못하는 문제 발생.   
->> nullpointerException이 발생했는데 Filter의 constructor에 TokenProvider를 추가해주고 
->> 필터를 등록해둔 SecurityConfig에도 같이 추가해줌으로써 해결.   
->> 당연히 @Component 달고 @Autowired를 달아주면 주입이 될거라고 생각을 했으나 전혀 주입 받지 못하는 상태였던 것.   
->> 이런 경우에는 생성자를 통한 주입으로 처리를 해야 정상적으로 동작한다.
->>
->> 사용자 로그인 정보 처리 구현.   
->> 계속 고민했으나 로그인 여부는 RefreshToken을 localStorage에 넣어두고 이 토큰 소지 여부로 파악 할 수 있다고 쳐도 
->> 게시판 상세페이지같은 곳에서 작성자와 사용자 아이디를 비교하는 경우에는 이 방법이 불가하다고 판단 함.   
->> 그래서 api에서 데이터를 받을 때 게시글 데이터와 사용자의 아이디를 같이 받는 형태로 구현.   
->> 클라이언트 서버에서는 세션을 전혀 사용하지 않고 있고 api 서버에서 그나마 권한관리로 인해 세션을 사용중인데 
->> 이 문제점이 딱히 검색해서도 나오는 방법이 없었고 생각해본 방법은 세가지.   
->>> 1. Spring Security를 사용중이니 클라이언트 서버에 세션을 만들어 사용자 정보(아이디, 닉네임 정도)를 관리.
->>> 2. api 서버에서 요청 데이터를 리턴할 때 사용자 아이디를 같이 리턴.
->>> 3. 2번 처럼 처리하는데 리턴할 때 사용자 아이디를 리턴하는 것이 아닌 작성자와 사용자 아이디가 동일한지 api 서버가 체크 후 boolean으로 리턴
->>
->> #### 여기서 2번 방법을 선택한 이유   
->> 1번은 stateless여야 한다는 개념에서 벗어나기 때문이다. 물론 api 서버에서도 권한관리를 편하게 하기 위해 세션을 사용하고 있지만 
->> 클라이언트 서버와 api 서버 모두 세션을 사용하면서 처리한다는 점에서 stateless로 처리하는것이 무의미 해진다고 생각을 했고 
->> 두 서버 모두 세션으로 인한 부담이 증가할 것이라고 생각했기 때문이다.   
->> api에서의 권한관리를 위한 세션 활용도 개발 편의성은 높여주지만 아무래도 그에 따른 부담이 있다고 생각하고 
->> 이걸 개선하기 위해서는 토큰에 권한 정보가 들어가거나, 아니면 토큰 검증 후 토큰의 사용자 아이디를 통해 권한을 체크해주는 
->> 방법으로 개선이 가능할것으로 보이나 코드를 어떻게 작성하는지에 따라 다르겠지만 오히려 비 효율적일 수도 있다는 생각이 듦.   
->> 예를 들어 메인 페이지를 제외한 모든 페이지에서 로그인이 필요하고 권한에 따라 출력되는 데이터가 달라지는 페이지라면.   
->> 매 요청 시 마다 권한 확인을 위한 DB 접근과 코드의 처리가 필요하게 될것이고 그 후에 권한 체크를 해 리턴하는 방식이기 때문에 
->> 세션 메모리에 대한 부담이 적어지기만 할 뿐 오히려 처리 속도에 있어서는 어떨지가 중점이라고 생각.
->>
->> 3번 방법을 사용하지 않는 이유는 상세페이지 데이터의 경우 하나의 row가 리턴되지만 그 페이지의 댓글의 경우는 
->> 리스트 형태로 리턴될건데 그 리스트의 모든 경우에 대해 api 서버에서 boolean으로 하나하나 다 대조해서 매핑한 뒤 보내는 것은 
->> 아무래도 비효율적이다. 라는 생각을 했기 때문.   
->> 그래서 사용자 아이디를 리턴해 처리하게 되면 상세페이지의 경우 프론트에서 eq로 비교해 출력해야해서 코드가 아주 살짝 길어지지만 
->> 반대로 comment에서는 api서버에서 처리도 덜해서 보내줄 수 있고 어차피 프론트에서는 json으로 받아 출력하도록 할것이기 때문에 
->> 이때 처리하는 것이 좀 더 빠르게 처리할 수 있겠다 라고 생각했기 때문.
->
-> 23/03/08 ~ 23/03/15 - SSR Frontend
->> 계층형 게시판 전체 구현 완료.   
->> 로그인 여부는 lsc라는 무작위 값을 갖고 있는 쿠키를 통해 처리.   
->> lsc 쿠키는 랜덤값을 갖고 있기 때문에 아무런 의미도 갖지 않는 쿠키이고 RefreshToken을 쿠키에 담을 때 같이 담아주게 된다.   
->> 주기 역시 refreshToken과 같은 주기를 갖게 되고 refreshToken이 갱신될때 lsc 역시 갱신된다.   
->> 이 lsc 쿠키는 아무런 값을 갖지 않기 때문에 노출이 되어도 상관이 없다고 판단했고 이 쿠키가 존재한다는 것은 RefreshToken이 존재한다는 것과 같은 의미이기 때문에 
->> 클라이언트에서 접근할 수 있어야 하기 때문에 httpOnly 설정은 하지 않음.   
->> jquery로 페이지 로딩 직후 lsc 쿠키 존재 여부에 따라 로그인 또는 로그아웃을 출력하도록 하는 방법으로 구현.   
->> 그렇기 때문에 사용자가 로그아웃을 요청하는 경우 모든 토큰의 쿠키를 제거하면서 lsc 쿠키 역시 제거해야 함.
->>
->> 토큰의 갱신은 AccessToken과 RefreshToken을 쿠키에 HttpOnly, secure, same-site 설정으로 보안을 해두었고 
->> 아직 구현하지 않은 인터셉터에서의 referer 체크로 csrf까지 대비할 예정.   
->> AccessToken은 1시간 RefreshToken은 2주의 만료기간을 갖는데 만료시간에 가까워지는 경우 발생할 수 있는 오류를 피하기 위해 AccessToken 쿠키는 59분으로 설정.   
->> 권한이 필요하지 않은 각 게시판 리스트와 로그인, 회원가입 페이지를 제외하고 나머지 요청에 대해서는 쿠키 존재여부를 체크하도록 구현.   
->> 위 페이지 외에 각 게시판 상세페이지의 경우도 권한은 딱히 필요하지 않지만 refreshToken이 존재한다거나 로그인 되어 있는 상태라면 작성자와 사용자 아이디를 비교해 
->> 게시글 수정, 삭제 기능을 사용할 수 있도록 해야 하기 때문에 토큰이 아예 존재하지 않는 경우와 그렇지 않은 경우를 구분해 처리하도록 구현.
->>
->> 게시글 수정의 경우 페이지 요청 시 해당 게시글 데이터를 가져올 때 작성자와 사용자의 아이디를 비교해 동일하면 데이터를 리턴하도록 구현.   
->> 게시글 답글의 경우는 이전 프로젝트들에서는 해당 게시글의 groupNo, indent, UpperNo를 받아와 페이지를 출력해주고 작성 요청 시 이 데이터를 수정해 
->> 등록해주는 형태로 구현했는데 이번에는 굳이 api 서버에 요청을 보내 데이터를 받아온 뒤 작성 요청을 다시 보내는것 보다 한번만 요청해서 처리하는 것이 좋겠다는 판단을 해서 
->> 페이지 요청시에는 클라이언트 서버에 요청을 하며 보낸 boardNo만 그대로 넘기면서 페이지를 출력하도록 구현 했음.   
->> 이유는 이렇게 분리된 restfulAPI 서버라면 여러 클라이언트 서버에서 다양한 요청이 올텐데 이 요청의 횟수를 줄이는 것이 성능 개선에 조금이라도 도움이 될것으로 생각했기 때문.   
->> 답글의 경우 어차피 작성하는데에 있어서 상위글의 boardNo만 존재하면 되기 때문에 클라이언트 서버내에서 해결하도록 하고 
->> 작성 요청시 제목, 내용, 글번호를 담아 api 서버에 요청하면 api 서버에서는 그때 해당 게시글의 groupNo, indent, upperNo를 가져오고 그 데이터를 수정해 바로 
->> insert 요청을 수행해 주면 된다고 생각했기 때문에 이와 같은 방법으로 구현.
->>
->> 현재 좀 신경쓰이는 문제가 토큰 체크 방법.   
->> 지금은 각 요청에 따라 해당 메소드를 호출해 체크를 하도록 구현했는데 이걸 굳이 메소드 작성시에 호출하지 않아도 알아서 동작하게 할 방법이 없을까 고민중.   
->> 인터셉터에 넣을까도 고민했지만 그렇게 하는 경우 현재 구현된 틀에서는 재발급 받아온 쿠키를 꺼낼 방법이 없음.   
->> 굳이 인터셉터에 넣는다면 ajax를 통해 매 요청마다 토큰체크를 하도록 하는 방법이 있지 않나? 라는 생각도 했지만 그럴거면 그냥 컨트롤러에 메소드 하나 만들지 
->> 굳이 인터셉터를 만들어서 처리할 필요는 없다고 생각함.   
->> 근데 체크하는 메소드 하나 호출하면 체크에 재발급 까지 다 해서 리턴하도록 만들어놨다고는 해도 매 요청마다 메소드 호출하는 코드를 넣어야 하고 
->> 하나 빼먹으면 api 에서 바로 403 날라오니까 이건 개선할 필요가 있다고 생각함. 인터셉터에서 원하는 타입으로 리턴하는 방법을 찾아보는것도 방법이 될 것 같음.
->>
->> 초반 rest api 계획에서는 계층형 게시판은 webClient로 처리, 이미지 게시판은 restTemplate으로, 댓글은 자바 connection으로 처리하려고 했으나 
->> 계층형 게시판을 webClient로 처리하다보니 다양한 문제가 생기는것을 확인했고 그래서 전체 다 webClient로 구현.   
->> 그 후에 restTemplate, java connection으로 전체 다 구현해보는 방법으로 변경.   
->> 그래서 connection 패키지에 javaCon, restTemplate, webClient 라는 하위 패키지 생성 후 
->> 각 패키지에서 게시판별 클래스로 분리.
->
->
-> 23/03/16 ~ 23/03/17 - SSR Frontend Server
->> comment 출력 기능 완료.   
->> ImageBoard는 아직 미구현이라 comment 적용하지 않았으나 comment.html로 분리해서 추가만 해주면 되기 때문에 문제는 발생하지 않을것으로 생각.   
->> 또한 comment 데이터를 요청하는 형태 역시 동일하기 때문에 큰 문제는 발생하지 않을 것으로 보임.   
->
->> comment의 경우 게시판 상세페이지 로딩 후 JQuery에서 comment 데이터를 요청하고 가져온 데이터를 파싱해서 처리.   
->> 중간에 JSON Array 파싱에 대해 문제가 발생했으나 해결.   
->> 이전 프로젝트들에서 경험한 형태와 다른 형태의 json이었으나 동일하게 처리하려다 보니 발생한 문제.   
->> 이전에는 딱 하나의 DTO의 리스트만 리턴받았기 때문에 바로 each를 돌려 처리가 가능했지만, 
->> 이번에는 json 배열이 아닌 하나의 JSON 안에 comment 데이터가 배열로 들어가 있는 상태였기 때문에 바로 each문으로 풀려고 해도 풀리지 않았던 것.   
->> 이 문제는 SSR Frontend README에 메모로 정리했으며 블로그에도 기록할 예정.
->>
->> comment의 페이징 기능까지 처리 완료했으며 남은건 comment reply와 delete 기능.   
->> 이 두가지 기능 모두 ajax로 비동기처리로 진행 예정.
->>
->> comment와 계층형 게시판의 페이징에서 active 상태인 a 태그를 bold에 black 컬러로 출력되도록 수정.   
->> 계층형 게시판 페이징의 경우 태그가 html 파일에 그대로 작성되어 있었기 때문에 style 태그를 통해 처리가 가능했으나 
->> comment의 경우 jquery에서 태그를 만들어 추가하는 형태이다보니 css에서 해당 태그를 잡지 못하는 것으로 보임.
->> 그래서 comment는 페이징 영역 생성 시 active 상태인 a 태그에 style 속성을 넣어 만들어주는 형태로 처리.
->>
->> 계층형 게시판 페이징에서 다른 페이지로 이동하기 위해 버튼을 눌렀을 때 keyword가 null이 아닌 blank 상태로 넘어가 
->> webClient로 보내줄 때 오류가 발생.
->> 그래서 조건문에 keyword.equals("") 조건을 추가해 문제 해결.
-> 
-> 23/03/18 ~ 23/03/21 - SSR Frontend, Api Server
->> comment insert, Reply Insert, delete, 페이징 구현 완료.   
->> insert와 Reply Insert는 imageBoard, HierarhicalBoard를 구분하지 않고 두 게시판의 boardNo를 찾아 보내게 된다.      
->> 그럼 둘중 하나는 값이 없을것이고 받은 데이터를 CommentDTO에 담아 api 서버로 전송한다.   
->> api 서버에서는 값이 존재하는지 여부에 따라서 commentInsert, Reply Insert를 처리하고 DB에 저장된 commentNo를 리턴한다.   
->> 최종적으로 ExceptionHandler를 구현하고 나면 여기서는 상태 리턴만 받도록 하면 될것으로 예상.   
->> 페이징기능이 게시판도 그렇고 댓글에서도 prev, next가 정상적으로 출력은 되지만 동작이 안되고 있었는데 해당 부분 수정해서 해결.   
->> a 태그로 만들어두기만 하고 연결을 안해줘서 동작을 안하고 있었음.   
->> 댓글의 경우 prev, next 테스트를 위해 계층형 게시판 99988번 글에 댓글 데이터 240개를 추가.   
->> API server에서 commentInsert를 처리하기 위해 CommentInsertDTO를 생성했고 insert, ReplyInsert 모두 이 DTO에 받아서 처리.
-> 
-> 23/03/22 ~ 23/03/23 - SSR Frontend, Api Server
->> ImageBoard 작업중.   
->> ImageBoardList 정상적으로 출력 완료.   
->> 이미지 파일의 경우 데스크탑 E 드라이브에 저장 후 api 서버에서 byte[]로 리턴해 출력하는 형태로 구현.   
->> 이미지 파일의 사이즈를 최대 10MB로 잡아두고 만들다보니 WebClient에서 버퍼 사이즈 초과로 오류가 발생.   
->> 그래서 SSR Frontend에서 버퍼 사이즈를 늘려서 WebClient를 빌드하는 메소드를 추가 생성. 이미지 리턴은 해당 메소드를 호출해서 WebClient를 생성하도록 함.   
->> ImageBoardInsert 처리 완료.   
->> 기존 사용하던 코드들을 재활용해 처리함.   
->> 게시글 등록 후에는 ImageBoardDetail 페이지로 연결되도록 구현.   
->> #### 갑자기 RefreshToken 값이 api server에서 제대로 검증되지 않는 오류가 발생.   
->> #### 디버그로 찾아봤으나 클라이언트에 리턴된 refreshToken 값이 DB에 존재하지 않는 값이 전달된 것으로 확인.   
->> #### 그래서 refreshToken만 받은 상태에서 두 토큰을 재발급 받으려 하다보니 검증에서 걸려 null만 리턴되는 현상.      
->> #### 재 로그인 후 기능 동작에 있어서는 문제가 발생하지 않음.   
->> #### AccessToken 만료기간 수정 후 refereshToken 을 통한 reIssued 테스트가 필요.
->> ImageDetail의 경우 기존 프로젝트처럼 출력하도록 되어있고 수정, 삭제 버튼은 추가했으나 기능 동작하도록 연결이 필요.   
->> 또한 ImageBoard에 대한 댓글 데이터는 존재하지 않으므로 해당 데이터 삽입하여 댓글 페이징과 답글 등등 기능 테스트 필요.   
->> ImageBoardList의 경우 기존에는 무한 스크롤도 넣지 않고 페이징도 넣지 않았는데 이번 프로젝트에서 페이징으로 기능 수정.   
->
-> 23/03/24 - SSR Frontend, Api Server
->> 어제 발생했던 RefreshToken 이슈 원인 불명.   
->> 다시 해당 오류를 파악하기 위해 AccessToken을 쿠키에서 제거 후 재발급 요청을 여러번 보냈으나 해당 오류가 발생하지 않음.
->> 오류가 발생하지 않으니 원인 파악이 불가하여 해결 불가.   
->> 단, 이런 경우가 발생할 때를 대비해 ExceptionHandling을 통해 로그아웃 처리 후 재 로그인을 유도하도록 구현해야 할것으로 판단. 구현해야 함.   
->> imageBoard Modify, delete까지 마저 구현 완료.
->>
->> ExceptionHandler 구현.   
->> SSR Frontend에서는 @ControllerAdvice로 Api Server에서는 @RestControllerAdvice로 구현.
->> Exception 처리에 대해서는 현재 동일하게 /error 페이지를 출력하도록 구현되어 있고 현재 클라이언트 서버는 NotFoundException, NullPointerException, AccessDeniedException만 되어 있고   
->> api 서버에서는 NullPointerException, FileNotFoundException, IllegalArgumentException, IllegalAccessException만 추가해 놓은 상태.
->> api 서버에서 발생한 Exception은 상태 코드를 리턴할것이고 클라이언트 서버는 WebClient로 요청 시 retrieve를 활용해 onStatus로 상태코드 값을 받아
->> ExceptionHandler를 동작시키는 형태로 구현.   
->> 전체적으로 테스트하면서 예외처리를 추가해야함.   
->> Api 서버에서는 오류를 로그에 저장한 뒤 상태코드를 리턴. 클라이언트 서버에서도 로그를 저장하도록 추가해줘야 함.
->> 클라이언트 서버에서 요청하는 모든 메소드를 수정한 상태는 아니고 boardList 처리 메소드만 수정한 상태.
->> 전체적으로 예외처리를 추가해줘야 함.
->>
->> Referer 인터셉터의 경우 지금까지 그냥 로그로 찍어내는 것만 만들어놨었는데 예외처리 수정 직후 구현 예정.
->> 계획중인 인터셉터 처리 형태로는 post, patch, delete 처리에 대한 url과 개인정보같은 중요 데이터의 get 요청 url을 선별해 해당 url로 요청이 들어오는 경우는
->> Referer 값을 localhost:8080/ 이런식으로 확인하는게 아닌 localhost:8080/board/boardInsert 이렇게 직전의 url 전체를 확인하는 형태로 구현 예정.   
->> 그냥 localhost:8080/ 이런 형태로 체크하게 되면 같은 도메인이기만 하면 어느 위치에서든 처리가 가능하게 될것이고 그건 방지해야 될것이라고 생각해서 
->> 데이터가 변할 수 있는 요청에 대한 것은 좀 더 상세하게 체크해서 처리하는 것으로 결정.
->>
->> 클라이언트 서버에서 security Dependency 제거하고 SecurityConfig 역시 제거함.   
->> csrf 토큰 때문에 사용할까 고민했는데 딱히 사용할것 같지 않아서 삭제.
->> 이건 고민 좀 더 해보고 추후 리펙토링 단계에서 결정.
-> 
-> 23/03/25 - SSR Frontend
->> RefererInterceptor 작업중
->> 계획했던 대로 각 요청들에 대해 세부적으로 url 체크를 하도록 구현.
->> 코드는 어느정도 작성이 마무리가 되었는데 고민되는 것은 referer가 유효하지 않을때 어떻게 처리할것인가가 고민.
->> Exception을 강제로 발생시켜 오류 페이지를 출력할것인지
->> 아니면 그냥 특정 url로 연결할 것인지
->> 아니면 뭐 다른 방법이 있는 것인지에 대해 결정을 할 필요가 있음.
->> 
-> 
-> 23/03/27 - SSR Frontend, Api Server
->> api 서버 컨트롤러에서 @PreAuthorize로 접근 권한 설정.   
->> 회원가입 기능이 구현이 안되어 있어서 회원가입 기능 구현.
->> refererInterCeptor exclude에 회원가입시 아이디체크와 에러페이지 추가.
-> 
-> 23/03/28 - SSR Frontend, Api server
->> 회원가입 후 로그인 과정에서 검증 오류 발생.   
->> 기존 계정들은 정상적으로 로그인이 되었지만 새로 가입한 계정들이 로그인이 안되는 오류가 발생.   
->> 테스트를 돌려본 결과 10자가 넘어가면서 특수문자가 들어간 경우 오류가 발생하는 것으로 확인.   
->> 그래서 구글링을 해봤지만 전혀 원하는 답이 나오지 않았음.   
->> 하지만! 문제는 join.html에서 비밀번호 확인 input에도 비밀번호 input과 마찬가지로 name 설정이 userPw로 되어있었기 때문에   
->> 회원가입 처리 시 중복으로 비밀번호가 들어갔기 때문에 발생한 에러였음.   
->> 테스트에서 오류가 발생한것은 아무래도 이것저것 해보느라 passwordEncoder 옵션 설정에서 발생한 에러로 추정.   
->> 이건 테스트 클래스에서 좀 더 테스트가 필요.   
->>
->> api 서버에서 TokenProvider를 수정.   
->> 기존 refreshToken을 검증하는 verifyRefreshToken 메소드는 RefreshToken 검증 후 정상적인 토큰이면 바로 reIssuanceAllToken 메소드를 호출 해
->> 두 토큰을 모두 재발급 받은 뒤 그것을 리턴받아 컨트롤러에 넘겨주는 형태였는데    
->> 로그아웃 처리를 하면서 refreshToken 검증이 필요해 provider를 보다보니 너무 검증 메소드에 기능이 몰려있다고 생각해 기능을 좀 분리.   
->> verifyRefreshToken은 RefreshToken을 검증한 뒤 token에 저장되어 있는 값인 rIndex와 tokenValue를 Map으로 리턴하도록 수정했고   
->> reIssuanceAllToken에서는 verifyRefreshToken에서 리턴받은 Map 데이터를 토대로 DB 데이터와 비교 후 정상적인 토큰이라면 재발급을 처리해   
->> JwtDTO 타입으로 토큰값들을 담아 리턴하도록 구현.   
->> 그리고 이것을 호출하는 TokenService의 reIssuedToken 메소드를 생성해 거기서 토큰 검증 후 map으로 데이터를 리턴받고   
->> 해당 데이터가 null이 아니라면 reIssuanceAllToken 메소드를 호출해 토큰을 재발급 받고 컨트롤러에 리턴하도록 구현.
->> 이 재발급 처리는 코드만 수정하고 테스트를 아직 하지 않았기 때문에 테스트 필요.
->> 
->> logout 기능을 구현을 안해서 logout 기능 구현 중.
->> 코드는 완성했고 테스트가 필요함.   
->>
->> url 입력으로 loginForm에 접근할 때 refreshToken을 갖고 있는 사용자라면 로그인 페이지에 접근해 다시 로그인 하는 경우를 발생시키면 안되기 때문에
->> loginForm 접근 시 토큰 여부를 확인해 갖고 있다면 메인 페이지로 이동시킬 수 있도록 처리가 필요.   
->> 또한 로그인 시 아이디나 비밀번호 오류 발생 시 error 페이지를 출력하는 것이 아닌 loginForm 페이지에서 아이디나 비밀번호가 맞지 않는다는
->> 메세지를 출력하도록 수정 필요.
-> 
-> 23/03/29 - SSR Frontend, Api Server, test
->> 로그아웃 구현 완료.   
->> 로그아웃 요청 시 AccessToken과 RefreshToken을 같이 담아 api 서버에 요청.   
->> api 서버에서는 AccessToken 검증 후 정상이라면 RefreshToken을 검증 하고 그 뒤 DB에 있는 RefreshToken 데이터를 삭제 처리.   
->> api 서버에서 정상적으로 처리 후 응답이 오면 FrontEnd 서버에서는 AccessToken, RefreshToken, lsc 이 세가지 쿠키를 삭제.   
->> 
->> 로그인페이지 접근 시 토큰이 존재하는(로그인이 되어있는) 사용자라면 url 입력으로 접근하더라도 로그인 페이지에 접근하지 않고   
->> /board/boardList 페이지로 redirect 하도록 수정.   
->> 처리는 로그인페이지에 접근했을 때 토큰 쿠키 체크를 하고 존재하지 않아야 해당 페이지로 이동할 수 있도록 구현.   
->> 
->> 로그인시 아이디나 비밀번호가 틀렸을 경우 오류페이지를 출력하는 것이 아닌 해당 페이지에 text를 출력하도록 수정.
->> 해당 기능을 위해 아이디 혹은 비밀번호가 일치하지 않는 경우에 api server에서 BadCredentialException이 발생하는 것을 확인해
->> 해당 Exception이 발생했을 때 400 코드를 리턴하도록 했고,
->> webclient의 status에서 400을 받아 CustomNotFoundException을 새로 만들어 해당 CustomException으로 처리 하도록 구현.   
->> 일반적인 notFoundException의 경우 다른 기능 동작시에도 발생할 수 있기 때문에 erorr 페이지로 연결되어 있기 때문에   
->> 로그인에서 발생하는 해당 Exception은 별도로 처리해주는게 맞다고 생각했고, 그래서 CustomException으로 상태코드를 리턴하도록 해
->> text를 출력할 수 있도록 구현.
-> 
-> 23/03/30 - SSR Frontend, Api Server, test
->> 아래 테스트항목 체크 중 발생했던 오류 수정 및 체크 완료.
->>
->> 테스트 항목 체크 중 발생했던 오류
->>> 1. 이미지게시판 리스트에서 여러개의 이미지를 갖고 있는 게시글의 경우 이미지 파일 개수만큼 리스트에 출력되던 문제.
->>>> inner join을 통해 데이터를 조인해 가져오는데 그러다보니 이미지 데이터가 여러개인 경우 중복되는 문제가 발생.   
->>>> Group By를 추가해줘서 문제 해결.
->>> 2. 이미지 게시판 상세페이지에서 댓글 출력.
->>>> 컨트롤러에 코드가 주석처리 되어있는 상태였고 임시 코드였기 때문에 코드 수정으로 문제 해결.
->>> 3. 페이징에 사용될 amount 문제.
->>>> 계층형 게시판과 댓글의 경우 amount가 20으로 잡혀있으나 이미지 게시판의 경우 한줄에 3개씩 출력되기 때문에 20개를 출력하면 아무래도 보기 좋지 않은 상황.    
->>>> 그래서 boardAmount = 20, imageAmount = 15로 분리했고 계층형 게시판과 댓글은 boardAmount를 사용하고 이미지 게시판만 imageAmount를 사용하도록 수정.
->>> 4. 각 게시판 상세페이지 댓글 출력시 페이징 기능 num 출력과 각 버튼 출력 문제.
->>>> 댓글의 페이지의 경우 1페이지밖에 없는데 페이지번호가 출력되는 문제 수정.   
->>>> 받은 데이터의 startPage와 endPage는 가장 첫페이지와 끝 페이지를 의미하는데 이 두 값이 같으면 1페이지밖에 없다는 의미이므로 이 경우 아예 페이지 번호를 출력하지 않도록 수정.   
->>>> 각 버튼의 경우 삭제는 작성자만 출력되고 있었지만 답글의 경우 로그인을 하지 않은 사용자에게도 출력이 되는 문제 발생.   
->>>> 로그인을 한 상태라면 응답 받은 값에 uid라는 값이 존재하게 되는데 이 값이 존재해야만 로그인을 한 사용자이기 때문에 이 경우에만 출력하도록 수정.   
->>> 5. 이미지 게시판 작성 및 수정 시 이미지 파일 처리 문제.
->>>> 이미지 파일을 선택했다가 삭제하고 다른 이미지를 다시 선택하는 경우 새로 선택한 이미지들이 정상적으로 처리가 되지 않는 문제 발생.   
->>>> jquery에서 preview 처리를 하면서 file이라는 배열에 넣어 관리하게 되는데 이때 file의 index 값이 제대로 설정되지 않아 발생한 문제.   
->>>> step 변수를 초기값으로 0을 주고 파일이 추가될때마다 1씩 증가시키는 형태인데 등록하지 않고 삭제하게 되더라도 이 step값은 감소를 시키지 않음.   
->>>> 이유는 감소시킨 다음 다른 파일을 다시 선택하게 될 경우 같은 step값을 가진 preview가 생길것이고 그럼 preview 삭제에서 문제를 발생시키는 것도 있지만
->>>> 이 step값이 file의 index 역할을 하기 때문.   
->>>> 그럼 여기서 문제가 발생한 이유는 두개의 이미지를 선택한 후 다시 두 이미지를 삭제. 그 뒤에 다른 이미지 2개를 선택했을 때.
->>>> 나중에 추가된 2개의 이미지 step값은 2, 3이 된다. step은 0부터 시작이기 떄문에.   
->>>> 하지만 insert나 modify 버튼 동작 시 formData에 file을 넣기 위한 처리과정에서 file.length로 file 배열의 길이만큼 반복문을 처리하기 때문에
->>>> file의 0, 1 번째 인덱스 값만 가져오니 당연히 빈값이 formData에 들어가게 된것.   
->>>> 그래서 이 문제를 해결하기 위해 file.length만큼 반복하는 것이 아닌 step값 만큼 반복하면서 file의 각 인덱스 값을 훑고,   
->>>> 값이 존재하는 경우에만 formData에 추가하도록 수정해서 문제를 해결.   
->>>> 또한 수정 페이지에서 기존 이미지 파일과 겹치지 않도록 하기 위해 기존 이미지 파일의 경우 preview div태그의 값을 imageStep값으로만 하는것이 아닌 old + imageStep으로 수정.
->>> 6. 이미지 파일 사이즈 문제.
->>>> 이미지 파일의 경우 제한을 10MB로 설정해두었고 yml에 작성한 것이 아닌 api 서버에서 insert 혹은 modify 처리 전 이미지 파일 사이즈를 체크하도록 구현했었음.   
->>>> 하지만 10MB가 넘는 고용량 이미지 파일을 다운받아 업로드 시도를 하며 테스트한 결과 클라이언트 서버에서부터 SizeLimitExceededException이 발생하면서 컨트롤러에 접근조차 하지 못함.   
->>>> 그래서 ExceptionHandler를 통해 이 문제를 해결하고자 오류코드를 리턴해 ajax에서 alert창을 띄우려고 했지만 아무런 데이터도 리턴받지 못하는 문제가 또 발생.   
->>>> 검색 결과 yml에 server: tomcat: max-swallow-size: -1 설정을 해줘야 제대로 리턴이 된다는 해결법을 찾았고 이 설정을 통해 문제를 해결.   
->>>> 그리고 업로드 사이즈를 설정하기 위해 spring: servlet: multipart: max-file-size: 10MB  , max-request-size: 10MB 이 두가지를 추가로 설정.   
->>>> 문제는 해결 되었으나 max-swallow-size가 무엇인지 해결방안을 찾은 블로그에서는 언급이 없었고 이게 무엇인지 알아봐야 함.   
->>>> 또한, 이렇게 클라이언트 서버에서 설정을 통해 max-file-size를 설정해 막아두게 되면 api 서버에서 작성되어 있는 파일 사이즈 체크는 아무런 의미가 없는것이 아닌가 하는 의문이 발생.   
->>>> 이에 대해서는 좀 더 알아보고 고민을 해봐야 할 필요가 있음.   
->>> 7. 각 게시판 수정페이지에 url로 접근 할때 발생하는 문제.
->>>> 각 게시판 수정페이지는 작성자가 아니면 상세페이지에서 버튼이 출력되지 않기 때문에 url로 접근할 수 밖에 없음.   
->>>> 그래서 작성자가 아니거나 로그인하지 않은 사용자가 접근하게 되면 작성해둔 오류페이지를 출력해야 하는데 Exception 로그가 그대로 출력되는 문제가 발생.   
->>>> 이런 문제가 발생한 첫번째 이유는 interceptor에서 get 요청에 대해서는 방어를 하지 않았기 때문.   
->>>> 이 프로젝트의 경우 토이프로젝트이고 게시판 위주의 기능테스트 및 공부하는 프로젝트이다보니   
->>>> 사용자 정보를 요청하는 경우나 api 서버에서 사용자 정보를 리턴해주는 기능 자체가 존재하지 않아 get 요청에 대해 referer 체크로 막을 필요가 없다고 판단했기 때문이다.
->>>> 하지만 좀 더 고민해본 결과 페이지에 접근해서 스크립트를 삽입 후 그대로 수정처리가 동작하게 된다면 문제가 발생할 수 있다고 생각해 내일 이것도 추가할 예정.
->>>> 두번째 문제는 api 서버에서 로그인한 사용자 아이디와 게시글 작성자의 아이디를 비교해 다르다면 그냥 null을 리턴해주고 있었던 것이다.   
->>>> dto로 리턴받아 매핑하는데 이게 매핑한 뒤 검증없이 그냥 다시 컨트롤러에 리턴해 model에 담아 보내주다보니 값이 null이라 출력이 안되는 오류가 발생하게 된 것.   
->>>> 그래서 이 문제를 해결하기 위해 api 서버에서 사용자 아이디와 작성자 아이디가 다른 경우 NullPointerException을 발생시키도록 했고,   
->>>> 그럼 api 서버에서는 ExceptionHandler를 통해 오류 코드를 리턴하게 된다.   
->>>> 클라이언트 서버에서는 오류코드를 리턴받은 경우 Exception을 발생시키기 때문에 클라이언트 서버에서도 ExceptionHandler를 통해 설정해둔 에러페이지로 연결이 되도록 수정.   
->>>> referer 체크로 사전에 방지한다면 작성자인 사용자가 url로 접근하더라도 referer는 null로 나오기 때문에 접근하지 못한다는 불편함이 생길 수 있지만   
->>>> 보안을 생각하면 referer 체크로 방지하는것이 맞다고 생각하고, 그렇다고 api 서버에서 체크하는 코드를 삭제하기에는 referer가 뚫리는 경우를 생각해 그대로 두는것이 좋을 것 같다고 생각함.   
->>>> 또한 api 서버에서 작성자와 사용자가 불일치 하는경우 NullPointerException을 발생시키도록 되어있는데 아무래도 맞는 예외처리는 아니다보니 다른 Exception을 발생시키도록 수정이 필요할 것으로 생각됨.   
->
-> 23/05/10 - ApiServer, DB
->> 각 게시판 게시글 작성 및 삭제 시 사용하던 CountTableService와 CountTableRepository 삭제 후 DB에서 Trigger로 설정 변경.   
->> 테스트까지 완료.
-> 
-> 23/07/03 - ApiServer, SSR Frontend
->> 요청시 토큰 검증부분 수정.   
->> 기존 AccessToken만 체크하던 것을 RefreshToken 존재여부까지 체크하도록 수정.   
->> FrontEnd Server에서는 토큰 체크 시 AccessToken만 존재한다면 null을 리턴해 요청을 차단하고는 있지만   
->> API Server에서는 AccessToken 하나만 존재하는지를 체크하고 RefreshToken에 대해서는 재발급 요청시에만 검증하고 있었는데   
->> AccessToken 하나만으로 요청이 들어오는 경우를 감안해 RefreshToken 검증까지는 안하더라도 존재 여부는 확인하도록 수정.      
->> FrontEnd Server에서 브라우저 종료 이벤트 구현 중.   
->> 브라우저 종료시 DB에 있는 RefreshToken 삭제까지는 무난하게 처리하고 있으나   
->> 클라이언트의 쿠키 삭제가 종종 삭제되지 않고 남아있는 경우가 발생.   
->> 될때가 있고 안될때가 있어서 지속적으로 테스트 해보면서 수정 필요.   
->> nav.js에서 코드 처리중.   
-> 
-> 
-> 테스트 항목(23/03/29 기준)
->> 1. login & logout & token
->>> 1. ~~이미 로그인한 사용자가 로그인 페이지 url 입력으로 접근 시 로그인 페이지에 접근할 수 없도록 되어있는가.~~
->>> 2. ~~로그인 시 아이디와 비밀번호가 맞지 않는 경우 오류페이지로 넘어가지 않고 데이터가 잘못되었다고 출력이 되는가.~~
->>> 3. ~~로그인 처리 시 토큰이 정상적으로 발급이 되고 있으며 쿠키에 의도한 유효기간과 설정을 갖고 생성이 되는가.~~
->>> 4. ~~로그아웃 처리 시 DB에 저장된 RefreshToken 데이터가 정상적으로 삭제가 되고 있으며 클라이언트 서버에서는 쿠키가 정상적으로 삭제 처리가 되고 있는가.~~
->>> 5. ~~AccessToken 유효기간이 만료된 후 사용자의 기능 요청 시 RefreshToken을 갖고 제대로 재발급이 되고 있는가.~~
->>> 6. ~~재발급된 RefreshToken 데이터가 DB에 추가되는것이 아닌 정상적으로 수정이 되고 있으며 클라이언트 서버에서는 lsc 쿠키의 유효기간이 수정된 RefreshToken 유효기간과 동일하게 설정이 되고 있는가.~~
->> 2. 계층형 게시판
->>> 1. 게시판 리스트
->>>> 1. ~~게시판 리스트가 계층형으로 잘 출력이 되고 있는가.~~
->>>> 2. ~~답글을 작성했을때 의도한 위치에 잘 출력이 되고 있는가.~~
->>>> 3. ~~페이징 기능이 정상적으로 동작하는가.(각 number, prev, next)~~
->>>> 4. ~~검색기능이 정상적으로 동작하는가.(분류별 검색)~~
->>>> 5. ~~검색 기능 동작 시 페이징이 제대로 동작하는가.~~
->>>> 6. ~~글 작성 기능 동작이 잘 처리되고 있는가.~~
->>>> 7. ~~로그인 하지 않은 사용자가 글 작성 페이지에 접근하고자 할 때 로그인 페이지로 유도가 되고 있는가.~~
->>> 2. 게시판 상세페이지
->>>> 1. ~~상세페이지 접근 시 작성자인 경우 수정, 삭제 버튼이 출력되고 아닌 경우는 출력이 안되고 있는가.~~
->>>> 2. ~~게시글 데이터가 정상적으로 잘 출력이 되고 있는가.~~
->>>> 3. ~~댓글이 잘 출력되고 있는가.~~
->>>> 4. ~~댓글 작성이 정상적으로 처리되고 있는가.~~
->>>> 5. ~~댓글의 답글 및 삭제 버튼 출력이 의도한대로 출력되고 있는가.~~
->>>> 6. ~~댓글 답글 작성 시 의도한 위치에서 출력되고 있는가.~~
->>>> 7. ~~댓글의 페이징 기능이 정상적으로 동작하고 있는가.~~
->>>> 8. ~~게시글의 수정 및 삭제 기능이 정상적으로 처리되고 있는가.~~
->>>> 9. ~~게시글의 답글 작성 기능이 정상적으로 처리되고 있는가.~~
->> 3. 이미지 게시판
->>> 1. 게시판 리스트
->>>> 1. ~~이미지와 제목이 잘 출력되고 있는가.~~
->>>> 2. ~~검색 기능이 잘 동작하고 있는가.(분류별 검색)~~
->>>> 3. ~~페이징 기능이 잘 동작하고 있는가.~~
->>>> 4. ~~검색 기능 동작 후 페이징이 잘 동작하고 있는가.~~
->>>> 5. ~~로그인하지 않은 사용자가 글작성 페이지에 접근하고자 할 때 로그인 페이지로 유도가 되고 있는가.~~
->>> 2. 게시판 상세페이지
->>>> 1. ~~게시글 데이터와 이미지 데이터가 정상적으로 잘 출력되고 있는가.~~
->>>> 2. ~~사용자 상태에 따른 수정, 삭제 버튼이 잘 출력되고 있는가.~~
->>>> 3. ~~게시글 삭제 처리가 정상적으로 처리되고 있는가.~~
->>>> 4. ~~게시글 삭제의 경우 url 입력으로 요청하게 되면 잘 차단하여 처리가 안되도록 하고 있는가.~~
->>>> 5. ~~작성자가 아닌 사용자의 삭제 요청에 잘 대비가 되어있는가.~~
->>>> 6. ~~댓글이 잘 출력되고 있는가.~~
->>>> 7. ~~댓글 작성이 정상적으로 처리되고 있는가.~~
->>>> 8. ~~댓글의 답글 및 삭제 버튼 출력이 의도한대로 출력되고 있는가.~~
->>>> 9. ~~댓글 답글 작성 시 의도한 위치에서 출력되고 있는가.~~
->>>> 10. ~~댓글의 페이징 기능이 정상적으로 동작하고 있는가.~~
->>> 3. 게시글 작성 페이지
->>>> 1. ~~이미지 미리보기 기능이 잘 동작하고 있는가.~~
->>>> 2. ~~선택했다가 삭제한 이미지의 경우 데이터가 넘어가지 않고 잘 처리되고 있는가.~~
->>>> 3. ~~이미지가 1장도 선택되지 않고 작성버튼을 누르는 경우 이미지 선택을 해야 한다는 alert 창이 출력되고 있는가.~~
->>>> 4. ~~이미지가 5장이 넘어가는 경우 5장까지만 가능하다는 alert 창이 출력되고 있는가.~~
->>>> 5. ~~이미지 삭제 후 재 선택 시 5장 제한에 걸리지 않는지, 정상적인 count 값을 갖고 처리 하고 있는가.~~
->>>> 6. ~~글 작성 동작 시 데이터 저장과 파일 저장이 정상적으로 처리되고 있는가.~~
->>>> 7. ~~사이즈를 초과한 파일의 경우 alert창으로 안내하고 있는가.~~
->>> 4. 게시글 수정 페이지
->>>> 1. ~~기존 게시글과 이미지 파일을 정상적으로 출력하고 있는가.~~
->>>> 2. ~~이미지 파일은 수정하지 않고 게시글 데이터만 수정하는 경우 오류없이 잘 처리되고 있는가.~~
->>>> 3. ~~삭제한 이미지와 추가한 이미지파일의 처리가 정상적으로 이루어 지고 있는가.~~
->>>> 4. ~~아무것도 수정하지 않고 작성 버튼을 눌렀을 때 정상적으로 처리되고 있는가.~~
->>>> 5. ~~로그인하지 않은 사용자나 작성자가 아닌 사용자가 페이지 접근 시 오류페이지를 출력하고 있는가.~~ 
->
-> 
-> 23/07/19 - Api server
->> count 쿼리 count(distinct(PK)) 형태로 수정.   
->> 그로인해 countTable Entity와 테이블 제거.
->> HierarchicalBoardRepository와 ImageBoardRepository에 사용하지 않는 쿼리 제거.
->
->
->> 23/08/28 ~ 23/08/29
->>> API server
->>>> 계층형 삭제 처리 수정.
->>>>> * 기존에는 삭제 요청 들어온 데이터만 삭제하는 형태.
->>>>> * 수정 후, 그 하위 게시글까지 삭제하도록 수정.
->>>>> * 삭제할 게시글의 upperNo를 갖고 있다면 삭제하도록 수정.
->>>>> * 쿼리 역시 반복문을 통해 계속 호출하는 것이 아닌 List를 전달해 처리하도록 수정.
->>>>
->>>> 댓글 삭제 처리 수정.
->>>>> * 데이터를 삭제하지 않고 '삭제된 댓글입니다.' 라는 문구를 출력하도록 수정.
->>>>> * 처리를 위해 Comment에 commentStatus 필드를 추가. default 0으로 설정. 삭제 요청 시 1로 수정 처리.
->>>>> * 리스트 조회 요청시에도 CASE WHEN을 통해 status가 1인 경우 content를 null로 출력하도록 쿼리 수정.
->>>>> * JQuery에서도 content가 null인 경우 해당하는 문구를 출력하도록 수정.
->>>>
->>>> @Transactional을 통한 롤백 처리를 위해 예외처리 구문 수정.
->
->
->> 23/08/30
->>> 주석과 불필요 로그 제거.
-> 
-> 
->> 23/10/26
->>> Redis 적용.
->>> * Spring Data Redis로 사용.
->>> * Redis 사용으로 인해 RefreshToken Entity와 RefreshTokenDTO, RefreshTokenRepository는 Deprecated 처리.
->>> * Redis 토큰 관리 구조.
->>>> * "rt" + ino + userId : RefreshTokenValue,   "at" + ino + userId : AccessTokenValue
->>> * 다중 디바이스 로그인 허용을 위해 ino(Identifier number)를 생성.
->>>> * 최초 로그인 시에만 ino를 생성하고 클라이언트에 전달.
->>>> * 아직 무기한 쿠키 설정 방법을 몰라 99999라는 maxAge를 세팅
->>>> * 로그아웃 요청시에도 ino쿠키는 삭제하지 않도록 구현.
->>>> * 다중 디바이스 로그인에 대해 고민한 내용은 아래 링크 블로그에 정리.
->>>> * https://myyoun.tistory.com/211
->>> * 토큰 관리 처리와 보안문제
->>>> * 로그인
->>>>> * 로그인 요청 시 ino가 존재한다면 쿠키에서 ino를 꺼내 사용하고 없다면 새로 생성.
->>>>> * 로그인 요청이 들어왔는데 Redis 서버에 해당 ino의 토큰 데이터가 존재한다면 모두 삭제 후 요청 처리.
->>>> * 재발급
->>>>> * 재발급 요청시에는 AccessToken, RefreshToken 모두 재발급
->>>>> * 기본적으로 RefreshToken과 ino가 존재해야 검증을 하도록 처리
->>>>> * RefreshToken을 verify로 먼저 검증하고 ino에 해당하는 데이터의 value가 RefreshTokenValue와 동일한지 체크.
->>>>> * 동일하지 않다면 더 이상의 처리를 진행하지 않도록 처리.
->>>>> * 동일하다면 ino에 해당하는 AccessToken 데이터를 찾아보고 존재한다면 탈취로 판단. 모든 토큰 데이터를 제거.
->>>>> * AccessToken의 경우 클라이언트가 1분 적은 만료기간을 갖도록 했기 때문에 60초 미만의 expire라면 정상이라고 판단. 처리를 진행
->>>> * AuthorizationFilter에서의 검증
->>>>> * 정상적인 사용자의 요청이라면 ino 역시 존재해야 하기 때문에 ino의 존재여부까지 체크하도록 수정.
->
-> 
->> 23/11/09
->>> Redis 적용 중 누락된 부분 수정.
->>> * FrontEnd Server에서 Api Server로 요청시 ino cookie 전달 안하는 부분 수정.
->>> * TokenProvider 불필요 메소드 삭제 및 코드 정리.
->>> * Authorization 코드 정리
->
-> 
->> 24/02/28
->>> 리펙토링 - Api-Server
->>> * 계층형 게시판과 댓글 insert, 답글 insert 코드 수정.
->>>   * 기존 코드는 save().getId() 이후 클라이언트로 부터 전달받은 DTO 데이터로 nativeQuery를 통한 update 처리.
->>>   * 수정 코드는 동일하게 save 처리 이후 게시판, 댓글 Entity에 setPatchData라는 메소드를 생성해서 DTO 데이터를 Entity에 담도록 한 후 save()로 처리.
->>>   * 이렇게 수정함으로써 서비스단에서 setter나 여러번의 builder 패턴을 통해 Entity에 데이터를 담아준다거나, DTO 데이터를 통한 update를 직접 작성하지 않아도 되었고 그로인해 코드가 간결해짐.
->>> * JwtTokenProvider 수정
->>>   * 토큰을 검증하고 Claim에 있는 userId를 꺼내는 코드를 별개의 메소드로 분리.
->>>   * 토큰 데이터는 JwtDTO에 담아 클라이언트에 반환하게 되는데 이때 JwtDTO를 builder 패턴으로 처리하는 부분을 별개의 메소드로 분리.
->>> * 비밀번호 암호화 처리 위치 수정
->>>   * Bcrypt를 통해 비밀번호를 암호화 하고 있는데 이전에는 서비스단에서 처리.
->>>   * 수정된 코드에서는 Member Entity를 builder 패턴으로 생성할 때 거치는 생성자 내부에서 encode한 뒤 필드에 담도록 수정.
->>> * 이미지 게시판 파일 삭제 수정
->>>   * 기존 코드는 파일 삭제 처리를 담당하는 deleteFileProc 메소드에서 데이터베이스에 접근해 삭제하도록 되어 있었으나
->>>   * deleteFilesProc은 파일 삭제만 담당하도록 수정하고 데이터베이스에 요청하는 것은 해당 메소드를 호출하는 곳에서 List를 전달해 처리하도록 수정.
->>>   * Repository에 List를 받아 처리하도록 새로 만들어서 처리.
->>> * 파일경로를 FilePathProperties에 분리.
->>>   * 파일 저장, 삭제시에 필요한 FilePath를 각 메소드에서 직접 작성하고 있었으나
->>>   * FilePathProperties라는 인터페이스를 생성하고 그 안에 FILE_PATH를 작성해 해당 값을 가져다 사용하도록 수정.
->>> * 수정내역 전부 테스트 완료.
->
-> 
->> 24/02/29
->>> * 리펙토링
->>>   * SSR Frontend에서 사용자 로그인 여부를 lsc라는 쿠키로 관리했으나 HttpSession을 통해 관리하도록 수정.
->>>     * API-Server로부터 정상적인 로그인 처리라고 응답 받으면 HttpSession에 id라는 이름으로 사용자 아이디를 저장.
->>>     * 로그아웃시에 세션을 삭제하도록 수정.
->>>     * 그에 따라 navbar.html에서는 더이상 JS파일을 통해 lsc 쿠키를 활용해 로그인여부를 판단하지 않고 session을 통해 판단하도록 수정.
->>>     * 쿠키 생성 역시 lsc 쿠키는 더이상 생성하지 않도록 수정.
->>>     * 토큰 저장을 위한 TokenService에서 쿠키 생성을 별도의 메소드로 분리.
->>>     * 쿠키 생성 메소들 분리해서 처리하게 되면서 JwtProperties에 작성한 각 쿠키 만료일을 모두 Duration 타입으로 처리하도록 수정. 
->>>     * 쿠키의 삭제를 좀 더 간결하고 확실하게 하기 위해 JwtProperties에 COOKIE_ARRAY라는 배열에 각 쿠키 헤더값을 담아두고 반복문으로 삭제 처리를 하도록 수정.
->>>     * 쿠키 삭제 기능을 수행하던 분리된 메소드를 삭제하고 반복문 내에서 삭제까지 모두 처리하도록 수정.
->
-> 
->> 24/03/02
->>> * 리펙토링
->>>   * SSR Frontend에서 HttpSession을 통한 사용자 상태 관리를 담당하게 되면서 Api-Server로부터 전달받던 사용자 아이디 반환을 수정.
->>>     * Comment-list 요청시 로그인한 사용자의 아이디를 Api-Server로부터 반환받고 그걸 사용해 버튼 상태 관리를 해왔는데 session.id를 통해 값의 존재 여부에 따라 버튼 출력을 제어하도록 수정.
->>>     * comment.js에서 comment-table 파싱하는 함수 코드 수정.
->>>     * commentList가 들어가는 imageBoardDetail, boardDetail 모두 테스트 완료. 
->>>     * boardDetail과 imageBoardDetail 페이지 요청 시 comment 말고도 기본적인 게시글 정보 반환 역시 uid를 받고 있었기에 해당 DTO를 제거하고 그 안에 있던 DTO인 게시글 정보 DTO만을 전달해 처리하도록 수정.
->>>     * Api-Server에서도 uid를 따로 담지 않고 전달하도록 수정.
->>>     * 각 게시판 Detail 페이지 정상 작동 테스트 완료.
->>>   * HierarchicalBoard의 list 조회 코드 개선
->>>     * 기존 코드는 keyword 값의 유무에 따라 조건문을 통해 두가지 요청 중 하나로 Api-Server에 요청하도록 했었으나 UriComponents를 통해 조건에 따른 객체를 만들어주고 그 객체를 통해 요청하도록 하는 방법으로 수정.
->>>     * 기존 코드에서 uri의 차이만 있던 요청코드였기 때문에 UriComponents 객체만 조건에 따라 생성해주는 방법으로 중복 코드 삭제.
->>>   * 댓글, 댓글답글 insert 코드 개선
->>>     * 기존에는 boardNo, imageNo 유무에 따라 조건문을 통해 DTO build를 하도록 되어있었으나
->>>     * DTO에서 해당 값들을 Wrapper class로 수정 null을 받을 수 있도록 수정.
->>>     * 그리고 각 필드에 해당하는 값 또는 null을 담아 요청하도록 수정함으로써 한번의 build로 처리가 가능해짐.
->>>   * 댓글 리스트 조회와 각 게시판 상세 페이지 조회 코드 개선
->>>     * 기존 코드는 HtpSession을 사용하지 않았기 때문에 사용자의 아이디(uid)를 같이 반환받으려고 로그인한 사용자는 쿠키를 전달, 비로그인 상태라면 쿠키를 전달하지 않는 요청으로 두가지가 있었지만
->>>     * HttpSession을 사용하면서 권한이 필요없는 기능에 쿠키를 굳이 전달할 필요가 없어졌기 때문에 쿠키를 전달하지 않는 요청으로 수정.
->>>   * 반환받은 데이터의 DTO 매핑 분리
->>>     * 리스트나 상세 페이지 같은 경우 ObjectMapper를 통한 DTO 매핑을 처리하고 있는데 이걸 각 메소드에서 인스턴스 생성 후 처리하는 것이 아닌
->>>     * ObjectReadValueService를 새로 만들어 제네릭으로 해당 기능을 처리하도록 분리.
->>>   * 요청 시작 url PathProperties로 분리
->>>     * 시작 url로는 board, image-board, comment, member로 되어있는데 이 시작 url들은 많은 곳에서 중복적으로 사용되기 때문에
->>>     * 추후 변경을 고려해 PathProperties라는 인터페이스를 통해 사용하도록 수정.
->>>     * 뒤에 위치하는 url들의 경우는 대부분 요청마다 다른 경우가 대부분이기 때문에 굳이 한곳에서 관리할 필요가 없다고 생각해 앞쪽만 분리.
->>>   * 이미지 게시판 글 작성, 수정 처리 코드 stream으로 수정
->>>     * 개선이라기 보다는 stream으로 처리해보고자 수정.
->>>     * stream으로만 처리하고자 하면 null체크가 안되기 때문에 NullPointerException이 발생할 수 있다.
->>>     * 그래서 Optional.ofNullable(List).orElseGet(Collections::emptyList)를 통해 처리.
->>>     * 그럼 NullPointerException이 발생하지 않고 처리가 가능하다.
->>>     * 글 작성의 경우 사진이 하나도 없을수는 없기 때문에 stream으로만 처리.
->>>   * 테스트 완료.
->
-> 
->> 24/03/06
->>> * 리펙토링
->>>   * Api-Server에 QueryDSL 적용.
->>>     * 각 게시판 리스트와 댓글 리스트를 동적으로 처리하기 위해 QueryDSL을 적용해 개선
->>>     * 해당 기능 Repository에 대해 CustomRepository 인터페이스와 구현 클래스를 생성하고 기존 Repository에서 상속받아 처리하도록 구현.
->>>     * 또한 DTO에 매핑하기 위해 Projections.fields()를 통해 매핑처리.
->>>     * Pageable의 경우 한번에 적용하고자 하면 count 쿼리의 성능 저하로 인해 분리해서 처리하도록 했고, QueryDSL로 처리하는 방법을 찾아보다가 PageableExecutionUtils.getPage()로 처리하면 count 쿼리 최적화가 가능하다는 것을 알게 되어 해당 방법으로 페이징 처리.
->>>     * where 조건에 대해서는 CustomImpl에 BooleanExpression으로 처리하도록 구현.
->>>   * JPQL 쿼리 일부 수정
->>>     * 동적 쿼리 수행을 위해 QueryDSL을 사용하게 되면서 필요없는 Repository 메소드를 제거하면서 쿼리들도 수정.
->>>     * 쿼리문 자체를 개선했다기 보다는 nativeQuery를 최대한 사용하지 않는 쪽으로 수정.
->>>   * 데이터 조회 요청 JPQL -> Query Method로 수정
->>>     * 모든 데이터 조회 요청에 대해 수정한 것은 아니고 데이터 전달 목적이 아닌 작성자와 요청자의 검증에 대한 쿼리문 위주로 Query Method로 처리하도록 수정.
->>>     * 보통 작성자와 요청자를 검증해야 하는 경우는 수정 데이터의 요청이나 수정 요청.
->>>     * 이 처리과정에서 필요한 데이터만 넘겨 JPQL을 통해 UPDATE 요청을 하도록 처리했으나
->>>     * 사용자 검증을 위한 데이터 요청 시 findById()로 해당 객체를 받고 조회된 Entity에 수정할 데이터를 담아 repository.save()로 처리하도록 수정.
->>>     * 이전에는 불필요한 데이터를 조회할 필요가 없다는 생각에 필요한 작성자 데이터만 조회하고 JPQL을 통해 UPDATE 요청을 했었던 건데
->>>     * 검증 데이터 조회는 Service 레이어까지만 전달되고 거기서 벗어나지 않기 때문에 단순 검증이 아니라면 괜찮을 것이라고 생각해 이 방법으로 개선. 
->>>   * HierarchicalBoard 리스트 조회에 사용되는 DTO 수정
->>>     * HierarchicalBoardDTO를 통해 조회한 데이터를 FrontEnd-Server에 전달했었는데 해당 DTO는 Entity와 동일한 구조로 테이블의 모든 데이터를 담고 있어 HierarchicalBoardListDTO로 새로 생성해 처리.
->>>     * 게시글 정보 테이블이다보니 민감한 정보는 없지만 굳이 모든 데이터를 넘겨줄 필요는 없다고 생각해 필요한 데이터만 담아 처리하도록 수정.
->>>   * 파일 사이즈 체크 메소드 Api-Server -> FrontEnd-Server로 이동
->>>     * SSR Frontend가 여러개 존재할 수 있다는 전제하에 진행하고 있는 프로젝트이기 때문에 추후 파일 사이즈 값의 변경에 대해 좀 더 대응하기 쉽도록 Api-Server에서 처리하고 있었으나
->>>     * API-Server에 요청한 뒤 오류가 아닌 파일 사이즈 문제로 다시 재요청이 발생하는 것은 불필요한 요청이지 않나 라는 생각에 FrontEnd-Server로 이동.
->>>     * 하지만 아직 고민중이긴 한 사항.
->>>     * 수정 내역대로면 파일 사이즈 허용치가 변경되는 경우 모든 FrontEnd-Server에서 사이즈 기준 값을 수정해야 하기 때문에 아직 확신은 없는 상태.
->>>     * 하지만 기획대로 웹, 모바일, 태블릿에서 서비스되는 하나의 커뮤니티 서비스를 제공하고 사용자가 많은 것을 가정한다면 잦은 Api-Server에 대한 요청보다는 그게 낫지 않을까 하는 생각에 수정.
->
-> 
->> 24/03/07
->>> * 리펙토링
->>>   * SSR Frontend에서 각 게시판 페이징 처리에서 필요한 페이지당 게시글 개수인 amount 값을 제어하지 않도록 제거.
->>>   * 현재 프로젝트에서 사용자가 출력하고자 하는 게시글의 개수를 제어하도록 하고 있지 않기 때문에 계층형 게시판과 댓글은 페이지당 20개, 이미지 게시판은 15개로 고정되어있는 상태.
->>>   * 하지만 SSR Frontend에 해당 값이 amount로 제공되고 있고 그럼 사용자가 임의로 수정할 수 있는 문제가 있기 때문에 아예 SSR Frontend에서는 amount값을 제어하지 못하도록 수정.
->>>   * Api-Server에서도 수정되는 경우를 방지하기 위해 두 amount 값을 final로 고정.
->
-> 
->> 24/03/19
->>> * 수정
->>>   * CorsConfig 수정.
->>>     * React로 클라이언트를 하나 더 만드는 과정에서 axios로 요청 시 cors 문제가 발생.
->>>     * IllegalArgumentsException으로 AllowCredentials 설정에 의한 AllowedOrigins 설정 문제.
->>>     * 오류의 자세한 내용은 블로그에 정리.
->>>     * addAllowedOrigin을 addAllowedOriginPattern으로 수정하는 것으로 문제 해결.
->>>   * ImageBoardList QueryDSL 부분 수정.
->>>     * 데스크탑에서는 문제가 없었으나 React 개발하면서 맥으로 사용하다보니 설정 문제가 발생.
->>>     * 맥에서의 MySQL은 sql_mode에 only_full_group_by가 설정되어있어서 imageNo 하나만으로 group by를 처리하지 못하는 문제가 발생.
->>>     * sql_mode에서 only_full_group_by 설정을 제외시키는 방법도 있었으나 문제가 되는 ImageData.imageName를 group by 절에 추가해주는 것으로 문제 해결.
->>>   * MemberServiceImpl은 테스트 해볼게 있어서 해보고 다시 원상복구.
->
-> 
->> 24/03/20
->>> * 수정
->>>   * JWT 와 ino 쿠키 생성 역할을 클라이언트 서버에서 수행하지 않고 API 서버에서 수행하도록 수정.
->>>     * Api-Server
->>>       * TokenProvider에서 토큰 생성과 쿠키 생성을 처리하도록 수정.
->>>       * 쿠키는 ResponseCookie로 생성하고, HttpServletResponse.addHeader()에 쿠키를 담아 반환.   
->>>       * 메소드는 쿠키를 response header에 담아주는 setTokenToCookie()와 쿠키를 생성하는 createCookie()로 생성.
->>>       * 로그인 과정에서는 더이상 JwtDTO에 데이터를 담아 반환하지 않도록 수정.
->>>       * 토큰 재발급의 경우 클라이언트 서버에서 재발급 받은 후 바로 요청할 수 있도록 동일한 과정을 거쳐 토큰 재발급과 쿠키 생성을 한 뒤 JwtDTO에 데이터를 담아 반환하도록 수정.
->>>       * 로그인 실패 시 발생하는 BadCredentialsException이 발생했을 때 반환되는 상태코드를 400에서 403으로 수정.
->>>     * SSR Frontend
->>>       * WebClient에서 ClientResponse와 헤더, 상태값을 받아 처리하기 위해 retrieve()가 아닌 exchangeToMono()로 수정.
->>>       * WebConfig 클래스 설정에서 allowCredentials, allowedOriginPatterns, allowedHeaders, allowedMethods 설정을 추가.
->>>       * TokenService에서 더이상 쿠키 생성을 할 필요가 없기 때문에 해당 메소드 제거.
->>>       * 재발급 요청 exchangeToMono()로 수정. 바로 토큰값을 사용하기 위해 JwtDTO로 반환받고 해당 dto를 리턴하는 것은 유지.
->>>     * 테스트 완료.
->
-> 
->> 24/03/22
->>> * 수정
->>>   * 사용자 로그인 여부 관련 수정.
->>>     * JWT 관리와 쿠키 생성 역할을 API 서버로 넘기게 되면서 발생한 문제인 로그인 여부와 사용자 아이디 체크를 수정.
->>>     * 모든 요청에서 UserStatusDTO라는 DTO에 loggedIn(로그인 여부, boolean), uid(사용자 아이디, String) 이렇게 두 필드에 담아 반환하도록 수정. 
->>>     * API-Server
->>>       * 반환하는 DTO의 틀을 정형화 하고자 ResponseDetailAndModifyDTO, ResponsePageableListDTO 이렇게 두개의 DTO를 새로 생성.
->>>       * 이름대로 PageableListDTO는 리스트 데이터를 담아 전달하는데 기존 Page\<DTO\> 구조로 바로 전달하던 것을 제네릭 타입의 content와 팔요하다고 생각한 pageable 필드들, UserStatusDTO 구조로 설계.
->>>       * DetailAndModifyDTO 역시 제네릭 타입의 content에 게시글 상세 데이터나 수정 데이터 DTO를 담을 수 있도록 했고 UserStatusDTO를 같이 담아 반환하도록 설계.
->>>       * 제네릭 타입의 content로 처리하도록 하게 되면서 이 틀에 맞는 구조를 갖는 데이터는 같은 구조로 반환하게 됨.
->>>       * 여러 클라이언트가 확장 되더라도 일정한 틀의 구조로 반환받을 수 있고, 수정이 발생하더라도 좀 더 수월하게 수정할 수 있을 것이라고 기대됨.
->>>       * 모든 GET 요청에 대해 UserStatusDTO를 반환해 클라이언트에서 사용자의 로그인 여부와 아이디를 알 수 있도록 수정.
->>>       * 중첩되어 사용되던 DTO를 기능별로 좀 더 분리하고자 추가 생성 및 분리.
->>>     * SSR Frontend
->>>       * 토큰 관리를 API 서버로 넘기게 되면서 클라이언트 서버에서는 토큰에 대한 처리를 아예 하지 않도록 수정.
->>>       * 게시글 작성 페이지 같은 API 서버에 요청할 데이터가 없는 요청에 대해서만 RefreshToken과 ino 쿠키의 존재 여부로 페이지 접근만 제어하도록 수정.
->>>       * 위와 같은 경우를 제외하고는 클라이언트에서 토큰 여부를 전혀 파악하지 않고 API 서버에서 확인 후 재발급 처리 및 사용자 요청 처리를 하거나 탈취 판단을 하도록 할 계획이기 때문에 모든 WebClient 요청은 exchangeToMono로 처리.
->>>       * WebClient 응답에 대한 처리는 아직까지는 모두 중복되기 때문에 ExchangeService를 새로 만들어 결과에 대한 쿠키 처리 및 Exception 처리를 하도록 구현.
->>>         * 각 기능별 응답에 대한 처리가 달라지는 경우에는 요청마다 응답 코드에 대한 처리를 작성해야 하겠지만 현재는 그렇게 할 필요가 없기 때문에 ExchangeService의 메소드를 통해 처리하도록 함.
->>>         * 처리는 HttpStatus.OK인 경우 쿠키가 존재한다면 쿠키 저장.
->>>         * API 서버에서 탈취로 판단하는 경우 Redis에서 해당 토큰 값 삭제를 처리할 계획이므로 만료기간 0의 쿠키 삭제 응답이 돌아오며 800번의 오류 코드를 반환할 예정. 이 경우 클라이언트 서버에서 800번으로 응답을 받는다면 쿠키를 저장하도록 처리해 갖고 있는 쿠키 삭제 처리 및 로그아웃 처리가 된다.
->>>         * 토큰 탈취에 대한 Exception으로 CustomTokenStealingException을 생성했고 alert 처리 후 로그인 페이지로 이동하도록 처리.
->>>         * 그 외 403은 AccessDeniedException, 4xx는 RuntimeException, 5xx는 NullPointerException으로 처리. ExceptionHandler를 통해 오류 페이지로 Redirect 처리가 된다.
->>>         * 200, 800, 403을 제외한 나머지 오류에 대해서는 임시 처리이며 CustomException으로 수정할 예정.
->>>       * WebClient 요청시 쿠키 상태와 상관없이 모든 쿠키를 담아서 보낼 수 있도록 cookies 옵션을 사용. MultiValueMap\<String, String\> 타입의 cookieMap을 CookieService 메소드를 통해 생성하도록 처리.
->>>         * MultiValueMap을 생성할 때 토큰 쿠키만 담을 수 있도록 Authorization으로 시작하는 쿠키만 담도록 처리.
->>>       * navbar에서 로그인 상태에 따른 로그인, 로그아웃 버튼 출력 여부를 결정하기 위해 loggedIn을 사용해 처리하고 있으나, 로그인, 회원가입, 게시글 작성 페이지의 경우 api 서버에 요청하지 않고 접근하게 되어있는 페이지이기 때문에 LoginDTO 라는 DTO를 생성. 그 안에 UserStatusDTO를 필드로 담아 처리.
->>>         * navbar는 모든 페이지에서 layout으로 들어가있기 때문에 특정 페이지만 차별을 두기에는 애매하다고 판단. 방법을 좀 찾아보려고 했으나 다른 페이지에서 data.userStatus.loggedIn으로 접근해야 했기 때문에 불가피하게 일단은 DTO를 새로 하나 생성한 뒤 필드로 갖도록 처리.
->>>         * 이 문제에 대해서는 다른 요청 응답에 대한 매핑 처리 시 UserStatus를 분리하는게 좋을지 고민과 상황 파악이 필요.
->>>       * comment.js 수정.
->>>         * 기존에는 삭제된 댓글에 대해 null로 반환되어 null인 경우~~~~ 이런형태로 처리하고 있었으나 QueryDSL을 적용하면서 '삭제된 댓글입니다.' 라는 content를 가진 상태로 조회되기 때문에 해당 부분을 수정.
->
-> 
->> 24/03/23
->>> * first commit
->>>   * 수정
->>>     * api-server
->>>       * AuthorizationFilter, TokenProvider 전체적으로 수정.
->>>       * 아직 테스트 이전. 데스크탑에 pull 받아 테스트 한 뒤 수정 내역 작성. 
->
-> 
->> 24/03/28
->>> * 수정
->>>   * Api-Server
->>>     * JwtAuthorizationFilter에서 토큰 탈취로 판단 되는 경우 response에 800의 응답코드를 담아 반환하도록 처리.
->>>     * JwtTokenProvider 수정.
->>>       * 각 메소드에 대해 좀 더 기능 처리에 있어서 메소드를 세분화.
->>>       * 토큰 검증 메소드를 분리해 각 토큰 검증 메소드에서 호출하도록 수정.
->>>       * 각 토큰 생성 메소드를 만들고 해당 메소드에서 Redis에 데이터를 저장하는것 까지 처리하도록 수정.
->>>       * 생성된 토큰은 쿠키를 생성해 response header에 담도록 처리.
->>>       * 재발급시 처리되는 메소드를 만들어서 해당 메소드에서 두 토큰을 생성하고 쿠키 생성까지 처리.
->>>       * AccessToken 만료일자는 1시간, RefreshToken 만료 일자는 14일, 두 토큰에 대한 쿠키 만료 일자와 Redis 데이터 만료일자는 30일로 처리.
->>>       * ino 쿠키는 9999일의 만료일자를 갖도록 처리.
->>>       * 로그아웃 요청시 ino 포함 모든 토큰 데이터와 쿠키를 삭제하도록 처리.
->>>       * JwtTokenProvider의 처리과정에 대한 반환값, 토큰 생성 및 데이터 생성에 필요한 고정적인 값은 최대한 JwtProperties에 작성해 가져다 사용하도록 처리
->>>     * SecurityConfig 수정
->>>       * WebSecurityConfigurerAdapter가 deprecated 되면서 애매해진 AuthenticationManager를 그대로 사용하기 위해 해당 코드를 긁어와 Bean으로 만들어 사용했었는데
->>>       * 해당 Bean을 삭제하고 AuthenticationManagerBuilder로 사용하도록 수정.
->>>     * 불필요한 로그 및 주석 제거
->>>   * SSR Frontend
->>>     * 기존 브라우저 종료 시 로그아웃 처리를 위해 작성했었던 navbar.js 제거.
->>>       * 제대로 작동하지 않는 코드이기도 했고 필요가 없어졌기 때문에 제거.
->>>     * ExchangeService 수정
->>>       * WebClient 요청에 대한 처리를 하는 ExchangeService에서 존재하지 않는 800번이라는 응답 코드를 처리하기 위해 rawStatusCode()로 처리
->>>       * 정상 처리 응답과 탈취 응답에 대해서는 쿠키 처리가 필요할 수 있기 때문에 CookieService를 통해 cookie를 처리
->>>       * 200 응답을 제외한 다른 응답에 대해서는 강제로 예외를 발생시켜 ExceptionHandler로 예외처리를 하도록 처리.
->>>     * 게시글 작성같은 API-Server에 요청해서 받을 데이터가 없는 페이지의 경우 SSR Frontend에서 토큰 존재 여부를 통해 판단하도록 처리.
->>>       * 게시글 작성 페이지를 제외하고는 Api-Server에 요청해 데이터를 받아야 하는 GET 요청들이기 떄문에 각 게시판의 작성 페이지 접근에 대해서만 SSR Frontend에서 처리.
->>>       * 비정상 적인 토큰으로 작성 페이지를 뚫고 접근하더라도 POST 요청을 위해서는 정상적인 토큰이 필요하기 때문에 해당 페이지 접근까지는 문제가 없을것이라는 판단.
->>>       * AccessToken, RefreshToken, ino 쿠키가 모두 존재해야 접근할 수 있도록 처리.
->>>     * JwtProperties에 각 쿠키명만 남기고 다 제거.
->>>       * 쿠키명을 제외한 다른 값들은 SSR Frontend에서 더이상 알고 있어야할 필요가 없기 때문에 제거.
->>>   * 테스트
->>>     * 모든 기능에 대한 테스트 완료.
->
-> 
->> 24/03/29
->>> * 수정
->>>   * url 전체적으로 수정. rest-ful하게
->>>   * CommentController에서 commentList 요청이 HierarchicalBoard에 대한 comment 요청, ImageBoard에 대한 comment 요청으로 두개로 구분되어있었는데 하나로 통합.
->>>     * /{board}/{boardNo}/{pageNum} 으로 요청하게 되고 board에는 게시판 타입으로 board, imageBoard 가 들어간다.
->>>     * WebClient로 요청을 보내는 CommentWebClient 에서는 이 board값에 따라 queryParam의 name을 변수화하고 해당 변수를 통해 queryParam을 설정해 요청을 보내도록 수정.
->>>     * 그래서 WebClient 요청 역시 두개에서 하나로 통합.
->>>   * API-Server CustomAccessDeniedException 생성
->>>     * 수정이나 삭제같은 요청 발생 시 작성자와 요청자가 동일한지 체크하는데 이때 AccessDeniedException과 같은 처리를 하기 위해 CustomAccessDeniedException을 생성, RuntimeException을 상속받도록 해 불일치시 강제로 예외를 던질 수 있도록 처리.
->>>   * url 수정으로 인해 js파일과 html 파일에서 역시 url 수정.
->
-> 
->> 24/04/14
->>> * 추가
->>>   * Api-Server
->>>     * 리액트에서 navbar를 통해 사용자 로그인 상태 체크를 해야 했고 그로 인해 MemberController에  checkLogin 메소드 추가.
->>>     * 단순하게 principal이 존재하면 LoginStatusDTO에 true를 담아 반환.
->>>     * 존재하지 않는다면 false를 반환하도록 처리.
->
-> 
->> 24/04/17
->>> * 수정
->>>   * Api-Server
->>>     * JwtProperties에 있던 값들 jwt.properties로 이동.
->>>       * JWT 처리 중 발생하는 탈취, 잘못된 토큰 같은 값들은 JwtProperties에 유지시키고, 각 토큰 헤더도 그대로 유지.
->>>       * 그 외 secret 값이나 토큰 만료기간, 쿠키 만료기간 등은 모두 jwt.properties로 이동.
->>>       * 새로 생성한 properties 사용하기 위해 PropertiesConfig 클래스 생성해서 Bean 등록.
->>>     * JwtAuthorization에서 토큰 prefix 확인하는 코드 누락되었어서 추가.
->>>       * ino가 존재하고 두 토큰이 모두 존재하는 경우에만 prefix를 체크한 뒤에 둘다 정상이라면 토큰 검증을 하도록 수정.
->
->
->> 24/04/26
->>> * 추가
->>> * Api-Server, SSR Frontend
->>>     * 각 메소드 시간 측정을 위한 AOP 설정.
->>>     * Dependency와 TimeCheckAOP Component 추가
->>>     * 측정 결과는 로그로 처리.
->>>     * 1000ms가 넘는 결과에 대해서는 WARN으로 처리하고 그 외의 결과에 대해서는 info로 처리.
->>> * 수정
->>>   * SSR Frontend
->>>     * 요청 이전 쿠키를 MultiValueMap에 담는 과정에서 request.getCookies()가 null인 경우에는 오류가 발생하는 것을 확인.
->>>     * 해당 부분을 request.getCookies() != null인 경우에만 수행하도록 수정.
->
-> 
->> 24/05/17
->>> * 추가
->>> * Api-Server
->>>   * OAuth2 추가.
->>>     * OAuth2를 추가하면서 변경되는 사항에 대해 데이터베이스 테이블 구조 수정
->>>     * Member Entity에 auto_increment로 동작하는 id를 PK로 수정.
->>>     * nickname, profileThumbnail, provider(로그인 유형)으로 처리.
->>>     * provider에는 OAuth2로 로그인하는 경우 각 소셜 미디어 명이 들어가게 되며 일반 회원가입으로 처리된 사용자는 local로 저장.
->>>     * Google, Naver, Kakao 로그인 설정.
->>>     * 프로필 이미지는 사용자가 직접 등록하고 OAuth2 로그인을 통해 가져온 프로필은 사용하지 않도록 처리.
->>>     * 첫 로그인시에는 닉네임, 프로필 사진 설정 페이지로 리다이렉트 하도록 처리.
->>>     * 프론트에서 OAuth2 요청은 하이퍼링크로 처리.
->>>     * 로그인 시 이전 페이지 처리를 위해 sessionStorage에 이전 페이지를 담아두도록 처리
->>>     * 최초 로그인이 아닌 사용자의 경우 빈 페이지로 이동하도록 Redirect를 하고 해당 페이지의 스크립트를 통해 sessionStorage에 저장된 이전 페이지로 이동하도록 처리
->>>   * 사용자 정보 관련 수정
->>>     * 닉네임, 프로필 이미지 등록 추가
->>>     * 닉네임은 커뮤니티 컨셉 특성상 중복되지 않도록 중복체크를 하도록 처리
->>>     * 닉네임을 필수 사항으로 처리
->>>     * 프로필 사진은 선택사항으로 처리.
->>>   * ImageFileService 추가
->>>     * 기존 이미지 게시판에서만 사용되던 이미지 파일 처리가 사용자 프로필에도 사용되어야 하기 때문에 별도의 서비스로 분리.
->>>     * 파일 저장과 삭제에 대한 처리만 분리.
->>>     * 파일 저장의 경우 key, value 모두 String 타입의 Map으로 반환.
->>>     * 게시판 파일 저장명(imageName)과 본래 파일명(originalName)을 처리해야 하고 프로필에서는 저장명만 필요한데 하나의 메소드에서 처리하다보니 Map으로 반환하는 것이 가장 효율적이라고 판단해 처리.
->>>   * 쿼리 및 DTO 수정
->>>     * 테이블 구조가 변경되었기 때문에 해당 변경사항에 맞게 native Query 또는 QueryDSL 수정.
->>>     * 수정 내역에 대해서는 test 코드로 체크 후 react와 연동해 추가 테스트 완료.
->>>   * Principal 관련 서비스 메소드 추가
->>>     * principal에 id나 nickname이 들어가지 않고 기존과 동일하게 userId가 들어가도록 유지.
->>>     * 그러다보니 작성자 검증 시 nickname이 필요하고 이 부분에 대해 인증 객체에 nickname을 넣을까 고민했지만 유지하도록 하고 PrincipalService를 통해 반환받도록 처리
->>>     * Member Entity는 userId, provider가 NonNull로 설정되어 있기 때문에 해당 값들을 같이 PrincipalDTO에 담아 반환하도록 처리.
->>>     * PrincipalDTO 내부에서는 toEntity를 통해 Member Entity를 build할 수 있도록 처리
->>>     * 추가적인 메소드로 PrincipalDTO를 반환받는 것이 아닌 nickname만 반환받을 수 있는 메소드를 생성.
->>>     * Client Side Application 또는 SSR Frontend로 전달하는 값 중 userStatus가 존재하는데 이 안에 사용자의 userId를 받고 있었으나 모두 nickname으로 수정했기 때문에 해당 값을 PrincipalService를 통해 nickname을 반환받아 담을 수 있도록 처리.
->
-> 
->> 24/05/18
->>> * SSR Frontend
->>>   * OAuth2 로그인 추가.
->>>   * OAuth2 로그인 추가하면서 필요한 최초 로그인 사용자에 대한 닉네임, 프로필 사진 받는 페이지 추가 및 연결.
->>>   * 정보수정 페이지 추가.
->>>   * 모든 게시판과 댓글에 대해 아이디가 아닌 닉네임 출력하도록 수정.
->>>   * 전체 기능에 대한 테스트 완료
->
-> 
->> 24/05/19
->>> * SSR Frontend, API-Server
->>>   * 로그인 누락 기능 추가.
->>>   * 로컬 사용자 로그인의 경우 provider가 local인지를 꼭 체크해야 하는 부분이 누락되어 추가.
->>>   * WebClient 응답에서도 ExchangeService를 통한 처리에서 직접 처리 코드를 작성하는 것으로 수정.
->>>   * 잘못된 로그인의 경우 AccessDenidedException을 날리는 것이 아닌 BadCredentialsException을 날리도록 수정.
->>>   * CustomBadCredentialsException을 추가하고 ExceptionHandler 역시 추가.
->
->
->> 24/08/01
->>> * API-Server
->>>   * QueryDSL 코드 수정.
->>>   * Comment 리스트 조회에서 imageNo, BoardNo에 대한 조건 검색 처리에서 두개의 메소드로 처리되어 있어서 해당 부분 하나로 통합
->>>   * ImageBoard findAll 조회에서 imageContent를 같이 조회하고 있어서 해당 부분 수정.
->
-> 
->> 24/08/23
->>> * API-Server
->>>   * 모든 Entity의 Date 필드 LocalDate 타입으로 수정. 또한, @CreationTimeStamp를 통해 객체 생성 시 직접 Date 값을 설정하지 않도록 수정.   
->>>   * 객체 생성 및 변환에 대한 코드 개선. 서비스 메소드나 컨트롤러 메소드에서 직접 빌더패턴을 사용해 처리하는 방법을 지양하고 각 DTO나 Entity 내부의 to, from 메소드를 통해 처리하도록 개선.   
->>>   * 각 게시판 및 댓글 리스트 조회 시 요청 파라미터로 받는 Pagination 관련 데이터는 CriteriaRequestMapper라는 클래스를 통해 처리하도록 수정.   
->>>   * 서비스 레이어에서 반환 타입을 ResponseEntity<?> 타입이 아닌 DTO 타입으로 수정.
->>>     * 각 요청에 공통적으로 사용되는 DTO 매핑 및 사용자 로그인 정보, ResponseEntity로 감싸주는 처리는 ResponseFactory 라는 클래스를 생성해 처리하도록 수정.
->>>   * 예외처리 부분 수정.
->>>     * 대부분이 NullPointerException으로 처리하고 있어서 해당 부분들을 수정.
->>>   * OAuth2UserService 코드 개선.
->>>     * 각 Provider에 따른 Response 처리에 대한 중복 코드를 개선.
->>>     * converter 클래스를 통해 DTO를 처리하도록 개선하면서 중복코드 제거됨.
->>>   * JwtTokenProvider 코드 개선
->>>     * 각 토큰 검증 이후 각자의 메소드에서 Redis key 조합 후 조회 메소드를 호출하는 순서였는데 조회 메소드에서 key를 조합하도록 수정.
->>>     * 토큰을 담을 응답 쿠키 생성 메소드 하나로 통합. 그로 인해 호출시 쿠키에 들어갈 값을 매개변수로 받도록 수정.
->>>   * 프로필 및 이미지 게시판 요청에서 파일 저장 처리 코드 개선
->>>     * 기존에도 오류가 발생하면 롤백은 되었지만 이미 저장된 파일에 대한 삭제 처리가 없었기 때문에 해당 부분 추가.
->>>     * 상위메소드에서 try-catch로 감싸 예외 발생 시 현재까지 처리되어 반환된 값을 토대로 삭제 요청을 보내도록 처리.
->>>     * 삭제 처리 이후에는 CustomIOException 강제 발생을 통해 오류 코드를 클라이언트로 반환하도록 처리.
->>>   * domain.dto 패키지 구조 개선.
->>>     * 컨트롤러처럼 큰 기능별로 1차적으로 나눠 분리하고 그 안에서는 요청을 받는 DTO, 응답을 보내는 DTO, 비즈니스 로직에 사용되는 DTO로 구분해 각각 in, out, business 패키지를 갖도록 수정.
->>>   * DTO 반환을 제외한 응답 타입이 Long으로 되어있던 것을 String으로 수정.
->>>     * Result라는 Enum을 통해 응답 값 관리.
->>>   * JwtAuthorizationFilter 코드 개선.
->>>     * Authentication 처리 과정 코드 개선.
->>>     * local은 User를 상속받는 CustomUser, OAuth2는 OAuth2User를 재정의한 CustomOAuth2User를 사용하고 있었고, 각각 나눠져서 사용하다보니 중복 코드가 많았던 상황.   
->>>       결과적으로 Authentication 객체 생성에 필요한 것은 userId, Authorities 두가지였기 때문에 CustomUserDetails라는 인터페이스를 생성하고 두 Custom 클래스는 CustomUserDetails를 재정의하도록 해 조건문 내에서 CustomUserDetails 타입으로 담도록 수정.   
->>>     * 그렇게 되면서 조건문에서는 Provider에 따라 CustomUserDetails에 필요 데이터를 담아 나오게 되고 조건문 밖에서 userId와 Authorities를 꺼내 처리할 수 있게 됨.   
->>> * SSR Frontend
->>>   * API 서버 응답을 매핑하는 ObjectReadValueService 코드 개선
->>>     * 기존에는 하나의 메소드에서 T dto 로 제네릭을 통한 처리를 하고 있었는데 이 메소드를 좀 더 세분화 해서 나누도록 수정.   
->>>     * 수정 이유는 Unchecked cast: 'capture<? extends java.lang.Object>' to 'T' 이 오류 때문.
->>>     * 빨간 밑줄이 생기는 오류는 아니었지만 신경쓰이기도 했고, 확실한 cast 처리를 위해 개선.   
->>>     * List<T> 타입의 DTO를 처리하는 메소드, ParentDTO<ChildDTO> 구조를 처리하는 메소드, 페이징이 필요한 기능에 대한 처리 메소드로 분리.   
->>>     * 이때 ParentDTO<ChildDTO> 타입을 처리하는 케이스에서 ParameterizedTypeReference<T> 타입으로 받아 처리할 수 있도록 구현.   
->>>     * ParameterizedTypeReference 생성에 대해 ObjectReadValueService 내부에서 처리하고자 했으나 제네릭 타입으로 받은 매개변수를 처리하게 되어서 그런지 정상적인 처리가 되지 않는 것을 확인.   
->>>     * 불가피하게 호출하는 메소드에서 응답받을 DTO를 명시하며 ParameterizedTypeReference를 생성하는 방향으로 처리.   
->>>     * 페이징 기능이 필요한 DTO에 대한 처리는 ParentDTO<ChildDTO> 구조와 동일하게 매핑되지만 해당 DTO의 PageDTO 필드를 생성해야 한다는 차이가 발생.   
->>>     * 해당 부분을 호출 서비스에서 처리하게 되면 여러곳으로 처리가 분리되기 때문에 한군데서 처리할 수 있도록 중개 역할을 하는 메소드를 생성해 처리.
->>>   * Pagination 처리가 되는 기능들의 응답 DTO를 PaginationListDTO<T>로 통합.
->>>     * 기존에는 각각의 DTO가 존재했으나 너무 분리되어있는 환경이라 해당 부분을 통합.
->>>   * 각 게시판 리스트 조회시 검색에 유무에 따른 UriComponent 생성 코드 개선.
->>>     * 검색어가 존재한다면 UriComponent.instance()를 다시 생성하고 있었고 각 게시판 서비스에서 동일한 코드가 작성된다는 문제.
->>>     * 이 문제를 해결하기 위해 UriComponents가 아닌 UriComponentsBuilder로 처리하게 되면 기존에 생성한 인스턴스에 추가적인 RequestParam 설정을 담을 수 있다는 것을 알게 되어 해당 방법으로 수정.   
->>>     * 또한, 두 게시판이 동일한 조건문과 동일한 처리를 하고 있기 때문에 이 부분을 분리해 UriComponentsService를 생성해 해당 서비스를 호출해 처리하도록 수정.   
->>>   * Controller 메소드에서 클라이언트의 요청 데이터에 대해 DTO가 아닌 HttpServletRequest로 받아 처리하던 부분을 모두 수정.
->>>     * DTO로 받을 수 있도록 수정.   
->>>     * 다른 프로젝트에서 DTO로 받고 있기 때문에 여기서는 HttpServletRequest로 받을까 고민했지만 DTO 생성을 선택.   
->>>     * 만약 HttpServletRequest로 받는다면 RequestMapper를 통해 DTO에 매핑하도록 처리해야 하고 그럼 RequestMapper 관리 역시 까다로워지기 때문에 DTO로 바로 매핑할 수 있도록 처리.
->>>   * 클라이언트 쿠키 값 체크 및 MultiValueMap에 담아주는 처리를 서비스레이어에서 컨트롤러로 이동.
->>>     * 기존에는 서비스 레이어에서 CookieService를 호출해 처리하고 있었으나 그럼 HttpServletRequest가 서비스 레이어로 넘어가야 하기 때문에 해당 부분을 개선.   
->>>     * 요청 데이터를 DTO로 매핑하게 되면서 HttpServletRequest가 굳이 서비스 레이어로 들어가야 할 이유도 없어졌고 서비스 레이어로 넘기는 것은 좋지 않은 처리라고 해서 최대한 HttpServletRequest를 넘기지 않는쪽으로 처리.
+이미지 게시판의 경우 300, 600 두 사이즈로 리사이징을 진행하게 되며 원본도 같이 저장하는 구조입니다.   
+그리고 데이터베이스에는 원본 파일명으로 저장하도록 설계했습니다.
+이미지 게시판은 목록에서 기본적으로 300을 사용, 상세 페이지에서는 브라우저 크기에 따라 300에서 600 사이즈까지 조절되어야 하기 때문입니다.   
+
+원본 파일만 데이터베이스에 저장되는 만큼 리사이징 파일명들은 원본 파일명을 기본적으로 따라가도록 설계했습니다.   
+원본파일명_300.jpg, 원본파일명_600.jpg 와 같은 구조로 저장합니다.   
+
+<details>
+    <summary><strong>✔️ ImageFileService 코드</strong></summary>
+
+```java
+@Service
+public class ImageFileServiceImpl implements ImageFileService {
+    @Value("#{filePath['file.board.path']}")
+    private String boardPath;
+
+    @Value("#{filePath['file.profile.path']}")
+    private String profilePath;
+
+    private final int MAX_PIXEL = 5000;
+
+    private final int SIZE_300 = 300;
+
+    private final int SIZE_600 = 600;
+
+    private final String EXTENSION = "jpg";
+    
+    //profile 이미지 처리
+    @Override
+    public String profileImageSave(MultipartFile file) throws IOException {
+        validateResolution(file);
+        String saveNamePrefix = createSaveFileName(file).get(SaveImageKey.SAVE_NAME);
+        BufferedImage originalImage = ImageIO.read(file.getInputStream());
+        return imageResizing(originalImage, saveNamePrefix, SIZE_300, profilePath);
+    }
+    
+    // 이미지 게시판 이미지 처리
+    @Override
+    public Map<SaveImageKey, String> boardImageSave(MultipartFile file) throws IOException {
+        validateResolution(file);
+        Map<SaveImageKey, String> saveImageMap = createSaveFileName(file);
+        String saveName = saveImageMap.get(SaveImageKey.SAVE_NAME);
+        try {
+            BufferedImage originalImage = ImageIO.read(file.getInputStream());
+
+            Thumbnails.of(originalImage)
+                    .scale(1.0)
+                    .outputFormat(EXTENSION)
+                    .outputQuality(0.9)
+                    .toFile(new File(boardPath + saveName));
+
+            imageResizing(originalImage, saveName, SIZE_300, boardPath);
+            imageResizing(originalImage, saveName, SIZE_600, boardPath);
+
+            return saveImageMap;
+        }catch (Exception e) {
+            if(!saveImageMap.isEmpty())
+                cleanupImageBoardFiles(saveImageMap.get(SaveImageKey.SAVE_NAME));
+
+            throw new CustomIOException(ErrorCode.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR.getMessage());
+        }
+    }
+
+    // 리사이징 처리
+    private String imageResizing(BufferedImage file, String fileName, int size, String filePath) throws IOException {
+        String saveName = createResizeName(fileName, size);
+
+        File targetFile = new File(filePath + saveName);
+
+        Thumbnails.of(file)
+                .size(size, size)
+                .outputFormat(EXTENSION)
+                .outputQuality(0.8)
+                .toFile(targetFile);
+
+        return saveName;
+    }
+    
+    // 원본 파일명 생성
+    private Map<SaveImageKey, String> createSaveFileName(MultipartFile image) {
+        Map<SaveImageKey, String> map = new HashMap<>();
+
+        String originalName = image.getOriginalFilename();
+        StringBuffer sb = new StringBuffer();
+        String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss")
+                        .format(System.currentTimeMillis()))
+                .append(UUID.randomUUID())
+                .append(".")
+                .append(EXTENSION)
+                .toString();
+
+        map.put(SaveImageKey.SAVE_NAME, saveName);
+        map.put(SaveImageKey.ORIGIN_NAME, originalName);
+
+        return map;
+    }
+
+    // 리사이징 파일명 생성
+    private String createResizeName(String fileName, int size) {
+        String saveNamePrefix = fileName.substring(0, fileName.lastIndexOf('.'));
+        String saveName = saveNamePrefix + "_" + size + "." + EXTENSION;
+
+        return saveName;
+    }
+    
+    //...
+}
+```
+
+</details>
+
+ImageFileService에서는 기본적으로 profile, imageBoard에 따라 접근하는 메서드를 제공하고 세부적인 기능들은 private으로 설계했습니다.   
+이미지 게시판의 경우 파일이 여러개 존재하기 때문에 ImageBoardService에서 반복적으로 boardImageSave 메서드를 호출하는 구조입니다.   
+파일 저장 처리 도중 예외가 발생했을 때 이미 저장된 파일들은 제거하도록 처리할 필요가 있었기 때문에 하나씩 결과를 반환받고 파일명을 관리할 수 있어야 하기 때문입니다.   
+임시 저장소를 사용하지 않고 바로 저장하는 구조 특성상 필요한 작업이었으며, 이번 처리를 통해 임시 저장소의 효율성에 대해 다시 한번 고민하는 기회가 되었습니다.
+
+기본적으로 이미지는 10MB를 넘기지 않도록 처리하고 있지만, 그럼에도 픽셀수가 많아지면 Heap Memory 부족 또는 서버 부하가 발생할 수 있다는 점을 알 수 있었습니다.   
+그래서 최초 파일 검증 과정에서 MAX_PIXEL 이상인 경우에는 처리하지 않고 Exception을 발생시키도록 설계했습니다.
+원본, 300, 600을 처리하는 다단계 리사이징 과정에서 매번 Disk I/O를 발생시키지 않도록 ImageIO.read()를 통해 원본 이미지를 메모리에 한번만 로드하여 모든 리사이징 프로세스에 재사용함으로써 처리 속도를 최적화했습니다.
+

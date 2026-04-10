@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.example.boardrest.domain.enumuration.TokenValidationResult;
+import com.example.boardrest.domain.enums.TokenValidationResult;
 import com.example.boardrest.properties.CookieProperties;
 import com.example.boardrest.properties.JwtSecretProperties;
 import com.example.boardrest.properties.TokenProperties;

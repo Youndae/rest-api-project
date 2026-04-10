@@ -1,6 +1,6 @@
-package com.example.boardrest.auth.response;
+package com.example.boardrest.auth.oAuth.response;
 
-import com.example.boardrest.domain.enumuration.OAuthProvider;
+import com.example.boardrest.domain.enums.OAuthProvider;
 
 import java.util.Map;
 

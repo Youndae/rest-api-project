@@ -1,6 +1,6 @@
 package com.example.boardrest.domain.dto.response;
 
-import com.example.boardrest.domain.enumuration.ResponseStatus;
+import com.example.boardrest.domain.enums.ResponseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

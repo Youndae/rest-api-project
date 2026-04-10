@@ -2,8 +2,7 @@ package com.example.boardrest.service;
 
 import com.example.boardrest.customException.CustomIOException;
 import com.example.boardrest.customException.ErrorCode;
-import com.example.boardrest.domain.entity.ImageData;
-import com.example.boardrest.domain.enumuration.SaveImageKey;
+import com.example.boardrest.domain.enums.SaveImageKey;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;

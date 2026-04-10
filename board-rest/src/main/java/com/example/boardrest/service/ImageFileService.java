@@ -1,6 +1,6 @@
 package com.example.boardrest.service;
 
-import com.example.boardrest.domain.enumuration.SaveImageKey;
+import com.example.boardrest.domain.enums.SaveImageKey;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 

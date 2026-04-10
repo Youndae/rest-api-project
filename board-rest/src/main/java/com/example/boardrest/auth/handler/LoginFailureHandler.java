@@ -2,7 +2,7 @@ package com.example.boardrest.auth.handler;
 
 import com.example.boardrest.customException.ErrorCode;
 import com.example.boardrest.domain.dto.response.ExceptionResponse;
-import com.example.boardrest.domain.enumuration.ResponseStatus;
+import com.example.boardrest.domain.enums.ResponseStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

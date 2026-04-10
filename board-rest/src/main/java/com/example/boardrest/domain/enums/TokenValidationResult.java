@@ -1,4 +1,4 @@
-package com.example.boardrest.domain.enumuration;
+package com.example.boardrest.domain.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

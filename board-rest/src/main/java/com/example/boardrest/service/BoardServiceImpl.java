@@ -13,7 +13,7 @@ import com.example.boardrest.domain.dto.common.in.ListRequest;
 import com.example.boardrest.domain.dto.response.PageResponse;
 import com.example.boardrest.domain.entity.Board;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.domain.enumuration.ListAmount;
+import com.example.boardrest.domain.enums.ListAmount;
 import com.example.boardrest.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -8,7 +8,7 @@ import com.example.boardrest.domain.dto.member.in.OAuthJoinRequest;
 import com.example.boardrest.domain.dto.member.in.UpdateProfileRequest;
 import com.example.boardrest.domain.dto.member.out.ProfileResponse;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.domain.enumuration.MemberCheckResult;
+import com.example.boardrest.domain.enums.MemberCheckResult;
 import com.example.boardrest.mapper.MemberMapper;
 import com.example.boardrest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

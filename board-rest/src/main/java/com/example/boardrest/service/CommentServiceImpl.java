@@ -10,7 +10,7 @@ import com.example.boardrest.domain.dto.comment.out.BoardCommentResponse;
 import com.example.boardrest.domain.dto.comment.in.CommentRequest;
 import com.example.boardrest.domain.entity.ImageBoard;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.domain.enumuration.ListAmount;
+import com.example.boardrest.domain.enums.ListAmount;
 import com.example.boardrest.repository.BoardRepository;
 import com.example.boardrest.repository.CommentRepository;
 import com.example.boardrest.repository.ImageBoardRepository;

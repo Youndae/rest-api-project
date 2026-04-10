@@ -6,8 +6,8 @@ import com.example.boardrest.domain.dto.member.in.UpdateProfileRequest;
 import com.example.boardrest.domain.dto.member.out.MemberStatusResponse;
 import com.example.boardrest.domain.dto.member.out.ProfileResponse;
 import com.example.boardrest.domain.dto.response.ApiResponse;
-import com.example.boardrest.domain.enumuration.MemberCheckResult;
-import com.example.boardrest.domain.enumuration.ResponseStatus;
+import com.example.boardrest.domain.enums.MemberCheckResult;
+import com.example.boardrest.domain.enums.ResponseStatus;
 import com.example.boardrest.properties.CookieProperties;
 import com.example.boardrest.service.AuthContextService;
 import com.example.boardrest.service.ImageFileService;
@@ -27,7 +27,6 @@ import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.security.Principal;
 
 @RestController

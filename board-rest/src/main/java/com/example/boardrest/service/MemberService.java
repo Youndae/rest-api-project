@@ -4,7 +4,7 @@ import com.example.boardrest.domain.dto.member.in.JoinRequest;
 import com.example.boardrest.domain.dto.member.in.OAuthJoinRequest;
 import com.example.boardrest.domain.dto.member.in.UpdateProfileRequest;
 import com.example.boardrest.domain.dto.member.out.ProfileResponse;
-import com.example.boardrest.domain.enumuration.MemberCheckResult;
+import com.example.boardrest.domain.enums.MemberCheckResult;
 
 import java.security.Principal;
 

@@ -1,8 +1,7 @@
 package com.example.boardrest.domain.entity;
 
 import com.example.boardrest.auth.oAuth.domain.OAuth2DTO;
-import com.example.boardrest.domain.dto.member.in.OAuthJoinRequest;
-import com.example.boardrest.domain.enumuration.Role;
+import com.example.boardrest.domain.enums.Role;
 import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

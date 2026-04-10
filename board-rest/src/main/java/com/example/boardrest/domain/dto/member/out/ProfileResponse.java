@@ -1,6 +1,6 @@
 package com.example.boardrest.domain.dto.member.out;
 
-import com.example.boardrest.domain.enumuration.MailSuffix;
+import com.example.boardrest.domain.enums.MailSuffix;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

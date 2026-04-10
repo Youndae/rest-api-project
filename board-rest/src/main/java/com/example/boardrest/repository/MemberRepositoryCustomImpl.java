@@ -2,8 +2,7 @@ package com.example.boardrest.repository;
 
 import com.example.boardrest.domain.dto.member.out.ProfileResponse;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.domain.enumuration.OAuthProvider;
-import com.example.boardrest.domain.enumuration.Role;
+import com.example.boardrest.domain.enums.OAuthProvider;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

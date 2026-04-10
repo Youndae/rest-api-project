@@ -5,7 +5,7 @@ import com.example.boardrest.auth.user.CustomUserDetails;
 import com.example.boardrest.customException.ErrorCode;
 import com.example.boardrest.auth.oAuth.domain.OAuth2DTO;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.domain.enumuration.TokenValidationResult;
+import com.example.boardrest.domain.enums.TokenValidationResult;
 import com.example.boardrest.properties.CookieProperties;
 import com.example.boardrest.properties.TokenProperties;
 import com.example.boardrest.repository.MemberRepository;

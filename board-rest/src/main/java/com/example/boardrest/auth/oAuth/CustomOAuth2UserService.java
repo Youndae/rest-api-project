@@ -1,9 +1,9 @@
 package com.example.boardrest.auth.oAuth;
 
-import com.example.boardrest.auth.response.*;
+import com.example.boardrest.auth.oAuth.response.*;
 import com.example.boardrest.auth.oAuth.domain.OAuth2DTO;
 import com.example.boardrest.domain.entity.Member;
-import com.example.boardrest.domain.enumuration.OAuthProvider;
+import com.example.boardrest.domain.enums.OAuthProvider;
 import com.example.boardrest.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
