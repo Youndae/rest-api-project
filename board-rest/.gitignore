@@ -21,8 +21,9 @@ bin/
 secret.yml
 dev-filepath.properties
 **/logback-spring/
-**/logs
-**/META-INF
+**/logs/
+**/META-INF/
+/META-INF/
 .idea
 *.iws
 *.iml
@@ -40,10 +41,7 @@ out/
 
 ### VS Code ###
 .vscode/
-!/logback-spring/
 **/src/main/generated/
 *.log
 *.log.gz
 *.log.*
-!/logs
-!/META-INF
