@@ -39,7 +39,6 @@ out/
 
 ### VS Code ###
 .vscode/
-
 !/logback-spring/
 **/src/main/generated/
 *.log
